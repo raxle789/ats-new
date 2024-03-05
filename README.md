@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## Erajaya ATS System - 2024
 
-## Getting Started
+See the timeline [here](https://docs.google.com/spreadsheets/d/12jSYs7mVIssOY1iyGkwIB7xP7d3tJvxNGkDeasjgg7s/edit#gid=0).
 
-First, run the development server:
+##### Development Rules
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. Struktur Folder
+   - Tempatkan semua route didalam direktori `./src/app` (file-based routing)
+   - Tempatkan semua komponen didalam direktori `./src/components`
+   - Tempatkan semua hal seperti function, library instances, dummy data didalam direktori `./src/utils`
+   - Tempatkan semua custom hooks pada didalam direktori `./src/hooks`
+    
+    
+    > Note : Selalu buat terapkan grouping untuk setiap komponen, utils, ataupun custom hooks (e.g `./src/components/interviews`)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Penamaan Folder dan File
+   - Gunakan jamak (`s`) untuk nama folder ataupun route segment (e.g untuk membuat folder atau route segment `interview` akan menjadi `interviews`)
+   - Nama file harus detail atau di sesuaikan dengan parent direktori, gunakan (`-`) sebagai tanda penghubung spasi (e.g `get-valid-efpk`)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+##### Github Branch
+- `main`
+  Branch utama ketika segala fitur/kode tidak terdapat masalah
+- `dev`
+  Development branch, untuk fitur yang dikembangkan. Setelah mengubah atau menambahkan beberapa fitur atau kode, _commit_ disini.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+##### Commit Message Rules
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Gunakan `conventional commits` dengan format berikut `<type>: <description>`. Perhatikan setiap tipe berikut:
+1. `feat`
+   Gunakan tipe ini ketika telah menambahkan sebuah fitur.
+2. `fix`
+   Gunakan tipe ini ketika telah memperbaiki sebuah bug/masalah.
+3. `chore`
+   Gunakan tipe ini ketika hanya merubah tambahan informasi comment, readme, atau hal lain yang tidak mempengaruhi perilaku/fungsionalitas kode
+4. `build`
+   Gunakan tipe ini ketika melakukan penambahan atau update versi dependencies/library.
+5. `refactor`
+   Gunakan tipe ini ketika merubah kode untuk meningkatkan kualitas kode tanpa mengubah atau mempengaruhi fungsionalitas kode.
+   
+Contoh _commit message_
+>  `git commit -m 'fix: reminder candidate for user interview via calendar'`
