@@ -610,7 +610,7 @@ const RegisterFormNext = () => {
                 name="uploadCV"
                 accept=".pdf"
               />
-              <label htmlFor="photo-input" className="photo-input">
+              <label htmlFor="photo-cv" className="photo-cv">
                 <Image
                   src={uploadIcon}
                   alt="upload-icon"

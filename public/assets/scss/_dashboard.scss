@@ -1489,6 +1489,14 @@
   display: inline-block;
 }
 
+.upload-apply-cv {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
 .upload-img {
   max-width: 24px;
   display: inline;
@@ -1506,4 +1514,8 @@
 
 .upload-label {
   cursor: pointer;
+}
+
+.label-cv-apply {
+  font-weight: 400;
 }

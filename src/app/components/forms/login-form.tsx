@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import * as Yup from 'yup';
-import { Resolver, useForm } from 'react-hook-form';
+import { Resolver, useForm, SubmitHandler } from 'react-hook-form';
 import ErrorMsg from '../common/error-msg';
 import icon from '@/assets/images/icon/icon_60.svg';
 
@@ -20,20 +20,24 @@ const schema = Yup.object().shape({
 
 // resolver
 const resolver: Resolver<IFormData> = async (values) => {
+  const errors: Record<string, any> = {};
+
+  if (!values.email) {
+    errors.email = {
+      type: 'required',
+      message: 'Email is required.',
+    };
+  }
+  if (!values.password) {
+    errors.password = {
+      type: 'required',
+      message: 'Password is required.',
+    };
+  }
+
   return {
-    values: values.email ? values : {},
-    errors: !values.email
-      ? {
-          email: {
-            type: 'required',
-            message: 'Email is required.',
-          },
-          password: {
-            type: 'required',
-            message: 'Password is required.',
-          },
-        }
-      : {},
+    values: Object.keys(errors).length > 0 ? {} : values,
+    errors,
   };
 };
 
