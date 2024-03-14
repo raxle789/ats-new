@@ -22,7 +22,7 @@ const LoginModal = () => {
     }
 
     // Navigasi ke halaman pendaftaran
-    router.push('/pages/register');
+    router.push('/register');
   };
 
   useEffect(() => {
