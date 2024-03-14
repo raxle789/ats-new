@@ -7,6 +7,12 @@ import PartnersSlider from './components/partners/partners-slider';
 import CategorySectionSix from './components/category/category-section-6';
 import { TrendingJobs } from './components/category/category-section-3';
 import { JobListItems } from './components/jobs/list/job-list-one';
+import SpiritSection from './components/home/spirit-section';
+import EngageSection from './components/home/engage-section';
+import VerticalSection from './components/home/vertical-section';
+import KickstartSection from './components/home/kickstart-section';
+import EventSection from './components/home/event-section';
+import VisionSection from './components/home/vision-section';
 import FancyBannerThree from './components/fancy-banner/fancy-banner-3';
 import FeatureNine from './components/features/feature-nine';
 import FeedbackFive from './components/feedBacks/feedback-five';
@@ -15,29 +21,27 @@ import FeatureTwo from './components/features/feature-two';
 import FancyBannerSix from './components/fancy-banner/fancy-banner-6';
 import FooterOne from '@/layouts/footers/footer-one';
 import Link from 'next/link';
-import Header from '@/layouts/headers/header';
 
 export const metadata: Metadata = {
-  title: 'Home',
+  title: 'Home six',
 };
 
-const Home = () => {
+export default function Home() {
   return (
     <Wrapper>
       <div className="main-page-wrapper">
         {/* header start */}
-        {/* <HeaderSix /> */}
+        <HeaderSix />
         {/* header end */}
 
-        <Header />
         {/* hero banner start */}
         <HeroBannerSix />
         {/* hero banner end */}
 
         {/* partners logo start*/}
-        <div className="partner-logos bg-color border-0 pt-45 pb-45 ps-3 pe-3">
+        {/* <div className="partner-logos bg-color border-0 pt-45 pb-45 ps-3 pe-3">
           <PartnersSlider />
-        </div>
+        </div> */}
         {/* partners logo end*/}
 
         {/* category section start */}
@@ -99,32 +103,56 @@ const Home = () => {
               <div className="btn-eight fw-500">
                 Do you want to post a job for your company?{' '}
                 <span>We can help.</span>{' '}
-                <Link href="/register">Click here</Link>
+                <Link href="/auth/register">Click here</Link>
               </div>
             </div>
           </div>
         </section>
         {/* job list items end */}
 
+        {/* spirit words start */}
+        <SpiritSection />
+        {/* spirit words end */}
+
         {/* fancy banner start */}
-        <FancyBannerThree style_2={true} />
+        {/* <FancyBannerThree style_2={true} /> */}
         {/* fancy banner end */}
 
         {/* text feature start */}
         <FeatureNine />
         {/* text feature end */}
 
+        {/* vision section start */}
+        <VisionSection />
+        {/* vision section end */}
+
+        {/* vertical section start */}
+        <VerticalSection />
+        {/* vertical section end */}
+
         {/* feedback start */}
         <FeedbackFive />
         {/* feedback end */}
 
+        {/* kickstart section start */}
+        <KickstartSection />
+        {/* kickstart section end */}
+
         {/* blog start */}
-        <BlogFour />
+        {/* <BlogFour /> */}
         {/* blog end */}
 
         {/* text feature two start */}
-        <FeatureTwo />
+        {/* <FeatureTwo /> */}
         {/* text feature two end */}
+
+        {/* event section start */}
+        <EventSection />
+        {/* event section end */}
+
+        {/* engage section start */}
+        <EngageSection />
+        {/* engage section end */}
 
         {/* fancy banner start */}
         <FancyBannerSix />
@@ -136,6 +164,4 @@ const Home = () => {
       </div>
     </Wrapper>
   );
-};
-
-export default Home;
+}

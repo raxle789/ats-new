@@ -5,9 +5,9 @@ import { Metadata } from 'next';
 // import Header from '@/layouts/headers/header';
 import HeaderSix from '@/layouts/headers/header-6';
 import Wrapper from '@/layouts/wrapper';
-import CompanyBreadcrumb from '../../../components/common/common-breadcrumb';
+import CompanyBreadcrumb from '../../components/common/common-breadcrumb';
 import FooterOne from '@/layouts/footers/footer-one';
-import RegisterArea from '../../../components/register/register-area';
+import RegisterArea from '../../components/register/register-area';
 
 export const metadata: Metadata = {
   title: 'Register',

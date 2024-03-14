@@ -1,14 +1,24 @@
 import wishlistSlice from './features/wishlist';
-import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import filterSlice from './features/filterSlice';
-import sidebarSlice from './features/sidebarSlice';
+import stepSlice from './features/stepSlice';
+import registerSlice from './features/registerSlice';
+// import storage from 'redux-persist/lib/storage';
+
+const rootReducer = combineReducers({
+  filter: filterSlice,
+  wishlist: wishlistSlice,
+  step: stepSlice,
+  register: registerSlice,
+});
+
+// const persistConfig = {
+//   key: "simple-next-js",
+//   storage,
+// };
 
 export const store = configureStore({
-  reducer: {
-    filter: filterSlice,
-    wishlist: wishlistSlice,
-    sidebar: sidebarSlice,
-  },
+  reducer: rootReducer,
 });
 
 export type RootState = ReturnType<typeof store.getState>;

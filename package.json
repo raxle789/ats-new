@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "compile-scss": "node-sass --watch src/app -o src/styles"
   },
   "dependencies": {
     "@emailjs/browser": "^3.11.0",

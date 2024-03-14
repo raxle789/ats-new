@@ -1,77 +1,131 @@
-"use client";
-import React, { useState } from "react";
-import Image from "next/image";
-import * as Yup from "yup";
-import { Resolver, useForm } from "react-hook-form";
-import ErrorMsg from "../common/error-msg";
-import icon from "@/assets/images/icon/icon_60.svg";
+'use client';
+import React, { useState, ChangeEvent, useEffect } from 'react';
+import Image from 'next/image';
+import * as Yup from 'yup';
+import { Resolver, useForm, SubmitHandler } from 'react-hook-form';
+import ErrorMsg from '../common/error-msg';
+import uploadIcon from '@/assets/images/icon/icon_11.svg';
+import { useAppDispatch, useAppSelector } from '@/redux/hook';
+import { setStep } from '@/redux/features/stepSlice';
+import { setRegister } from '@/redux/features/registerSlice';
 
 // form data type
 type IFormData = {
-  name: string;
+  fullName: string;
   email: string;
-  password: string;
+  phoneNumber: string;
+  dateOfBirth: string;
+  uploadPhoto: FileList;
 };
 
 // schema
 const schema = Yup.object().shape({
-  name: Yup.string().required().label("Name"),
-  email: Yup.string().required().email().label("Email"),
-  password: Yup.string().required().min(6).label("Password"),
+  fullName: Yup.string().required().label('Name'),
+  email: Yup.string().required().email().label('Email'),
+  password: Yup.string().required().min(6).label('Password'),
+  // blm disetting
 });
+
 // resolver
 const resolver: Resolver<IFormData> = async (values) => {
+  const errors: Record<string, any> = {};
+
+  if (!values.fullName) {
+    errors.fullName = {
+      type: 'required',
+      message: 'Full Name is required.',
+    };
+  }
+  if (!values.email) {
+    errors.email = {
+      type: 'required',
+      message: 'Email is required.',
+    };
+  }
+  if (!values.phoneNumber) {
+    errors.phoneNumber = {
+      type: 'required',
+      message: 'Phone Number is required.',
+    };
+  }
+  if (!values.dateOfBirth) {
+    errors.dateOfBirth = {
+      type: 'required',
+      message: 'Date of Birth is required.',
+    };
+  }
+  if (!values.uploadPhoto) {
+    errors.uploadPhoto = {
+      type: 'required',
+      message: 'Photo is required.',
+    };
+  }
+
   return {
-    values: values.name ? values : {},
-    errors: !values.name
-      ? {
-        name: {
-          type: "required",
-          message: "Name is required.",
-        },
-        email: {
-          type: "required",
-          message: "Email is required.",
-        },
-        password: {
-          type: "required",
-          message: "Password is required.",
-        }
-      }
-      : {},
+    values: Object.keys(errors).length > 0 ? {} : values,
+    errors,
   };
 };
 
 const RegisterForm = () => {
-  const [showPass, setShowPass] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+  const step1Data = useAppSelector((state) => state.register.dataCandidate);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (file) {
+      setUploadedFileName(file.name);
+    }
+  };
+
   // react hook form
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    watch,
     reset,
-  } = useForm<IFormData>({ resolver });
-  // on submit
-  const onSubmit = (data: IFormData) => {
-    if (data) {
-      alert("Register successfully!");
-    }
-    reset();
+    formState: { errors },
+  } = useForm<IFormData>({ resolver, defaultValues: step1Data });
+  const watchedValues = watch();
+  const fullName = watch('fullName');
+
+  const onSubmit: SubmitHandler<IFormData> = (data) => {
+    // const uploadedFiles = Array.from(data.uploadPhoto as FileList).map(
+    //   (file) => file.name,
+    // );
+
+    console.log('watchedValues: ', watchedValues);
+    dispatch(setRegister(data));
+    // dispatch(setRegister({ ...data, uploadPhoto: uploadedFiles[0] }));
+    console.log('data saat ini: ', data);
+    console.log('fullname: ', fullName);
+    dispatch(setStep({ newStep: 2 }));
   };
+
+  useEffect(() => {
+    // setValue('fullName', step1Data.fullName);
+    // setValue('email', step1Data.email);
+    // setValue('phoneNumber', step1Data.phoneNumber);
+    // setValue('dateOfBirth', step1Data.dateOfBirth);
+    reset(step1Data);
+    console.log('coba data: ', step1Data);
+  }, [step1Data]);
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="row">
         <div className="col-12">
           <div className="input-group-meta position-relative mb-25">
-            <label>Name*</label>
+            <label>Full Name*</label>
             <input
               type="text"
               placeholder="James Brower"
-              {...register("name", { required: `Name is required!` })}
-              name="name"
+              {...register('fullName', { required: `Full Name is required!` })}
+              name="fullName"
             />
             <div className="help-block with-errors">
-              <ErrorMsg msg={errors.name?.message!} />
+              <ErrorMsg msg={errors.fullName?.message!} />
             </div>
           </div>
         </div>
@@ -81,7 +135,7 @@ const RegisterForm = () => {
             <input
               type="email"
               placeholder="james@example.com"
-              {...register("email", { required: `Email is required!` })}
+              {...register('email', { required: `Email is required!` })}
               name="email"
             />
             <div className="help-block with-errors">
@@ -90,46 +144,86 @@ const RegisterForm = () => {
           </div>
         </div>
         <div className="col-12">
-          <div className="input-group-meta position-relative mb-20">
-            <label>Password*</label>
+          <div className="input-group-meta position-relative mb-25">
+            <label>Phone Number*</label>
             <input
-              type={`${showPass ? "text" : "password"}`}
-              placeholder="Enter Password"
-              className="pass_log_id"
-              {...register("password", { required: `Password is required!` })}
-              name="password"
+              type="text"
+              placeholder="081234567890"
+              {...register('phoneNumber', {
+                required: `Phone Number is required!`,
+              })}
+              name="phoneNumber"
             />
-            <span
-              className="placeholder_icon"
-              onClick={() => setShowPass(!showPass)}
-            >
-              <span className={`passVicon ${showPass ? "eye-slash" : ""}`}>
-                <Image src={icon} alt="pass-icon" />
-              </span>
-            </span>
             <div className="help-block with-errors">
-              <ErrorMsg msg={errors.password?.message!} />
+              <ErrorMsg msg={errors.phoneNumber?.message!} />
             </div>
           </div>
         </div>
         <div className="col-12">
-          <div className="agreement-checkbox d-flex justify-content-between align-items-center">
-            <div>
+          <div className="input-group-meta position-relative mb-20">
+            <label>Date of Birth*</label>
+            <div className="form-group">
               <input
-                type="checkbox"
-                name="remember"
+                type="date"
+                className="form-control"
+                id="date-of-birth"
+                {...register('dateOfBirth', {
+                  required: `Date of Birth is required!`,
+                })}
+                name="dateOfBirth"
               />
-              <label htmlFor="remember">
-                By hitting the Register button, you agree to the{" "}
-                <a href="#">Terms conditions</a> &{" "}
-                <a href="#">Privacy Policy</a>
+            </div>
+            <div className="help-block with-errors">
+              <ErrorMsg msg={errors.dateOfBirth?.message!} />
+            </div>
+          </div>
+        </div>
+        <div className="">
+          <div className="input-group-meta position-relative mb-25">
+            <label>Upload Photo*</label>
+            <div className="upload-container">
+              <input
+                className="upload-photo-btn"
+                type="file"
+                id="upload-photo"
+                accept="image/*"
+                {...register('uploadPhoto', {
+                  required: `Photo is required!`,
+                })}
+                name="uploadPhoto"
+                onChange={handleFileChange}
+              />
+              <label htmlFor="photo-input" className="photo-input">
+                <Image
+                  src={uploadIcon}
+                  alt="upload-icon"
+                  className="upload-img"
+                />
+                <span className="fw-500 ms-2 text-dark upload-label">
+                  Upload your Photo
+                </span>
               </label>
             </div>
+            <div className="help-block with-errors">
+              <ErrorMsg msg={errors.uploadPhoto?.message!} />
+            </div>
           </div>
         </div>
         <div className="col-12">
-          <button type="submit" className="btn-eleven fw-500 tran3s d-block mt-20">
-            Register
+          {uploadedFileName && <p>Uploaded File: {uploadedFileName}</p>}
+        </div>
+
+        <div className="col-12">
+          {/* {isFormSubmitted && Object.keys(errors).length > 0 && (
+            <div className="alert alert-danger" role="alert">
+              Please fill in all required fields.
+            </div>
+          )} */}
+          <button
+            type="submit"
+            className="btn-eleven fw-500 tran3s d-block mt-20"
+          >
+            Next
           </button>
         </div>
       </div>
