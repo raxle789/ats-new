@@ -7,6 +7,8 @@ import dark_logo from '@/assets/images/logo/logo_04.png';
 import Menus from './component/menus';
 import useSticky from '@/hooks/use-sticky';
 import LoginModal from '@/app/components/common/popup/login-modal';
+/* server components */
+// import { getSession } from '@/lib/Authentication';
 
 const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
   const { sticky } = useSticky();
@@ -48,11 +50,17 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
                     </a>
                   </li> */}
                   <li className="d-none d-md-block ms-3">
-                    <Link href="/pages/register" className="btn-five">
+                    <Link href="/register" className="btn-five">
                       Register
                     </Link>
                   </li>
                 </ul>
+                {/* check session here */}
+                {/* {getSession() ? (
+                  'fuck'
+                ) : (
+                  'njing'
+                )} */}
               </div>
 
               <nav className="navbar navbar-expand-lg p0 ms-3 ms-lg-5 order-lg-1">
@@ -85,7 +93,7 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
                     <Menus />
                     {/* menus end */}
                     <li className="d-md-none mt-5">
-                      <Link href="/pages/register" className="btn-five w-100">
+                      <Link href="/register" className="btn-five w-100">
                         Register
                       </Link>
                     </li>
