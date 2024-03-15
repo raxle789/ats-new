@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "compile-scss": "node-sass --watch src/app -o src/styles"
   },
   "dependencies": {
     "@emailjs/browser": "^3.11.0",
@@ -21,6 +22,8 @@
     "@types/react-paginate": "^7.1.1",
     "@types/react-slick": "^0.23.10",
     "antd": "^5.15.0",
+    "axios": "^1.6.7",
+    "bcrypt": "^5.1.1",
     "bootstrap": "^5.3.0",
     "eslint": "8.42.0",
     "eslint-config-next": "^14.1.2",

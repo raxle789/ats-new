@@ -1,13 +1,16 @@
-import React from "react";
-import menu_data from "@/data/menu-data";
-import Link from "next/link";
+import React from 'react';
+import menu_data from '@/data/menu-data';
+import Link from 'next/link';
 
 const Menus = () => {
   return (
     <>
       {menu_data.map((menu) =>
         menu.sub_menus ? (
-          <li key={menu.id} className={`nav-item dropdown ${menu.title === 'Dashboard' ? 'dashboard-menu' : ''}`}>
+          <li
+            key={menu.id}
+            className={`nav-item dropdown ${menu.title === 'Dashboard' ? 'dashboard-menu' : ''}`}
+          >
             <a
               className="nav-link dropdown-toggle"
               href="#"
@@ -18,7 +21,7 @@ const Menus = () => {
             >
               {menu.title}
             </a>
-            <ul className="dropdown-menu">
+            {/* <ul className="dropdown-menu">
               {menu.sub_menus.map((s, i) => (
                 <li key={i}>
                   <Link href={s.link} className="dropdown-item">
@@ -26,7 +29,7 @@ const Menus = () => {
                   </Link>
                 </li>
               ))}
-            </ul>
+            </ul> */}
           </li>
         ) : menu.mega_menus ? (
           <li key={menu.id} className="nav-item dropdown mega-dropdown-sm">
@@ -49,10 +52,7 @@ const Menus = () => {
                       <ul className="style-none mega-dropdown-list">
                         {m.sub_menus.map((ms, i) => (
                           <li key={i}>
-                            <Link
-                              href={ms.link}
-                              className="dropdown-item"
-                            >
+                            <Link href={ms.link} className="dropdown-item">
                               <span>{ms.title}</span>
                             </Link>
                           </li>
@@ -66,11 +66,11 @@ const Menus = () => {
           </li>
         ) : (
           <li key={menu.id} className="nav-item">
-            <Link className="nav-link" href='/contact' role="button">
+            <Link className="nav-link" href="/" role="button">
               {menu.title}
             </Link>
           </li>
-        )
+        ),
       )}
     </>
   );

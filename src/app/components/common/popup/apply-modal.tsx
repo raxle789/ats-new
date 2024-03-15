@@ -1,48 +1,15 @@
 import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import LoginForm from '../../forms/login-form';
-// import google from "@/assets/images/icon/google.png";
-// import google from '../../../../../public/assets/images/icon/google.png';
-// import facebook from '../../../../../public/assets/images/icon/facebook.png';
 import linkedin from '@/assets/images/icon/linkedin.png';
-import { Resolver, useForm, SubmitHandler } from 'react-hook-form';
+import uploadIcon from '@/assets/images/icon/icon_11.svg';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
-// form data type
-type IFormData = {
-  email: string;
-  phoneNumber: string;
-};
-
-const resolver: Resolver<IFormData> = async (values) => {
-  const errors: Record<string, any> = {};
-
-  if (!values.email) {
-    errors.email = {
-      type: 'required',
-      message: 'Email is required.',
-    };
-  }
-  if (!values.phoneNumber) {
-    errors.phoneNumber = {
-      type: 'required',
-      message: 'Phone Number is required.',
-    };
-  }
-
-  return {
-    values: Object.keys(errors).length > 0 ? {} : values,
-    errors,
-  };
-};
-
-const LoginModal = () => {
+const ApplyModal = () => {
   const router = useRouter();
 
   const handleSignUpClick = () => {
-    // Tutup modal sebelum navigasi
     const modal = document.getElementById('loginModal');
     if (modal) {
       modal.classList.remove('fade');
@@ -50,7 +17,6 @@ const LoginModal = () => {
       modal.style.display = 'none';
     }
 
-    // Navigasi ke halaman pendaftaran
     router.push('/register');
   };
 
@@ -71,17 +37,10 @@ const LoginModal = () => {
     //   }
     // });
   }, [router]);
-  // const closeModal = () => {
-  //   const modal = document.getElementById('loginModal');
-  //   if (modal) {
-  //     const bootstrapModal = new bootstrap.Modal(modal);
-  //     bootstrapModal.hide();
-  //   }
-  // };
   return (
     <div
       className="modal fade"
-      id="loginModal"
+      id="applyModal"
       tabIndex={-1}
       aria-hidden="true"
     >
@@ -101,7 +60,6 @@ const LoginModal = () => {
                 <a id="signUpButton" className="fw-500 sign-up-link">
                   Sign up
                 </a>
-                {/* <Link href="/auth/register">Sign up</Link> */}
               </p>
             </div>
             <div className="form-wrapper m-auto">
@@ -112,7 +70,7 @@ const LoginModal = () => {
                 <div className="line"></div>
               </div>
               <div className="row">
-                <div className="col-md-6">
+                <div className="col-lg-6 col-md-6">
                   <a
                     href="#"
                     className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10"
@@ -121,14 +79,50 @@ const LoginModal = () => {
                     <span className="ps-2">Login with LinkedIn</span>
                   </a>
                 </div>
-                {/* <div className="col-md-6">
-                  <a
-                    href="#"
-                    className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10"
-                  >
-                    <Image src={facebook} alt="facebook-img" />
-                    <span className="ps-2">Login with Facebook</span>
-                  </a>
+                <div className="col-lg-6 col-md-6">
+                  <div className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10">
+                    <div className="upload-apply-cv d-flex align-items-center justify-content-center">
+                      <input
+                        className="upload-photo-btn"
+                        type="file"
+                        id="upload-CV"
+                        name="uploadCV"
+                        accept=".pdf"
+                      />
+                      <label htmlFor="photo-input" className="">
+                        <Image
+                          src={uploadIcon}
+                          alt="upload-icon"
+                          className="upload-img"
+                        />
+                        <span className="fw-500 ms-2 text-dark upload-label label-cv-apply">
+                          Apply with CV
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                {/* <div className="col-lg-6 col-md-6">
+                  <div className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10">
+                    <input
+                      className="upload-photo-btn"
+                      type="file"
+                      id="upload-CV"
+                      name="uploadCV"
+                      accept=".pdf"
+                    />
+                    <label htmlFor="photo-input" className="">
+                      <Image
+                        src={uploadIcon}
+                        alt="upload-icon"
+                        className="upload-img"
+                      />
+                      <span className="fw-500 ms-2 text-dark upload-label">
+                        Upload your CV
+                      </span>
+                    </label>
+                  </div>
                 </div> */}
               </div>
               <p className="text-center mt-10">
@@ -145,4 +139,4 @@ const LoginModal = () => {
   );
 };
 
-export default LoginModal;
+export default ApplyModal;
