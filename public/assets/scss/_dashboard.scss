@@ -245,6 +245,33 @@
       color: $color-one;
     }
   }
+
+  .job-fpk-header {
+    .search-form {
+      position: relative;
+      height: 45px;
+      width: 100%;
+      input {
+        width: 100%;
+        height: 100%;
+        font-size: 15px;
+        color: rgba($color: #000, $alpha: 0.5);
+        border: none;
+        border-radius: 25px;
+        padding: 0 15px 0 45px;
+        background: rgba($color: #000000, $alpha: 0.05);
+      }
+      button {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 50px;
+        border-radius: 25px 0 0 25px;
+      }
+    }
+  }
+
   // Dashboard Header
   .dashboard-header {
     position: fixed;
