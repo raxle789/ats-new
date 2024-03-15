@@ -85,11 +85,11 @@ const ApplyModal = () => {
                       <input
                         className="upload-photo-btn"
                         type="file"
-                        id="upload-CV"
+                        id="apply-CV"
                         name="uploadCV"
                         accept=".pdf"
                       />
-                      <label htmlFor="photo-input" className="">
+                      <label htmlFor="apply-CV" className="">
                         <Image
                           src={uploadIcon}
                           alt="upload-icon"
