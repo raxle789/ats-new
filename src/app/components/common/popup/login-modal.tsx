@@ -1,54 +1,30 @@
+'use client';
+
 import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import LoginForm from '../../forms/login-form';
-// import google from "@/assets/images/icon/google.png";
-// import google from '../../../../../public/assets/images/icon/google.png';
-// import facebook from '../../../../../public/assets/images/icon/facebook.png';
 import linkedin from '@/assets/images/icon/linkedin.png';
-import { Resolver, useForm, SubmitHandler } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-
-// form data type
-type IFormData = {
-  email: string;
-  phoneNumber: string;
-};
-
-const resolver: Resolver<IFormData> = async (values) => {
-  const errors: Record<string, any> = {};
-
-  if (!values.email) {
-    errors.email = {
-      type: 'required',
-      message: 'Email is required.',
-    };
-  }
-  if (!values.phoneNumber) {
-    errors.phoneNumber = {
-      type: 'required',
-      message: 'Phone Number is required.',
-    };
-  }
-
-  return {
-    values: Object.keys(errors).length > 0 ? {} : values,
-    errors,
-  };
-};
+import { Button, Modal } from 'bootstrap';
 
 const LoginModal = () => {
   const router = useRouter();
 
   const handleSignUpClick = () => {
-    // Tutup modal sebelum navigasi
-    const modal = document.getElementById('loginModal');
-    if (modal) {
-      modal.classList.remove('fade');
-      modal.setAttribute('aria-hidden', 'true');
-      modal.style.display = 'none';
+    if (typeof document !== 'undefined') {
+      const modal = Modal.getOrCreateInstance('#login-modal');
+      modal.hide();
     }
+
+    // Tutup modal sebelum navigasi
+    // const modal = document.getElementById('loginModal');
+    // if (modal) {
+    //   modal.classList.remove('modal');
+    //   modal.classList.remove('fade');
+    //   modal.setAttribute('aria-hidden', 'true');
+    //   modal.style.display = 'none';
+    // }
 
     // Navigasi ke halaman pendaftaran
     router.push('/register');

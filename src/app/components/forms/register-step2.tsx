@@ -163,7 +163,7 @@ const resolver: Resolver<IFormData> = async (values) => {
   };
 };
 
-const RegisterFormNext = () => {
+const RegisterFormStep2 = () => {
   const dispatch = useAppDispatch();
   const [showPass, setShowPass] = useState<boolean>(false);
   const [showConfirmPass, setShowConfirmPass] = useState<boolean>(false);
@@ -610,7 +610,7 @@ const RegisterFormNext = () => {
                 name="uploadCV"
                 accept=".pdf"
               />
-              <label htmlFor="photo-cv" className="photo-cv">
+              <label htmlFor="photo-input" className="photo-input">
                 <Image
                   src={uploadIcon}
                   alt="upload-icon"
@@ -787,4 +787,4 @@ const RegisterFormNext = () => {
   );
 };
 
-export default RegisterFormNext;
+export default RegisterFormStep2;

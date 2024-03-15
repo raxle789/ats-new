@@ -7,15 +7,14 @@ import ErrorMsg from '../common/error-msg';
 import uploadIcon from '@/assets/images/icon/icon_11.svg';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { setStep } from '@/redux/features/stepSlice';
+import icon from '@/assets/images/icon/icon_60.svg';
 import { setRegister } from '@/redux/features/registerSlice';
 
 // form data type
 type IFormData = {
-  fullName: string;
   email: string;
-  phoneNumber: string;
-  dateOfBirth: string;
-  uploadPhoto: FileList;
+  password: string;
+  confirmPass: string;
 };
 
 // schema
@@ -30,34 +29,22 @@ const schema = Yup.object().shape({
 const resolver: Resolver<IFormData> = async (values) => {
   const errors: Record<string, any> = {};
 
-  if (!values.fullName) {
-    errors.fullName = {
-      type: 'required',
-      message: 'Full Name is required.',
-    };
-  }
   if (!values.email) {
     errors.email = {
       type: 'required',
       message: 'Email is required.',
     };
   }
-  if (!values.phoneNumber) {
-    errors.phoneNumber = {
+  if (!values.password) {
+    errors.password = {
       type: 'required',
-      message: 'Phone Number is required.',
+      message: 'Password is required.',
     };
   }
-  if (!values.dateOfBirth) {
-    errors.dateOfBirth = {
+  if (!values.confirmPass) {
+    errors.confirmPass = {
       type: 'required',
-      message: 'Date of Birth is required.',
-    };
-  }
-  if (!values.uploadPhoto) {
-    errors.uploadPhoto = {
-      type: 'required',
-      message: 'Photo is required.',
+      message: 'Confirm Password is required.',
     };
   }
 
@@ -69,6 +56,8 @@ const resolver: Resolver<IFormData> = async (values) => {
 
 const RegisterForm = () => {
   const dispatch = useAppDispatch();
+  const [showPass, setShowPass] = useState<boolean>(false);
+  const [showConfirmPass, setShowConfirmPass] = useState<boolean>(false);
   const step1Data = useAppSelector((state) => state.register.dataCandidate);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
 
@@ -89,46 +78,22 @@ const RegisterForm = () => {
     formState: { errors },
   } = useForm<IFormData>({ resolver, defaultValues: step1Data });
   const watchedValues = watch();
-  const fullName = watch('fullName');
 
   const onSubmit: SubmitHandler<IFormData> = (data) => {
-    // const uploadedFiles = Array.from(data.uploadPhoto as FileList).map(
-    //   (file) => file.name,
-    // );
-
     console.log('watchedValues: ', watchedValues);
-    dispatch(setRegister(data));
+    // dispatch(setRegister(data));
     // dispatch(setRegister({ ...data, uploadPhoto: uploadedFiles[0] }));
     console.log('data saat ini: ', data);
-    console.log('fullname: ', fullName);
     dispatch(setStep({ newStep: 2 }));
   };
 
   useEffect(() => {
-    // setValue('fullName', step1Data.fullName);
-    // setValue('email', step1Data.email);
-    // setValue('phoneNumber', step1Data.phoneNumber);
-    // setValue('dateOfBirth', step1Data.dateOfBirth);
     reset(step1Data);
     console.log('coba data: ', step1Data);
   }, [step1Data]);
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="row">
-        <div className="col-12">
-          <div className="input-group-meta position-relative mb-25">
-            <label>Full Name*</label>
-            <input
-              type="text"
-              placeholder="James Brower"
-              {...register('fullName', { required: `Full Name is required!` })}
-              name="fullName"
-            />
-            <div className="help-block with-errors">
-              <ErrorMsg msg={errors.fullName?.message!} />
-            </div>
-          </div>
-        </div>
         <div className="col-12">
           <div className="input-group-meta position-relative mb-25">
             <label>Email*</label>
@@ -143,74 +108,55 @@ const RegisterForm = () => {
             </div>
           </div>
         </div>
-        <div className="col-12">
-          <div className="input-group-meta position-relative mb-25">
-            <label>Phone Number*</label>
-            <input
-              type="text"
-              placeholder="081234567890"
-              {...register('phoneNumber', {
-                required: `Phone Number is required!`,
-              })}
-              name="phoneNumber"
-            />
-            <div className="help-block with-errors">
-              <ErrorMsg msg={errors.phoneNumber?.message!} />
-            </div>
-          </div>
-        </div>
-        <div className="col-12">
+        <div className="col-6">
           <div className="input-group-meta position-relative mb-20">
-            <label>Date of Birth*</label>
-            <div className="form-group">
-              <input
-                type="date"
-                className="form-control"
-                id="date-of-birth"
-                {...register('dateOfBirth', {
-                  required: `Date of Birth is required!`,
-                })}
-                name="dateOfBirth"
-              />
-            </div>
+            <label>Password*</label>
+            <input
+              type={`${showPass ? 'text' : 'password'}`}
+              placeholder="Enter Password"
+              className="pass_log_id"
+              {...register('password', { required: `Password is required!` })}
+              name="password"
+            />
+            <span
+              className="placeholder_icon"
+              onClick={() => setShowPass(!showPass)}
+            >
+              <span className={`passVicon ${showPass ? 'eye-slash' : ''}`}>
+                <Image src={icon} alt="pass-icon" />
+              </span>
+            </span>
             <div className="help-block with-errors">
-              <ErrorMsg msg={errors.dateOfBirth?.message!} />
+              <ErrorMsg msg={errors.password?.message!} />
             </div>
           </div>
         </div>
-        <div className="">
-          <div className="input-group-meta position-relative mb-25">
-            <label>Upload Photo*</label>
-            <div className="upload-container">
-              <input
-                className="upload-photo-btn"
-                type="file"
-                id="upload-photo"
-                accept="image/*"
-                {...register('uploadPhoto', {
-                  required: `Photo is required!`,
-                })}
-                name="uploadPhoto"
-                onChange={handleFileChange}
-              />
-              <label htmlFor="photo-input" className="photo-input">
-                <Image
-                  src={uploadIcon}
-                  alt="upload-icon"
-                  className="upload-img"
-                />
-                <span className="fw-500 ms-2 text-dark upload-label">
-                  Upload your Photo
-                </span>
-              </label>
-            </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-20">
+            <label>Confirm Password*</label>
+            <input
+              type={`${showConfirmPass ? 'text' : 'password'}`}
+              placeholder="Confirm Your Password"
+              className="pass_log_id"
+              {...register('confirmPass', {
+                required: `Confirm Password is required!`,
+              })}
+              name="confirmPass"
+            />
+            <span
+              className="placeholder_icon"
+              onClick={() => setShowConfirmPass(!showConfirmPass)}
+            >
+              <span
+                className={`passVicon ${showConfirmPass ? 'eye-slash' : ''}`}
+              >
+                <Image src={icon} alt="pass-icon" />
+              </span>
+            </span>
             <div className="help-block with-errors">
-              <ErrorMsg msg={errors.uploadPhoto?.message!} />
+              <ErrorMsg msg={errors.confirmPass?.message!} />
             </div>
           </div>
-        </div>
-        <div className="col-12">
-          {uploadedFileName && <p>Uploaded File: {uploadedFileName}</p>}
         </div>
 
         <div className="col-12">
