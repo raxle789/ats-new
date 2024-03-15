@@ -1,4 +1,3 @@
-import React from 'react';
 import { Metadata } from 'next';
 import Wrapper from '@/layouts/wrapper';
 import HeaderSix from '@/layouts/headers/header-6';

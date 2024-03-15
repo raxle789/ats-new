@@ -9,6 +9,8 @@ import RegisterFormNext from '../forms/register-form-next';
 import linkedin from '@/assets/images/icon/linkedin.png';
 import { useAppSelector, useAppDispatch } from '@/redux/hook';
 import { setStep } from '@/redux/features/stepSlice';
+/* libs */
+import { createdLinkedInOAuth } from '@/lib/Authentication';
 
 const RegisterArea = () => {
   const currentStep = useAppSelector((state) => state.step.step);
@@ -154,13 +156,19 @@ const RegisterArea = () => {
             </div>
             <div className="row">
               <div className="col-sm-6">
-                <a
-                  href="#"
+                {/* linkedin here */}
+                <Link
+                  href='https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=86spngwvycqa3c&redirect_uri=http://localhost:3000/api/authorization&state=wearetaeb&scope=openid%20profile%20email'
+                  className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10">
+                    <Image src={linkedin} alt="linkedin-img" />
+                  <span className="ps-2">Signup with LinkedIn</span>
+                </Link>
+                {/* <a
+                  href={}
                   className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10"
                 >
-                  <Image src={linkedin} alt="linkedin-img" />
-                  <span className="ps-2">Signup with LinkedIn</span>
-                </a>
+                  
+                </a> */}
               </div>
               {/* <div className="col-sm-6">
                 <a
