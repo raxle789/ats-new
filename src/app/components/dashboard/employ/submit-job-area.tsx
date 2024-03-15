@@ -1577,7 +1577,7 @@ const SubmitJobArea = () => {
           </div>
         </div>
 
-        <h4 className="dash-title-three pt-50 lg-pt-30">Benefit</h4>
+        {/* <h4 className="dash-title-three pt-50 lg-pt-30">Benefit</h4>
         <div className="dash-input-wrapper mb-30">
           <Form.Item
             label="Show Benefit"
@@ -1636,7 +1636,7 @@ const SubmitJobArea = () => {
               ]}
             />
           </Form.Item>
-        </div>
+        </div> */}
 
         <h4 className="dash-title-three pt-50 lg-pt-30">Other Settings</h4>
         {/* <div className="dash-input-wrapper mb-30">
