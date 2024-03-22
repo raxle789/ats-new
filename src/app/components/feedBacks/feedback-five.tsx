@@ -6,14 +6,13 @@ import Slider from 'react-slick';
 import user_1 from '@/assets/images/assets/img_14.jpg';
 import user_2 from '@/assets/images/assets/img_15.jpg';
 import user_3 from '@/assets/images/assets/img_14.jpg';
-import icon from '@/assets/images/icon/icon_41.svg';
 
 // slider setting
 const slider_setting = {
   dots: false,
   arrows: false,
   centerPadding: '0px',
-  slidesToShow: 2,
+  slidesToShow: 3,
   slidesToScroll: 1,
   autoplay: true,
   autoplaySpeed: 3000000,
@@ -76,6 +75,13 @@ const FeedbackFive = () => {
   const sliderNext = () => {
     sliderRef.current?.slickNext();
   };
+
+  // const feedbackContent = (item: any) => {
+  //   return (
+
+  //   );
+  // };
+
   return (
     <section className="feedback-section-five position-relative mt-180 xl-mt-150 pt-90 md-pt-60 pb-130 xl-pb-100 md-pb-70">
       <div className="container">
@@ -98,14 +104,13 @@ const FeedbackFive = () => {
             className="row feedback-slider-one"
           >
             {slider_data.map((item) => (
-              <div key={item.id} className="item m-0">
+              <div key={item.id} className="col-lg-4 item m-0">
                 <div className="feedback-block-three position-relative">
-                  {/* <Image src={icon} alt="icon" className="quote-icon" /> */}
                   <div className="d-flex align-items-center justify-content-between">
                     <div className="review fw-500">
                       {item.review_text}
                       <ul className="style-none d-flex rating">
-                        {item.review_start.map((r, i) => (
+                        {item.review_start.map((r: any, i: any) => (
                           <li key={i}>
                             <a href="#">
                               <i className="bi bi-star-fill"></i>
@@ -125,18 +130,11 @@ const FeedbackFive = () => {
                   <blockquote className="mt-50 lg-mt-20 mb-15 lg-mb-10 text-dark">
                     <div>{item.desc}</div>
                   </blockquote>
-                  <div className="block-footer d-flex align-items-center justify-content-between pt-35 lg-pt-10">
-                    <div className="d-flex align-items-center">
-                      <div className="name fw-500 text-dark">{item.name},</div>
-                      <span className="opacity-50 ps-1">{item.position}</span>
+                  <div className="block-footer pt-35 lg-pt-10">
+                    <div className="sub-block-footer d-flex flex-column align-items-start justify-content-start">
+                      <div className="name fw-500 text-dark">{item.name}</div>
+                      <span className="opacity-50">{item.position}</span>
                     </div>
-                    {/* <Image
-                      src={item.user}
-                      alt="user"
-                      className="author-img rounded-circle"
-                      width="50"
-                      height="50"
-                    /> */}
                   </div>
                 </div>
               </div>

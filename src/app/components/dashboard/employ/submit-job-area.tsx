@@ -62,7 +62,7 @@ const SubmitJobArea = () => {
   //   });
   // };
 
-  function handleJobPost(values) {
+  function handleJobPost(values: any) {
     confirm({
       title: 'Do you want to create new job posting?',
       icon: <ExclamationCircleFilled />,

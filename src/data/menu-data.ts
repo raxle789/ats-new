@@ -17,7 +17,7 @@ const menu_data: IMenuData[] = [
   },
   {
     id: 2,
-    link: '/',
+    link: '/main/job',
     title: 'Job Vacancy',
     // sub_menus: [
     //   { link: '/job-list-v1', title: 'Job List style -1' },

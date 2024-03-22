@@ -128,7 +128,7 @@
     top: 50px;
   }
   .feedback-block-three blockquote {
-    font-size: 20px;
+    font-size: 16px;
   }
   .candidate-profile-card.list-layout {
     padding: 27px 15px 38px;
@@ -142,6 +142,9 @@
   .blog-details-meta .blog-heading {
     font-size: 46px;
   }
+  .slick-arrow-one li {
+    display: none;
+  }
 }
 /*(min-width: 1200px) and (max-width: 1399px)*/
 
@@ -154,6 +157,9 @@
   }
   .blog-section-one .explore-btn {
     top: 16px;
+  }
+  .slick-arrow-one li {
+    display: none;
   }
 }
 /* (min-width: 992px) and (max-width: 1399px) */

@@ -17,13 +17,13 @@ const SpiritSection = () => {
     <div className="spirit-section row">
       <div className="col-lg-4 spirit-words">
         <h1 className="wow fadeInUp">We Are ERAngers!</h1>
-        <p>
+        <p className="wow fadeInUp">
           We endlessly strive to foster passion for our work, and we extend that
           very opportunity to you at Erajaya. With our core value, ILEAD, let us
           unite our forces and become the leading smart retailer!
         </p>
         <div>
-          <Link href="#" className="btn-five w-100">
+          <Link href="#" className="btn-five w-100 wow fadeInUp">
             Join Us
           </Link>
         </div>

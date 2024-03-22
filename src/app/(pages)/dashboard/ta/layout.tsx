@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Wrapper from '@/layouts/wrapper';
 import EmployAside from '../../../components/dashboard/employ/aside';
 import DashboardHeader from '@/app/components/dashboard/candidate/dashboard-header';

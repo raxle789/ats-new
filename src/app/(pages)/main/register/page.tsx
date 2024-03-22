@@ -1,8 +1,6 @@
 // 'use client';
 import React from 'react';
 import { Metadata } from 'next';
-// import Router from 'next/router';
-// import Header from '@/layouts/headers/header';
 import HeaderSix from '@/layouts/headers/header-6';
 import Wrapper from '@/layouts/wrapper';
 import CompanyBreadcrumb from '../../../components/common/common-breadcrumb';
@@ -14,13 +12,10 @@ export const metadata: Metadata = {
 };
 
 const RegisterPage = () => {
-  // const router = useRouter()
-  // Router.reload();
   return (
     <Wrapper>
       <div className="main-page-wrapper">
         {/* header start */}
-        {/* <Header /> */}
         <HeaderSix />
         {/* header end */}
 

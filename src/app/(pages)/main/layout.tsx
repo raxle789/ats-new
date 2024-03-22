@@ -14,7 +14,7 @@ export default function MainLayout({
   return (
     <Wrapper>
       <div className="main-page-wrapper">
-        <Header />
+        <HeaderSix />
         {children}
         {/* footer start */}
         <FooterOne style_2={true} />

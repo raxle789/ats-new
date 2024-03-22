@@ -3,7 +3,11 @@ import Wrapper from '@/layouts/wrapper';
 import EmployDashboardMain from '@/app/components/dashboard/employ';
 
 const EmployDashboardPage = () => {
-  return <EmployDashboardMain />;
+  return (
+    <Wrapper>
+      <EmployDashboardMain />
+    </Wrapper>
+  );
 };
 
 export default EmployDashboardPage;

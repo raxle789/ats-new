@@ -88,10 +88,10 @@ const HeroBannerSix = () => {
             className="carousel-item active"
             style={{ backgroundImage: `url(${banner_1.src})` }}
           ></div>
-          <div
+          {/* <div
             className="carousel-item"
             style={{ backgroundImage: `url(${banner_2.src})` }}
-          ></div>
+          ></div> */}
         </div>
       </div>
     </div>

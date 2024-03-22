@@ -357,6 +357,7 @@
   background: url(../images/assets/img_21.jpg) no-repeat center;
   background-size: cover;
   z-index: 1;
+  font-family: var(--gorditas-font);
   &::after {
     content: '';
     position: absolute;
@@ -432,6 +433,10 @@
         }
       }
     }
+  }
+  h2 {
+    font-family: var(--gorditas-font);
+    font-weight: 500;
   }
 }
 // Fancy Banner Four
