@@ -1,4 +1,6 @@
 import React from 'react';
+import DropdownIcon from '@/assets/images/icon/dropdown.png';
+import Image from 'next/image';
 
 // Definisikan tipe untuk props
 interface ExpendableButtonProps {
@@ -11,15 +13,13 @@ export const ExpendableButton: React.FC<ExpendableButtonProps> = ({
   toggle,
 }) => {
   return (
-    <button onClick={toggle}>
-      <span
-        className="material-symbols-outlined"
-        style={{
-          transform: `rotate(${isOpen ? 180 : 0}deg)`,
-          transition: 'all 0.25s',
-        }}
-      >
-        <i className="bi bi-caret-down"></i>
+    <button className="expanded-button" onClick={toggle}>
+      <span className="material-symbols-outlined">
+        <Image
+          src={DropdownIcon}
+          alt="dropdown-icon"
+          className={`dropdown-icon ${isOpen ? 'rotated' : 'not-rotated'}`}
+        />
       </span>
     </button>
   );

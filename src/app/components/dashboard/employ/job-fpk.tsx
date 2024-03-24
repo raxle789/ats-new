@@ -311,8 +311,8 @@ const EmployJobFpk = () => {
                               <div
                                 className={
                                   expandedRows[index]
-                                    ? 'expanded-row open'
-                                    : 'expanded-row'
+                                    ? 'expanded-row-open'
+                                    : 'expanded-row-close'
                                 }
                               >
                                 <div className="row">

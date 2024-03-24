@@ -19,7 +19,7 @@ import FooterOne from '@/layouts/footers/footer-one';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Home six',
+  title: 'Home',
 };
 
 export default function Home() {

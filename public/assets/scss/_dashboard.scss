@@ -934,18 +934,15 @@
     .job-posting {
       width: 120px;
     }
-    .expanded-row {
-      text-align: start;
-      transition-property: all;
-      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-      transition-duration: 300ms;
-      max-height: 0;
-      display: none;
-      transition: all 1s;
-      // overflow: hidden;
+    .expanded-row-close {
+      max-height: 0px;
+      // display: none;
+      overflow: hidden;
     }
-    .expanded-row.open {
-      display: block;
+    .expanded-row-open {
+      text-align: start;
+      // display: block;
+      transition: all 1s;
       max-height: 300px;
     }
     tr,
@@ -1611,27 +1608,23 @@
   font-weight: 400;
 }
 
-.table-responsive,
-.nav-bar-responsive::-webkit-scrollbar {
-  height: 6px;
+.table-responsive::-webkit-scrollbar {
+  height: 7px;
 }
 
 /* Track */
-.table-responsive,
-.nav-bar-responsive::-webkit-scrollbar-track {
+.table-responsive::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
 
 /* Handle */
-.table-responsive,
-.nav-bar-responsive::-webkit-scrollbar-thumb {
+.table-responsive::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 10px;
 }
 
 /* Hover */
-.table-responsive,
-.nav-bar-responsive::-webkit-scrollbar-thumb:hover {
+.table-responsive::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
 
@@ -1670,6 +1663,41 @@
   }
 }
 
+.nav-bar-responsive::-webkit-scrollbar {
+  height: 7px;
+}
+
+/* Track */
+.nav-bar-responsive::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+.nav-bar-responsive::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+/* Hover */
+.nav-bar-responsive::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
 .nav-bar-responsive a:first-child {
   margin-left: 120px;
+}
+
+.expanded-button {
+  .dropdown-icon {
+    width: 35px;
+    height: auto;
+  }
+  .rotated {
+    transform: rotate(180deg);
+    transition: all 0.3s;
+  }
+  .not-rotated {
+    transform: rotate(0deg);
+    transition: all 0.3s;
+  }
 }
