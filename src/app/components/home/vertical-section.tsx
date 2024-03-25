@@ -18,11 +18,11 @@ const VerticalSection = () => {
           <div className="row">
             <h2 className="text-center wow fadeInUp">Our Line of Verticals</h2>
             {/* widget one */}
-            <div className="col-lg-3 col-md-3 col-sm-4 mb-20">
+            <div className="col-lg-3 col-md-3 col-sm-4 mb-20 wow fadeInUp">
               <Image
                 src={vertical_line}
                 alt="Vertical-Line"
-                className="mb-25"
+                className="mb-25 rounded-3"
               ></Image>
               <h5 className="footer-title vertical-title">Erajaya Digital</h5>
               <p>
@@ -30,11 +30,11 @@ const VerticalSection = () => {
                 Electronics)
               </p>
             </div>
-            <div className="col-lg-3 col-md-3 col-sm-4 mb-20">
+            <div className="col-lg-3 col-md-3 col-sm-4 mb-20 wow fadeInUp">
               <Image
                 src={vertical_line}
                 alt="Vertical-Line"
-                className="mb-25"
+                className="mb-25 rounded-3"
               ></Image>
               <h5 className="footer-title vertical-title">
                 Erajaya Active Lifestyle​
@@ -45,22 +45,22 @@ const VerticalSection = () => {
                 apparel: and others
               </p>
             </div>
-            <div className="col-lg-3 col-md-3 col-sm-4 mb-20">
+            <div className="col-lg-3 col-md-3 col-sm-4 mb-20 wow fadeInUp">
               <Image
                 src={vertical_line}
                 alt="Vertical-Line"
-                className="mb-25"
+                className="mb-25 rounded-3"
               ></Image>
               <h5 className="footer-title vertical-title">
                 Erajaya Food & Nourishment
               </h5>
               <p>Focuses on food, beverages, & groceries products</p>
             </div>
-            <div className="col-lg-3 col-md-3 col-sm-4 mb-20">
+            <div className="col-lg-3 col-md-3 col-sm-4 mb-20 wow fadeInUp">
               <Image
                 src={vertical_line}
                 alt="Vertical-Line"
-                className="mb-25"
+                className="mb-25 rounded-3"
               ></Image>
               <h5 className="footer-title vertical-title">
                 Erajaya Beauty & Wellness

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import DashboardHeader from '../candidate/dashboard-header';
 import EmployJobItem from './job-item';
 import EmployShortSelect from './short-select';
@@ -123,34 +124,8 @@ const EmployJobArea = () => {
       {/* <div className="d-sm-flex align-items-center justify-content-between mb-40 lg-mb-30">
         <h2 className="main-title m0">My Jobs</h2>
         <div className="d-flex ms-auto xs-mt-30">
-          <div
-            className="nav nav-tabs tab-filter-btn me-4"
-            id="nav-tab"
-            role="tablist"
-          >
-            <button
-              className="nav-link active"
-              data-bs-toggle="tab"
-              data-bs-target="#a1"
-              type="button"
-              role="tab"
-              aria-selected="true"
-            >
-              All
-            </button>
-            <button
-              className="nav-link"
-              data-bs-toggle="tab"
-              data-bs-target="#a2"
-              type="button"
-              role="tab"
-              aria-selected="false"
-            >
-              New
-            </button>
-          </div>
           <div className="short-filter d-flex align-items-center ms-auto">
-            <div className="text-dark fw-500 me-2">Sort by:</div>
+            <div className="text-dark fw-500 me-2">Filter by:</div>
             <EmployShortSelect />
           </div>
         </div>

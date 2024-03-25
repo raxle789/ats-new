@@ -28,7 +28,7 @@ import nav_9_active from '@/assets/dashboard/images/icon/icon_40_active.svg';
 import nav_8 from '@/assets/dashboard/images/icon/icon_8.svg';
 import LogoutModal from '../../common/popup/logout-modal';
 
-import { useAppSelector, useAppDispatch } from '@/redux/hook';
+import { useAppDispatch, useAppSelector } from '@/redux/hook';
 
 import { setIsOpen } from '@/redux/features/sidebarSlice';
 
@@ -59,6 +59,7 @@ const nav_data: {
     icon: nav_3,
     icon_active: nav_3_active,
     link: '/dashboard/ta/jobs',
+    link: '/dashboard/ta/jobs',
     title: 'My Jobs',
   },
   {
@@ -73,6 +74,7 @@ const nav_data: {
     icon: nav_5,
     icon_active: nav_5_active,
     link: '/dashboard/ta/submit-job',
+    link: '/dashboard/ta/submit-job',
     title: 'Submit Job',
   },
   {
@@ -86,8 +88,8 @@ const nav_data: {
     id: 7,
     icon: nav_9,
     icon_active: nav_9_active,
-    link: '/dashboard/employ-dashboard/membership',
-    title: 'Membership',
+    link: '/dashboard/ta/fpk',
+    title: 'FPK',
   },
   {
     id: 8,
@@ -108,7 +110,6 @@ const EmployAside = () => {
   const pathname = usePathname();
 
   const isOpenSidebar = useAppSelector((state) => state.sidebar.isOpen);
-
   const dispatch = useAppDispatch();
 
   return (

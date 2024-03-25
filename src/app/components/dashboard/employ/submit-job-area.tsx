@@ -103,7 +103,44 @@ const SubmitJobArea = () => {
     setModalOpen(false);
   }
 
-  function handleJobPost(values) {
+  const formModalRef = useRef(null);
+
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      [{ font: [] }],
+      [{ size: [] }],
+      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+      [
+        { list: 'ordered' },
+        { list: 'bullet' },
+        { align: [] },
+        { indent: '-1' },
+        { indent: '+1' },
+      ],
+      ['link', 'image', 'video'],
+    ],
+    // clipboard: {
+    //   matchers: [
+    //     [
+    //       '\n',
+    //       (node, delta) => {
+    //         return delta.compose(
+    //           new Delta().retain(delta.length(), { list: 'bullet' }),
+    //         );
+    //       },
+    //     ],
+    //   ],
+    // },
+  };
+
+  async function handleFpkModal(values) {
+    console.info(values);
+
+    setModalOpen(false);
+  }
+
+  function handleJobPost(values: any) {
     confirm({
       title: 'Do you want to create new job posting?',
       icon: <ExclamationCircleFilled />,

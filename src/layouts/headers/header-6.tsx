@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import logo from '@/assets/images/logo/logo_06.png';
@@ -12,6 +12,15 @@ import LoginModal from '@/app/components/common/popup/login-modal';
 
 const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
   const { sticky } = useSticky();
+  const [scrollDistance, setScrollDistance] = useState<number>(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollDistance(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+  }, []);
   return (
     <>
       <header
@@ -23,7 +32,7 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
               <div className="logo order-lg-0">
                 <Link href="/" className="d-flex align-items-center">
                   <Image
-                    src={dark_style ? dark_logo : logo}
+                    src={scrollDistance > 100 ? dark_logo : logo}
                     alt="logo"
                     priority
                   />

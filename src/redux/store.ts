@@ -12,6 +12,7 @@ const rootReducer = combineReducers({
   wishlist: wishlistSlice,
   step: stepSlice,
   register: registerSlice,
+  sidebar: sidebarSlice,
 });
 
 // const persistConfig = {

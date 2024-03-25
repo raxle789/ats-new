@@ -15,28 +15,22 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 const Pagination = ({ pageRangeDisplayed, totalData, disabled }) => {
   const searchParams = useSearchParams();
-
   const router = useRouter();
-
   const pathname = usePathname();
-
   // const page = searchParams.get('page') ?? '1';
 
   const perPage = searchParams.get('perPage') ?? '10';
 
-  function handleClick({ selected }) {
+  function handleClick({ selected }: { selected: any }) {
     const params = new URLSearchParams(searchParams);
 
     if (selected) {
       params.set('page', selected + 1);
-
       params.set('perPage', perPage);
     } else {
       params.delete('page');
-
       params.delete('perPage');
     }
-
     router.replace(`${pathname}?${params.toString()}`);
   }
 

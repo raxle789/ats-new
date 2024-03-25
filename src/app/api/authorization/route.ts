@@ -45,3 +45,5 @@ export async function GET(request: NextRequest) {
    */
   redirect('/register/linkedin');
 }
+
+export async function POST() {}

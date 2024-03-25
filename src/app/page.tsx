@@ -5,23 +5,30 @@ import HeroBannerSix from './components/hero-banners/hero-banner-six';
 import CategorySectionSix from './components/category/category-section-6';
 import { TrendingJobs } from './components/category/category-section-3';
 import { JobListItems } from './components/jobs/list/job-list-one';
+import BlogFour from './components/blogs/blog-four';
 import SpiritSection from './components/home/spirit-section';
 import EngageSection from './components/home/engage-section';
 import VerticalSection from './components/home/vertical-section';
-import KickstartSection from './components/home/kickstart-section';
+// import FancyBannerThree from './components/fancy-banner/fancy-banner-3';
 import EventSection from './components/home/event-section';
-import VisionSection from './components/home/vision-section';
+// import VisionSection from './components/home/vision-section';
 import FeatureNine from './components/features/feature-nine';
 import FeedbackFive from './components/feedBacks/feedback-five';
-import FancyBannerSix from './components/fancy-banner/fancy-banner-6';
+// import FancyBannerSix from './components/fancy-banner/fancy-banner-6';
 import FooterOne from '@/layouts/footers/footer-one';
 import Link from 'next/link';
 
+import { getFatkhur, migrateFromATS } from '@/libs/MsSQL/FETCH_EXISTING';
+import { getSession } from '@/libs/Authentication/session';
+
 export const metadata: Metadata = {
-  title: 'Home six',
+  title: 'Home',
 };
 
 export default function Home() {
+  // const session = await getSession();
+  // console.info(session);
+  // await getFatkhur();
   return (
     <Wrapper>
       <div className="main-page-wrapper">
@@ -118,7 +125,7 @@ export default function Home() {
         {/* text feature end */}
 
         {/* vision section start */}
-        <VisionSection />
+        {/* <VisionSection /> */}
         {/* vision section end */}
 
         {/* vertical section start */}
@@ -130,27 +137,27 @@ export default function Home() {
         {/* feedback end */}
 
         {/* kickstart section start */}
-        <KickstartSection />
+        {/* <KickstartSection /> */}
         {/* kickstart section end */}
-
-        {/* blog start */}
-        {/* <BlogFour /> */}
-        {/* blog end */}
 
         {/* text feature two start */}
         {/* <FeatureTwo /> */}
         {/* text feature two end */}
 
         {/* event section start */}
-        <EventSection />
+        {/* <EventSection /> */}
         {/* event section end */}
+
+        {/* blog start */}
+        <BlogFour />
+        {/* blog end */}
 
         {/* engage section start */}
         <EngageSection />
         {/* engage section end */}
 
         {/* fancy banner start */}
-        <FancyBannerSix />
+        {/* <FancyBannerSix /> */}
         {/* fancy banner end */}
 
         {/* footer start */}

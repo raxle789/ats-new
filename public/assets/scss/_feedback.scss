@@ -235,18 +235,18 @@
   }
 }
 .feedback-block-three {
-  padding: 45px 55px 40px;
+  padding: 38px 35px 30px;
   background: #fff;
   border-radius: 10px;
   blockquote {
     display: flex;
     align-items: center;
-    font-size: 20px;
+    font-size: 17px;
     line-height: 2em;
-    height: 288px;
+    height: 260px;
   }
   .review {
-    font-size: 28px;
+    font-size: 20px;
     color: $color-three;
   }
   .rating li a {
@@ -259,12 +259,20 @@
     height: 60px;
   }
   .name {
-    font-size: 20px;
+    font-size: 16px;
   }
   .quote-icon {
     position: absolute;
     top: 58px;
     right: 55px;
+  }
+  .block-footer {
+    .sub-block-footer {
+      height: 70.5px;
+    }
+    span {
+      font-size: 15px;
+    }
   }
 }
 .feedback-block-four {

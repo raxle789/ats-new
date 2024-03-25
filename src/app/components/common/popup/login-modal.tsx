@@ -6,31 +6,16 @@ import LoginForm from '../../forms/login-form';
 import linkedin from '@/assets/images/icon/linkedin.png';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Button, Modal } from 'bootstrap';
 
 const LoginModal = () => {
   const router = useRouter();
 
-  const handleSignUpClick = () => {
-    if (typeof document !== 'undefined') {
-      const modal = Modal.getOrCreateInstance('#login-modal');
-      modal.hide();
-    }
-
-    // Tutup modal sebelum navigasi
-    // const modal = document.getElementById('loginModal');
-    // if (modal) {
-    //   modal.classList.remove('modal');
-    //   modal.classList.remove('fade');
-    //   modal.setAttribute('aria-hidden', 'true');
-    //   modal.style.display = 'none';
-    // }
-
-    // Navigasi ke halaman pendaftaran
-    router.push('/register');
-  };
-
   useEffect(() => {
+    const handleSignUpClick = () => {
+      // Navigasi ke halaman pendaftaran
+      router.push('/register');
+    };
+
     // Menambahkan event listener ke tombol sign up
     const signUpButton = document.getElementById('signUpButton');
     const signUpButton2 = document.getElementById('signUpButton2');
@@ -47,17 +32,10 @@ const LoginModal = () => {
     //   }
     // });
   }, [router]);
-  // const closeModal = () => {
-  //   const modal = document.getElementById('loginModal');
-  //   if (modal) {
-  //     const bootstrapModal = new bootstrap.Modal(modal);
-  //     bootstrapModal.hide();
-  //   }
-  // };
   return (
     <div
-      className="modal fade"
       id="loginModal"
+      className="modal fade"
       tabIndex={-1}
       aria-hidden="true"
     >
@@ -74,10 +52,14 @@ const LoginModal = () => {
               <h2>Hi, Welcome Back!</h2>
               <p>
                 Still do not have an account?{' '}
-                <a id="signUpButton" className="fw-500 sign-up-link">
+                <a
+                  id="signUpButton"
+                  className="fw-500 sign-up-link"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                >
                   Sign up
                 </a>
-                {/* <Link href="/auth/register">Sign up</Link> */}
               </p>
             </div>
             <div className="form-wrapper m-auto">
@@ -97,19 +79,15 @@ const LoginModal = () => {
                     <span className="ps-2">Login with LinkedIn</span>
                   </a>
                 </div>
-                {/* <div className="col-md-6">
-                  <a
-                    href="#"
-                    className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10"
-                  >
-                    <Image src={facebook} alt="facebook-img" />
-                    <span className="ps-2">Login with Facebook</span>
-                  </a>
-                </div> */}
               </div>
               <p className="text-center mt-10">
                 Do not have an account?{' '}
-                <a id="signUpButton2" className="fw-500 sign-up-link">
+                <a
+                  id="signUpButton2"
+                  className="fw-500 sign-up-link"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                >
                   Sign up
                 </a>
               </p>

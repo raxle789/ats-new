@@ -1,5 +1,5 @@
 import React from 'react';
-import ActionDropdown from '../candidate/action-dropdown';
+import ActionDropdown from '../candidate/action-dropdown-job-details';
 
 const EmployJobItem = ({
   jobTitle,
