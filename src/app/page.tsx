@@ -18,11 +18,17 @@ import FeedbackFive from './components/feedBacks/feedback-five';
 import FooterOne from '@/layouts/footers/footer-one';
 import Link from 'next/link';
 
+import { getFatkhur, migrateFromATS } from '@/libs/MsSQL/FETCH_EXISTING';
+import { getSession } from '@/libs/Authentication/session';
+
 export const metadata: Metadata = {
   title: 'Home',
 };
 
 export default function Home() {
+  // const session = await getSession();
+  // console.info(session);
+  // await getFatkhur();
   return (
     <Wrapper>
       <div className="main-page-wrapper">

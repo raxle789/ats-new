@@ -1,35 +1,38 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { fetchLinkedInProfile, insertUserStaticData } from '@/lib/Authentication';
+import {
+  fetchLinkedInProfile,
+  insertUserStaticData,
+} from '@/libs/Authentication';
 import { Button } from 'antd';
 
 export default async function LinkedInProfile() {
-    const linkedinData = await fetchLinkedInProfile();
-    console.log(linkedinData);
-    return (
-        <>
-        <div className="container">
-            <div className="d-flex justify-content-center align-items-center vh-100">
-                <div className="d-flex flex-column align-items-center">
-                    <h4 className='mb-4'>Is your LinkedIn Account?</h4>
-                    <Image
-                        className='rounded-circle mb-4'
-                        /* image source */
-                        src={linkedinData.picture}
-                        alt="User Profile"
-                        width={150}
-                        height={150}
-                        />
-                        <div className="">
-                            {/* user name */}
-                            {linkedinData.name}
-                        </div>
-                        <div className="mb-3">
-                            {/* user country */}
-                            {linkedinData.locale.country}
-                        </div>
-                    <span className="text-primary">{linkedinData.email}</span>
-                    {/* <form
+  const linkedinData = await fetchLinkedInProfile();
+  console.log(linkedinData);
+  return (
+    <>
+      <div className="container">
+        <div className="d-flex justify-content-center align-items-center vh-100">
+          <div className="d-flex flex-column align-items-center">
+            <h4 className="mb-4">Is your LinkedIn Account?</h4>
+            <Image
+              className="rounded-circle mb-4"
+              /* image source */
+              src={linkedinData.picture}
+              alt="User Profile"
+              width={150}
+              height={150}
+            />
+            <div className="">
+              {/* user name */}
+              {linkedinData.name}
+            </div>
+            <div className="mb-3">
+              {/* user country */}
+              {linkedinData.locale.country}
+            </div>
+            <span className="text-primary">{linkedinData.email}</span>
+            {/* <form
                         className=""
                         action={insertUserStaticData}>
                         <input type="hidden" name='name' value={linkedinData.name} />
@@ -53,21 +56,23 @@ export default async function LinkedInProfile() {
                             </button>
                         </div>
                     </form> */}
-                    <div className="mt-3">
-                        <Link
-                            className='btn btn-sm border me-3 ps-4 pe-4'
-                            href="/register">
-                            No
-                        </Link>
-                        <Link
-                            className='btn btn-sm btn-primary border me-3 ps-4 pe-4'
-                            href='/'>
-                                Yes
-                        </Link>
-                    </div>
-                </div>
+            <div className="mt-3">
+              <Link
+                className="btn btn-sm border me-3 ps-4 pe-4"
+                href="/register"
+              >
+                No
+              </Link>
+              <Link
+                className="btn btn-sm btn-primary border me-3 ps-4 pe-4"
+                href="/"
+              >
+                Yes
+              </Link>
             </div>
+          </div>
         </div>
-        </>
-    );
+      </div>
+    </>
+  );
 }
