@@ -1,6 +1,6 @@
-import React from "react";
-import Image from "next/image";
-import icon from "@/assets/dashboard/images/icon/icon_22.svg";
+import React from 'react';
+import Image from 'next/image';
+import icon from '@/assets/dashboard/images/icon/icon_22.svg';
 
 const LogoutModal = () => {
   return (
@@ -9,6 +9,7 @@ const LogoutModal = () => {
       id="deleteModal"
       tabIndex={-1}
       aria-hidden="true"
+      data-bs-backdrop="static"
     >
       <div className="modal-dialog modal-fullscreen modal-dialog-centered">
         <div className="container">

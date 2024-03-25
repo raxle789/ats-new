@@ -8,7 +8,7 @@ import notify_icon_2 from '@/assets/dashboard/images/icon/icon_37.svg';
 import notify_icon_3 from '@/assets/dashboard/images/icon/icon_38.svg';
 import search from '@/assets/dashboard/images/icon/icon_10.svg';
 
-import { useSelector, useDispatch } from 'react-redux';
+import { useAppSelector, useAppDispatch } from '@/redux/hook';
 import { setIsOpen } from '@/redux/features/sidebarSlice';
 
 // notification item
@@ -38,9 +38,9 @@ function NotificationItem({
 //   setIsOpenSidebar?: React.Dispatch<React.SetStateAction<boolean>>
 // }
 const DashboardHeader = () => {
-  const isOpenSidebar = useSelector((state) => state.sidebar.isOpen);
+  const isOpenSidebar = useAppSelector((state) => state.sidebar.isOpen);
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // handle click to open
   const handleOpen = () => {

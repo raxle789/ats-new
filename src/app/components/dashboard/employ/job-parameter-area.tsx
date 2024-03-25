@@ -2,7 +2,7 @@
 
 import React from 'react';
 import DashboardHeader from '../candidate/dashboard-header';
-import EmployJobItem from './job-item';
+import EmployJobParameter from './job-parameter-item';
 import EmployShortSelect from './short-select';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Pagination from '@/ui/pagination';
@@ -10,62 +10,82 @@ import Image from 'next/image';
 import search from '@/assets/dashboard/images/icon/icon_10.svg';
 import { useDebouncedCallback } from 'use-debounce';
 
-const jobData = [
+const parameterData = [
   {
-    jobId: 1,
-    jobPosition: 'Assistant Store Manager',
-    jobDepartment: 'EFN Strategy & Business Development',
-    jobStatus: 'Posted',
-    jobEndPosted: '30-06-2025',
-    jobApplicants: 4,
-    jobApplicantsAssessment: 2,
-    jobApplicantsInterview: 0,
-    jobApplicantsOffering: 4,
-    jobRemainingSLA: '36 days',
-    jobRecruiter: 'Gusti 1',
-    jobFpkStatus: 'Not Yet',
+    parameterId: 1,
+    parameterName: 'Parameter 1',
+    minimumYearOfExperienceParameter: 4,
+    educationLevelParameter: 'S1 - S2',
+    majorOfStudiesParameter: 'Ayam Goreng, Ayam Bakar, Tahu Goreng, Ayam Rebus',
+    gradeParameter: '3.98 - 4.00',
+    specialSkillParameter: 'Security, Data, Cyber, Analysis',
+    certificationsParameter: 'Analysis, Cyber, Data, Security',
+    salaryRangeParameter: '2.000.000 - 4.000.000',
+    domicileParameter: 'Jawa Tengah, Jawa Barat, Jawa Timur, Bekasi',
+    maximumAgeParameter: 24,
+    genderParameter: '',
+    religionParameter: '',
+    raceParameter: '',
+    lineIndustryParameter: true,
+    jobFunctionParameter: '',
+    positionLevelParameter: true,
   },
   {
-    jobId: 2,
-    jobPosition: 'Store Manager',
-    jobDepartment: 'EFN Strategy & Business Development',
-    jobStatus: 'Posted',
-    jobEndPosted: '12-08-2026',
-    jobApplicants: 2,
-    jobApplicantsAssessment: 3,
-    jobApplicantsInterview: 4,
-    jobApplicantsOffering: 5,
-    jobRemainingSLA: '28 days',
-    jobRecruiter: 'Gusti 2',
-    jobFpkStatus: 'Done',
+    parameterId: 2,
+    parameterName: 'Parameter 2',
+    minimumYearOfExperienceParameter: 4,
+    educationLevelParameter: 'S1 - S3',
+    majorOfStudiesParameter: 'Ayam Goreng, Ayam Bakar, Tahu Goreng, Ayam Rebus',
+    gradeParameter: '3.98 - 4.00',
+    specialSkillParameter: 'Security, Data, Cyber, Analysis',
+    certificationsParameter: 'Analysis, Cyber, Data, Security',
+    salaryRangeParameter: '3.000.000 - 4.000.000',
+    domicileParameter: 'Jawa Tengah, Jawa Barat, Jawa Timur, Bekasi',
+    maximumAgeParameter: 24,
+    genderParameter: '',
+    religionParameter: '',
+    raceParameter: '',
+    lineIndustryParameter: true,
+    jobFunctionParameter: true,
+    positionLevelParameter: '',
   },
   {
-    jobId: 3,
-    jobPosition: 'Assistant Store Manager',
-    jobDepartment: 'EFN Strategy & Business Development',
-    jobStatus: 'Posted',
-    jobEndPosted: '14-12-2028',
-    jobApplicants: 2,
-    jobApplicantsAssessment: 2,
-    jobApplicantsInterview: 0,
-    jobApplicantsOffering: 2,
-    jobRemainingSLA: '18 days',
-    jobRecruiter: 'Gusti 3',
-    jobFpkStatus: 'Not Yet',
+    parameterId: 3,
+    parameterName: 'Parameter 3',
+    minimumYearOfExperienceParameter: 8,
+    educationLevelParameter: 'S1 - S2',
+    majorOfStudiesParameter: 'Ayam Goreng, Ayam Bakar, Tahu Goreng, Ayam Rebus',
+    gradeParameter: '3.98 - 4.00',
+    specialSkillParameter: 'Security, Data, Cyber, Analysis',
+    certificationsParameter: 'Analysis, Cyber, Data, Security',
+    salaryRangeParameter: '12.000.000 - 14.000.000',
+    domicileParameter: 'Jawa Tengah, Jawa Barat, Jawa Timur, Bekasi',
+    maximumAgeParameter: 28,
+    genderParameter: '',
+    religionParameter: '',
+    raceParameter: '',
+    lineIndustryParameter: '',
+    jobFunctionParameter: true,
+    positionLevelParameter: true,
   },
   {
-    jobId: 4,
-    jobPosition: 'Store Manager',
-    jobDepartment: 'EFN Strategy & Business Development',
-    jobStatus: 'Posted',
-    jobEndPosted: '02-06-2025',
-    jobApplicants: 3,
-    jobApplicantsAssessment: 4,
-    jobApplicantsInterview: 5,
-    jobApplicantsOffering: 6,
-    jobRemainingSLA: '12 days',
-    jobRecruiter: 'Gusti 4',
-    jobFpkStatus: 'Done',
+    parameterId: 4,
+    parameterName: 'Parameter 4',
+    minimumYearOfExperienceParameter: 12,
+    educationLevelParameter: 'S1 - S2',
+    majorOfStudiesParameter: 'Ayam Goreng, Ayam Bakar, Tahu Goreng, Ayam Rebus',
+    gradeParameter: '3.98 - 4.00',
+    specialSkillParameter: 'Security, Data, Cyber, Analysis',
+    certificationsParameter: 'Analysis, Cyber, Data, Security',
+    salaryRangeParameter: '2.000.000 - 4.000.000',
+    domicileParameter: 'Jawa Tengah, Jawa Barat, Jawa Timur, Bekasi',
+    maximumAgeParameter: 24,
+    genderParameter: '',
+    religionParameter: '',
+    raceParameter: '',
+    lineIndustryParameter: '',
+    jobFunctionParameter: true,
+    positionLevelParameter: true,
   },
 ];
 
@@ -73,7 +93,7 @@ const jobData = [
 type IProps = {
   setIsOpenSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 };
-const EmployJobArea = () => {
+const EmployParameterArea = () => {
   const searchParams = useSearchParams();
 
   const page = searchParams.get('page') ?? '1';
@@ -82,7 +102,7 @@ const EmployJobArea = () => {
 
   let offset = 0;
 
-  let newJobData = [];
+  let newParameterData = [];
 
   const searchQuery = searchParams.get('query') ?? '';
 
@@ -93,16 +113,16 @@ const EmployJobArea = () => {
   if (searchQuery) {
     offset = 0;
 
-    newJobData = jobData.filter((data) => {
-      return data.jobPosition.includes(searchQuery);
+    newParameterData = parameterData.filter((data) => {
+      return data.parameterName.includes(searchQuery);
     });
   } else {
     offset = (Number(page) - 1) * Number(perPage);
 
-    newJobData = jobData.slice(offset, offset + Number(perPage));
+    newParameterData = parameterData.slice(offset, offset + Number(perPage));
   }
 
-  const handleJobSearch = useDebouncedCallback((value) => {
+  const handleParameterSearch = useDebouncedCallback((value) => {
     const params = new URLSearchParams(searchParams);
 
     if (value) {
@@ -163,7 +183,7 @@ const EmployJobArea = () => {
             <input
               type="text"
               placeholder="Search here.."
-              onChange={(e) => handleJobSearch(e.target.value)}
+              onChange={(e) => handleParameterSearch(e.target.value)}
               defaultValue={searchParams.get('query')?.toString()}
             />
             <button type="submit">
@@ -210,33 +230,36 @@ const EmployJobArea = () => {
               <table className="table job-alert-table">
                 <thead>
                   <tr>
-                    <th scope="col">Job Title</th>
-                    <th scope="col">Applicants</th>
-                    <th scope="col">Assessment</th>
-                    <th scope="col">Interview</th>
-                    <th scope="col">Offering</th>
-                    <th scope="col">Remaining SLA</th>
-                    <th scope="col">Recruiter</th>
-                    <th scope="col">EFPK</th>
+                    <th scope="col">#</th>
+                    <th scope="col">Parameter Name</th>
+                    <th scope="col">More</th>
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
                 <tbody className="border-0">
-                  {newJobData.map((data) => {
+                  {newParameterData.map((data, index) => {
                     return (
-                      <EmployJobItem
-                        key={data.jobId}
-                        jobTitle={`${data.jobPosition}`}
-                        jobDeparment={`${data.jobDepartment}`}
-                        jobStatus={`Status: ${data.jobStatus}`}
-                        jobEndPosted={`End Posted: ${data.jobEndPosted}`}
-                        jobApplicants={data.jobApplicants}
-                        jobApplicantsAssessment={data.jobApplicantsAssessment}
-                        jobApplicantsInterview={data.jobApplicantsInterview}
-                        jobApplicantsOffering={data.jobApplicantsOffering}
-                        jobRemainingSLA={data.jobRemainingSLA}
-                        jobRecruiter={data.jobRecruiter}
-                        jobFpkStatus={data.jobFpkStatus}
+                      <EmployJobParameter
+                        key={data.parameterId}
+                        parameterIndex={index + Number(offset)}
+                        parameterName={data.parameterName}
+                        minimumYearOfExperienceParameter={
+                          data.minimumYearOfExperienceParameter
+                        }
+                        educationLevelParameter={data.educationLevelParameter}
+                        majorOfStudiesParameter={data.majorOfStudiesParameter}
+                        gradeParameter={data.gradeParameter}
+                        specialSkillParameter={data.specialSkillParameter}
+                        certificationsParameter={data.certificationsParameter}
+                        salaryRangeParameter={data.salaryRangeParameter}
+                        domicileParameter={data.domicileParameter}
+                        maximumAgeParameter={data.maximumAgeParameter}
+                        genderParameter={data.genderParameter}
+                        religionParameter={data.religionParameter}
+                        raceParameter={data.raceParameter}
+                        lineIndustryParameter={data.lineIndustryParameter}
+                        jobFunctionParameter={data.jobFunctionParameter}
+                        positionLevelParameter={data.positionLevelParameter}
                       />
                     );
                   })}
@@ -322,7 +345,7 @@ const EmployJobArea = () => {
       <div className="d-flex justify-content-center mt-30">
         <Pagination
           pageRangeDisplayed={3}
-          totalData={jobData.length}
+          totalData={parameterData.length}
           disabled={searchQuery ? true : false}
         />
         {/* <ul className="style-none d-flex align-items-center">
@@ -352,4 +375,4 @@ const EmployJobArea = () => {
   );
 };
 
-export default EmployJobArea;
+export default EmployParameterArea;

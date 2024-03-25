@@ -6,7 +6,6 @@ import ReactPaginate from 'react-paginate';
 import icon from '@/assets/images/icon/icon_50.svg';
 import icon_2 from '@/assets/images/icon/icon_69.svg';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { fpkData } from '@/app/components/dashboard/employ/job-fpk';
 
 // prop type
 // type IProps = {
@@ -14,7 +13,7 @@ import { fpkData } from '@/app/components/dashboard/employ/job-fpk';
 //   perPage: string;
 // };
 
-const Pagination = ({ disabled }) => {
+const Pagination = ({ pageRangeDisplayed, totalData, disabled }) => {
   const searchParams = useSearchParams();
 
   const router = useRouter();
@@ -23,7 +22,7 @@ const Pagination = ({ disabled }) => {
 
   // const page = searchParams.get('page') ?? '1';
 
-  const perPage = searchParams.get('perPage') ?? '2';
+  const perPage = searchParams.get('perPage') ?? '10';
 
   function handleClick({ selected }) {
     const params = new URLSearchParams(searchParams);
@@ -52,8 +51,8 @@ const Pagination = ({ disabled }) => {
         </span>
       }
       onPageChange={handleClick}
-      pageRangeDisplayed={3}
-      pageCount={Math.ceil(fpkData.length / Number(perPage))}
+      pageRangeDisplayed={pageRangeDisplayed}
+      pageCount={Math.ceil(totalData / Number(perPage))}
       previousLabel={
         <span className="d-flex align-items-center">
           <Image src={icon_2} className="me-2" alt="icon" />

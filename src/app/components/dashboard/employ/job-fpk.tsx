@@ -1,24 +1,17 @@
-'use client';
+export const revalidate = 0;
 
 import React from 'react';
-import DashboardHeader from '../candidate/dashboard-header';
-import EmployJobItem from './job-item';
-import EmployShortSelect from './short-select';
-import { Table, Button, Form, Select, notification, Modal } from 'antd';
-import { useState, useEffect } from 'react';
-import { ExclamationCircleFilled } from '@ant-design/icons';
+import EmployJobFpkItem from './job-fpk-item';
+import SearchBar from '@/ui/search-bar';
+import { getFpkData, searchFpkData, getTaData } from '@/lib/action/fpk/action';
 import Pagination from '@/ui/pagination';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import Image from 'next/image';
-import search from '@/assets/dashboard/images/icon/icon_10.svg';
-import { useDebouncedCallback } from 'use-debounce';
 
 // props type
 // type IProps = {
 //   setIsOpenSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 // };
 
-const { confirm } = Modal;
+// const { confirm } = Modal;
 
 // const columns = [
 //   {
@@ -46,47 +39,47 @@ const { confirm } = Modal;
 //   });
 // }
 
-const userData = [
-  {
-    userId: 1,
-    userName: 'Stanly Wijaja',
-    userEmail: 'stanly.widjaja@erajaya.com',
-  },
-  {
-    userId: 2,
-    userName: 'Ayam',
-    userEmail: 'ayam@erajaya.com',
-  },
-  {
-    userId: 3,
-    userName: 'Ayam Goreng',
-    userEmail: 'ayamgoreng@erajaya.com',
-  },
-  {
-    userId: 4,
-    userName: 'Ayam Bakar',
-    userEmail: 'ayambakar@erajaya.com',
-  },
-];
+// const userData = [
+//   {
+//     userId: 1,
+//     userName: 'Stanly Wijaja',
+//     userEmail: 'stanly.widjaja@erajaya.com',
+//   },
+//   {
+//     userId: 2,
+//     userName: 'Ayam',
+//     userEmail: 'ayam@erajaya.com',
+//   },
+//   {
+//     userId: 3,
+//     userName: 'Ayam Goreng',
+//     userEmail: 'ayamgoreng@erajaya.com',
+//   },
+//   {
+//     userId: 4,
+//     userName: 'Ayam Bakar',
+//     userEmail: 'ayambakar@erajaya.com',
+//   },
+// ];
 
-const taData = [
-  {
-    taId: 1,
-    taName: 'Gusti1',
-  },
-  {
-    taId: 2,
-    taName: 'Gusti2',
-  },
-  {
-    taId: 3,
-    taName: 'Gusti3',
-  },
-  {
-    taId: 4,
-    taName: 'Gusti4',
-  },
-];
+// const taData = [
+//   {
+//     taId: 1,
+//     taName: 'Gusti1',
+//   },
+//   {
+//     taId: 2,
+//     taName: 'Gusti2',
+//   },
+//   {
+//     taId: 3,
+//     taName: 'Gusti3',
+//   },
+//   {
+//     taId: 4,
+//     taName: 'Gusti4',
+//   },
+// ];
 
 export const fpkData = [
   {
@@ -147,38 +140,78 @@ export const fpkData = [
   },
 ];
 
-const EmployJobFpk = () => {
+const EmployJobFpk = async ({ searchParams }) => {
   // const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  // const [fpkData, setFpkData] = useState([]);
 
-  const [loading, setLoading] = useState(false);
+  // const [fpkTotal, setFpkTotal] = useState(0);
 
-  const [api, contextHolder] = notification.useNotification();
+  // const [offset, setOffset] = useState(0);
 
-  const searchParams = useSearchParams();
+  const page = searchParams?.page ?? '1';
 
-  const router = useRouter();
+  const perPage = searchParams?.perPage ?? '10';
 
-  const pathname = usePathname();
+  const searchQuery = searchParams?.query ?? '';
 
-  const page = searchParams.get('page') || '1';
+  const offset = (Number(page) - 1) * Number(perPage);
 
-  const perPage = searchParams.get('perPage') || '2';
+  const getData = async () => {
+    if (searchQuery) {
+      return await searchFpkData(
+        'searchFpk',
+        searchQuery,
+        offset,
+        Number(perPage),
+      ).then((res) => {
+        return {
+          data: res.data,
+          total: res.total[0].searchTotal,
+        };
+      });
+    } else {
+      // setOffset((Number(page) - 1) * Number(perPage));
 
-  const searchQuery = searchParams.get('query') || '';
+      return await getFpkData('allFpk', offset, Number(perPage)).then((res) => {
+        return {
+          data: res.data,
+          total: res.total[0].total,
+        };
+      });
 
-  let offset = 0;
+      // getFpkTotal('fpkTotal').then((res) => {
+      //   setFpkTotal(res[0].total);
+      // });
+    }
+  };
 
-  let newFpkData = [];
+  const fpkData = await getData();
 
-  if (searchQuery) {
-    offset = 0;
+  const taData = await getTaData('allTa').then((res) => res);
 
-    newFpkData = fpkData.filter((data) => data.fpkNo.includes(searchQuery));
-  } else {
-    offset = (Number(page) - 1) * Number(perPage);
+  // useEffect(() => {
+  //   setOffset((Number(page) - 1) * Number(perPage));
 
-    newFpkData = fpkData.slice(offset, offset + Number(perPage));
-  }
+  //   if (searchQuery) {
+  //     searchFpkData('searchFpk', searchQuery, offset, Number(perPage)).then(
+  //       (res) => {
+  //         setFpkData(res.data);
+
+  //         setFpkTotal(res.total[0].searchTotal);
+  //       },
+  //     );
+  //   } else {
+  //     setOffset((Number(page) - 1) * Number(perPage));
+
+  //     getFpkData('allFpk', offset, Number(perPage)).then((res) => {
+  //       setFpkData(res);
+  //     });
+
+  //     getFpkTotal('fpkTotal').then((res) => {
+  //       setFpkTotal(res[0].total);
+  //     });
+  //   }
+  // }, [searchQuery, page, perPage, offset]);
 
   //   const start = () => {
   //     setLoading(true);
@@ -204,48 +237,89 @@ const EmployJobFpk = () => {
 
   // const hasSelected = selectedRowKeys.length > 0;
 
-  const handleJobFpkSearch = useDebouncedCallback((value) => {
-    const params = new URLSearchParams(searchParams);
+  // const convertDate = (dateTime) => {
+  //   const monthNames = [
+  //     'Jan',
+  //     'Feb',
+  //     'Mar',
+  //     'Apr',
+  //     'May',
+  //     'Jun',
+  //     'Jul',
+  //     'Aug',
+  //     'Sep',
+  //     'Okt',
+  //     'Nov',
+  //     'Des',
+  //   ];
 
-    if (value) {
-      params.set('query', value);
-    } else {
-      params.delete('query');
-    }
+  //   if (!dateTime) {
+  //     return 'Undifined';
+  //   } else if (typeof dateTime === 'string') {
+  //     const newDate = dateTime.replaceAll('/', ' ');
 
-    router.replace(`${pathname}?${params.toString()}`);
-  }, 300);
+  //     const day = newDate.slice(0, 2);
 
-  function handleAssignTa(values) {
-    setLoading(true);
+  //     const month = monthNames[Number(newDate.slice(3, 5)) - 1];
 
-    setTimeout(() => {
-      confirm({
-        title: 'Do you want to assign fpk?',
-        icon: <ExclamationCircleFilled />,
-        centered: true,
-        content:
-          'When clicked the OK button, this dialog will be closed after 1 second',
-        onOk() {
-          return new Promise<void>((resolve, reject) => {
-            setTimeout(() => {
-              api.success({
-                message: 'Notification',
-                description: <p>Successfully Assign FPK</p>,
-                placement: 'topRight',
-              });
-              console.info(values);
-              // setSelectedRowKeys([]);
-              resolve();
-            }, 2000);
-          }).catch(() => console.log('Oops errors!'));
-        },
-        onCancel() {},
-      });
+  //     const year = newDate.slice(6, 10);
 
-      setLoading(false);
-    }, 2000);
-  }
+  //     return `${day}-${month}-${year}`;
+  //   } else {
+  //     const date = new Date(dateTime);
+
+  //     const day = String(date.getDate());
+
+  //     const month = monthNames[date.getMonth()];
+
+  //     const year = String(date.getFullYear());
+
+  //     return `${day}-${month}-${year}`;
+  //   }
+  // };
+
+  // const handleJobFpkSearch = useDebouncedCallback((value) => {
+  //   const params = new URLSearchParams(searchParams);
+
+  //   if (value) {
+  //     params.set('query', value);
+  //   } else {
+  //     params.delete('query');
+  //   }
+
+  //   router.replace(`${pathname}?${params.toString()}`);
+  // }, 500);
+
+  // function handleAssignTa(values) {
+  //   setLoading(true);
+
+  //   setTimeout(() => {
+  //     confirm({
+  //       title: 'Do you want to assign fpk?',
+  //       icon: <ExclamationCircleFilled />,
+  //       centered: true,
+  //       content:
+  //         'When clicked the OK button, this dialog will be closed after 1 second',
+  //       onOk() {
+  //         return new Promise<void>((resolve, reject) => {
+  //           setTimeout(() => {
+  //             api.success({
+  //               message: 'Notification',
+  //               description: <p>Successfully Assign FPK</p>,
+  //               placement: 'topRight',
+  //             });
+  //             resolve();
+  //           }, 2000);
+  //         }).catch(() => console.log('Oops errors!'));
+  //       },
+  //       onCancel() {},
+  //     });
+
+  //     assignTa('assignTa', values.requestNo, values.taId);
+
+  //     setLoading(false);
+  //   }, 2000);
+  // }
 
   // function handleJobFpk(values) {
   //   setLoading(true);
@@ -284,22 +358,12 @@ const EmployJobFpk = () => {
       {/* <DashboardHeader /> */}
       {/* header end */}
 
-      {contextHolder}
+      {/* {contextHolder} */}
 
       <div className="job-fpk-header d-sm-flex flex-wrap align-items-center justify-content-between mb-40 lg-mb-30">
         <h2 className="main-title m0 flex-grow-1">FPK</h2>
         <div className="d-flex flex-grow-1 ms-auto xs-mt-30 justify-content-between align-items-center">
-          <form onSubmit={(e) => e.preventDefault()} className="search-form">
-            <input
-              type="text"
-              placeholder="Search here.."
-              onChange={(e) => handleJobFpkSearch(e.target.value)}
-              defaultValue={searchParams.get('query')?.toString()}
-            />
-            <button type="submit">
-              <Image src={search} alt="search" className="lazy-img m-auto" />
-            </button>
-          </form>
+          <SearchBar />
           {/* <div
             className="nav nav-tabs tab-filter-btn me-4"
             id="nav-tab"
@@ -334,7 +398,12 @@ const EmployJobFpk = () => {
       </div>
 
       <div className="bg-white card-box border-20">
-        <div className="tab-content" id="nav-tabContent">
+        <EmployJobFpkItem
+          fpkData={fpkData.data}
+          offset={offset}
+          taData={taData}
+        />
+        {/* <div className="tab-content" id="nav-tabContent">
           <div className="tab-pane fade show active" id="a1" role="tabpanel">
             <div className="table-responsive">
               {/* <table className="table job-alert-table">
@@ -382,7 +451,7 @@ const EmployJobFpk = () => {
                 </tbody>
               </table> */}
 
-              <>
+        {/* <>
                 <table className="table caption-top">
                   <thead>
                     <tr>
@@ -401,57 +470,55 @@ const EmployJobFpk = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {newFpkData?.map((data, index) => (
-                      <tr key={data.fpkNo}>
+                    {fpkData?.map((data, index) => (
+                      <tr key={index}>
                         <th scope="row">{index + 1 + offset}</th>
-                        <td>{`${data.jobTitle}\n${data.fpkNo}`}</td>
-                        <td>{`${data.jobLevel}`}</td>
-                        <td>{`${data.companyCode}`}</td>
-                        <td>{`${userData.filter((user) => user.userId === data.fpkUser)[0]?.userName}\n${userData.filter((user) => user.userId === data.fpkUser)[0]?.userEmail}`}</td>
-                        <td>{`${data.location}`}</td>
-                        <td>{`${data.statusMpp}`}</td>
-                        <td>{`${data.createFpk}`}</td>
-                        <td>{`${data.fpkFullyApproved}`}</td>
-                        <td>{`${data.fpkStatus}`}</td>
-                        <td>{`${data.jobPosting}`}</td>
+                        <td>{`${data?.JobTitleName ?? ''}\n${data?.RequestNo ?? ''}`}</td>
+                        <td>{`${data?.JobLvlCode ?? ''}`}</td>
+                        <td>{`${data?.CompCode ?? ''}`}</td>
+                        <td>{`${data?.InitiatorName ?? ''}\n${data.InitiatorEmail ?? ''}`}</td>
+                        <td>{`${data?.LocationName ?? ''}`}</td>
+                        <td>{`${data?.Reason ?? ''}`}</td>
+                        <td>{`${convertDate(data?.CreateDate ?? '')}`}</td>
+                        <td>{`${convertDate(data?.ApprovalDate ?? '')}`}</td>
+                        <td>{`Fully ${data?.Status ?? ''}`}</td>
+                        <td>{`${data?.CandidateSource ? 'Yes' : 'No'}`}</td>
                         <td>
                           <Form
-                            name={`assignTaForm${data.fpkNo}`}
+                            form={form}
+                            name={`assignTaForm${data.RequestNo}`}
                             layout="vertical"
                             variant="filled"
                             initialValues={{
-                              [`picTa${data.fpkNo}`]:
-                                data.picTa === -1 ? null : data.picTa,
+                              ['taId']: data.TaId,
+                              ['requestNo']: data.RequestNo,
                             }}
                             onFinish={handleAssignTa}
                           >
-                            <Form.Item name={`picTa${data.fpkNo}`}>
+                            <Form.Item name="taId">
                               <Select
                                 className="select"
                                 showSearch
                                 allowClear
+                                onChange={() => setAssignDisabled(false)}
                                 placeholder="Select TA"
                                 optionFilterProp="children"
                                 filterOption={(input, option) =>
                                   (option?.label ?? '').includes(input)
                                 }
-                                filterSort={(optionA, optionB) =>
-                                  (optionA?.label ?? '')
-                                    .toLowerCase()
-                                    .localeCompare(
-                                      (optionB?.label ?? '').toLowerCase(),
-                                    )
-                                }
-                                options={taData.map((ta) => {
-                                  return {
-                                    label: ta.taName,
-                                    value: ta.taId,
-                                  };
-                                })}
+                                options={taData}
                               />
                             </Form.Item>
+                            <Form.Item className="d-none" name="requestNo">
+                              <Input className="d-none" type="hidden" />
+                            </Form.Item>
                             <Form.Item>
-                              <Button htmlType="submit">Assign</Button>
+                              <Button
+                                htmlType="submit"
+                                disabled={assignDisabled}
+                              >
+                                Assign
+                              </Button>
                             </Form.Item>
                           </Form>
                         </td>
@@ -469,9 +536,9 @@ const EmployJobFpk = () => {
                       <td>the Bird</td>
                       <td>@twitter</td>
                     </tr> */}
-                  </tbody>
-                </table>
-                {/* <div className="dash-input-wrapper mb-30">
+        {/* </tbody>
+                </table> */}
+        {/* <div className="dash-input-wrapper mb-30">
                   <Form.Item
                     label="TA"
                     name="ta"
@@ -547,10 +614,10 @@ const EmployJobFpk = () => {
                     Assign FPK
                   </Button>
                 </Form.Item> */}
-              </>
+        {/* </>
             </div>
-          </div>
-          {/* <div className="tab-pane fade" id="a2" role="tabpanel">
+          </div> */}
+        {/* <div className="tab-pane fade" id="a2" role="tabpanel">
             <div className="table-responsive">
               <table className="table job-alert-table">
                 <thead>
@@ -598,11 +665,15 @@ const EmployJobFpk = () => {
               </table>
             </div>
           </div> */}
-        </div>
+        {/* </div> */}
       </div>
 
       <div className="d-flex justify-content-center mt-30">
-        <Pagination disabled={searchQuery ? true : false} />
+        <Pagination
+          pageRangeDisplayed={3}
+          totalData={fpkData.total}
+          disabled={fpkData.total <= Number(perPage) ? true : false}
+        />
         {/* <ul className="style-none d-flex align-items-center">
           <li>
             <a href="#" className="active">

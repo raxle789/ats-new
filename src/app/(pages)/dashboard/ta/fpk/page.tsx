@@ -1,12 +1,8 @@
-'use client';
-import React, { useState } from 'react';
-import Wrapper from '@/layouts/wrapper';
-import EmployAside from '@/app/components/dashboard/employ/aside';
-import SubmitJobArea from '@/app/components/dashboard/employ/submit-job-area';
+import React from 'react';
 import EmployJobFpk from '@/app/components/dashboard/employ/job-fpk';
 
-const jobFpkPage = () => {
-  return <EmployJobFpk />;
+const jobFpkPage = async ({ searchParams }) => {
+  return <EmployJobFpk searchParams={searchParams} />;
 };
 
 export default jobFpkPage;

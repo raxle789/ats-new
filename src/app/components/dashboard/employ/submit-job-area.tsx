@@ -1,7 +1,9 @@
 'use client';
-import React, { useState } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import DashboardHeader from '../candidate/dashboard-header';
+import ReactQuill from 'react-quill';
 import StateSelect from '../candidate/state-select';
 import CitySelect from '../candidate/city-select';
 import CountrySelect from '../candidate/country-select';
@@ -38,6 +40,8 @@ import {
   ageMarks,
 } from '@/data/job-posting-data';
 
+import { fpkData } from './job-fpk';
+
 const { RangePicker } = DatePicker;
 
 const { TextArea } = Input;
@@ -62,6 +66,43 @@ const SubmitJobArea = () => {
   //   });
   // };
 
+  const formModalRef = useRef(null);
+
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      [{ font: [] }],
+      [{ size: [] }],
+      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+      [
+        { list: 'ordered' },
+        { list: 'bullet' },
+        { align: [] },
+        { indent: '-1' },
+        { indent: '+1' },
+      ],
+      ['link', 'image', 'video'],
+    ],
+    // clipboard: {
+    //   matchers: [
+    //     [
+    //       '\n',
+    //       (node, delta) => {
+    //         return delta.compose(
+    //           new Delta().retain(delta.length(), { list: 'bullet' }),
+    //         );
+    //       },
+    //     ],
+    //   ],
+    // },
+  };
+
+  async function handleFpkModal(values) {
+    console.info(values);
+
+    setModalOpen(false);
+  }
+
   function handleJobPost(values) {
     confirm({
       title: 'Do you want to create new job posting?',
@@ -78,6 +119,7 @@ const SubmitJobArea = () => {
               placement: 'topRight',
             });
             console.info(values);
+            form.resetFields();
             resolve();
           }, 2000);
         }).catch(() => console.log('Oops errors!'));
@@ -86,53 +128,18 @@ const SubmitJobArea = () => {
     });
   }
 
-  const [
-    minimumYearOfExperienceParameterState,
-    setMinimumYearOfExperienceParameterState,
-  ] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const [educationLevelParameterState, setEducationLevelParameterState] =
-    useState(false);
+  const [form] = Form.useForm();
 
-  const [majorOfStudiesParameterState, setMajorOfStudiesParameterState] =
-    useState(false);
-
-  const [gradeParameterState, setGradeParameterState] = useState(false);
-
-  const [specialSkillParameterState, setSpecialSkillParameterState] =
-    useState(false);
-
-  const [certificationsParameterState, setCertificationsParameterState] =
-    useState(false);
-
-  const [salaryRangeParameterState, setSalaryRangeParameterState] =
-    useState(false);
-
-  const [domicileParamaterState, setDomicileParamaterState] = useState(false);
-
-  const [maximumAgeParameterState, setMaximumAgeParameterState] =
-    useState(false);
-
-  const [genderParameterState, setGenderParameterState] = useState(false);
-
-  const [religionParameterState, setReligionParameterState] = useState(false);
-
-  const [raceParameterState, setRaceParameterState] = useState(false);
-
-  const [lineIndustryParameterState, setLineIndustryParameterState] =
-    useState(false);
-
-  const [jobFunctionParameterState, setJobFunctionParameterState] =
-    useState(false);
-
-  const [positionLevelParameterState, setPositionLevelParameterState] =
-    useState(false);
-
-  const [showBenefit, setShowBenefit] = useState('notShow');
+  useEffect(() => {
+    setModalOpen(true);
+  }, []);
 
   const handleCategory = (item: { value: string; label: string }) => {};
   const handleJobType = (item: { value: string; label: string }) => {};
   const handleSalary = (item: { value: string; label: string }) => {};
+
   return (
     <>
       {contextHolder}
@@ -141,7 +148,102 @@ const SubmitJobArea = () => {
       {/* header end */}
       <h2 className="main-title">Post a New Job</h2>
 
+      <div>
+        <Modal
+          title="Choose FPK"
+          centered
+          open={modalOpen}
+          maskClosable={false}
+          closable={false}
+          onOk={() => formModalRef?.current?.submit()}
+          onCancel={() => setModalOpen(false)}
+          okText="Submit Job FPK"
+          cancelText="Don't Have Job FPK"
+        >
+          <Form
+            ref={formModalRef}
+            layout="vertical"
+            variant="filled"
+            onFinish={handleFpkModal}
+          >
+            <Form.Item
+              name="jobFpkModal"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please Select Job FPK!',
+                },
+              ]}
+            >
+              <Select
+                className="select"
+                showSearch
+                allowClear
+                placeholder="Select Job FPK"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                options={[
+                  {
+                    value: '1',
+                    label: 'Not Identified',
+                  },
+                  {
+                    value: '2',
+                    label: 'Closed',
+                  },
+                  {
+                    value: '3',
+                    label: 'Communicated',
+                  },
+                  {
+                    value: '4',
+                    label: 'Identified',
+                  },
+                  {
+                    value: '5',
+                    label: 'Resolved',
+                  },
+                  {
+                    value: '6',
+                    label: 'Cancelled',
+                  },
+                ]}
+              />
+              {/* <Select
+                className="select"
+                mode="multiple"
+                allowClear
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                placeholder="Select Job FPK"
+                options={fpkData.map((data) => {
+                  return {
+                    value: data.fpkNo,
+                    label: `${data.jobTitle} - ${data.fpkNo}`,
+                  };
+                })}
+              /> */}
+            </Form.Item>
+          </Form>
+        </Modal>
+      </div>
+
       <Form
+        form={form}
         className="bg-white card-box border-20"
         layout="vertical"
         variant="filled"
@@ -152,7 +254,7 @@ const SubmitJobArea = () => {
           <Form.Item
             label="Job Title"
             name="jobTitle"
-            rules={[{ required: true, message: 'Please Select Job Title!' }]}
+            rules={[{ required: true, message: 'Please Input Job Title!' }]}
           >
             <Select
               className="select"
@@ -543,10 +645,15 @@ const SubmitJobArea = () => {
             label="Work Location"
             name="jobWorkLocation"
             rules={[
-              { required: true, message: 'Please Select Job Work Location!' },
+              { required: true, message: 'Please Input Job Work Location!' },
             ]}
           >
-            <Select
+            <TextArea
+              className="select"
+              placeholder="Input Job Work Location"
+              autoSize
+            />
+            {/* <Select
               className="select"
               showSearch
               allowClear
@@ -586,7 +693,7 @@ const SubmitJobArea = () => {
                   label: 'Cancelled',
                 },
               ]}
-            />
+            /> */}
           </Form.Item>
         </div>
         <div className="dash-input-wrapper mb-30">
@@ -615,7 +722,13 @@ const SubmitJobArea = () => {
               { required: true, message: 'Please Input Job Description!' },
             ]}
           >
-            <TextArea
+            <ReactQuill
+              className="textArea"
+              theme="snow"
+              modules={modules}
+              placeholder="Input Job Description"
+            />
+            {/* <TextArea
               className="textArea"
               allowClear
               placeholder="Input Job Description"
@@ -623,7 +736,7 @@ const SubmitJobArea = () => {
                 minRows: 8,
                 maxRows: 12,
               }}
-            />
+            /> */}
           </Form.Item>
         </div>
         <div className="dash-input-wrapper mb-30">
@@ -634,7 +747,13 @@ const SubmitJobArea = () => {
               { required: true, message: 'Please Input Job Requirement!' },
             ]}
           >
-            <TextArea
+            <ReactQuill
+              className="textArea"
+              theme="snow"
+              modules={modules}
+              placeholder="Input Job Requirement"
+            />
+            {/* <TextArea
               className="textArea"
               allowClear
               placeholder="Input Job Requirement"
@@ -642,7 +761,7 @@ const SubmitJobArea = () => {
                 minRows: 8,
                 maxRows: 12,
               }}
-            />
+            /> */}
           </Form.Item>
         </div>
 
@@ -650,6 +769,87 @@ const SubmitJobArea = () => {
           Parameter/Filter Set
         </h4>
         <div className="dash-input-wrapper mb-30">
+          <Form.Item name="jobParameter">
+            <TextArea
+              className="select"
+              placeholder="Input Job Paramater"
+              disabled
+              autoSize
+            />
+          </Form.Item>
+          {/* <div className="row">
+            <div className="col-xxl-4">
+              <Form.Item name="jobParameterCheckbox" valuePropName="checked">
+                <Checkbox
+                  className="checkbox"
+                  value={jobParameterState}
+                  onChange={() => setJobParameterState(!jobParameterState)}
+                >
+                  Job Parameter
+                </Checkbox>
+              </Form.Item>
+            </div>
+            <div className="col-xxl-8">
+              <Form.Item
+                name="jobParameter"
+                rules={
+                  jobParameterState
+                    ? [
+                        {
+                          required: true,
+                          message: 'Please Select Job Parameter!',
+                        },
+                      ]
+                    : []
+                }
+              >
+                <Select
+                  className="select"
+                  showSearch
+                  disabled={!jobParameterState}
+                  allowClear
+                  placeholder="Select Job Parameter"
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').includes(input)
+                  }
+                  filterSort={(optionA, optionB) =>
+                    (optionA?.label ?? '')
+                      .toLowerCase()
+                      .localeCompare((optionB?.label ?? '').toLowerCase())
+                  }
+                  options={[
+                    {
+                      value: '1',
+                      label: 'Not Identified',
+                    },
+                    {
+                      value: '2',
+                      label: 'Closed',
+                    },
+                    {
+                      value: '3',
+                      label: 'Communicated',
+                    },
+                    {
+                      value: '4',
+                      label: 'Identified',
+                    },
+                    {
+                      value: '5',
+                      label: 'Resolved',
+                    },
+                    {
+                      value: '6',
+                      label: 'Cancelled',
+                    },
+                  ]}
+                />
+              </Form.Item>
+            </div>
+          </div> */}
+        </div>
+        {/* <div className="dash-input-wrapper mb-30">
           <div className="row">
             <div className="col-xxl-4">
               <Form.Item
@@ -956,7 +1156,7 @@ const SubmitJobArea = () => {
               </Form.Item>
             </div>
           </div>
-        </div>
+        </div> */}
         {/* <div className="dash-input-wrapper mb-30">
             <div className="row">
               <div className="col-xxl-4">
@@ -996,7 +1196,7 @@ const SubmitJobArea = () => {
               </div>
             </div>
           </div> */}
-        <div className="dash-input-wrapper mb-30">
+        {/* <div className="dash-input-wrapper mb-30">
           <div className="row">
             <div className="col-xxl-4">
               <Form.Item
@@ -1323,7 +1523,7 @@ const SubmitJobArea = () => {
               </Form.Item>
             </div>
           </div>
-        </div>
+        </div> */}
         {/* <div className="dash-input-wrapper mb-30">
             <div className="row">
               <div className="col-xxl-4">
@@ -1363,7 +1563,7 @@ const SubmitJobArea = () => {
               </div>
             </div>
           </div> */}
-        <div className="dash-input-wrapper mb-30">
+        {/* <div className="dash-input-wrapper mb-30">
           <div className="row">
             <div className="col-xxl-4">
               <Form.Item
@@ -1575,7 +1775,7 @@ const SubmitJobArea = () => {
               </Form.Item>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* <h4 className="dash-title-three pt-50 lg-pt-30">Benefit</h4>
         <div className="dash-input-wrapper mb-30">
@@ -1706,6 +1906,47 @@ const SubmitJobArea = () => {
           >
             <Select
               className="select"
+              showSearch
+              allowClear
+              placeholder="Select Job FPK"
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                (option?.label ?? '').includes(input)
+              }
+              filterSort={(optionA, optionB) =>
+                (optionA?.label ?? '')
+                  .toLowerCase()
+                  .localeCompare((optionB?.label ?? '').toLowerCase())
+              }
+              options={[
+                {
+                  value: '1',
+                  label: 'Not Identified',
+                },
+                {
+                  value: '2',
+                  label: 'Closed',
+                },
+                {
+                  value: '3',
+                  label: 'Communicated',
+                },
+                {
+                  value: '4',
+                  label: 'Identified',
+                },
+                {
+                  value: '5',
+                  label: 'Resolved',
+                },
+                {
+                  value: '6',
+                  label: 'Cancelled',
+                },
+              ]}
+            />
+            {/* <Select
+              className="select"
               mode="multiple"
               allowClear
               optionFilterProp="children"
@@ -1723,7 +1964,7 @@ const SubmitJobArea = () => {
                 { value: 'jack', label: 'Jack' },
                 { value: 'lucy', label: 'Lucy' },
               ]}
-            />
+            /> */}
           </Form.Item>
         </div>
         {/* <div className="dash-input-wrapper mb-30">
@@ -1989,12 +2230,12 @@ const SubmitJobArea = () => {
         </div>
         <div className="dash-input-wrapper mb-30">
           <Form.Item
-            label="Collaborator"
-            name="jobPostingCollaborator"
+            label="TA Collaborator"
+            name="jobPostingTaCollaborator"
             rules={[
               {
                 required: true,
-                message: 'Please Select Job Posting Collaborator!',
+                message: 'Please Select Job Posting TA Collaborator!',
               },
             ]}
           >
@@ -2011,7 +2252,40 @@ const SubmitJobArea = () => {
                   .toLowerCase()
                   .localeCompare((optionB?.label ?? '').toLowerCase())
               }
-              placeholder="Select Job Collaborator"
+              placeholder="Select Job TA Collaborator"
+              options={[
+                { value: 'Yiminghe', label: 'yiminghe' },
+                { value: 'jack', label: 'Jack' },
+                { value: 'lucy', label: 'Lucy' },
+              ]}
+            />
+          </Form.Item>
+        </div>
+        <div className="dash-input-wrapper mb-30">
+          <Form.Item
+            label="User Collaborator"
+            name="jobPostingUserCollaborator"
+            rules={[
+              {
+                required: true,
+                message: 'Please Select Job Posting User Collaborator!',
+              },
+            ]}
+          >
+            <Select
+              className="select"
+              mode="multiple"
+              allowClear
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                (option?.label ?? '').includes(input)
+              }
+              filterSort={(optionA, optionB) =>
+                (optionA?.label ?? '')
+                  .toLowerCase()
+                  .localeCompare((optionB?.label ?? '').toLowerCase())
+              }
+              placeholder="Select Job User Collaborator"
               options={[
                 { value: 'Yiminghe', label: 'yiminghe' },
                 { value: 'jack', label: 'Jack' },

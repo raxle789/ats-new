@@ -1,30 +1,37 @@
-import React from "react";
-import ActionDropdown from "../candidate/action-dropdown";
+import React from 'react';
+import ActionDropdown from '../candidate/action-dropdown';
 
 const EmployJobItem = ({
-  title,
-  info,
-  date,
-  application,
-  status,
-}: {
-  title: string;
-  info: string;
-  date: string;
-  application: string;
-  status: string;
+  jobTitle,
+  jobDeparment,
+  jobStatus,
+  jobEndPosted,
+  jobApplicants,
+  jobApplicantsAssessment,
+  jobApplicantsInterview,
+  jobApplicantsOffering,
+  jobRemainingSLA,
+  jobRecruiter,
+  jobFpkStatus,
 }) => {
   return (
     <tr className={status}>
       <td>
-        <div className="job-name fw-500">{title}</div>
-        <div className="info1">{info}</div>
+        <div className="job-name fw-500">{jobTitle}</div>
+        <div className="info1">{jobDeparment}</div>
+        <div className="info1">{jobStatus}</div>
+        <div className="info1">{jobEndPosted}</div>
       </td>
-      <td>{date}</td>
-      <td>{application} Applications</td>
-      <td>
+      <td>{jobApplicants}</td>
+      <td>{jobApplicantsAssessment}</td>
+      <td>{jobApplicantsInterview}</td>
+      <td>{jobApplicantsOffering}</td>
+      <td>{jobRemainingSLA}</td>
+      <td>{jobRecruiter}</td>
+      <td>{jobFpkStatus}</td>
+      {/* <td>
         <div className="job-status text-capitalize">{status}</div>
-      </td>
+      </td> */}
       <td>
         <div className="action-dots float-end">
           <button

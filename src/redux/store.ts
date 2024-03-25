@@ -3,10 +3,12 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import filterSlice from './features/filterSlice';
 import stepSlice from './features/stepSlice';
 import registerSlice from './features/registerSlice';
+import sidebarSlice from './features/sidebarSlice';
 // import storage from 'redux-persist/lib/storage';
 
 const rootReducer = combineReducers({
   filter: filterSlice,
+  sidebar: sidebarSlice,
   wishlist: wishlistSlice,
   step: stepSlice,
   register: registerSlice,
