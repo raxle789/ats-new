@@ -76,13 +76,12 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
                 placement: 'topRight',
               });
               resolve();
+              assignTa('assignTa', values.requestNo, values.taId);
             }, 2000);
           }).catch(() => console.log('Oops errors!'));
         },
         onCancel() {},
       });
-
-      assignTa('assignTa', values.requestNo, values.taId);
       setLoading(false);
     }, 2000);
   };
@@ -245,11 +244,19 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
                                   {`${data.InitiatorEmail ?? ''}`}
                                 </p>
                                 <p>
-                                  <b>Location: </b>
-                                  {`${data?.LocationName ?? ''}`}
+                                  <b>Phone Number: </b>
+                                  {`${data.InitiatorPhone ?? ''}`}
+                                </p>
+                                <p>
+                                  <b>Position: </b>
+                                  {`${data.InitiatorPosition ?? ''}`}
                                 </p>
                               </div>
                               <div className="col-lg-6">
+                                <p>
+                                  <b>Location: </b>
+                                  {`${data?.LocationName ?? ''}`}
+                                </p>
                                 <p>
                                   <b>Create FPK: </b>
                                   {`${convertDate(data?.CreateDate ?? '')}`}

@@ -86,7 +86,7 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
       ).then((res) => {
         const data = res.data ?? [];
 
-        const total = res.total ?? [0] ?? [];
+        const total = res.total ? res.total[0] : 0;
 
         return {
           data: data,
@@ -99,7 +99,7 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
       return await getFpkData('allFpk', offset, Number(perPage)).then((res) => {
         const data = res.data ?? [];
 
-        const total = res.total ?? [0] ?? [];
+        const total = res.total ? res.total[0] : 0;
 
         return {
           data: data,
@@ -143,7 +143,9 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
         <Pagination
           pageRangeDisplayed={3}
           totalData={fpkData?.total}
-          disabled={fpkData || fpkData.total <= Number(perPage) ? true : false}
+          disabled={
+            !fpkData || fpkData?.total <= Number(perPage) ? true : false
+          }
         />
       </div>
     </>

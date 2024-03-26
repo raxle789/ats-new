@@ -12,15 +12,13 @@ export async function getAllFullyApprovedFpk(poolName, offset, perPage) {
       .input('offset', sql.Int, offset)
       .input('perPage', sql.Int, perPage)
       .query(
-        'SELECT JobTitleName, RequestNo, JobLvlCode, CompCode, InitiatorName, InitiatorEmail, LocationName, Reason, CreateDate, ApprovalDate, Status, CandidateSource, TaId FROM efpk WHERE Status = @status ORDER BY RequestNo DESC OFFSET @offset ROWS FETCH NEXT @perPage ROWS ONLY',
+        'SELECT JobTitleName, RequestNo, JobLvlCode, CompCode, InitiatorName, InitiatorEmail, initiators.phone AS InitiatorPhone, initiators.position as InitiatorPosition, LocationName, Reason, CreateDate, ApprovalDate, Status, CandidateSource, TaId FROM efpk LEFT JOIN initiators ON efpk.InitiatorNIK = initiators.nik WHERE Status = @status ORDER BY RequestNo DESC OFFSET @offset ROWS FETCH NEXT @perPage ROWS ONLY',
       );
 
     const total = await db
       .request()
       .input('status', sql.VarChar, 'Approved')
       .query('SELECT COUNT(*) AS total FROM efpk WHERE Status = @status');
-
-    console.info(data.recordset);
 
     return {
       data: data?.recordset,
@@ -60,14 +58,14 @@ export async function searchFpk(poolName, query, offset, perPage) {
       .input('offset', sql.Int, offset)
       .input('perPage', sql.Int, perPage)
       .query(
-        "SELECT JobTitleName, RequestNo, JobLvlCode, CompCode, InitiatorName, InitiatorEmail, LocationName, Reason, CreateDate, ApprovalDate, Status, CandidateSource, efpk.TaId FROM efpk LEFT JOIN v_users ON efpk.TaId = v_users.id WHERE JobTitleName LIKE @query OR RequestNo LIKE @query OR JobLvlCode LIKE @query OR CompCode LIKE @query OR InitiatorName LIKE @query OR InitiatorEmail LIKE @query OR LocationName LIKE @query OR Reason LIKE @query OR FORMAT(CreateDate, 'dd-MMM-yyyy') LIKE @query OR FORMAT(CONVERT(datetime, ApprovalDate, 103), 'dd-MMM-yyyy') LIKE @query OR Status LIKE @query OR CandidateSource LIKE @query OR v_users.name LIKE @query ORDER BY RequestNo DESC OFFSET @offset ROWS FETCH NEXT @perPage ROWS ONLY",
+        "SELECT JobTitleName, RequestNo, JobLvlCode, CompCode, InitiatorName, InitiatorEmail, initiators.phone AS InitiatorPhone, initiators.position AS InitiatorPosition, LocationName, Reason, CreateDate, ApprovalDate, Status, CandidateSource, efpk.TaId FROM ((efpk LEFT JOIN v_users ON efpk.TaId = v_users.id) LEFT JOIN initiators ON efpk.InitiatorNIK = initiators.nik) WHERE JobTitleName LIKE @query OR RequestNo LIKE @query OR JobLvlCode LIKE @query OR CompCode LIKE @query OR InitiatorName LIKE @query OR InitiatorEmail LIKE @query OR initiators.phone LIKE @query OR initiators.position LIKE @query OR LocationName LIKE @query OR Reason LIKE @query OR FORMAT(CreateDate, 'dd-MMM-yyyy') LIKE @query OR FORMAT(CONVERT(datetime, ApprovalDate, 103), 'dd-MMM-yyyy') LIKE @query OR Status LIKE @query OR CandidateSource LIKE @query OR v_users.name LIKE @query ORDER BY RequestNo DESC OFFSET @offset ROWS FETCH NEXT @perPage ROWS ONLY",
       );
 
     const total = await db
       .request()
       .input('query', sql.Text, `%${query}%`)
       .query(
-        "SELECT COUNT(*) AS searchTotal FROM efpk LEFT JOIN v_users ON efpk.TaId = v_users.id WHERE JobTitleName LIKE @query OR RequestNo LIKE @query OR JobLvlCode LIKE @query OR CompCode LIKE @query OR InitiatorName LIKE @query OR InitiatorEmail LIKE @query OR LocationName LIKE @query OR Reason LIKE @query OR FORMAT(CreateDate, 'dd-MMM-yyyy') LIKE @query OR FORMAT(CONVERT(datetime, ApprovalDate, 103), 'dd-MMM-yyyy') LIKE @query OR Status LIKE @query OR CandidateSource LIKE @query OR v_users.name LIKE @query",
+        "SELECT COUNT(*) AS searchTotal FROM ((efpk LEFT JOIN v_users ON efpk.TaId = v_users.id) LEFT JOIN initiators ON efpk.InitiatorNIK = initiators.nik) WHERE JobTitleName LIKE @query OR RequestNo LIKE @query OR JobLvlCode LIKE @query OR CompCode LIKE @query OR InitiatorName LIKE @query OR InitiatorEmail LIKE @query OR initiators.phone LIKE @query OR initiators.position LIKE @query OR LocationName LIKE @query OR Reason LIKE @query OR FORMAT(CreateDate, 'dd-MMM-yyyy') LIKE @query OR FORMAT(CONVERT(datetime, ApprovalDate, 103), 'dd-MMM-yyyy') LIKE @query OR Status LIKE @query OR CandidateSource LIKE @query OR v_users.name LIKE @query",
       );
 
     return {
