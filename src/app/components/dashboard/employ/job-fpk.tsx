@@ -1,61 +1,11 @@
 export const revalidate = 0;
 
-import React from 'react';
 import EmployShortSelect from './short-select';
-import { Button, Form, Select, notification, Modal } from 'antd';
-import { useState } from 'react';
-import { ExclamationCircleFilled } from '@ant-design/icons';
+import React from 'react';
+import EmployJobFpkItem from './job-fpk-item';
+import SearchBar from '@/ui/search-bar';
+import { getFpkData, searchFpkData, getTaData } from '@/lib/action/fpk/action';
 import Pagination from '@/ui/pagination';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import Image from 'next/image';
-import search from '@/assets/dashboard/images/icon/icon_10.svg';
-import { useDebouncedCallback } from 'use-debounce';
-import { ExpendableButton } from './expendable-button';
-import Link from 'next/link';
-
-// const { confirm } = Modal;
-
-const inisiatorData = [
-  {
-    inisiatorId: 1,
-    inisiatorName: 'Stanly Wijaja',
-    inisiatorEmail: 'stanly.widjaja@erajaya.com',
-  },
-  {
-    inisiatorId: 2,
-    inisiatorName: 'Ayam',
-    inisiatorEmail: 'ayam@erajaya.com',
-  },
-  {
-    inisiatorId: 3,
-    inisiatorName: 'Ayam Goreng',
-    inisiatorEmail: 'ayamgoreng@erajaya.com',
-  },
-  {
-    inisiatorId: 4,
-    inisiatorName: 'Ayam Bakar',
-    inisiatorEmail: 'ayambakar@erajaya.com',
-  },
-];
-
-// const taData = [
-//   {
-//     taId: 1,
-//     taName: 'Gusti1',
-//   },
-//   {
-//     taId: 2,
-//     taName: 'Gusti2',
-//   },
-//   {
-//     taId: 3,
-//     taName: 'Gusti3',
-//   },
-//   {
-//     taId: 4,
-//     taName: 'Gusti4',
-//   },
-// ];
 
 export const fpkData = [
   {
@@ -116,141 +66,65 @@ export const fpkData = [
   },
 ];
 
-const EmployJobFpk = () => {
-  const [loading, setLoading] = useState(false);
-  const [api, contextHolder] = notification.useNotification();
-  const searchParams = useSearchParams();
-  const router = useRouter();
-  const pathname = usePathname();
-  const page = searchParams.get('page') || '1';
-  const perPage = searchParams.get('perPage') || '2';
-  const searchQuery = searchParams.get('query') || '';
+interface EmployJobFpkProps {
+  searchParams: any;
+}
 
-  let offset = 0;
-  let newFpkData = [];
-  if (searchQuery) {
-    offset = 0;
-    newFpkData = fpkData.filter((data) => data.fpkNo.includes(searchQuery));
-  } else {
-    offset = (Number(page) - 1) * Number(perPage);
-    newFpkData = fpkData.slice(offset, offset + Number(perPage));
-  }
+const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
+  const page = searchParams?.page ?? '1';
+  const perPage = searchParams?.perPage ?? '10';
+  const searchQuery = searchParams?.query ?? '';
+  const offset = (Number(page) - 1) * Number(perPage);
 
-  // const convertDate = (dateTime) => {
-  //   const monthNames = [
-  //     'Jan',
-  //     'Feb',
-  //     'Mar',
-  //     'Apr',
-  //     'May',
-  //     'Jun',
-  //     'Jul',
-  //     'Aug',
-  //     'Sep',
-  //     'Okt',
-  //     'Nov',
-  //     'Des',
-  //   ];
+  const getData = async () => {
+    if (searchQuery) {
+      return await searchFpkData(
+        'searchFpk',
+        searchQuery,
+        offset,
+        Number(perPage),
+      ).then((res) => {
+        const data = res.data ?? [];
 
-  //   if (!dateTime) {
-  //     return 'Undifined';
-  //   } else if (typeof dateTime === 'string') {
-  //     const newDate = dateTime.replaceAll('/', ' ');
+        const total = res.total ?? [0] ?? [];
 
-  //     const day = newDate.slice(0, 2);
-
-  //     const month = monthNames[Number(newDate.slice(3, 5)) - 1];
-
-  //     const year = newDate.slice(6, 10);
-
-  //     return `${day}-${month}-${year}`;
-  //   } else {
-  //     const date = new Date(dateTime);
-
-  //     const day = String(date.getDate());
-
-  //     const month = monthNames[date.getMonth()];
-
-  //     const year = String(date.getFullYear());
-
-  //     return `${day}-${month}-${year}`;
-  //   }
-  // };
-
-  // const handleJobFpkSearch = useDebouncedCallback((value) => {
-  //   const params = new URLSearchParams(searchParams);
-
-    if (value) {
-      params.set('query', value);
+        return {
+          data: data,
+          total: total.searchTotal,
+        };
+      });
     } else {
-      params.delete('query');
-    }
-    router.replace(`${pathname}?${params.toString()}`);
-  }, 300);
+      // setOffset((Number(page) - 1) * Number(perPage));
 
-  function handleAssignTa(values: any) {
-    setLoading(true);
+      return await getFpkData('allFpk', offset, Number(perPage)).then((res) => {
+        const data = res.data ?? [];
 
-    setTimeout(() => {
-      confirm({
-        title: 'Do you want to assign fpk?',
-        icon: <ExclamationCircleFilled />,
-        centered: true,
-        content:
-          'When clicked the OK button, this dialog will be closed after 1 second',
-        onOk() {
-          return new Promise<void>((resolve, reject) => {
-            setTimeout(() => {
-              api.success({
-                message: 'Notification',
-                description: <p>Successfully Assign FPK</p>,
-                placement: 'topRight',
-              });
-              console.info(values);
-              // setSelectedRowKeys([]);
-              resolve();
-            }, 2000);
-          }).catch(() => console.log('Oops errors!'));
-        },
-        onCancel() {},
+        const total = res.total ?? [0] ?? [];
+
+        return {
+          data: data,
+          total: total.total,
+        };
       });
 
-      setLoading(false);
-    }, 2000);
-  }
-
-  const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
-    {},
-  );
-
-  const toggleRowExpansion = (index: number) => {
-    setExpandedRows((prevExpandedRows) => ({
-      ...prevExpandedRows,
-      [index]: !prevExpandedRows[index],
-    }));
+      // getFpkTotal('fpkTotal').then((res) => {
+      //   setFpkTotal(res[0].total);
+      // });
+    }
   };
+
+  const fpkData = await getData();
+  const taData = await getTaData('allTa').then((res) => res);
+
   return (
     <>
-      {contextHolder}
+      {/* {contextHolder} */}
 
       <div className="job-fpk-header d-sm-flex flex-wrap align-items-center justify-content-between mb-40 lg-mb-30">
         <h2 className="main-title m0 flex-grow-1">FPK</h2>
         <div className="d-flex ms-auto xs-mt-30 justify-content-between align-items-center">
-          <form
-            onSubmit={(e) => e.preventDefault()}
-            className="search-form form-fpk"
-          >
-            <input
-              type="text"
-              placeholder="Search here.."
-              onChange={(e) => handleJobFpkSearch(e.target.value)}
-              defaultValue={searchParams.get('query')?.toString()}
-            />
-            <button type="submit">
-              <Image src={search} alt="search" className="lazy-img m-auto" />
-            </button>
-          </form>
-          <div className="short-filter d-flex align-items-center ms-auto">
+          <SearchBar />
+          <div className="short-filter d-flex align-items-center ms-3">
             <div className="text-dark fw-500 me-2">Filter by:</div>
             <EmployShortSelect />
           </div>
@@ -263,156 +137,14 @@ const EmployJobFpk = () => {
           offset={offset}
           taData={taData}
         />
-        {/* <div className="tab-content" id="nav-tabContent">
-          <div className="tab-pane fade show active" id="a1" role="tabpanel">
-            <div className="table-responsive">
-              <>
-                <table className="table job-alert-table">
-                  <thead>
-                    <tr>
-                      <th scope="col" className="fpk-id">
-                        No
-                      </th>
-                      <th scope="col">FPK</th>
-                      <th scope="col">Level</th>
-                      <th scope="col" className="company-code">
-                        Company
-                      </th>
-                      <th scope="col">Status EFPK</th>
-                      <th scope="col">PIC TA</th>
-                      <th scope="col"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {newFpkData?.map((data, index) => (
-                      <React.Fragment key={data.fpkNo}>
-                        <tr>
-                          <th scope="row">{index + 1 + offset}</th>
-                          <td>
-                            <b>{`${data.jobTitle}\n`}</b>
-                            {`${data.fpkNo}`}
-                          </td>
-                          <td>{`${data.jobLevel}`}</td>
-                          <td>{`${data.companyCode}`}</td>
-
-                          <td>
-                            <b>
-                              <span className="approved">{`${data.fpkStatus}`}</span>
-                            </b>
-                            <br />
-                            {`${data.fpkFullyApproved}`}
-                          </td>
-                          <td>
-                            <Form
-                              name={`assignTaForm${data.fpkNo}`}
-                              layout="vertical"
-                              variant="filled"
-                              initialValues={{
-                                [`picTa${data.fpkNo}`]:
-                                  data.picTa === -1 ? null : data.picTa,
-                              }}
-                              onFinish={handleAssignTa}
-                            >
-                              <Form.Item name={`picTa${data.fpkNo}`}>
-                                <Select
-                                  className="select"
-                                  showSearch
-                                  allowClear
-                                  placeholder="Select TA"
-                                  optionFilterProp="children"
-                                  filterOption={(input, option) =>
-                                    (option?.label ?? '').includes(input)
-                                  }
-                                  filterSort={(optionA, optionB) =>
-                                    (optionA?.label ?? '')
-                                      .toLowerCase()
-                                      .localeCompare(
-                                        (optionB?.label ?? '').toLowerCase(),
-                                      )
-                                  }
-                                  options={taData.map((ta) => {
-                                    return {
-                                      label: ta.taName,
-                                      value: ta.taId,
-                                    };
-                                  })}
-                                />
-                              </Form.Item>
-                              <Form.Item>
-                                <Button htmlType="submit">Assign</Button>
-                              </Form.Item>
-                            </Form>
-                          </td>
-                          <td>
-                            <ExpendableButton
-                              isOpen={expandedRows[index]}
-                              toggle={() => toggleRowExpansion(index)}
-                            />
-                          </td>
-                        </tr>
-                        {expandedRows[index] && (
-                          <tr>
-                            <td></td>
-                            <td colSpan={5}>
-                              <div
-                                className={
-                                  expandedRows[index]
-                                    ? 'expanded-row-open'
-                                    : 'expanded-row-close'
-                                }
-                              >
-                                <div className="row">
-                                  <div className="col-6">
-                                    <p>
-                                      <b>Inisiator: </b>
-                                      {`${inisiatorData.filter((inisiator) => inisiator.inisiatorId === data.fpkInisiator)[0]?.inisiatorName}`}
-                                    </p>
-                                    <p>
-                                      <b>Email: </b>
-                                      {`${inisiatorData.filter((inisiator) => inisiator.inisiatorId === data.fpkInisiator)[0]?.inisiatorEmail}`}
-                                    </p>
-                                    <p>
-                                      <b>Location: </b>
-                                      {`${data.location}`}
-                                    </p>
-                                  </div>
-                                  <div className="col-lg-6">
-                                    <p>
-                                      <b>Create FPK: </b>
-                                      {`${data.createFpk}`}
-                                    </p>
-                                    <p>
-                                      <b>Status Mpp: </b>
-                                      {`${data.statusMpp}`}
-                                    </p>
-                                    <p>
-                                      <b>Job Posting: </b>
-                                      {data.jobPosting === 'Yes' && (
-                                        <Link href="#">{`${data.jobPosting}`}</Link>
-                                      )}
-                                      {data.jobPosting === 'No' && (
-                                        <span>{`${data.jobPosting}`}</span>
-                                      )}{' '}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </td>
-                            <td></td>
-                          </tr>
-                        )}
-                      </React.Fragment>
-                    ))}
-                  </tbody>
-                </table>
-              </>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div className="d-flex justify-content-center mt-30">
-        <Pagination disabled={searchQuery ? true : false} />
+        <Pagination
+          pageRangeDisplayed={3}
+          totalData={fpkData?.total}
+          disabled={fpkData || fpkData.total <= Number(perPage) ? true : false}
+        />
       </div>
     </>
   );

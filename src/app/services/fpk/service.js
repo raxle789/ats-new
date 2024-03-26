@@ -20,6 +20,8 @@ export async function getAllFullyApprovedFpk(poolName, offset, perPage) {
       .input('status', sql.VarChar, 'Approved')
       .query('SELECT COUNT(*) AS total FROM efpk WHERE Status = @status');
 
+    console.info(data.recordset);
+
     return {
       data: data?.recordset,
       total: total?.recordset,
