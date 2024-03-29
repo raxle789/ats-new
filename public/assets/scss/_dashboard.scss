@@ -178,6 +178,12 @@
     color: $color-one;
     margin-bottom: 40px;
   }
+  .sub-main-title {
+    font-family: var(--gorditas-font);
+    // font-size: 36px;
+    color: $color-one;
+    // margin-bottom: 40px;
+  }
   .dash-title-two {
     font-family: var(--gorditas-font);
     font-size: 20px;
@@ -249,7 +255,7 @@
     .search-form {
       position: relative;
       height: 45px;
-      width: 100%;
+      width: 260px;
       input {
         width: 100%;
         height: 100%;
@@ -643,7 +649,7 @@
       display: block;
       font-size: 15px;
       font-weight: 500;
-      color: $heading;
+      color: $text-dark;
       margin-bottom: 10px;
     }
     .alert-text {
@@ -651,12 +657,20 @@
       letter-spacing: -0.14px;
       color: rgba($color: #000, $alpha: 0.5);
     }
-    input {
+    // div[class^='ant-'] {
+    //   width: 100%;
+    //   height: 40px;
+    // }
+    // input:not(.ant-input-number-input) {
+    input:not[class^='.ant-input'] {
       width: 100%;
       height: 55px;
       letter-spacing: -0.16px;
       border: 1px solid #e5e5e5;
       border-radius: 7px;
+      padding: 0 20px;
+    }
+    input[class^='ant-input'] {
       padding: 0 20px;
     }
     textarea {
@@ -943,7 +957,7 @@
       text-align: start;
       // display: block;
       transition: all 1s;
-      max-height: 300px;
+      max-height: 600px;
     }
     tr,
     td {
@@ -961,7 +975,7 @@
       }
       &:last-child {
         border-radius: 0 7px 7px 0;
-        text-align: right;
+        // text-align: right;
       }
     }
     td {
@@ -1683,10 +1697,6 @@
   background: #555;
 }
 
-.nav-bar-responsive a:first-child {
-  margin-left: 120px;
-}
-
 .expanded-button {
   .dropdown-icon {
     width: 20px;
@@ -1701,3 +1711,29 @@
     transition: all 0.3s;
   }
 }
+
+.form-item-custom-ant {
+  margin-bottom: 0px;
+}
+
+// .ant-select-selector {
+//   padding-left: 18px;
+// }
+
+.view-result-btn {
+  font-weight: 500;
+  color: #fff;
+  text-align: center;
+  line-height: 45px;
+  border-radius: 50px;
+  background: $color-one;
+  &:hover {
+    background: $color-two;
+    color: $color-one;
+  }
+}
+
+// .ant-upload-drag {
+//   width: 300px;
+//   height: 200px;
+// }

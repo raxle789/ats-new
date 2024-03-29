@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import Image from 'next/image';
-import * as Yup from 'yup';
+// import * as Yup from 'yup';
 import { Resolver, useForm, SubmitHandler } from 'react-hook-form';
 import ErrorMsg from '../common/error-msg';
 import uploadIcon from '@/assets/images/icon/icon_11.svg';
@@ -9,22 +9,23 @@ import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { setStep } from '@/redux/features/stepSlice';
 import { setRegister } from '@/redux/features/registerSlice';
 
+import axios from 'axios';
+
 // form data type
 type IFormData = {
   fullName: string;
   email: string;
   phoneNumber: string;
   dateOfBirth: string;
-  uploadPhoto: FileList;
+  uploadPhoto: string;
 };
 
 // schema
-const schema = Yup.object().shape({
-  fullName: Yup.string().required().label('Name'),
-  email: Yup.string().required().email().label('Email'),
-  password: Yup.string().required().min(6).label('Password'),
-  // blm disetting
-});
+// const schema = Yup.object().shape({
+//   fullName: Yup.string().required().label('Name'),
+//   email: Yup.string().required().email().label('Email'),
+//   password: Yup.string().required().min(6).label('Password'),
+// });
 
 // resolver
 const resolver: Resolver<IFormData> = async (values) => {
@@ -71,14 +72,70 @@ const RegisterFormStep1 = () => {
   const dispatch = useAppDispatch();
   const step1Data = useAppSelector((state) => state.register.dataCandidate);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
     if (file) {
       setUploadedFileName(file.name);
+      setFile(file);
     }
   };
+
+  const handleUpload = async () => {
+    if (!file) {
+      alert('Silakan pilih file terlebih dahulu');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      await axios.post('/api/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      alert('File berhasil diunggah');
+    } catch (error: any) {
+      if (error.response) {
+        alert(
+          'Terjadi kesalahan saat mengunggah file: ' +
+            error.response.data.message,
+        );
+      } else if (error.request) {
+        alert('Terjadi kesalahan saat mengirim permintaan ke server.');
+      } else {
+        alert('Terjadi kesalahan: ' + error.message);
+      }
+    }
+  };
+
+  //   const handleUpload = async () => {
+  //     const formData = new FormData();
+  //     formData.append('image', file);
+
+  //     try {
+  //       await axios.post('/api/upload', formData, {
+  //         headers: {
+  //           'Content-Type': 'multipart/form-data',
+  //         },
+  //       });
+
+  //       alert('File berhasil diunggah');
+  //     } catch (error) {
+  //       if (error.response) {
+  //         alert('Terjadi kesalahan saat mengunggah file: ' + error.response.data.message);
+  //       } else if (error.request) {
+  //         alert('Terjadi kesalahan saat mengirim permintaan ke server.');
+  //       } else {
+  //         alert('Terjadi kesalahan: ' + error.message);
+  //       }
+  //     }
+  // };
 
   // react hook form
   const {
@@ -89,7 +146,7 @@ const RegisterFormStep1 = () => {
     formState: { errors },
   } = useForm<IFormData>({ resolver, defaultValues: step1Data });
   const watchedValues = watch();
-  const fullName = watch('fullName');
+  // const fullName = watch('fullName');
 
   const onSubmit: SubmitHandler<IFormData> = (data) => {
     // const uploadedFiles = Array.from(data.uploadPhoto as FileList).map(
@@ -98,10 +155,12 @@ const RegisterFormStep1 = () => {
 
     console.log('watchedValues: ', watchedValues);
     dispatch(setRegister(data));
+    // handleUpload();
     // dispatch(setRegister({ ...data, uploadPhoto: uploadedFiles[0] }));
-    console.log('data saat ini: ', data);
-    console.log('fullname: ', fullName);
-    dispatch(setStep({ newStep: 2 }));
+    console.log('data form 2: ', data);
+    console.log('nama file: ', uploadedFileName);
+    // console.log('fullname: ', fullName);
+    dispatch(setStep({ newStep: 3 }));
   };
 
   useEffect(() => {
@@ -110,7 +169,7 @@ const RegisterFormStep1 = () => {
     // setValue('phoneNumber', step1Data.phoneNumber);
     // setValue('dateOfBirth', step1Data.dateOfBirth);
     reset(step1Data);
-    console.log('coba data: ', step1Data);
+    console.log('data form 2: ', step1Data);
   }, [step1Data]);
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -129,7 +188,7 @@ const RegisterFormStep1 = () => {
             </div>
           </div>
         </div>
-        <div className="col-12">
+        {/* <div className="col-12">
           <div className="input-group-meta position-relative mb-25">
             <label>Email*</label>
             <input
@@ -142,7 +201,7 @@ const RegisterFormStep1 = () => {
               <ErrorMsg msg={errors.email?.message!} />
             </div>
           </div>
-        </div>
+        </div> */}
         <div className="col-12">
           <div className="input-group-meta position-relative mb-25">
             <label>Phone Number*</label>
@@ -203,6 +262,7 @@ const RegisterFormStep1 = () => {
                   Upload your Photo
                 </span>
               </label>
+              <button onClick={handleUpload}>Upload Image</button>
             </div>
             <div className="help-block with-errors">
               <ErrorMsg msg={errors.uploadPhoto?.message!} />

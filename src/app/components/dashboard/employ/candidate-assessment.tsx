@@ -9,16 +9,15 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
 import candidate_data from '@/data/candidate-data';
 import CandidateItem from './candidate-item';
+import SearchBar from '@/ui/search-bar';
 import { useAppDispatch } from '@/redux/hook';
 import { setApplicantStep } from '@/redux/features/applicantStepSlice';
 
-const JobApplicantArea = () => {
+const CandidateAssessment = () => {
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-
-  dispatch(setApplicantStep({ currentStep: 'initial' }));
 
   const handleJobFpkSearch = useDebouncedCallback((value) => {
     const params = new URLSearchParams(searchParams);
@@ -30,7 +29,7 @@ const JobApplicantArea = () => {
     }
     router.replace(`${pathname}?${params.toString()}`);
   }, 300);
-  const candidate_items = candidate_data.slice(0, 5);
+  const candidate_items = candidate_data.slice(0, 3);
 
   return (
     <>
@@ -70,10 +69,10 @@ const JobApplicantArea = () => {
         </Link>
         <Link
           href="/dashboard/ta/preview-page/assessment"
+          className="d-flex flex-column align-items-center me-4"
           onClick={() =>
             dispatch(setApplicantStep({ currentStep: 'assessment' }))
           }
-          className="d-flex flex-column align-items-center me-4"
         >
           <span>3</span>
           <span>Assessment</span>
@@ -103,8 +102,11 @@ const JobApplicantArea = () => {
           <span>Boarding</span>
         </Link>
       </div>
-      <div className="d-flex justify-content-end mb-40">
-        <form
+      <div className="d-flex justify-content-between align-items-center mb-40">
+        <div>
+          <h4 className="sub-main-title">Assessment</h4>
+        </div>
+        {/* <form
           onSubmit={(e) => e.preventDefault()}
           className="search-form form-fpk"
         >
@@ -117,7 +119,8 @@ const JobApplicantArea = () => {
           <button type="submit">
             <Image src={search} alt="search" className="lazy-img m-auto" />
           </button>
-        </form>
+        </form> */}
+        <SearchBar />
       </div>
 
       <div className="wrapper">
@@ -126,7 +129,7 @@ const JobApplicantArea = () => {
         ))}
       </div>
 
-      <div className="dash-pagination d-flex justify-content-end mt-30">
+      {/* <div className="dash-pagination d-flex justify-content-end mt-30">
         <ul className="style-none d-flex align-items-center">
           <li>
             <a href="#" className="active">
@@ -149,9 +152,9 @@ const JobApplicantArea = () => {
             </a>
           </li>
         </ul>
-      </div>
+      </div> */}
     </>
   );
 };
 
-export default JobApplicantArea;
+export default CandidateAssessment;

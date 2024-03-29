@@ -7,7 +7,7 @@ interface IRegisterState {
     email: string;
     phoneNumber: string;
     dateOfBirth: string;
-    // uploadPhoto: FileList | string | null;
+    uploadPhoto: string;
   };
 }
 
@@ -18,7 +18,7 @@ const initialState: IRegisterState = {
     email: '',
     phoneNumber: '',
     dateOfBirth: '',
-    // uploadPhoto: '',
+    uploadPhoto: '',
   },
 };
 
@@ -33,7 +33,7 @@ export const registerSlice = createSlice({
         email: string;
         phoneNumber: string;
         dateOfBirth: string;
-        // uploadPhoto: FileList | string | null;
+        uploadPhoto: string;
       }>,
     ) => {
       state.dataCandidate = action.payload;

@@ -5,7 +5,7 @@ import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useState, useEffect, useRef } from 'react';
 import { assignTa } from '@/lib/action/fpk/action';
 import { ExpendableButton } from './expendable-button';
-import Link from 'next/link';
+// import Link from 'next/link';
 
 const { confirm } = Modal;
 
@@ -14,9 +14,19 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
   const [loading, setLoading] = useState(false);
   const [api, contextHolder] = notification.useNotification();
   const [assignDisabled, setAssignDisabled] = useState({});
+  const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
+    {},
+  );
+
+  const toggleRowExpansion = (index: number) => {
+    setExpandedRows((prevExpandedRows) => ({
+      ...prevExpandedRows,
+      [index]: !prevExpandedRows[index],
+    }));
+  };
 
   useEffect(() => {
-    fpkData.forEach((data) => {
+    fpkData.forEach((data: any) => {
       formRef.current[data.RequestNo].setFieldsValue({
         taId: data.TaId,
         requestNo: data.RequestNo,
@@ -24,7 +34,7 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
     });
   }, [fpkData, offset]);
 
-  const convertDate = (dateTime) => {
+  const convertDate = (dateTime: any) => {
     const monthNames = [
       'Jan',
       'Feb',
@@ -57,7 +67,7 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
     }
   };
 
-  const handleAssignTa = (values) => {
+  const handleAssignTa = (values: any) => {
     setLoading(true);
 
     setTimeout(() => {
@@ -76,26 +86,17 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
                 placement: 'topRight',
               });
               resolve();
-              assignTa('assignTa', values.requestNo, values.taId);
             }, 2000);
           }).catch(() => console.log('Oops errors!'));
         },
         onCancel() {},
       });
+
+      assignTa('assignTa', values.requestNo, values.taId);
       setLoading(false);
     }, 2000);
   };
 
-  const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
-    {},
-  );
-
-  const toggleRowExpansion = (index: number) => {
-    setExpandedRows((prevExpandedRows) => ({
-      ...prevExpandedRows,
-      [index]: !prevExpandedRows[index],
-    }));
-  };
   return (
     <>
       {contextHolder}
@@ -244,19 +245,11 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
                                   {`${data.InitiatorEmail ?? ''}`}
                                 </p>
                                 <p>
-                                  <b>Phone Number: </b>
-                                  {`${data.InitiatorPhone ?? ''}`}
-                                </p>
-                                <p>
-                                  <b>Position: </b>
-                                  {`${data.InitiatorPosition ?? ''}`}
-                                </p>
-                              </div>
-                              <div className="col-lg-6">
-                                <p>
                                   <b>Location: </b>
                                   {`${data?.LocationName ?? ''}`}
                                 </p>
+                              </div>
+                              <div className="col-lg-6">
                                 <p>
                                   <b>Create FPK: </b>
                                   {`${convertDate(data?.CreateDate ?? '')}`}

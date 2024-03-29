@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import Image from 'next/image';
-import * as Yup from 'yup';
+// import * as Yup from 'yup';
 import { Resolver, useForm, SubmitHandler } from 'react-hook-form';
 import ErrorMsg from '../common/error-msg';
 import uploadIcon from '@/assets/images/icon/icon_11.svg';
@@ -18,12 +18,11 @@ type IFormData = {
 };
 
 // schema
-const schema = Yup.object().shape({
-  fullName: Yup.string().required().label('Name'),
-  email: Yup.string().required().email().label('Email'),
-  password: Yup.string().required().min(6).label('Password'),
-  // blm disetting
-});
+// const schema = Yup.object().shape({
+//   fullName: Yup.string().required().label('Name'),
+//   email: Yup.string().required().email().label('Email'),
+//   password: Yup.string().required().min(6).label('Password'),
+// });
 
 // resolver
 const resolver: Resolver<IFormData> = async (values) => {
@@ -83,13 +82,13 @@ const RegisterForm = () => {
     console.log('watchedValues: ', watchedValues);
     // dispatch(setRegister(data));
     // dispatch(setRegister({ ...data, uploadPhoto: uploadedFiles[0] }));
-    console.log('data saat ini: ', data);
+    console.log('data form 1: ', data);
     dispatch(setStep({ newStep: 2 }));
   };
 
   useEffect(() => {
     reset(step1Data);
-    console.log('coba data: ', step1Data);
+    console.log('data form 1: ', step1Data);
   }, [step1Data]);
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

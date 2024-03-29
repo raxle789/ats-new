@@ -4,7 +4,10 @@ import filterSlice from './features/filterSlice';
 import stepSlice from './features/stepSlice';
 import registerSlice from './features/registerSlice';
 import sidebarSlice from './features/sidebarSlice';
-// import storage from 'redux-persist/lib/storage';
+import applicantStepSlice from './features/applicantStepSlice';
+
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 
 const rootReducer = combineReducers({
   filter: filterSlice,
@@ -12,17 +15,35 @@ const rootReducer = combineReducers({
   wishlist: wishlistSlice,
   step: stepSlice,
   register: registerSlice,
-  sidebar: sidebarSlice,
+  applicantStep: applicantStepSlice,
 });
 
-// const persistConfig = {
-//   key: "simple-next-js",
-//   storage,
-// };
+const persistConfig = {
+  key: 'ats-erajaya',
+  storage,
+  blacklist: ['step', 'applicantStep', 'sidebar'],
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: rootReducer,
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ serializableCheck: false }),
 });
+
+// export const store = configureStore({
+//   reducer: persistedReducer,
+//   middleware: (getDefaultMiddleware) =>
+//     getDefaultMiddleware({ serializableCheck: false }),
+// middleware: (getDefaultMiddleware) =>
+//   getDefaultMiddleware({
+//     serializableCheck: {
+//       ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+//     },
+//   }),
+// });
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+export const persistor = persistStore(store);
