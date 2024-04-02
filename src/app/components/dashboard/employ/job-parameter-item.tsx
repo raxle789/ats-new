@@ -76,7 +76,17 @@ const EmployJobParameter = ({ positionLevelRequirementData }) => {
                             }
                           >
                             <div className="row">
-                              <div className="col-6">
+                              {data?.positionLevelRequirements?.map(
+                                (d, index) => {
+                                  return (
+                                    <p key={index}>
+                                      <b>{`${d?.positionLevelRequirementFields?.name}: `}</b>
+                                      {`${d?.value ?? '-'}`}
+                                    </p>
+                                  );
+                                },
+                              )}
+                              {/* <div className="col-6">
                                 <p>
                                   <b>Total Year Of Experience: </b>
                                   {`${data?.totalYearOfExperienceParameter ?? '-'}`}
@@ -103,7 +113,7 @@ const EmployJobParameter = ({ positionLevelRequirementData }) => {
                                   <b>Job Level: </b>
                                   {`${data?.jobLevelParameter ? 'Yes' : 'No'}`}
                                 </p>
-                              </div>
+                              </div> */}
                             </div>
                           </div>
                         </td>

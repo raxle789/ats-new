@@ -374,24 +374,24 @@ model EducationLevels {
   @@map("education_levels")
 }
 
-model PositionLevelRequirementFields {
+model RequirementFields {
   id                        Int                         @id() @default(autoincrement()) @db.Int
   name                      String                      @db.NVarChar(510)
   createdAt                 DateTime?                   @default(now()) @map("created_at") @db.DateTime
   updatedAt                 DateTime?                   @updatedAt @map("updated_at") @db.DateTime
   positionLevelRequirements PositionLevelRequirements[]
 
-  @@map("position_level_requirement_fields")
+  @@map("requirement_fields")
 }
 
 model PositionLevelRequirements {
-  positionLevelId                Int                            @map("position_level_id") @db.Int
-  requirementLevelId             Int                            @map("requirement_level_id") @db.Int
-  value                          String?                        @db.Text
-  positionLevels                 PositionLevels                 @relation(fields: [positionLevelId], references: [id])
-  positionLevelRequirementFields PositionLevelRequirementFields @relation(fields: [requirementLevelId], references: [id])
+  positionLevelId                Int               @map("position_level_id") @db.Int
+  requirementFieldId             Int               @map("requirement_field_id") @db.Int
+  value                          String?           @db.Text
+  positionLevels                 PositionLevels    @relation(fields: [positionLevelId], references: [id])
+  positionLevelRequirementFields RequirementFields @relation(fields: [requirementFieldId], references: [id])
 
-  @@id([positionLevelId, requirementLevelId])
+  @@id([positionLevelId, requirementFieldId])
   @@map("position_level_requirements")
 }
 

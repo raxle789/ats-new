@@ -5,7 +5,6 @@ import React from 'react';
 import {
   getPositionLevelRequirementData,
   searchPositionLevelRequirementData,
-  getUserData,
 } from '@/lib/action/positionLevelRequirement/action';
 import EmployJobParameter from './job-parameter-item';
 import EmployShortSelect from './short-select';

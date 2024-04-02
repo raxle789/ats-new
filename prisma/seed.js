@@ -96,9 +96,9 @@ async function main() {
 
   await prisma.$executeRaw`INSERT INTO position_levels(name, level, score, sla_days, created_at, updated_at) SELECT name, level, score, sla_days, created_at, updated_at  FROM ats.dbo.levels ORDER BY id;`;
 
-  await prisma.$executeRaw`INSERT INTO position_level_requirement_fields(name) SELECT DISTINCT fields FROM ats.dbo.job_vacancy_requirements ORDER BY fields;`;
+  await prisma.$executeRaw`INSERT INTO requirement_fields(name) SELECT DISTINCT fields FROM ats.dbo.job_vacancy_requirements ORDER BY fields;`;
 
-  await prisma.$executeRaw`INSERT INTO position_level_requirements(position_level_id, requirement_level_id) VALUES(1, 13), (1, 12), (1, 10), (1, 15), (1, 4), (1, 8), (2, 13), (2, 12), (2, 10), (2, 15), (2, 4), (2, 8), (3, 13), (3, 12), (3, 10), (3, 15), (3, 4), (3, 8), (4, 13), (4, 12), (4, 10), (4, 15), (4, 4), (4, 8), (5, 13), (5, 12), (5, 10), (5, 15), (5, 4), (5, 8), (6, 13), (6, 12), (6, 10), (6, 15), (6, 4), (6, 8), (7, 13), (7, 12), (7, 10), (7, 15), (7, 4), (7, 8)`;
+  await prisma.$executeRaw`INSERT INTO position_level_requirements(position_level_id, requirement_field_id) VALUES(1, 13), (1, 12), (1, 10), (1, 15), (1, 4), (1, 8), (2, 13), (2, 12), (2, 10), (2, 15), (2, 4), (2, 8), (3, 13), (3, 12), (3, 10), (3, 15), (3, 4), (3, 8), (4, 13), (4, 12), (4, 10), (4, 15), (4, 4), (4, 8), (5, 13), (5, 12), (5, 10), (5, 15), (5, 4), (5, 8), (6, 13), (6, 12), (6, 10), (6, 15), (6, 4), (6, 8), (7, 13), (7, 12), (7, 10), (7, 15), (7, 4), (7, 8)`;
 
   await prisma.$executeRaw`INSERT INTO roles(name, guard, created_at, updated_at) SELECT name, guard, created_at, updated_at FROM ats.dbo.roles ORDER BY id;`;
 

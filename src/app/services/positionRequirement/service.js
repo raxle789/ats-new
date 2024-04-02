@@ -106,3 +106,28 @@ export async function searchPositionLevelRequirement(query, offset, perPage) {
     };
   }
 }
+
+export async function setPositionLevelRequirement(
+  positionLevelId,
+  requirementFieldId,
+  value,
+) {
+  try {
+    await prisma.positionLevelRequirements.upsert({
+      where: {
+        positionLevelId: positionLevelId,
+        requirementFieldId: requirementFieldId,
+      },
+      update: {
+        value: value,
+      },
+      create: {
+        positionLevelId: positionLevelId,
+        requirementFieldId: requirementFieldId,
+        value: value,
+      },
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}
