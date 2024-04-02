@@ -9,7 +9,7 @@ const EmployShortSelect = () => {
     <NiceSelect
       options={[
         { value: 'Newest', label: 'Newest' },
-        { value: 'Name', label: 'Pending' },
+        { value: 'Name', label: 'Name' },
         { value: 'Oldest', label: 'Oldest' },
       ]}
       defaultCurrent={0}

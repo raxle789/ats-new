@@ -29,7 +29,7 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
     });
   }, [fpkData, offset]);
 
-  const convertDate = (dateTime) => {
+  const convertDate = (dateTime: any) => {
     const monthNames = [
       'Jan',
       'Feb',
@@ -62,7 +62,7 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
     }
   };
 
-  const handleAssignTa = (values) => {
+  const handleAssignTa = (values: any) => {
     setLoading(true);
 
     setTimeout(() => {
@@ -91,20 +91,12 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
           router.refresh();
         },
       });
+
+      assignTa('assignTa', values.requestNo, values.taId);
       setLoading(false);
     }, 2000);
   };
 
-  const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
-    {},
-  );
-
-  const toggleRowExpansion = (index: number) => {
-    setExpandedRows((prevExpandedRows) => ({
-      ...prevExpandedRows,
-      [index]: !prevExpandedRows[index],
-    }));
-  };
   return (
     <>
       {contextHolder}

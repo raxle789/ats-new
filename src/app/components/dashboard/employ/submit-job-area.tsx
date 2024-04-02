@@ -1,16 +1,15 @@
 'use client';
-
 import React, { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
-import DashboardHeader from '../candidate/dashboard-header';
+// import Image from 'next/image';
+// import DashboardHeader from '../candidate/dashboard-header';
 import ReactQuill from 'react-quill';
-import StateSelect from '../candidate/state-select';
-import CitySelect from '../candidate/city-select';
-import CountrySelect from '../candidate/country-select';
-import EmployExperience from './employ-experience';
-import icon from '@/assets/dashboard/images/icon/icon_16.svg';
-import NiceSelect from '@/ui/nice-select';
-import { SmileOutlined } from '@ant-design/icons';
+// import StateSelect from '../candidate/state-select';
+// import CitySelect from '../candidate/city-select';
+// import CountrySelect from '../candidate/country-select';
+// import EmployExperience from './employ-experience';
+// import icon from '@/assets/dashboard/images/icon/icon_16.svg';
+// import NiceSelect from '@/ui/nice-select';
+// import { SmileOutlined } from '@ant-design/icons';
 import {
   Cascader,
   DatePicker,
@@ -30,22 +29,17 @@ import {
   notification,
   Modal,
 } from 'antd';
-
 import { ExclamationCircleFilled } from '@ant-design/icons';
 
-import {
-  yearOfExperienceMarks,
-  educationLevelMarks,
-  gradeMarks,
-  ageMarks,
-} from '@/data/job-posting-data';
-
-import { fpkData } from './job-fpk';
-
+// import {
+//   yearOfExperienceMarks,
+//   educationLevelMarks,
+//   gradeMarks,
+//   ageMarks,
+// } from '@/data/job-posting-data';
+// import { fpkData } from './job-fpk';
 const { RangePicker } = DatePicker;
-
 const { TextArea } = Input;
-
 const { confirm } = Modal;
 
 // props type
@@ -56,18 +50,12 @@ const { confirm } = Modal;
 const SubmitJobArea = () => {
   const [api, contextHolder] = notification.useNotification();
 
-  // const openNotification = (placement) => {
-  //   api.info({
-  //     message: `Notification ${placement}`,
-  //     description: (
-  //       <Context.Consumer>{({ name }) => `Hello, ${name}!`}</Context.Consumer>
-  //     ),
-  //     placement,
-  //   });
-  // };
+  async function handleFpkModal(values) {
+    console.info(values);
+    setModalOpen(false);
+  }
 
   const formModalRef = useRef(null);
-
   const modules = {
     toolbar: [
       [{ header: [1, 2, 3, 4, 5, 6, false] }],
@@ -96,49 +84,6 @@ const SubmitJobArea = () => {
     //   ],
     // },
   };
-
-  async function handleFpkModal(values) {
-    console.info(values);
-
-    setModalOpen(false);
-  }
-
-  const formModalRef = useRef(null);
-
-  const modules = {
-    toolbar: [
-      [{ header: [1, 2, 3, 4, 5, 6, false] }],
-      [{ font: [] }],
-      [{ size: [] }],
-      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-      [
-        { list: 'ordered' },
-        { list: 'bullet' },
-        { align: [] },
-        { indent: '-1' },
-        { indent: '+1' },
-      ],
-      ['link', 'image', 'video'],
-    ],
-    // clipboard: {
-    //   matchers: [
-    //     [
-    //       '\n',
-    //       (node, delta) => {
-    //         return delta.compose(
-    //           new Delta().retain(delta.length(), { list: 'bullet' }),
-    //         );
-    //       },
-    //     ],
-    //   ],
-    // },
-  };
-
-  async function handleFpkModal(values) {
-    console.info(values);
-
-    setModalOpen(false);
-  }
 
   function handleJobPost(values: any) {
     confirm({
@@ -166,9 +111,7 @@ const SubmitJobArea = () => {
   }
 
   const [modalOpen, setModalOpen] = useState(false);
-
   const [form] = Form.useForm();
-
   useEffect(() => {
     setModalOpen(true);
   }, []);
@@ -176,7 +119,6 @@ const SubmitJobArea = () => {
   const handleCategory = (item: { value: string; label: string }) => {};
   const handleJobType = (item: { value: string; label: string }) => {};
   const handleSalary = (item: { value: string; label: string }) => {};
-
   return (
     <>
       {contextHolder}
@@ -253,27 +195,6 @@ const SubmitJobArea = () => {
                   },
                 ]}
               />
-              {/* <Select
-                className="select"
-                mode="multiple"
-                allowClear
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? '').includes(input)
-                }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? '')
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? '').toLowerCase())
-                }
-                placeholder="Select Job FPK"
-                options={fpkData.map((data) => {
-                  return {
-                    value: data.fpkNo,
-                    label: `${data.jobTitle} - ${data.fpkNo}`,
-                  };
-                })}
-              /> */}
             </Form.Item>
           </Form>
         </Modal>
@@ -295,6 +216,7 @@ const SubmitJobArea = () => {
           >
             <Select
               className="select"
+              size="large"
               showSearch
               allowClear
               placeholder="Select Job Title"
@@ -344,6 +266,7 @@ const SubmitJobArea = () => {
           >
             <Select
               className="select"
+              size="large"
               showSearch
               allowClear
               placeholder="Select Job Function"
@@ -395,6 +318,7 @@ const SubmitJobArea = () => {
           >
             <Select
               className="select"
+              size="large"
               showSearch
               allowClear
               placeholder="Select Employment Status"
@@ -449,6 +373,7 @@ const SubmitJobArea = () => {
           >
             <Select
               className="select"
+              size="large"
               showSearch
               allowClear
               placeholder="Select Job Position Level"
@@ -500,6 +425,7 @@ const SubmitJobArea = () => {
           >
             <Select
               className="select"
+              size="large"
               showSearch
               allowClear
               placeholder="Select Job Department"
@@ -554,6 +480,7 @@ const SubmitJobArea = () => {
           >
             <Select
               className="select"
+              size="large"
               mode="multiple"
               allowClear
               optionFilterProp="children"
@@ -582,6 +509,7 @@ const SubmitJobArea = () => {
           >
             <Select
               className="select"
+              size="large"
               showSearch
               allowClear
               placeholder="Select Job Region"
@@ -636,6 +564,7 @@ const SubmitJobArea = () => {
           >
             <Select
               className="select"
+              size="large"
               showSearch
               allowClear
               placeholder="Select Job Work Location City"
@@ -688,49 +617,8 @@ const SubmitJobArea = () => {
             <TextArea
               className="select"
               placeholder="Input Job Work Location"
-              autoSize
+              size="large"
             />
-            {/* <Select
-              className="select"
-              showSearch
-              allowClear
-              placeholder="Select Job Work Location"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                (option?.label ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              options={[
-                {
-                  value: '1',
-                  label: 'Not Identified',
-                },
-                {
-                  value: '2',
-                  label: 'Closed',
-                },
-                {
-                  value: '3',
-                  label: 'Communicated',
-                },
-                {
-                  value: '4',
-                  label: 'Identified',
-                },
-                {
-                  value: '5',
-                  label: 'Resolved',
-                },
-                {
-                  value: '6',
-                  label: 'Cancelled',
-                },
-              ]}
-            /> */}
           </Form.Item>
         </div>
         <div className="dash-input-wrapper mb-30">
@@ -746,8 +634,9 @@ const SubmitJobArea = () => {
           >
             <RangePicker
               className="range"
+              size="small"
               placeholder={['Published Date', 'Expired Date']}
-              style={{}}
+              style={{ height: '50px', paddingLeft: '12px' }}
             />
           </Form.Item>
         </div>
@@ -765,15 +654,6 @@ const SubmitJobArea = () => {
               modules={modules}
               placeholder="Input Job Description"
             />
-            {/* <TextArea
-              className="textArea"
-              allowClear
-              placeholder="Input Job Description"
-              autoSize={{
-                minRows: 8,
-                maxRows: 12,
-              }}
-            /> */}
           </Form.Item>
         </div>
         <div className="dash-input-wrapper mb-30">
@@ -790,15 +670,6 @@ const SubmitJobArea = () => {
               modules={modules}
               placeholder="Input Job Requirement"
             />
-            {/* <TextArea
-              className="textArea"
-              allowClear
-              placeholder="Input Job Requirement"
-              autoSize={{
-                minRows: 8,
-                maxRows: 12,
-              }}
-            /> */}
           </Form.Item>
         </div>
 
@@ -811,1125 +682,12 @@ const SubmitJobArea = () => {
               className="select"
               placeholder="Input Job Paramater"
               disabled
-              autoSize
+              size="large"
             />
           </Form.Item>
-          {/* <div className="row">
-            <div className="col-xxl-4">
-              <Form.Item name="jobParameterCheckbox" valuePropName="checked">
-                <Checkbox
-                  className="checkbox"
-                  value={jobParameterState}
-                  onChange={() => setJobParameterState(!jobParameterState)}
-                >
-                  Job Parameter
-                </Checkbox>
-              </Form.Item>
-            </div>
-            <div className="col-xxl-8">
-              <Form.Item
-                name="jobParameter"
-                rules={
-                  jobParameterState
-                    ? [
-                        {
-                          required: true,
-                          message: 'Please Select Job Parameter!',
-                        },
-                      ]
-                    : []
-                }
-              >
-                <Select
-                  className="select"
-                  showSearch
-                  disabled={!jobParameterState}
-                  allowClear
-                  placeholder="Select Job Parameter"
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').includes(input)
-                  }
-                  filterSort={(optionA, optionB) =>
-                    (optionA?.label ?? '')
-                      .toLowerCase()
-                      .localeCompare((optionB?.label ?? '').toLowerCase())
-                  }
-                  options={[
-                    {
-                      value: '1',
-                      label: 'Not Identified',
-                    },
-                    {
-                      value: '2',
-                      label: 'Closed',
-                    },
-                    {
-                      value: '3',
-                      label: 'Communicated',
-                    },
-                    {
-                      value: '4',
-                      label: 'Identified',
-                    },
-                    {
-                      value: '5',
-                      label: 'Resolved',
-                    },
-                    {
-                      value: '6',
-                      label: 'Cancelled',
-                    },
-                  ]}
-                />
-              </Form.Item>
-            </div>
-          </div> */}
         </div>
-        {/* <div className="dash-input-wrapper mb-30">
-          <div className="row">
-            <div className="col-xxl-4">
-              <Form.Item
-                name="minimumYearOfExperienceParameterCheckbox"
-                valuePropName="checked"
-              >
-                <Checkbox
-                  className="checkbox"
-                  checked={minimumYearOfExperienceParameterState}
-                  onChange={() =>
-                    setMinimumYearOfExperienceParameterState(
-                      !minimumYearOfExperienceParameterState,
-                    )
-                  }
-                >
-                  Minimum Year Of Experience
-                </Checkbox>
-              </Form.Item>
-            </div>
-            <div className="col-xxl-8">
-              <Form.Item
-                name="minimumYearOfExperienceParameter"
-                rules={
-                  minimumYearOfExperienceParameterState
-                    ? [
-                        {
-                          required: true,
-                          message:
-                            'Please Input Minimum Year Of Experience Parameter!',
-                        },
-                      ]
-                    : []
-                }
-              >
-                <InputNumber
-                  className="select"
-                  min={1}
-                  placeholder="Input Minimum Year Of Experience Parameter"
-                  disabled={!minimumYearOfExperienceParameterState}
-                />
-              </Form.Item>
-            </div>
-          </div>
-        </div>
-        <div className="dash-input-wrapper mb-30">
-          <div className="row">
-            <div className="col-xxl-4">
-              <Form.Item
-                name="educationLevelParameterCheckbox"
-                valuePropName="checked"
-              >
-                <Checkbox
-                  className="checkbox"
-                  checked={educationLevelParameterState}
-                  onChange={() => {
-                    setEducationLevelParameterState(
-                      !educationLevelParameterState,
-                    );
-                  }}
-                >
-                  Education Level
-                </Checkbox>
-              </Form.Item>
-            </div>
-            <div className="col-xxl-8">
-              <Form.Item
-                name="educationLevelParameter"
-                rules={
-                  educationLevelParameterState
-                    ? [
-                        {
-                          required: true,
-                          message: 'Please Select Education Level Parameter!',
-                        },
-                      ]
-                    : []
-                }
-              >
-                <Slider
-                  className="slider"
-                  step={1}
-                  min={0}
-                  max={Object.keys(educationLevelMarks).length - 1}
-                  range
-                  marks={educationLevelMarks}
-                  tooltip={{ formatter: null }}
-                  disabled={!educationLevelParameterState}
-                />
-              </Form.Item>
-            </div>
-          </div>
-        </div>
-        <div className="dash-input-wrapper mb-30">
-          <div className="row">
-            <div className="col-xxl-4">
-              <Form.Item
-                name="majorOfStudiesParameterCheckbox"
-                valuePropName="checked"
-              >
-                <Checkbox
-                  className="checkbox"
-                  value={majorOfStudiesParameterState}
-                  onChange={() => {
-                    setMajorOfStudiesParameterState(
-                      !majorOfStudiesParameterState,
-                    );
-                  }}
-                >
-                  Major Of Studies
-                </Checkbox>
-              </Form.Item>
-            </div>
-            <div className="col-xxl-8">
-              <Form.Item
-                name="majorOfStudiesParameter"
-                rules={
-                  majorOfStudiesParameterState
-                    ? [
-                        {
-                          required: true,
-                          message: 'Please Select Major Of Studies Parameter!',
-                        },
-                      ]
-                    : []
-                }
-              >
-                <Select
-                  className="select"
-                  mode="multiple"
-                  disabled={!majorOfStudiesParameterState}
-                  allowClear
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').includes(input)
-                  }
-                  filterSort={(optionA, optionB) =>
-                    (optionA?.label ?? '')
-                      .toLowerCase()
-                      .localeCompare((optionB?.label ?? '').toLowerCase())
-                  }
-                  placeholder="Select Major Of Studies Parameter"
-                  options={[
-                    { value: 'Yiminghe', label: 'yiminghe' },
-                    { value: 'jack', label: 'Jack' },
-                    { value: 'lucy', label: 'Lucy' },
-                  ]}
-                />
-              </Form.Item>
-            </div>
-          </div>
-        </div>
-        <div className="dash-input-wrapper mb-30">
-          <div className="row">
-            <div className="col-xxl-4">
-              <Form.Item name="gradeParameterCheckbox" valuePropName="checked">
-                <Checkbox
-                  className="checkbox"
-                  value={gradeParameterState}
-                  onChange={() => setGradeParameterState(!gradeParameterState)}
-                >
-                  Grade
-                </Checkbox>
-              </Form.Item>
-            </div>
-            <div className="col-xxl-8">
-              <Form.Item
-                name="gradeParameter"
-                rules={
-                  gradeParameterState
-                    ? [
-                        {
-                          required: true,
-                          message: 'Please Select Grade Parameter!',
-                        },
-                      ]
-                    : []
-                }
-              >
-                <Slider
-                  className="slider"
-                  step={0.01}
-                  min={0}
-                  max={Object.keys(gradeMarks).length - 1}
-                  range
-                  marks={gradeMarks}
-                  disabled={!gradeParameterState}
-                />
-              </Form.Item>
-            </div>
-          </div>
-        </div>
-        <div className="dash-input-wrapper mb-30">
-          <div className="row">
-            <div className="col-xxl-4">
-              <Form.Item
-                name="specialSkillParameterCheckbox"
-                valuePropName="checked"
-              >
-                <Checkbox
-                  className="checkbox"
-                  value={specialSkillParameterState}
-                  onChange={() =>
-                    setSpecialSkillParameterState(!specialSkillParameterState)
-                  }
-                >
-                  Special Skill
-                </Checkbox>
-              </Form.Item>
-            </div>
-            <div className="col-xxl-8">
-              <Form.Item
-                name="specialSkillParameter"
-                rules={
-                  specialSkillParameterState
-                    ? [
-                        {
-                          required: true,
-                          message: 'Please Select Special Skill Parameter!',
-                        },
-                      ]
-                    : []
-                }
-              >
-                <Select
-                  className="select"
-                  mode="multiple"
-                  disabled={!specialSkillParameterState}
-                  allowClear
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').includes(input)
-                  }
-                  filterSort={(optionA, optionB) =>
-                    (optionA?.label ?? '')
-                      .toLowerCase()
-                      .localeCompare((optionB?.label ?? '').toLowerCase())
-                  }
-                  placeholder="Select Special Skill Parameter"
-                  options={[
-                    { value: 'Yiminghe', label: 'yiminghe' },
-                    { value: 'jack', label: 'Jack' },
-                    { value: 'lucy', label: 'Lucy' },
-                  ]}
-                />
-              </Form.Item>
-            </div>
-          </div>
-        </div>
-        <div className="dash-input-wrapper mb-30">
-          <div className="row">
-            <div className="col-xxl-4">
-              <Form.Item
-                name="certificationsParameterCheckbox"
-                valuePropName="checked"
-              >
-                <Checkbox
-                  className="checkbox"
-                  value={certificationsParameterState}
-                  onChange={() =>
-                    setCertificationsParameterState(
-                      !certificationsParameterState,
-                    )
-                  }
-                >
-                  Certifications
-                </Checkbox>
-              </Form.Item>
-            </div>
-            <div className="col-xxl-8">
-              <Form.Item
-                name="certificationsParameter"
-                rules={
-                  certificationsParameterState
-                    ? [
-                        {
-                          required: true,
-                          message: 'Please Select Certifications Parameter!',
-                        },
-                      ]
-                    : []
-                }
-              >
-                <Select
-                  className="select"
-                  mode="multiple"
-                  disabled={!certificationsParameterState}
-                  allowClear
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').includes(input)
-                  }
-                  filterSort={(optionA, optionB) =>
-                    (optionA?.label ?? '')
-                      .toLowerCase()
-                      .localeCompare((optionB?.label ?? '').toLowerCase())
-                  }
-                  placeholder="Select Certifications Parameter"
-                  options={[
-                    { value: 'Yiminghe', label: 'yiminghe' },
-                    { value: 'jack', label: 'Jack' },
-                    { value: 'lucy', label: 'Lucy' },
-                  ]}
-                />
-              </Form.Item>
-            </div>
-          </div>
-        </div> */}
-        {/* <div className="dash-input-wrapper mb-30">
-            <div className="row">
-              <div className="col-xxl-4">
-                <Checkbox className="checkbox">Job Title</Checkbox>
-              </div>
-              <div className="col-xxl-8">
-                <Form.Item
-                  name="jobTitleParameter"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please Select Job Title Parameter!',
-                    },
-                  ]}
-                >
-                  <Select
-                    className="select"
-                    mode="multiple"
-                    allowClear
-                    optionFilterProp="children"
-                    filterOption={(input, option) =>
-                      (option?.label ?? '').includes(input)
-                    }
-                    filterSort={(optionA, optionB) =>
-                      (optionA?.label ?? '')
-                        .toLowerCase()
-                        .localeCompare((optionB?.label ?? '').toLowerCase())
-                    }
-                    placeholder="Select Job Title Parameter"
-                    options={[
-                      { value: 'Yiminghe', label: 'yiminghe' },
-                      { value: 'jack', label: 'Jack' },
-                      { value: 'lucy', label: 'Lucy' },
-                    ]}
-                  />
-                </Form.Item>
-              </div>
-            </div>
-          </div> */}
-        {/* <div className="dash-input-wrapper mb-30">
-          <div className="row">
-            <div className="col-xxl-4">
-              <Form.Item
-                name="salaryRangeParameterCheckbox"
-                valuePropName="checked"
-              >
-                <Checkbox
-                  className="checkbox"
-                  value={salaryRangeParameterState}
-                  onChange={() =>
-                    setSalaryRangeParameterState(!salaryRangeParameterState)
-                  }
-                >
-                  Salary Range
-                </Checkbox>
-              </Form.Item>
-            </div>
-            <div className="col-xxl-8">
-              <Form.Item
-                name="salaryRangeParameter"
-                rules={
-                  salaryRangeParameterState
-                    ? [
-                        {
-                          required: true,
-                          message: 'Please Select Salary Range Parameter!',
-                        },
-                      ]
-                    : []
-                }
-              >
-                <Slider
-                  className="slider"
-                  step={1}
-                  min={0}
-                  max={Object.keys(educationLevelMarks).length - 1}
-                  range
-                  marks={educationLevelMarks}
-                  disabled={!salaryRangeParameterState}
-                />
-              </Form.Item>
-            </div>
-          </div>
-        </div>
-        <div className="dash-input-wrapper mb-30">
-          <div className="row">
-            <div className="col-xxl-4">
-              <Form.Item
-                name="domicileParameterCheckbox"
-                valuePropName="checked"
-              >
-                <Checkbox
-                  className="checkbox"
-                  value={domicileParamaterState}
-                  onChange={() =>
-                    setDomicileParamaterState(!domicileParamaterState)
-                  }
-                >
-                  Domicile
-                </Checkbox>
-              </Form.Item>
-            </div>
-            <div className="col-xxl-8">
-              <Form.Item
-                name="domicileParameter"
-                rules={
-                  domicileParamaterState
-                    ? [
-                        {
-                          required: true,
-                          message: 'Please Select Domicile Parameter!',
-                        },
-                      ]
-                    : []
-                }
-              >
-                <Select
-                  className="select"
-                  mode="multiple"
-                  disabled={!domicileParamaterState}
-                  allowClear
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').includes(input)
-                  }
-                  filterSort={(optionA, optionB) =>
-                    (optionA?.label ?? '')
-                      .toLowerCase()
-                      .localeCompare((optionB?.label ?? '').toLowerCase())
-                  }
-                  placeholder="Select Domicile Parameter"
-                  options={[
-                    { value: 'Yiminghe', label: 'yiminghe' },
-                    { value: 'jack', label: 'Jack' },
-                    { value: 'lucy', label: 'Lucy' },
-                  ]}
-                />
-              </Form.Item>
-            </div>
-          </div>
-        </div>
-        <div className="dash-input-wrapper mb-30">
-          <div className="row">
-            <div className="col-xxl-4">
-              <Form.Item
-                name="maximumAgeParameterCheckbox"
-                valuePropName="checked"
-              >
-                <Checkbox
-                  className="checkbox"
-                  value={maximumAgeParameterState}
-                  onChange={() =>
-                    setMaximumAgeParameterState(!maximumAgeParameterState)
-                  }
-                >
-                  Maximum Age
-                </Checkbox>
-              </Form.Item>
-            </div>
-            <div className="col-xxl-8">
-              <Form.Item
-                name="maximumAgeParameter"
-                rules={
-                  maximumAgeParameterState
-                    ? [
-                        {
-                          required: true,
-                          message: 'Please Select Maximum Age Parameter',
-                        },
-                      ]
-                    : []
-                }
-              >
-                <InputNumber
-                  className="select"
-                  min={1}
-                  placeholder="Select Maximum Age Parameter!"
-                  disabled={!maximumAgeParameterState}
-                />
-              </Form.Item>
-            </div>
-          </div>
-        </div>
-        <div className="dash-input-wrapper mb-30">
-          <div className="row">
-            <div className="col-xxl-4">
-              <Form.Item name="genderParameterCheckbox" valuePropName="checked">
-                <Checkbox
-                  className="checkbox"
-                  value={genderParameterState}
-                  onChange={() =>
-                    setGenderParameterState(!genderParameterState)
-                  }
-                >
-                  Gender
-                </Checkbox>
-              </Form.Item>
-            </div>
-            <div className="col-xxl-8">
-              <Form.Item
-                name="genderParameter"
-                rules={
-                  genderParameterState
-                    ? [
-                        {
-                          required: true,
-                          message: 'Please Select Gender Parameter!',
-                        },
-                      ]
-                    : []
-                }
-              >
-                <Select
-                  className="select"
-                  showSearch
-                  disabled={!genderParameterState}
-                  allowClear
-                  placeholder="Select Gender Parameter"
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').includes(input)
-                  }
-                  filterSort={(optionA, optionB) =>
-                    (optionA?.label ?? '')
-                      .toLowerCase()
-                      .localeCompare((optionB?.label ?? '').toLowerCase())
-                  }
-                  options={[
-                    {
-                      value: '1',
-                      label: 'Not Identified',
-                    },
-                    {
-                      value: '2',
-                      label: 'Closed',
-                    },
-                    {
-                      value: '3',
-                      label: 'Communicated',
-                    },
-                    {
-                      value: '4',
-                      label: 'Identified',
-                    },
-                    {
-                      value: '5',
-                      label: 'Resolved',
-                    },
-                    {
-                      value: '6',
-                      label: 'Cancelled',
-                    },
-                  ]}
-                />
-              </Form.Item>
-            </div>
-          </div>
-        </div>
-        <div className="dash-input-wrapper mb-30">
-          <div className="row">
-            <div className="col-xxl-4">
-              <Form.Item
-                name="religionParameterCheckbox"
-                valuePropName="checked"
-              >
-                <Checkbox
-                  className="checkbox"
-                  value={religionParameterState}
-                  onChange={() =>
-                    setReligionParameterState(!religionParameterState)
-                  }
-                >
-                  Religion
-                </Checkbox>
-              </Form.Item>
-            </div>
-            <div className="col-xxl-8">
-              <Form.Item
-                name="religionParameter"
-                rules={
-                  religionParameterState
-                    ? [
-                        {
-                          required: true,
-                          message: 'Please Select Religion Parameter!',
-                        },
-                      ]
-                    : []
-                }
-              >
-                <Select
-                  className="select"
-                  mode="multiple"
-                  disabled={!religionParameterState}
-                  allowClear
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').includes(input)
-                  }
-                  filterSort={(optionA, optionB) =>
-                    (optionA?.label ?? '')
-                      .toLowerCase()
-                      .localeCompare((optionB?.label ?? '').toLowerCase())
-                  }
-                  placeholder="Select Religion Parameter"
-                  options={[
-                    { value: 'Yiminghe', label: 'yiminghe' },
-                    { value: 'jack', label: 'Jack' },
-                    { value: 'lucy', label: 'Lucy' },
-                  ]}
-                />
-              </Form.Item>
-            </div>
-          </div>
-        </div>
-        <div className="dash-input-wrapper mb-30">
-          <div className="row">
-            <div className="col-xxl-4">
-              <Form.Item name="raceParameterCheckbox" valuePropName="checked">
-                <Checkbox
-                  className="checkbox"
-                  value={raceParameterState}
-                  onChange={() => setRaceParameterState(!raceParameterState)}
-                >
-                  Race (Suku Bangsa)
-                </Checkbox>
-              </Form.Item>
-            </div>
-            <div className="col-xxl-8">
-              <Form.Item
-                name="raceParameter"
-                rules={
-                  raceParameterState
-                    ? [
-                        {
-                          required: true,
-                          message: 'Please Select Race Parameter!',
-                        },
-                      ]
-                    : []
-                }
-              >
-                <Select
-                  className="select"
-                  mode="multiple"
-                  disabled={!raceParameterState}
-                  allowClear
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').includes(input)
-                  }
-                  filterSort={(optionA, optionB) =>
-                    (optionA?.label ?? '')
-                      .toLowerCase()
-                      .localeCompare((optionB?.label ?? '').toLowerCase())
-                  }
-                  placeholder="Select Race Parameter"
-                  options={[
-                    { value: 'Yiminghe', label: 'yiminghe' },
-                    { value: 'jack', label: 'Jack' },
-                    { value: 'lucy', label: 'Lucy' },
-                  ]}
-                />
-              </Form.Item>
-            </div>
-          </div>
-        </div> */}
-        {/* <div className="dash-input-wrapper mb-30">
-            <div className="row">
-              <div className="col-xxl-4">
-                <Checkbox className="checkbox">University</Checkbox>
-              </div>
-              <div className="col-xxl-8">
-                <Form.Item
-                  name="universityParameter"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please Select University Parameter!',
-                    },
-                  ]}
-                >
-                  <Select
-                    className="select"
-                    mode="multiple"
-                    allowClear
-                    optionFilterProp="children"
-                    filterOption={(input, option) =>
-                      (option?.label ?? '').includes(input)
-                    }
-                    filterSort={(optionA, optionB) =>
-                      (optionA?.label ?? '')
-                        .toLowerCase()
-                        .localeCompare((optionB?.label ?? '').toLowerCase())
-                    }
-                    placeholder="Select University Parameter"
-                    options={[
-                      { value: 'Yiminghe', label: 'yiminghe' },
-                      { value: 'jack', label: 'Jack' },
-                      { value: 'lucy', label: 'Lucy' },
-                    ]}
-                  />
-                </Form.Item>
-              </div>
-            </div>
-          </div> */}
-        {/* <div className="dash-input-wrapper mb-30">
-          <div className="row">
-            <div className="col-xxl-4">
-              <Form.Item
-                name="lineIndustryParameterCheckbox"
-                valuePropName="checked"
-              >
-                <Checkbox
-                  className="checkbox"
-                  value={lineIndustryParameterState}
-                  onChange={() =>
-                    setLineIndustryParameterState(!lineIndustryParameterState)
-                  }
-                >
-                  Line Industry
-                </Checkbox>
-              </Form.Item>
-            </div>
-            <div className="col-xxl-8">
-              <Form.Item
-                name="lineIndustryParameter"
-                rules={
-                  lineIndustryParameterState
-                    ? [
-                        {
-                          required: true,
-                          message: 'Please Select Line Industry Parameter!',
-                        },
-                      ]
-                    : []
-                }
-              >
-                <Select
-                  className="select"
-                  mode="multiple"
-                  disabled={!lineIndustryParameterState}
-                  allowClear
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').includes(input)
-                  }
-                  filterSort={(optionA, optionB) =>
-                    (optionA?.label ?? '')
-                      .toLowerCase()
-                      .localeCompare((optionB?.label ?? '').toLowerCase())
-                  }
-                  placeholder="Select Line Industry Parameter"
-                  options={[
-                    { value: 'Yiminghe', label: 'yiminghe' },
-                    { value: 'jack', label: 'Jack' },
-                    { value: 'lucy', label: 'Lucy' },
-                  ]}
-                />
-              </Form.Item>
-            </div>
-          </div>
-        </div>
-        <div className="dash-input-wrapper mb-30">
-          <div className="row">
-            <div className="col-xxl-4">
-              <Form.Item
-                name="jobFunctionParameterCheckbox"
-                valuePropName="checked"
-              >
-                <Checkbox
-                  className="checkbox"
-                  value={jobFunctionParameterState}
-                  onChange={() =>
-                    setJobFunctionParameterState(!jobFunctionParameterState)
-                  }
-                >
-                  Job Function
-                </Checkbox>
-              </Form.Item>
-            </div>
-            <div className="col-xxl-8">
-              <Form.Item
-                name="jobFunctionParameter"
-                rules={
-                  jobFunctionParameterState
-                    ? [
-                        {
-                          required: true,
-                          message: 'Please Select Job Function Parameter!',
-                        },
-                      ]
-                    : []
-                }
-              >
-                <Select
-                  className="select"
-                  showSearch
-                  disabled={!jobFunctionParameterState}
-                  allowClear
-                  placeholder="Select Job Function Parameter"
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').includes(input)
-                  }
-                  filterSort={(optionA, optionB) =>
-                    (optionA?.label ?? '')
-                      .toLowerCase()
-                      .localeCompare((optionB?.label ?? '').toLowerCase())
-                  }
-                  options={[
-                    {
-                      value: '1',
-                      label: 'Not Identified',
-                    },
-                    {
-                      value: '2',
-                      label: 'Closed',
-                    },
-                    {
-                      value: '3',
-                      label: 'Communicated',
-                    },
-                    {
-                      value: '4',
-                      label: 'Identified',
-                    },
-                    {
-                      value: '5',
-                      label: 'Resolved',
-                    },
-                    {
-                      value: '6',
-                      label: 'Cancelled',
-                    },
-                  ]}
-                />
-              </Form.Item>
-            </div>
-          </div>
-        </div>
-        <div className="dash-input-wrapper mb-30">
-          <div className="row">
-            <div className="col-xxl-4">
-              <Form.Item
-                name="positionLevelParameterCheckbox"
-                valuePropName="checked"
-              >
-                <Checkbox
-                  className="checkbox"
-                  value={positionLevelParameterState}
-                  onChange={() =>
-                    setPositionLevelParameterState(!positionLevelParameterState)
-                  }
-                >
-                  Position Level
-                </Checkbox>
-              </Form.Item>
-            </div>
-            <div className="col-xxl-8">
-              <Form.Item
-                name="positionLevelParameter"
-                rules={
-                  positionLevelParameterState
-                    ? [
-                        {
-                          required: true,
-                          message: 'Please Select Position Level Parameter!',
-                        },
-                      ]
-                    : []
-                }
-              >
-                <Select
-                  className="select"
-                  showSearch
-                  disabled={!positionLevelParameterState}
-                  allowClear
-                  placeholder="Select Position Level Parameter"
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').includes(input)
-                  }
-                  filterSort={(optionA, optionB) =>
-                    (optionA?.label ?? '')
-                      .toLowerCase()
-                      .localeCompare((optionB?.label ?? '').toLowerCase())
-                  }
-                  options={[
-                    {
-                      value: '1',
-                      label: 'Not Identified',
-                    },
-                    {
-                      value: '2',
-                      label: 'Closed',
-                    },
-                    {
-                      value: '3',
-                      label: 'Communicated',
-                    },
-                    {
-                      value: '4',
-                      label: 'Identified',
-                    },
-                    {
-                      value: '5',
-                      label: 'Resolved',
-                    },
-                    {
-                      value: '6',
-                      label: 'Cancelled',
-                    },
-                  ]}
-                />
-              </Form.Item>
-            </div>
-          </div>
-        </div> */}
-
-        {/* <h4 className="dash-title-three pt-50 lg-pt-30">Benefit</h4>
-        <div className="dash-input-wrapper mb-30">
-          <Form.Item
-            label="Show Benefit"
-            name="showBenefit"
-            rules={[
-              {
-                required: true,
-                message: 'Please Select Show Benefit Or Not Show Benefit!',
-              },
-            ]}
-          >
-            <Radio.Group
-              className="radio"
-              buttonStyle="solid"
-              value={showBenefit}
-              onChange={(e) => setShowBenefit(e.target.value)}
-            >
-              <Radio.Button className="radio-children" value="show">
-                Show Benefit
-              </Radio.Button>
-              <Radio.Button className="radio-children" value="notShow">
-                Don&apos;t Show Benefit
-              </Radio.Button>
-            </Radio.Group>
-          </Form.Item>
-        </div>
-        <div className="dash-input-wrapper mb-30">
-          <Form.Item
-            label="Benefit"
-            name="jobBenefit"
-            rules={
-              showBenefit === 'show'
-                ? [{ required: true, message: 'Please Select Job Benefit!' }]
-                : []
-            }
-          >
-            <Select
-              className="select"
-              mode="multiple"
-              disabled={showBenefit === 'show' ? false : true}
-              allowClear
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                (option?.label ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              placeholder="Select Job Benefit"
-              options={[
-                { value: 'Yiminghe', label: 'yiminghe' },
-                { value: 'jack', label: 'Jack' },
-                { value: 'lucy', label: 'Lucy' },
-              ]}
-            />
-          </Form.Item>
-        </div> */}
 
         <h4 className="dash-title-three pt-50 lg-pt-30">Other Settings</h4>
-        {/* <div className="dash-input-wrapper mb-30">
-            <Form.Item
-              label="Status Pipeline"
-              name="jobStatusPipeline"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please Select Job Status Pipeline!',
-                },
-              ]}
-            >
-              <Select
-                className="select"
-                showSearch
-                allowClear
-                placeholder="Select Job Status Pipeline"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? '').includes(input)
-                }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? '')
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? '').toLowerCase())
-                }
-                options={[
-                  {
-                    value: '1',
-                    label: 'Not Identified',
-                  },
-                  {
-                    value: '2',
-                    label: 'Closed',
-                  },
-                  {
-                    value: '3',
-                    label: 'Communicated',
-                  },
-                  {
-                    value: '4',
-                    label: 'Identified',
-                  },
-                  {
-                    value: '5',
-                    label: 'Resolved',
-                  },
-                  {
-                    value: '6',
-                    label: 'Cancelled',
-                  },
-                ]}
-              />
-            </Form.Item>
-          </div> */}
         <div className="dash-input-wrapper mb-30">
           <Form.Item
             label="FPK"
@@ -1943,6 +701,7 @@ const SubmitJobArea = () => {
           >
             <Select
               className="select"
+              size="large"
               showSearch
               allowClear
               placeholder="Select Job FPK"
@@ -1982,181 +741,8 @@ const SubmitJobArea = () => {
                 },
               ]}
             />
-            {/* <Select
-              className="select"
-              mode="multiple"
-              allowClear
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                (option?.label ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              placeholder="Select Job FPK"
-              options={[
-                { value: 'Yiminghe', label: 'yiminghe' },
-                { value: 'jack', label: 'Jack' },
-                { value: 'lucy', label: 'Lucy' },
-              ]}
-            /> */}
           </Form.Item>
         </div>
-        {/* <div className="dash-input-wrapper mb-30">
-            <Form.Item
-              label="FPK User"
-              name="jobFpkUser"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please Select Job FPK User!',
-                },
-              ]}
-            >
-              <Select
-                className="select"
-                mode="multiple"
-                allowClear
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? '').includes(input)
-                }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? '')
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? '').toLowerCase())
-                }
-                placeholder="Select Job FPK User"
-                options={[
-                  { value: 'Yiminghe', label: 'yiminghe' },
-                  { value: 'jack', label: 'Jack' },
-                  { value: 'lucy', label: 'Lucy' },
-                ]}
-              />
-            </Form.Item>
-          </div> */}
-        {/* <div className="dash-input-wrapper mb-30">
-            <Form.Item
-              label="HR AREA"
-              name="jobHrArea"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please Select Job HR AREA!',
-                },
-              ]}
-            >
-              <Select
-                className="select"
-                mode="multiple"
-                allowClear
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? '').includes(input)
-                }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? '')
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? '').toLowerCase())
-                }
-                placeholder="Select Job HR AREA"
-                options={[
-                  { value: 'Yiminghe', label: 'yiminghe' },
-                  { value: 'jack', label: 'Jack' },
-                  { value: 'lucy', label: 'Lucy' },
-                ]}
-              />
-            </Form.Item>
-          </div> */}
-        {/* <div className="dash-input-wrapper mb-30">
-            <Form.Item
-              label="HRBP User"
-              name="jobHrbpUser"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please Select Job HRBP User!',
-                },
-              ]}
-            >
-              <Select
-                className="select"
-                mode="multiple"
-                allowClear
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? '').includes(input)
-                }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? '')
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? '').toLowerCase())
-                }
-                placeholder="Select Job HRBP User"
-                options={[
-                  { value: 'Yiminghe', label: 'yiminghe' },
-                  { value: 'jack', label: 'Jack' },
-                  { value: 'lucy', label: 'Lucy' },
-                ]}
-              />
-            </Form.Item>
-          </div> */}
-        {/* <div className="dash-input-wrapper mb-30">
-            <Form.Item
-              label="Assessment User"
-              name="jobAssessmentUser"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please Select Job Assessment User!',
-                },
-              ]}
-            >
-              <Select
-                className="select"
-                showSearch
-                allowClear
-                placeholder="Select Job Assessment User"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? '').includes(input)
-                }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? '')
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? '').toLowerCase())
-                }
-                options={[
-                  {
-                    value: '1',
-                    label: 'Not Identified',
-                  },
-                  {
-                    value: '2',
-                    label: 'Closed',
-                  },
-                  {
-                    value: '3',
-                    label: 'Communicated',
-                  },
-                  {
-                    value: '4',
-                    label: 'Identified',
-                  },
-                  {
-                    value: '5',
-                    label: 'Resolved',
-                  },
-                  {
-                    value: '6',
-                    label: 'Cancelled',
-                  },
-                ]}
-              />
-            </Form.Item>
-          </div> */}
         <div className="dash-input-wrapper mb-30">
           <Form.Item
             label="Video Interview"
@@ -2169,7 +755,10 @@ const SubmitJobArea = () => {
               },
             ]}
           >
-            <Radio.Group className="radio" buttonStyle="solid">
+            <Radio.Group
+              className="radio d-flex align-items-center"
+              buttonStyle="solid"
+            >
               <Radio.Button className="radio-children" value="enable">
                 Enable
               </Radio.Button>
@@ -2191,7 +780,10 @@ const SubmitJobArea = () => {
               },
             ]}
           >
-            <Radio.Group className="radio" buttonStyle="solid">
+            <Radio.Group
+              className="radio d-flex align-items-center"
+              buttonStyle="solid"
+            >
               <Radio.Button className="radio-children" value="enable">
                 Enable
               </Radio.Button>
@@ -2212,7 +804,10 @@ const SubmitJobArea = () => {
               },
             ]}
           >
-            <Radio.Group className="radio" buttonStyle="solid">
+            <Radio.Group
+              className="radio d-flex align-items-center"
+              buttonStyle="solid"
+            >
               <Radio.Button className="radio-children" value="yes">
                 Yes
               </Radio.Button>
@@ -2222,28 +817,6 @@ const SubmitJobArea = () => {
             </Radio.Group>
           </Form.Item>
         </div>
-        {/* <div className="dash-input-wrapper mb-30">
-            <Form.Item
-              label="Takedown"
-              name="jobTakedown"
-              rules={[
-                {
-                  required: true,
-                  message:
-                    'Please Select Want Takedown Or Don&apos;t Want Takedown!',
-                },
-              ]}
-            >
-              <Radio.Group className="radio" buttonStyle="solid">
-                <Radio.Button className="radio-children" value="yes">
-                  Yes
-                </Radio.Button>
-                <Radio.Button className="radio-children" value="no">
-                  No
-                </Radio.Button>
-              </Radio.Group>
-            </Form.Item>
-          </div> */}
         <div className="dash-input-wrapper mb-30">
           <Form.Item
             label="Is Career Fest?"
@@ -2255,7 +828,10 @@ const SubmitJobArea = () => {
               },
             ]}
           >
-            <Radio.Group className="radio" buttonStyle="solid">
+            <Radio.Group
+              className="radio d-flex align-items-center"
+              buttonStyle="solid"
+            >
               <Radio.Button className="radio-children" value="yes">
                 Yes
               </Radio.Button>
@@ -2278,6 +854,7 @@ const SubmitJobArea = () => {
           >
             <Select
               className="select"
+              size="large"
               mode="multiple"
               allowClear
               optionFilterProp="children"
@@ -2311,6 +888,7 @@ const SubmitJobArea = () => {
           >
             <Select
               className="select"
+              size="large"
               mode="multiple"
               allowClear
               optionFilterProp="children"
@@ -2334,13 +912,20 @@ const SubmitJobArea = () => {
 
         <div className="button-group d-flex flex-row align-items-center justify-content-start mt-50 w-100">
           <Form.Item className="mb-0">
-            <Button className="dash-btn-two tran3s me-3" htmlType="submit">
+            <Button
+              className="dash-btn-two tran3s me-3"
+              htmlType="submit"
+              style={{
+                height: '40px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                paddingBottom: '3px',
+              }}
+            >
               Submit
             </Button>
           </Form.Item>
-          {/* <a href="#" className="dash-btn-two tran3s me-3">
-              Next
-            </a> */}
           <button className="dash-cancel-btn tran3s" type="button">
             Cancel
           </button>

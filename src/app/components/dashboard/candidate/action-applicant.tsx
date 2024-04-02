@@ -1,8 +1,20 @@
 import React from 'react';
+import { useAppSelector } from '@/redux/hook';
 
 const ActionApplicant = () => {
+  const currentStep = useAppSelector((state) => state.applicantStep.step);
   return (
     <ul className="dropdown-menu dropdown-menu-end">
+      {currentStep === 'assessment' && (
+        <li>
+          <a
+            className="applicant-action"
+            href="/dashboard/ta/preview-page/assessment/review"
+          >
+            View Result
+          </a>
+        </li>
+      )}
       <li>
         <a className="applicant-action" href="#">
           Assign to Assessment

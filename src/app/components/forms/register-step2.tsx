@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, ChangeEvent } from 'react';
 import Image from 'next/image';
-import * as Yup from 'yup';
+// import * as Yup from 'yup';
 import { Resolver, useForm } from 'react-hook-form';
 import ErrorMsg from '../common/error-msg';
 import icon from '@/assets/images/icon/icon_60.svg';
@@ -54,12 +54,11 @@ type IFormData = {
 };
 
 // schema
-const schema = Yup.object().shape({
-  fullName: Yup.string().required().label('Name'),
-  email: Yup.string().required().email().label('Email'),
-  password: Yup.string().required().min(6).label('Password'),
-  // blm disetting
-});
+// const schema = Yup.object().shape({
+//   fullName: Yup.string().required().label('Name'),
+//   email: Yup.string().required().email().label('Email'),
+//   password: Yup.string().required().min(6).label('Password'),
+// });
 // resolver
 const resolver: Resolver<IFormData> = async (values) => {
   return {
@@ -187,8 +186,8 @@ const RegisterFormStep2 = () => {
   const onSubmit = (data: IFormData) => {
     if (data) {
       // alert('Register successfully!');
-      console.log('data sampai step 2', data);
-      reset();
+      console.log('data form 3', data);
+      // reset();
     }
   };
   return (
@@ -678,7 +677,7 @@ const RegisterFormStep2 = () => {
         ) : (
           <div className="col-6"></div>
         )}
-        <div className="col-6">
+        {/* <div className="col-6">
           <div className="input-group-meta position-relative mb-20">
             <label>Password*</label>
             <input
@@ -700,8 +699,8 @@ const RegisterFormStep2 = () => {
               <ErrorMsg msg={errors.password?.message!} />
             </div>
           </div>
-        </div>
-        <div className="col-6">
+        </div> */}
+        {/* <div className="col-6">
           <div className="input-group-meta position-relative mb-20">
             <label>Confirm Password*</label>
             <input
@@ -727,7 +726,7 @@ const RegisterFormStep2 = () => {
               <ErrorMsg msg={errors.confirmPass?.message!} />
             </div>
           </div>
-        </div>
+        </div> */}
         <div className="col-12">
           <div className="agreement-checkbox d-flex justify-content-between align-items-center">
             <div>
@@ -760,7 +759,11 @@ const RegisterFormStep2 = () => {
         <div className="col-5 col-sm-6">
           <button
             className="btn-eleven fw-500 tran3s mt-20"
-            onClick={() => dispatch(setStep({ newStep: 1 }))}
+            onClick={(e) => {
+              e.preventDefault(); // Mencegah default behavior dari tombol
+              dispatch(setStep({ newStep: 2 }));
+            }}
+            // onClick={() => dispatch(setStep({ newStep: 2 }))}
           >
             Back
           </button>

@@ -5,8 +5,6 @@ import Link from 'next/link';
 import RegisterForm from '../forms/register-form';
 import RegisterFormStep1 from '../forms/register-step1';
 import RegisterFormStep2 from '../forms/register-step2';
-// import google from "@/assets/images/icon/google.png";
-// import facebook from "@/assets/images/icon/facebook.png";
 import linkedin from '@/assets/images/icon/linkedin.png';
 import uploadIcon from '@/assets/images/icon/icon_11.svg';
 import { useAppSelector, useAppDispatch } from '@/redux/hook';
