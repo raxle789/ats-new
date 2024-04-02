@@ -27,6 +27,7 @@ import nav_9 from '@/assets/dashboard/images/icon/icon_40.svg';
 import nav_9_active from '@/assets/dashboard/images/icon/icon_40_active.svg';
 import nav_8 from '@/assets/dashboard/images/icon/icon_8.svg';
 import LogoutModal from '../../common/popup/logout-modal';
+import logo2 from '@/assets/images/logo/erajaya_logo4.jpg';
 
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 
@@ -59,7 +60,6 @@ const nav_data: {
     icon: nav_3,
     icon_active: nav_3_active,
     link: '/dashboard/ta/jobs',
-    link: '/dashboard/ta/jobs',
     title: 'My Jobs',
   },
   {
@@ -73,7 +73,6 @@ const nav_data: {
     id: 5,
     icon: nav_5,
     icon_active: nav_5_active,
-    link: '/dashboard/ta/submit-job',
     link: '/dashboard/ta/submit-job',
     title: 'Submit Job',
   },
@@ -118,7 +117,12 @@ const EmployAside = () => {
         <div className="position-relative">
           <div className="logo text-md-center d-md-block d-flex align-items-center justify-content-between">
             <Link href="/dashboard/employ-dashboard">
-              <Image src={logo} alt="logo" priority />
+              <Image
+                src={logo2}
+                alt="logo"
+                priority
+                style={{ height: '80px', width: 'auto' }}
+              />
             </Link>
             <button
               className="close-btn d-block d-md-none"

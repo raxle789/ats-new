@@ -9,6 +9,7 @@ import linkedin from '@/assets/images/icon/linkedin.png';
 import uploadIcon from '@/assets/images/icon/icon_11.svg';
 import { useAppSelector, useAppDispatch } from '@/redux/hook';
 import { setStep } from '@/redux/features/stepSlice';
+import ArrowBack from '@/assets/images/icon/arrow-left-solid.svg';
 /* libs */
 // import { createdLinkedInOAuth } from '@/lib/Authentication';
 
@@ -27,8 +28,13 @@ const RegisterArea = () => {
     <section className="registration-section position-relative pt-100 lg-pt-80 pb-150 lg-pb-80">
       <div className="container">
         <div className="user-data-form">
-          <div className="text-center">
-            <h2>Create Account</h2>
+          <div>
+            {/* <Image
+              src={ArrowBack}
+              alt="arrow-back"
+              style={{ width: '30px', height: 'auto', position: 'relative' }}
+            /> */}
+            <h2 className="text-center">Create Account</h2>
           </div>
           <div className="form-wrapper m-auto">
             <ul

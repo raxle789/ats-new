@@ -8,9 +8,28 @@ import { Collapse } from 'antd';
 
 const { Dragger } = Upload;
 
+const beforeUpload = (file: any) => {
+  return new Promise((resolve, reject) => {
+    // check the file size - you can specify the file size you'd like here:
+    const isLt1M = file.size / 1024 / 1024 <= 0.5;
+    // if (!isLt5M) {
+    //   alert('Image must smaller than 1MB!');
+    //   reject(false);
+    // }
+    if (isLt1M) {
+      reject();
+    } else {
+      message.error('File must be smaller than 500KB!');
+      resolve(file);
+    }
+  });
+};
+
 const props: UploadProps = {
   name: 'file',
-  multiple: true,
+  multiple: false,
+  maxCount: 1,
+  accept: '.pdf',
   action: 'https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188',
   onChange(info) {
     const { status } = info.file;
@@ -137,7 +156,7 @@ const JobAssessmentResult = () => {
             <p>Test Assesment</p>
             <p>Data has not been set</p>
           </div>
-          <div className="col-lg-12 mb-10">
+          <div className="col-lg-12 mb-50">
             <div className="row">
               <div className="col-lg-4">
                 <b>
@@ -148,7 +167,7 @@ const JobAssessmentResult = () => {
                 className="col-lg-6"
                 style={{ width: '300px', height: '200px' }}
               >
-                <Dragger {...props}>
+                <Dragger {...props} beforeUpload={beforeUpload}>
                   <p className="ant-upload-drag-icon">
                     <InboxOutlined />
                   </p>
@@ -163,7 +182,7 @@ const JobAssessmentResult = () => {
               </div>
             </div>
           </div>
-          <div className="col-lg-12 mb-10">
+          <div className="col-lg-12 mb-50">
             <div className="row">
               <div className="col-lg-4">
                 <b>
@@ -174,7 +193,7 @@ const JobAssessmentResult = () => {
                 className="col-lg-6"
                 style={{ width: '300px', height: '200px' }}
               >
-                <Dragger {...props}>
+                <Dragger {...props} beforeUpload={beforeUpload}>
                   <p className="ant-upload-drag-icon">
                     <InboxOutlined />
                   </p>
@@ -189,7 +208,7 @@ const JobAssessmentResult = () => {
               </div>
             </div>
           </div>
-          <div className="col-lg-12">
+          <div className="col-lg-12 mb-30">
             <div className="row">
               <div className="col-lg-4">
                 <b>
@@ -200,7 +219,7 @@ const JobAssessmentResult = () => {
                 className="col-lg-6"
                 style={{ width: '300px', height: '200px' }}
               >
-                <Dragger {...props}>
+                <Dragger {...props} beforeUpload={beforeUpload}>
                   <p className="ant-upload-drag-icon">
                     <InboxOutlined />
                   </p>

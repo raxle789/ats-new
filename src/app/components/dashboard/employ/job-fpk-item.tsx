@@ -125,7 +125,7 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
                 {fpkData?.map((data, index) => (
                   <React.Fragment key={index}>
                     <tr>
-                      <th scope="row">{index + 1 + offset}</th>
+                      <td>{index + 1 + offset}</td>
                       <td>
                         <b>{`${data?.jobTitleName ?? ''}`}</b>
                         <br />

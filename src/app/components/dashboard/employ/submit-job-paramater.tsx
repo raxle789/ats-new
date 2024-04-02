@@ -122,6 +122,58 @@ const EmployJobParameter = () => {
   const handleCategory = (item: { value: string; label: string }) => {};
   const handleJobType = (item: { value: string; label: string }) => {};
   const handleSalary = (item: { value: string; label: string }) => {};
+
+  // const handleFormatter = (value) => {
+  //   if (value) {
+  //     const formattedValue = new Intl.NumberFormat('id-ID', {
+  //       style: 'currency',
+  //       currency: 'IDR',
+  //     }).format(value);
+  //     return formattedValue.replace('IDR', 'Rp');
+  //   }
+  //   return '';
+  // };
+
+  // const handleParser = (value) => {
+  //   const replacedValue = value.replace(/\D/g, ''); // Menghapus karakter selain digit
+  //   return parseFloat(replacedValue);
+  // };
+
+  // const handleFormatter = (value) => {
+  //   // Memformat nilai menjadi string dengan format mata uang Rupiah
+  //   if (value) {
+  //     const formattedValue = new Intl.NumberFormat('id-ID', {
+  //       style: 'currency',
+  //       currency: 'IDR',
+  //     }).format(value);
+  //     return formattedValue.replace('IDR', '').trim();
+  //   }
+  //   return '';
+  // };
+
+  // const handleFormatter = (value) => {
+  //   // Memformat nilai menjadi string dengan format mata uang Rupiah
+  //   if (value || value === 0) {
+  //     const formattedValue = new Intl.NumberFormat('id-ID', {
+  //       style: 'currency',
+  //       currency: 'IDR',
+  //     }).format(value);
+  //     // Menghilangkan tanda Rupiah dan whitespace, jika value bukan null atau undefined
+  //     return formattedValue.replace('IDR', '').trim();
+  //   }
+  //   return ''; // Kembalikan string kosong jika value null atau undefined
+  // };
+
+  // const handleParser = (value) => {
+  //   // Menghapus semua karakter selain digit dan koma
+  //   const replacedValue = value.replace(/[^\d,]/g, '');
+  //   // Menghapus titik sebagai pemisah ribuan
+  //   const dotRemovedValue = replacedValue.replace(/\./g, '');
+  //   // Menghapus tanda Rupiah
+  //   const rupiahRemovedValue = dotRemovedValue.replace(/^IDR\s?|,/g, '');
+  //   return parseFloat(rupiahRemovedValue || '0'); // Parse menjadi float, atau 0 jika kosong
+  // };
+
   return (
     <>
       {contextHolder}
@@ -136,10 +188,10 @@ const EmployJobParameter = () => {
         <h4 className="dash-title-three">Parameter Information</h4>
         <div className="dash-input-wrapper mb-30">
           <Form.Item
-            label="Job Level Parameter"
-            name="jobLevelParameter"
+            label="Position Level"
+            name="positionLevel"
             rules={[
-              { required: true, message: 'Please Select Job Level Parameter!' },
+              { required: true, message: 'Please Select Position Level!' },
             ]}
           >
             <Select
@@ -147,7 +199,7 @@ const EmployJobParameter = () => {
               size="large"
               showSearch
               allowClear
-              placeholder="Select Job Level Parameter"
+              placeholder="Select Position Level"
               optionFilterProp="children"
               filterOption={(input, option) =>
                 (option?.label ?? '').includes(input)
@@ -201,7 +253,14 @@ const EmployJobParameter = () => {
                 },
               ]}
             >
-              <Select
+              <InputNumber
+                className="select d-flex align-items-center w-100"
+                min={0}
+                step={1}
+                placeholder="Input Total Experience"
+                style={{ height: '40px' }}
+              />
+              {/* <Select
                 className="select"
                 size="large"
                 showSearch
@@ -243,7 +302,7 @@ const EmployJobParameter = () => {
                     label: 'Cancelled',
                   },
                 ]}
-              />
+              /> */}
             </Form.Item>
           </div>
         </div>
@@ -262,6 +321,7 @@ const EmployJobParameter = () => {
             >
               <Select
                 className="select"
+                mode="multiple"
                 size="large"
                 showSearch
                 allowClear
@@ -544,6 +604,12 @@ const EmployJobParameter = () => {
                   min={0}
                   placeholder="Input Start Salary Range"
                   style={{ height: '40px' }}
+                  formatter={(value) =>
+                    `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                  }
+                  parser={(value) => value!.replace(/\Rp\s?|(,*)/g, '')}
+                  // formatter={handleFormatter}
+                  // parser={handleParser}
                   // disabled={!salaryRangeParameterState}
                 />
               </Form.Item>
@@ -570,6 +636,10 @@ const EmployJobParameter = () => {
                   min={0}
                   placeholder="Input End Salary Range"
                   style={{ height: '40px' }}
+                  formatter={(value) =>
+                    `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+                  }
+                  parser={(value) => value!.replace(/\Rp\s?|(,*)/g, '')}
                   // disabled={!salaryRangeParameterState}
                 />
               </Form.Item>

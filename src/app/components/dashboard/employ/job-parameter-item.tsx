@@ -33,10 +33,9 @@ const EmployJobParameter = ({ parameterData }) => {
                 {parameterData?.map((data, index) => (
                   <React.Fragment key={index}>
                     <tr>
-                      <th
-                        scope="row"
+                      <td
                         style={{ width: '136.66px' }}
-                      >{`${data?.parameterId ?? ''}`}</th>
+                      >{`${data?.parameterId ?? ''}`}</td>
                       {/* <td>{parameterData?.parameterIndex + 1}</td> */}
                       <td>{`${data?.parameterName ?? ''}`}</td>
                       <td
@@ -59,6 +58,7 @@ const EmployJobParameter = ({ parameterData }) => {
                             <span></span>
                           </button>
                           <ActionDropdown />
+                          {/* <i className="fa-solid fa-trash-can">oke</i> */}
                         </div>
                       </td>
                     </tr>
@@ -76,66 +76,30 @@ const EmployJobParameter = ({ parameterData }) => {
                             <div className="row">
                               <div className="col-6">
                                 <p>
-                                  <b>Minimum Year Of Experience: </b>
-                                  {`${data?.minimumYearOfExperienceParameter ?? '-'}`}
+                                  <b>Total Year Of Experience: </b>
+                                  {`${data?.totalYearOfExperienceParameter ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Education Level: </b>
                                   {`${data?.educationLevelParameter ?? '-'}`}
                                 </p>
                                 <p>
-                                  <b>Major Of Studies: </b>
-                                  {`${data?.majorOfStudiesParameter ?? '-'}`}
-                                </p>
-                                <p>
                                   <b>Grade: </b>
                                   {`${data?.gradeParameter ?? '-'}`}
-                                </p>
-                                <p>
-                                  <b>Special Skill: </b>
-                                  {`${data?.specialSkillParameter ?? '-'}`}
-                                </p>
-                                <p>
-                                  <b>Certifications: </b>
-                                  {`${data?.certificationsParameter ?? '-'}`}
-                                </p>
-                                <p>
-                                  <b>Salary Range: </b>
-                                  {`${data?.salaryRangeParameter ?? '-'}`}
-                                </p>
-                                <p>
-                                  <b>Domicile: </b>
-                                  {`${data?.domicileParameter ?? '-'}`}
                                 </p>
                               </div>
                               <div className="col-lg-6">
                                 <p>
-                                  <b>Maximum Age: </b>
-                                  {`${data?.maximumAgeParameter ?? '-'}`}
-                                </p>
-                                <p>
-                                  <b>Gender: </b>
-                                  {`${data?.genderParameter ?? '-'}`}
-                                </p>
-                                <p>
-                                  <b>Religion: </b>
-                                  {`${data?.religionParameter ?? '-'}`}
-                                </p>
-                                <p>
-                                  <b>Race: </b>
-                                  {`${data?.raceParameter ?? '-'}`}
+                                  <b>Salary Range: </b>
+                                  {`${data?.salaryRangeParameter ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Line Industry: </b>
                                   {`${data?.lineIndustryParameter ? 'Yes' : 'No'}`}
                                 </p>
                                 <p>
-                                  <b>Job Function: </b>
-                                  {`${data?.jobFunctionParameter ? 'Yes' : 'No'}`}
-                                </p>
-                                <p>
-                                  <b>Position Level: </b>
-                                  {`${data?.positionLevelParameter ? 'Yes' : 'No'}`}
+                                  <b>Job Level: </b>
+                                  {`${data?.jobLevelParameter ? 'Yes' : 'No'}`}
                                 </p>
                               </div>
                             </div>

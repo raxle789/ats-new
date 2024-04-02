@@ -8,7 +8,7 @@ import delete_icon from '@/assets/dashboard/images/icon/icon_21.svg';
 const ActionDropdown = () => {
   return (
     <ul className="dropdown-menu dropdown-menu-end">
-      <li>
+      {/* <li>
         <a className="dropdown-item" href="#">
           <Image src={view} alt="icon" className="lazy-img" /> View
         </a>
@@ -17,9 +17,9 @@ const ActionDropdown = () => {
         <a className="dropdown-item" href="#">
           <Image src={share} alt="icon" className="lazy-img" /> Share
         </a>
-      </li>
+      </li> */}
       <li>
-        <a className="dropdown-item" href="#">
+        <a className="dropdown-item" href="/dashboard/ta/submit-parameter">
           <Image src={edit} alt="icon" className="lazy-img" /> Edit
         </a>
       </li>

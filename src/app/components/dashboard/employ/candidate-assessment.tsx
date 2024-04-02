@@ -19,6 +19,8 @@ const CandidateAssessment = () => {
   const router = useRouter();
   const pathname = usePathname();
 
+  dispatch(setApplicantStep({ currentStep: 'assessment' }));
+
   const handleJobFpkSearch = useDebouncedCallback((value) => {
     const params = new URLSearchParams(searchParams);
 
