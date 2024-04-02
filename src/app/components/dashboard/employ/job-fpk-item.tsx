@@ -1,35 +1,30 @@
 'use client';
 import React from 'react';
 import { Button, Form, Select, Input, Modal, notification } from 'antd';
+import { useRouter } from 'next/navigation';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useState, useEffect, useRef } from 'react';
 import { assignTa } from '@/lib/action/fpk/action';
 import { ExpendableButton } from './expendable-button';
-// import Link from 'next/link';
 
 const { confirm } = Modal;
 
 const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
   const formRef = useRef({});
-  const [loading, setLoading] = useState(false);
-  const [api, contextHolder] = notification.useNotification();
-  const [assignDisabled, setAssignDisabled] = useState({});
-  const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
-    {},
-  );
 
-  const toggleRowExpansion = (index: number) => {
-    setExpandedRows((prevExpandedRows) => ({
-      ...prevExpandedRows,
-      [index]: !prevExpandedRows[index],
-    }));
-  };
+  const [loading, setLoading] = useState(false);
+
+  const [api, contextHolder] = notification.useNotification();
+
+  const [assignDisabled, setAssignDisabled] = useState({});
+
+  const router = useRouter();
 
   useEffect(() => {
-    fpkData.forEach((data: any) => {
-      formRef.current[data.RequestNo].setFieldsValue({
-        taId: data.TaId,
-        requestNo: data.RequestNo,
+    fpkData.forEach((data) => {
+      formRef.current[data?.id]?.setFieldsValue({
+        taId: data?.efpkTa?.taId,
+        efpkId: data?.id,
       });
     });
   }, [fpkData, offset]);
@@ -86,10 +81,15 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
                 placement: 'topRight',
               });
               resolve();
+              assignTa(values.efpkId, values.taId)
+                .then(() => router.refresh())
+                .catch((e) => console.log('Error assigning TA: ', e));
             }, 2000);
-          }).catch(() => console.log('Oops errors!'));
+          }).catch((e) => console.log('Error assigning TA: ', e));
         },
-        onCancel() {},
+        onCancel() {
+          router.refresh();
+        },
       });
 
       assignTa('assignTa', values.requestNo, values.taId);
@@ -127,12 +127,12 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
                     <tr>
                       <td>{index + 1 + offset}</td>
                       <td>
-                        <b>{`${data?.JobTitleName ?? ''}`}</b>
+                        <b>{`${data?.jobTitleName ?? ''}`}</b>
                         <br />
-                        {`${data?.RequestNo ?? ''}`}
+                        {`${data?.requestNo ?? ''}`}
                       </td>
-                      <td>{`${data?.JobLvlCode ?? ''}`}</td>
-                      <td>{`${data?.CompCode ?? ''}`}</td>
+                      <td>{`${data?.jobLvlCode ?? ''}`}</td>
+                      <td>{`${data?.compCode ?? ''}`}</td>
                       {/* <td>{`${data?.InitiatorName ?? ''}\n${data.InitiatorEmail ?? ''}`}</td> */}
                       {/* <td>{`${data?.LocationName ?? ''}`}</td> */}
                       {/* <td>{`${data?.Reason ?? ''}`}</td> */}
@@ -140,21 +140,21 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
                       {/* <td>{`${convertDate(data?.ApprovalDate ?? '')}`}</td> */}
                       <td>
                         <b>
-                          <span className="approved">{`Fully ${data?.Status ?? ''}`}</span>
+                          <span className="approved">{`Fully ${data?.status ?? ''}`}</span>
                         </b>
                         <br />
-                        {`${convertDate(data?.ApprovalDate ?? '')}`}
+                        {`${convertDate(data?.approvalDate ?? '')}`}
                       </td>
                       {/* <td>{`${data?.CandidateSource ? 'Yes' : 'No'}`}</td> */}
                       <td>
                         <Form
-                          ref={(el) => (formRef.current[data.RequestNo] = el)}
-                          name={`assignTaForm${data.RequestNo}`}
+                          ref={(el) => (formRef.current[data.id] = el)}
+                          name={`assignTaForm${data.id}`}
                           layout="vertical"
                           variant="filled"
                           initialValues={{
-                            ['taId']: data.TaId,
-                            ['requestNo']: data.RequestNo,
+                            ['taId']: data?.efpkTa?.taId,
+                            ['efpkId']: data?.id,
                           }}
                           onFinish={handleAssignTa}
                         >
@@ -166,7 +166,7 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
                               onChange={() =>
                                 setAssignDisabled((prevState) => ({
                                   ...prevState,
-                                  [data.RequestNo]: true,
+                                  [data.id]: true,
                                 }))
                               }
                               placeholder="Select TA"
@@ -178,7 +178,7 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
                               options={taData.map((item) => ({
                                 value: item.value,
                                 label: item.label,
-                                disabled: item.value === data.TaId,
+                                disabled: item.value === data?.efpkTa?.taId,
                               }))}
                             />
                             {/* {taData.map((item) => {
@@ -199,17 +199,13 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
                               })}
                             </Select> */}
                           </Form.Item>
-                          <Form.Item className="d-none" name="requestNo">
-                            <Input
-                              className="d-none"
-                              type="hidden"
-                              value={data.RequestNo}
-                            />
+                          <Form.Item className="d-none" name="efpkId">
+                            <Input className="d-none" type="hidden" />
                           </Form.Item>
                           <Form.Item>
                             <Button
                               htmlType="submit"
-                              disabled={!assignDisabled[data.RequestNo]}
+                              disabled={!assignDisabled[data.id]}
                             >
                               Assign
                             </Button>
@@ -238,29 +234,37 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
                               <div className="col-6">
                                 <p>
                                   <b>Initiator: </b>
-                                  {`${data?.InitiatorName ?? ''}`}
+                                  {`${data?.initiatorName ?? ''}`}
                                 </p>
                                 <p>
                                   <b>Email: </b>
-                                  {`${data.InitiatorEmail ?? ''}`}
+                                  {`${data.initiatorEmail ?? ''}`}
                                 </p>
                                 <p>
-                                  <b>Location: </b>
-                                  {`${data?.LocationName ?? ''}`}
+                                  <b>Phone Number: </b>
+                                  {`${data.efpkInitiatorInformations.phone ?? ''}`}
+                                </p>
+                                <p>
+                                  <b>Position: </b>
+                                  {`${data.efpkInitiatorInformations.position ?? ''}`}
                                 </p>
                               </div>
                               <div className="col-lg-6">
                                 <p>
+                                  <b>Location: </b>
+                                  {`${data?.locationName ?? ''}`}
+                                </p>
+                                <p>
                                   <b>Create FPK: </b>
-                                  {`${convertDate(data?.CreateDate ?? '')}`}
+                                  {`${convertDate(data?.createDate ?? '')}`}
                                 </p>
                                 <p>
                                   <b>Status Mpp: </b>
-                                  {`${data?.Reason ?? ''}`}
+                                  {`${data?.reason ?? ''}`}
                                 </p>
                                 <p>
                                   <b>Job Posting: </b>
-                                  {`${data?.CandidateSource ? 'Yes' : 'No'}`}
+                                  {`${'No'}`}
                                 </p>
                               </div>
                             </div>

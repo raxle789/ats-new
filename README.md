@@ -5,19 +5,21 @@ See the timeline [here](https://docs.google.com/spreadsheets/d/12jSYs7mVIssOY1iy
 ##### Development Rules
 
 1. Struktur Folder
+
    - Tempatkan semua route didalam direktori `./src/app` (file-based routing)
    - Tempatkan semua komponen didalam direktori `./src/components`
    - Tempatkan semua hal seperti function, library instances, dummy data didalam direktori `./src/utils`
    - Tempatkan semua custom hooks pada didalam direktori `./src/hooks`
-    
-    
-    > Note : Selalu buat terapkan grouping untuk setiap komponen, utils, ataupun custom hooks (e.g `./src/components/interviews`)
 
+   > Note : Selalu buat terapkan grouping untuk setiap komponen, utils, ataupun custom hooks (e.g `./src/components/interviews`)
+   >
 2. Penamaan Folder dan File
+
    - Gunakan jamak (`s`) untuk nama folder ataupun route segment (e.g untuk membuat folder atau route segment `interview` akan menjadi `interviews`)
    - Nama file harus detail atau di sesuaikan dengan parent direktori, gunakan (`-`) sebagai tanda penghubung spasi (e.g `get-valid-efpk`)
 
 ##### Github Branch
+
 - `main`
   Branch utama ketika segala fitur/kode tidak terdapat masalah
 - `dev`
@@ -26,6 +28,7 @@ See the timeline [here](https://docs.google.com/spreadsheets/d/12jSYs7mVIssOY1iy
 ##### Commit Message Rules
 
 Gunakan `conventional commits` dengan format berikut `<type>: <description>`. Perhatikan setiap tipe berikut:
+
 1. `feat`
    Gunakan tipe ini ketika telah menambahkan sebuah fitur.
 2. `fix`
@@ -36,6 +39,7 @@ Gunakan `conventional commits` dengan format berikut `<type>: <description>`. Pe
    Gunakan tipe ini ketika melakukan penambahan atau update versi dependencies/library.
 5. `refactor`
    Gunakan tipe ini ketika merubah kode untuk meningkatkan kualitas kode tanpa mengubah atau mempengaruhi fungsionalitas kode.
-   
+
 Contoh _commit message_
->  `git commit -m 'fix: reminder candidate for user interview via calendar'`
+
+> `git commit -m 'fix: reminder candidate for user interview via calendar'`

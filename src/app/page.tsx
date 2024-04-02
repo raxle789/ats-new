@@ -1,6 +1,9 @@
 import { Metadata } from 'next';
 import Wrapper from '@/layouts/wrapper';
 import HeaderSix from '@/layouts/headers/header-6';
+import { Users } from './services/connection/entity/users';
+import { isEstablished } from '@/app/services/connection/db';
+import db from './services/connection/db';
 import HeroBannerSix from './components/hero-banners/hero-banner-six';
 import CategorySectionSix from './components/category/category-section-6';
 import { TrendingJobs } from './components/category/category-section-3';
@@ -25,10 +28,23 @@ export const metadata: Metadata = {
   title: 'Home',
 };
 
-export default function Home() {
+export default async function Home() {
   // const session = await getSession();
   // console.info(session);
   // await getFatkhur();
+
+  // const ayam = async () => {
+  //   await isEstablished();
+
+  //   const data = await db.manager.find(Users);
+
+  //   console.info(data);
+  // };
+
+  // ayam();
+
+  // console.info(db);
+
   return (
     <Wrapper>
       <div className="main-page-wrapper">

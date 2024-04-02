@@ -1,25 +1,25 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from "typeorm";
-import { Candidate } from "./candidates";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Candidates } from "./candidates";
 
 @Entity()
-export class Family {
+export class Familys {
     @PrimaryGeneratedColumn({
         type: 'numeric'
     })
     id!: number;
 
     /* Foreign -> Candidate */
-    @ManyToOne(() => Candidate, (candidate) => candidate.id)
-    candidate!: Candidate[];
+    @ManyToOne(() => Candidates, (candidate) => candidate.families)
+    candidate!: Candidates;
 
     @Column({
         type: 'nvarchar',
-        length: '64'
+        length: 64
     })
     type!: string;
 
     @Column({
-        type: 'string',
+        type: 'nvarchar',
         length: 128
     })
     relationship!: string;
@@ -59,12 +59,12 @@ export class Family {
     })
     ktp_number!: string;
 
-    @Column({
+    @CreateDateColumn({
         type: 'datetime'
     })
     created_at!: string;
 
-    @Column({
+    @UpdateDateColumn({
         type: 'datetime',
         nullable: true
     })
