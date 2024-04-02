@@ -12,12 +12,22 @@ const SearchBar = () => {
 
   const pathname = usePathname();
 
+  const perPage = searchParams.get('perPage')?.toString() ?? '10';
+
   const handleSearch = useDebouncedCallback((value) => {
     const params = new URLSearchParams(searchParams);
 
     if (value) {
+      params.set('page', '1');
+
+      params.set('perPage', perPage);
+
       params.set('query', value);
     } else {
+      params.set('page', '1');
+
+      params.set('perPage', perPage);
+
       params.delete('query');
     }
 

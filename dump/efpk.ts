@@ -1,8 +1,17 @@
-import { Entity, Column, OneToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+} from 'typeorm';
 import { EfpkTa } from './efpkTa';
 
-@Entity();
+@Entity({ name: 'efpk' })
 export class Efpk {
+  @PrimaryGeneratedColumn({ type: 'numeric' })
+  id: number;
+
   @Column({ type: 'varchar', length: 25, nullable: false })
   RequestNo: String;
 
@@ -121,6 +130,6 @@ export class Efpk {
   UpdUser: String;
 
   @OneToOne(() => EfpkTa)
-  @JoinColumn({name: "assign_id", referencedColumnName: "id"})
+  @JoinColumn({ name: 'assign_id', referencedColumnName: 'id' })
   efpkTa: EfpkTa;
 }

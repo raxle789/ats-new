@@ -7,7 +7,7 @@ import { IdentityInfo } from "./identityInfo";
 import { Banks } from "./banks";
 import { EmergencyContacts } from "./emergencyContact";
 import { Educations } from "./educations";
-import { Family } from "./families";
+import { Familys } from "./families";
 import { Sims } from "./sim";
 import { WorkingExperiences } from "./workingExperiences";
 import { Certifications } from './certifications';
@@ -61,18 +61,21 @@ export class Candidates {
 
     @Column({
         type: 'nvarchar',
-        length: 128
+        length: 128,
+        nullable: true
     })
     religion!: string;
 
     @Column({
         type: 'nvarchar',
-        length: 64
+        length: 64,
+        nullable: true
     })
     ethnicity!: string;
 
     @Column({
-        type: 'char'
+        type: 'char',
+        nullable: true
     })
     blood_type!: string;
 
@@ -85,18 +88,21 @@ export class Candidates {
 
     @Column({
         type: 'numeric',
+        nullable: true
     })
     current_salary!: number;
 
     @Column({
         type: 'nvarchar',
-        length: 128
+        length: 128,
+        nullable: true
     })
     source_referer!: string;
 
     @Column({
         type: 'nvarchar',
-        length: 512
+        length: 512,
+        nullable: true
     })
     linkedin_profile_url!: string;
     
@@ -130,6 +136,9 @@ export class Candidates {
 
     @OneToMany(() => Certifications, (certificate) => certificate.candidate)
     certifications!: Certifications[];
+
+    // @OneToMany(() => Familys, (family) => family.candidate)
+    families!: Familys[];
 
     // @OneToMany(() => Documents, (document) => document.candidate)
     // documents!: Documents[];

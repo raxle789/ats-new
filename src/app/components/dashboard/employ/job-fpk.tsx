@@ -78,32 +78,29 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
 
   const getData = async () => {
     if (searchQuery) {
-      return await searchFpkData(
-        'searchFpk',
-        searchQuery,
-        offset,
-        Number(perPage),
-      ).then((res) => {
-        const data = res.data ?? [];
+      return await searchFpkData(searchQuery, offset, Number(perPage)).then(
+        (res) => {
+          const data = res.data ?? [];
 
-        const total = res.total ? res.total[0] : 0;
+          const total = res.total ? res.total : 0;
 
-        return {
-          data: data,
-          total: total.searchTotal,
-        };
-      });
+          return {
+            data: data,
+            total: total,
+          };
+        },
+      );
     } else {
       // setOffset((Number(page) - 1) * Number(perPage));
 
-      return await getFpkData('allFpk', offset, Number(perPage)).then((res) => {
+      return await getFpkData(offset, Number(perPage)).then((res) => {
         const data = res.data ?? [];
 
-        const total = res.total ? res.total[0] : 0;
+        const total = res.total ? res.total : 0;
 
         return {
           data: data,
-          total: total.total,
+          total: total,
         };
       });
 
@@ -114,7 +111,7 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
   };
 
   const fpkData = await getData();
-  const taData = await getTaData('allTa').then((res) => res);
+  const taData = await getTaData().then((res) => res);
 
   return (
     <>

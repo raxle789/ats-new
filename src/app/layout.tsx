@@ -4,6 +4,7 @@ import localFont from 'next/font/local';
 import { EB_Garamond } from 'next/font/google';
 import BackToTopCom from './components/common/back-to-top-com';
 import { Providers } from '@/redux/provider';
+import Script from 'next/script';
 
 const gordita = localFont({
   src: [
@@ -67,6 +68,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href="./favicon.ico" sizes="any" />
+        <Script src="./node_modules/reflect-metadata/Reflect.js"></Script>
       </head>
       <body
         suppressHydrationWarning={true}
@@ -74,6 +76,8 @@ export default function RootLayout({
       >
         <Providers>{children}</Providers>
         <BackToTopCom />
+
+        <Script src="./node_modules/reflect-metadata/Reflect.js"></Script>
       </body>
     </html>
   );

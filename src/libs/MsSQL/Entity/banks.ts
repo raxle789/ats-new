@@ -24,5 +24,4 @@ export class Banks {
         unique: true
     })
     bank_account_number!: string;
-
 }
