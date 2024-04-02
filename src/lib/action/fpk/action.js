@@ -2,21 +2,21 @@
 
 import { revalidatePath } from 'next/cache';
 import {
-  getAllFullyApprovedFpk,
-  getAllFullyApprovedFpkTotal,
+  getAllFpk,
+  getAllFpkTotal,
   searchFpk,
-  getAllTaData,
+  getAllTa,
   assignTaToFpk,
 } from '../../../app/services/fpk/service';
 
 export async function getFpkData(offset, perPage) {
-  const data = await getAllFullyApprovedFpk(offset, perPage);
+  const data = await getAllFpk(offset, perPage);
 
   return data;
 }
 
 export async function getFpkTotal() {
-  const data = await getAllFullyApprovedFpkTotal();
+  const data = await getAllFpkTotal();
 
   return data;
 }
@@ -28,7 +28,7 @@ export async function searchFpkData(query, offset, perPage) {
 }
 
 export async function getTaData() {
-  const data = await getAllTaData();
+  const data = await getAllTa();
 
   return data;
 }

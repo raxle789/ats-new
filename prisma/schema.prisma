@@ -385,13 +385,13 @@ model PositionLevelRequirementFields {
 }
 
 model PositionLevelRequirements {
-  positionLevelsId               Int                            @map("position_levels_id") @db.Int
-  requirementLevelsId            Int                            @map("requirement_levels_id") @db.Int
-  value                          String                         @db.Text
-  positionLevels                 PositionLevels                 @relation(fields: [positionLevelsId], references: [id])
-  positionLevelRequirementFields PositionLevelRequirementFields @relation(fields: [requirementLevelsId], references: [id])
+  positionLevelId                Int                            @map("position_level_id") @db.Int
+  requirementLevelId             Int                            @map("requirement_level_id") @db.Int
+  value                          String?                        @db.Text
+  positionLevels                 PositionLevels                 @relation(fields: [positionLevelId], references: [id])
+  positionLevelRequirementFields PositionLevelRequirementFields @relation(fields: [requirementLevelId], references: [id])
 
-  @@id([positionLevelsId, requirementLevelsId])
+  @@id([positionLevelId, requirementLevelId])
   @@map("position_level_requirements")
 }
 

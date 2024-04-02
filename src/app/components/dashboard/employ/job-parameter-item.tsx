@@ -1,9 +1,11 @@
+'use client';
+
 import React from 'react';
 import ActionDropdown from '../candidate/action-dropdown';
 import { useState } from 'react';
 import { ExpendableButton } from './expendable-button';
 
-const EmployJobParameter = ({ parameterData }) => {
+const EmployJobParameter = ({ positionLevelRequirementData }) => {
   const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
     {},
   );
@@ -30,14 +32,14 @@ const EmployJobParameter = ({ parameterData }) => {
                 </tr>
               </thead>
               <tbody className="border-0">
-                {parameterData?.map((data, index) => (
+                {positionLevelRequirementData?.map((data, index) => (
                   <React.Fragment key={index}>
                     <tr>
                       <td
                         style={{ width: '136.66px' }}
-                      >{`${data?.parameterId ?? ''}`}</td>
+                      >{`${index + 1 ?? ''}`}</td>
                       {/* <td>{parameterData?.parameterIndex + 1}</td> */}
-                      <td>{`${data?.parameterName ?? ''}`}</td>
+                      <td>{`${data?.name ?? ''} (Level: ${data?.level})`}</td>
                       <td
                         className="d-flex align-items-center justify-content-center"
                         style={{ height: '73px' }}
