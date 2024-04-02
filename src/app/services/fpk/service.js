@@ -40,6 +40,7 @@ export async function getAllFullyApprovedFpk(offset, perPage) {
             taId: true,
           },
         },
+        efpkJobVacancies: true,
         // efpkJobVacancies: {
         //   select: {
         //     status: true,
@@ -190,6 +191,7 @@ export async function searchFpk(query, offset, perPage) {
             taId: true,
           },
         },
+        efpkJobVacancies: true,
         // efpkJobVacancies: {
         //   select: {
         //     status: true,

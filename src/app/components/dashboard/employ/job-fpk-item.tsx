@@ -264,7 +264,15 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
                                 </p>
                                 <p>
                                   <b>Job Posting: </b>
-                                  {`${'No'}`}
+                                  {`${data?.efpkJobVacancies ? 'Yes' : 'No'}`}
+                                </p>
+                                <p>
+                                  <b>Total Need: </b>
+                                  {`${data?.totalNeed ?? ''}`}
+                                </p>
+                                <p>
+                                  <b>Total Relized: </b>
+                                  {`${data?.totalRelized ?? ''}`}
                                 </p>
                               </div>
                             </div>

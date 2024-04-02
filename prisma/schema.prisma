@@ -165,7 +165,7 @@ model Efpk {
   efpkTa                    EfpkTa?
   efpkTaTransactions        EfpkTaTransactions[]
   efpkInitiatorInformations EfpkInitiatorInformations?
-  efpkJobVacancies          EfpkJobVacancies?
+  efpkJobVacancies          EfpkJobVacancies[]
 
   @@map("efpk")
 }
@@ -193,11 +193,11 @@ model EfpkTaTransactions {
 }
 
 model EfpkJobVacancies {
-  id     Int    @id() @default(autoincrement()) @db.Int
-  status String @db.NVarChar(20)
-  efpkId Int    @unique() @map("efpk_id") @db.Int
-  efpk   Efpk   @relation(fields: [efpkId], references: [id])
+  efpkId       Int  @map("efpk_id") @db.Int
+  jobVacancyId Int  @map("job_vacancy_id") @db.Int
+  efpk         Efpk @relation(fields: [efpkId], references: [id])
 
+  @@id([efpkId, jobVacancyId])
   @@map("efpk_job_vacancies")
 }
 
