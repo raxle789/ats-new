@@ -72,15 +72,15 @@ const RegisterFormStep1 = () => {
   const dispatch = useAppDispatch();
   const step1Data = useAppSelector((state) => state.register.dataCandidate);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
-  const [file, setFile] = useState<File | null>(null);
+  const [file, setFile] = useState<File | undefined>(undefined);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
 
     if (file) {
       setUploadedFileName(file.name);
-      setFile(file);
     }
+    setFile(file);
   };
 
   const handleUpload = async () => {
@@ -90,7 +90,7 @@ const RegisterFormStep1 = () => {
     }
 
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('file', file);
 
     try {
       await axios.post('/api/upload', formData, {
@@ -172,7 +172,7 @@ const RegisterFormStep1 = () => {
     console.log('data form 2: ', step1Data);
   }, [step1Data]);
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
       <div className="row">
         <div className="col-12">
           <div className="input-group-meta position-relative mb-25">
@@ -237,7 +237,7 @@ const RegisterFormStep1 = () => {
             </div>
           </div>
         </div>
-        <div className="">
+        {/* <div className="">
           <div className="input-group-meta position-relative mb-25">
             <label>Upload Photo*</label>
             <div className="upload-container">
@@ -271,18 +271,27 @@ const RegisterFormStep1 = () => {
         </div>
         <div className="col-12">
           {uploadedFileName && <p>Uploaded File: {uploadedFileName}</p>}
-        </div>
+        </div> */}
 
-        <div className="col-12">
+        <div className="col-5 col-sm-6">
+          <button
+            className="btn-eleven fw-500 tran3s mt-20"
+            onClick={(e) => {
+              e.preventDefault();
+              dispatch(setStep({ newStep: 1 }));
+            }}
+            // onClick={() => dispatch(setStep({ newStep: 2 }))}
+          >
+            Back
+          </button>
+        </div>
+        <div className="col-5 col-sm-6">
           {/* {isFormSubmitted && Object.keys(errors).length > 0 && (
             <div className="alert alert-danger" role="alert">
               Please fill in all required fields.
             </div>
           )} */}
-          <button
-            type="submit"
-            className="btn-eleven fw-500 tran3s d-block mt-20"
-          >
+          <button type="submit" className="btn-eleven fw-500 tran3s mt-20">
             Next
           </button>
         </div>

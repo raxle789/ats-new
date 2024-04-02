@@ -67,6 +67,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href="./favicon.ico" sizes="any" />
+        <link rel="stylesheet" href="@/assets/css/font-awesome/all.min.css" />
       </head>
       <body
         suppressHydrationWarning={true}

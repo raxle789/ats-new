@@ -38,7 +38,7 @@ const EmployJobItem = ({ jobData }) => {
                 {jobData?.map((data, index) => (
                   <React.Fragment key={index}>
                     <tr>
-                      <th scope="row"></th>
+                      <td></td>
                       <td>
                         <b>{`${data?.jobPosition ?? ''}`}</b>
                         <br />

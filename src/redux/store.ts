@@ -1,5 +1,5 @@
-import wishlistSlice from './features/wishlist';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import wishlistSlice from './features/wishlist';
 import filterSlice from './features/filterSlice';
 import stepSlice from './features/stepSlice';
 import registerSlice from './features/registerSlice';
@@ -21,7 +21,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: 'ats-erajaya',
   storage,
-  blacklist: ['step', 'applicantStep', 'sidebar'],
+  whitelist: ['applicantStep'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

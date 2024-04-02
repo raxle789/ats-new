@@ -210,7 +210,7 @@ const RegisterFormStep2 = () => {
             </div>
           </div>
         </div>
-        <div className="col-6">
+        {/* <div className="col-6">
           <div className="input-group-meta position-relative mb-25">
             <label>Domicile*</label>
             <select
@@ -225,17 +225,11 @@ const RegisterFormStep2 = () => {
                 </option>
               ))}
             </select>
-            {/* <input
-              type="text"
-              placeholder="James Brower"
-              {...register('domicile', { required: `Domicile is required!` })}
-              name="name"
-            /> */}
             <div className="help-block with-errors">
               <ErrorMsg msg={errors.domicile?.message!} />
             </div>
           </div>
-        </div>
+        </div> */}
         <div className="col-6">
           <div className="input-group-meta position-relative mb-25">
             <label>Last Education Level*</label>
@@ -760,7 +754,7 @@ const RegisterFormStep2 = () => {
           <button
             className="btn-eleven fw-500 tran3s mt-20"
             onClick={(e) => {
-              e.preventDefault(); // Mencegah default behavior dari tombol
+              e.preventDefault();
               dispatch(setStep({ newStep: 2 }));
             }}
             // onClick={() => dispatch(setStep({ newStep: 2 }))}
