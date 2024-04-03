@@ -1,5 +1,3 @@
-'use server';
-
 import EmployJobParameterItem from './submit-job-parameter-item';
 import {
   getPositionLevelRequirementData,

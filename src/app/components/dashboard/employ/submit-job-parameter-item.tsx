@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Cascader,
   DatePicker,
@@ -50,11 +50,15 @@ const EmployJobParameterItem = ({
   //   });
   // };
 
-  const formModalRef = useRef(null);
-  function handleFpkModal(values) {
-    console.info(values);
-    // setModalOpen(false);
-  }
+  const formRef = useRef({});
+
+  console.info;
+
+  // useEffect(() => {
+  //   positionLevelRequirementData.foreach((data) => {
+  //     formRef.current[data.id].setFieldsValue({});
+  //   });
+  // });
 
   function handleJobParameter(values) {
     confirm({
@@ -183,6 +187,7 @@ const EmployJobParameterItem = ({
       {contextHolder}
       <Form
         form={form}
+        ref={formRef}
         className="bg-white card-box border-20"
         layout="vertical"
         variant="filled"
@@ -339,32 +344,7 @@ const EmployJobParameterItem = ({
                     .toLowerCase()
                     .localeCompare((optionB?.label ?? '').toLowerCase())
                 }
-                options={[
-                  {
-                    value: '1',
-                    label: 'Not Identified',
-                  },
-                  {
-                    value: '2',
-                    label: 'Closed',
-                  },
-                  {
-                    value: '3',
-                    label: 'Communicated',
-                  },
-                  {
-                    value: '4',
-                    label: 'Identified',
-                  },
-                  {
-                    value: '5',
-                    label: 'Resolved',
-                  },
-                  {
-                    value: '6',
-                    label: 'Cancelled',
-                  },
-                ]}
+                options={lineIndustryData}
               />
             </Form.Item>
           </div>
@@ -397,32 +377,7 @@ const EmployJobParameterItem = ({
                     .toLowerCase()
                     .localeCompare((optionB?.label ?? '').toLowerCase())
                 }
-                options={[
-                  {
-                    value: '1',
-                    label: 'Not Identified',
-                  },
-                  {
-                    value: '2',
-                    label: 'Closed',
-                  },
-                  {
-                    value: '3',
-                    label: 'Communicated',
-                  },
-                  {
-                    value: '4',
-                    label: 'Identified',
-                  },
-                  {
-                    value: '5',
-                    label: 'Resolved',
-                  },
-                  {
-                    value: '6',
-                    label: 'Cancelled',
-                  },
-                ]}
+                options={educationLevelData}
               />
             </Form.Item>
           </div>

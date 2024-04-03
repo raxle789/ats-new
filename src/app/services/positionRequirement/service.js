@@ -172,8 +172,14 @@ export async function setPositionLevelRequirement(
   try {
     await prisma.positionLevelRequirements.upsert({
       where: {
-        positionLevelId: positionLevelId,
-        requirementFieldId: requirementFieldId,
+        AND: [
+          {
+            positionLevelId: positionLevelId,
+          },
+          {
+            requirementFieldId: requirementFieldId,
+          },
+        ],
       },
       update: {
         value: value,

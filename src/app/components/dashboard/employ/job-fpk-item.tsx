@@ -4,13 +4,14 @@ import { Button, Form, Select, Input, Modal, notification } from 'antd';
 import { useRouter } from 'next/navigation';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useState, useEffect, useRef } from 'react';
-import { assignTa } from '@/lib/action/fpk/action';
 import { ExpendableButton } from './expendable-button';
 
 const { confirm } = Modal;
 
-const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
+const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
   const formRef = useRef({});
+
+  const [form] = Form.useForm();
 
   const [loading, setLoading] = useState(false);
 
@@ -82,7 +83,10 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
               });
               resolve();
               assignTa(values.efpkId, values.taId)
-                .then(() => router.refresh())
+                .then(() => {
+                  form.resetFields();
+                  router.refresh();
+                })
                 .catch((e) => console.log('Error assigning TA: ', e));
             }, 2000);
           }).catch((e) => console.log('Error assigning TA: ', e));
@@ -148,6 +152,7 @@ const EmployJobFpkItem = ({ fpkData, offset, taData }) => {
                       {/* <td>{`${data?.CandidateSource ? 'Yes' : 'No'}`}</td> */}
                       <td>
                         <Form
+                          form={form}
                           ref={(el) => (formRef.current[data.id] = el)}
                           name={`assignTaForm${data.id}`}
                           layout="vertical"

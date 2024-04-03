@@ -1,5 +1,3 @@
-'use server';
-
 import React from 'react';
 // import DashboardHeader from '../candidate/dashboard-header';
 import {
