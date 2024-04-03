@@ -12,6 +12,12 @@ export class Educations {
     candidate!: Candidates;
 
     @Column({
+        type: 'nvarchar',
+        length: 32
+    })
+    level: string;
+
+    @Column({
         type: 'smallint'
     })
     start_year!: number;

@@ -8,6 +8,7 @@ import applicantStepSlice from './features/applicantStepSlice';
 
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+import userRegisterStepSlice from './features/fatkhur/registerSlice';
 
 const rootReducer = combineReducers({
   filter: filterSlice,
@@ -16,6 +17,8 @@ const rootReducer = combineReducers({
   step: stepSlice,
   register: registerSlice,
   applicantStep: applicantStepSlice,
+  // fatkhur
+  UserRegisterStep: userRegisterStepSlice
 });
 
 const persistConfig = {
