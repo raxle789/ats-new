@@ -1,14 +1,16 @@
-'use client';
+'use server';
 
 import React from 'react';
 // import DashboardHeader from '../candidate/dashboard-header';
+import {
+  getAllPositionLevelRequirementData,
+  searchPositionLevelRequirementData,
+} from '@/lib/action/positionLevelRequirement/action';
 import EmployJobParameter from './job-parameter-item';
 import EmployShortSelect from './short-select';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import Pagination from '@/ui/pagination';
 // import Image from 'next/image';
 // import search from '@/assets/dashboard/images/icon/icon_10.svg';
-import { useDebouncedCallback } from 'use-debounce';
 import SearchBar from '@/ui/search-bar';
 import { ExpendableButton } from './expendable-button';
 
@@ -55,40 +57,74 @@ const parameterData = [
   },
 ];
 
-// props type
-type IProps = {
-  setIsOpenSidebar: React.Dispatch<React.SetStateAction<boolean>>;
-};
-const EmployParameterArea = () => {
-  const searchParams = useSearchParams();
-  const page = searchParams.get('page') ?? '1';
-  const perPage = searchParams.get('perPage') ?? '2';
-  let offset = 0;
+const EmployParameterArea = async ({ searchParams }) => {
+  const page = searchParams?.page ?? '1';
 
-  let newParameterData = [];
-  const searchQuery = searchParams.get('query') ?? '';
-  const router = useRouter();
-  const pathname = usePathname();
+  const perPage = searchParams?.perPage ?? '10';
 
-  if (searchQuery) {
-    offset = 0;
-    newParameterData = parameterData.filter((data) => {
-      return data.parameterName.includes(searchQuery);
-    });
-  } else {
-    offset = (Number(page) - 1) * Number(perPage);
-    newParameterData = parameterData.slice(offset, offset + Number(perPage));
-  }
+  const searchQuery = searchParams?.query ?? '';
 
-  const handleParameterSearch = useDebouncedCallback((value) => {
-    const params = new URLSearchParams(searchParams);
-    if (value) {
-      params.set('query', value);
+  const offset = (Number(page) - 1) * Number(perPage);
+
+  const getData = () => {
+    if (searchQuery) {
+      return searchPositionLevelRequirementData(searchQuery, offset, perPage)
+        .then((res) => {
+          const data = res?.data ?? [];
+
+          const total = res?.total ? res?.total : 0;
+
+          return {
+            data: data,
+            total: total,
+          };
+        })
+        .catch((e) =>
+          console.log('Error searching position level requirements: ', e),
+        );
     } else {
-      params.delete('query');
+      return getAllPositionLevelRequirementData(offset, Number(perPage))
+        .then((res) => {
+          const data = res?.data ?? [];
+
+          const total = res?.total ? res?.total : 0;
+
+          return {
+            data: data,
+            total: total,
+          };
+        })
+        .catch((e) =>
+          console.log('Error getting position level requirements: ', e),
+        );
     }
-    router.replace(`${pathname}?${params.toString()}`);
-  }, 500);
+  };
+
+  // if (searchQuery) {
+  //   offset = 0;
+  //   newParameterData = parameterData.filter((data) => {
+  //     return data.parameterName.includes(searchQuery);
+  //   });
+  // } else {
+  //   offset = (Number(page) - 1) * Number(perPage);
+  //   newParameterData = parameterData.slice(offset, offset + Number(perPage));
+  // }
+
+  // const handleParameterSearch = useDebouncedCallback((value) => {
+  //   const params = new URLSearchParams(searchParams);
+  //   if (value) {
+  //     params.set('query', value);
+  //   } else {
+  //     params.delete('query');
+  //   }
+  //   router.replace(`${pathname}?${params.toString()}`);
+  // }, 500);
+
+  const positionLevelRequirementData = await getData();
+
+  // const userData = await getUserData();
+
+  // console.info(userData);
 
   return (
     <>
@@ -98,7 +134,7 @@ const EmployParameterArea = () => {
 
       <div className="job-fpk-header d-sm-flex flex-wrap align-items-center justify-content-between mb-40 lg-mb-30">
         <h2 className="main-title m0 flex-grow-1">
-          Position Level Requirement
+          Position Level Requirements
         </h2>
         <div className="d-flex xs-mt-30 justify-content-between align-items-center">
           <SearchBar />
@@ -110,14 +146,21 @@ const EmployParameterArea = () => {
       </div>
 
       <div className="bg-white card-box border-20">
-        <EmployJobParameter parameterData={parameterData} />
+        <EmployJobParameter
+          positionLevelRequirementData={positionLevelRequirementData?.data}
+        />
       </div>
 
       <div className="d-flex justify-content-center mt-30">
         <Pagination
           pageRangeDisplayed={3}
-          totalData={parameterData.length}
-          disabled={searchQuery ? true : false}
+          totalData={positionLevelRequirementData?.total}
+          disabled={
+            !positionLevelRequirementData ||
+            positionLevelRequirementData?.total <= Number(perPage)
+              ? true
+              : false
+          }
         />
         {/* <ul className="style-none d-flex align-items-center">
           <li>

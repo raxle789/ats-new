@@ -165,7 +165,7 @@ model Efpk {
   efpkTa                    EfpkTa?
   efpkTaTransactions        EfpkTaTransactions[]
   efpkInitiatorInformations EfpkInitiatorInformations?
-  efpkJobVacancies          EfpkJobVacancies?
+  efpkJobVacancies          EfpkJobVacancies[]
 
   @@map("efpk")
 }
@@ -193,11 +193,11 @@ model EfpkTaTransactions {
 }
 
 model EfpkJobVacancies {
-  id     Int    @id() @default(autoincrement()) @db.Int
-  status String @db.NVarChar(20)
-  efpkId Int    @unique() @map("efpk_id") @db.Int
-  efpk   Efpk   @relation(fields: [efpkId], references: [id])
+  efpkId       Int  @map("efpk_id") @db.Int
+  jobVacancyId Int  @map("job_vacancy_id") @db.Int
+  efpk         Efpk @relation(fields: [efpkId], references: [id])
 
+  @@id([efpkId, jobVacancyId])
   @@map("efpk_job_vacancies")
 }
 
@@ -321,7 +321,7 @@ model skill_types {
 }
 
 model Users {
-  id                        Int                         @id(map: "PK_a3ffb1c0c8416b9fc6f907b7433") @db.Int
+  id                        Int                         @id(map: "PK_a3ffb1c0c8416b9fc6f907b7433") @default(autoincrement()) @db.Int
   name                      String                      @db.NVarChar(256)
   email                     String                      @unique(map: "UQ_97672ac88f789774dd47f7c8be3") @db.NVarChar(128)
   is_email_verified         Boolean?
@@ -374,24 +374,24 @@ model EducationLevels {
   @@map("education_levels")
 }
 
-model PositionLevelRequirementFields {
+model RequirementFields {
   id                        Int                         @id() @default(autoincrement()) @db.Int
   name                      String                      @db.NVarChar(510)
   createdAt                 DateTime?                   @default(now()) @map("created_at") @db.DateTime
   updatedAt                 DateTime?                   @updatedAt @map("updated_at") @db.DateTime
   positionLevelRequirements PositionLevelRequirements[]
 
-  @@map("position_level_requirement_fields")
+  @@map("requirement_fields")
 }
 
 model PositionLevelRequirements {
-  positionLevelsId               Int                            @map("position_levels_id") @db.Int
-  requirementLevelsId            Int                            @map("requirement_levels_id") @db.Int
-  value                          String                         @db.Text
-  positionLevels                 PositionLevels                 @relation(fields: [positionLevelsId], references: [id])
-  positionLevelRequirementFields PositionLevelRequirementFields @relation(fields: [requirementLevelsId], references: [id])
+  positionLevelId    Int               @map("position_level_id") @db.Int
+  requirementFieldId Int               @map("requirement_field_id") @db.Int
+  value              String?           @db.Text
+  positionLevels     PositionLevels    @relation(fields: [positionLevelId], references: [id])
+  requirementFields  RequirementFields @relation(fields: [requirementFieldId], references: [id])
 
-  @@id([positionLevelsId, requirementLevelsId])
+  @@id([positionLevelId, requirementFieldId])
   @@map("position_level_requirements")
 }
 

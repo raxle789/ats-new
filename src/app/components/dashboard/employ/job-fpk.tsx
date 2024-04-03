@@ -1,4 +1,4 @@
-export const revalidate = 0;
+'use server';
 
 import EmployShortSelect from './short-select';
 import React from 'react';
@@ -76,10 +76,25 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
   const searchQuery = searchParams?.query ?? '';
   const offset = (Number(page) - 1) * Number(perPage);
 
-  const getData = async () => {
+  const getData = () => {
     if (searchQuery) {
-      return await searchFpkData(searchQuery, offset, Number(perPage)).then(
-        (res) => {
+      return searchFpkData(searchQuery, offset, Number(perPage))
+        .then((res) => {
+          const data = res?.data ?? [];
+
+          const total = res?.total ? res?.total : 0;
+
+          return {
+            data: data,
+            total: total,
+          };
+        })
+        .catch((e) => console.log('Error search efpk data: ', e));
+    } else {
+      // setOffset((Number(page) - 1) * Number(perPage));
+
+      return getFpkData(offset, Number(perPage))
+        .then((res) => {
           const data = res.data ?? [];
 
           const total = res.total ? res.total : 0;
@@ -88,21 +103,8 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
             data: data,
             total: total,
           };
-        },
-      );
-    } else {
-      // setOffset((Number(page) - 1) * Number(perPage));
-
-      return await getFpkData(offset, Number(perPage)).then((res) => {
-        const data = res.data ?? [];
-
-        const total = res.total ? res.total : 0;
-
-        return {
-          data: data,
-          total: total,
-        };
-      });
+        })
+        .catch((e) => console.log('Error get efpk data: ', e));
 
       // getFpkTotal('fpkTotal').then((res) => {
       //   setFpkTotal(res[0].total);

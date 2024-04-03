@@ -1,9 +1,14 @@
+'use client';
+
 import React from 'react';
+import CryptoJS from 'crypto-js';
+import Link from 'next/link';
+import { FaEdit } from 'react-icons/fa';
 import ActionDropdown from '../candidate/action-dropdown';
 import { useState } from 'react';
 import { ExpendableButton } from './expendable-button';
 
-const EmployJobParameter = ({ parameterData }) => {
+const EmployJobParameter = ({ positionLevelRequirementData }) => {
   const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
     {},
   );
@@ -30,14 +35,14 @@ const EmployJobParameter = ({ parameterData }) => {
                 </tr>
               </thead>
               <tbody className="border-0">
-                {parameterData?.map((data, index) => (
+                {positionLevelRequirementData?.map((data, index) => (
                   <React.Fragment key={index}>
                     <tr>
                       <td
                         style={{ width: '136.66px' }}
-                      >{`${data?.parameterId ?? ''}`}</td>
+                      >{`${index + 1 ?? ''}`}</td>
                       {/* <td>{parameterData?.parameterIndex + 1}</td> */}
-                      <td>{`${data?.parameterName ?? ''}`}</td>
+                      <td>{`${data?.name ?? ''} (Level: ${data?.level})`}</td>
                       <td
                         className="d-flex align-items-center justify-content-center"
                         style={{ height: '73px' }}
@@ -48,8 +53,21 @@ const EmployJobParameter = ({ parameterData }) => {
                         />
                       </td>
                       <td>
-                        <div className="action-dots float-end">
-                          <button
+                        <div className="">
+                          <Link
+                            href={{
+                              pathname: '/dashboard/ta/submit-parameter',
+                              query: {
+                                '': CryptoJS.Rabbit.encrypt(
+                                  String(data.id),
+                                  process.env.NEXT_PUBLIC_SECRET_KEY,
+                                ).toString(),
+                              },
+                            }}
+                          >
+                            <FaEdit />
+                          </Link>
+                          {/* <button
                             className="action-btn dropdown-toggle"
                             type="button"
                             data-bs-toggle="dropdown"
@@ -57,7 +75,7 @@ const EmployJobParameter = ({ parameterData }) => {
                           >
                             <span></span>
                           </button>
-                          <ActionDropdown />
+                          <ActionDropdown /> */}
                           {/* <i className="fa-solid fa-trash-can">oke</i> */}
                         </div>
                       </td>
@@ -74,7 +92,17 @@ const EmployJobParameter = ({ parameterData }) => {
                             }
                           >
                             <div className="row">
-                              <div className="col-6">
+                              {data?.positionLevelRequirements?.map(
+                                (d, index) => {
+                                  return (
+                                    <p key={index}>
+                                      <b>{`${d?.requirementFields?.name}: `}</b>
+                                      {`${d?.value ?? '-'}`}
+                                    </p>
+                                  );
+                                },
+                              )}
+                              {/* <div className="col-6">
                                 <p>
                                   <b>Total Year Of Experience: </b>
                                   {`${data?.totalYearOfExperienceParameter ?? '-'}`}
@@ -101,7 +129,7 @@ const EmployJobParameter = ({ parameterData }) => {
                                   <b>Job Level: </b>
                                   {`${data?.jobLevelParameter ? 'Yes' : 'No'}`}
                                 </p>
-                              </div>
+                              </div> */}
                             </div>
                           </div>
                         </td>

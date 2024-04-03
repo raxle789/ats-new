@@ -1,10 +1,12 @@
+'use server';
+
 import prisma from '../connection/db';
 
 // const sql = require('mssql');
 
 const moment = require('moment');
 
-export async function getAllFullyApprovedFpk(offset, perPage) {
+export async function getAllFpk(offset, perPage) {
   try {
     // const db = await getDb(poolName);
 
@@ -40,6 +42,7 @@ export async function getAllFullyApprovedFpk(offset, perPage) {
             taId: true,
           },
         },
+        efpkJobVacancies: true,
         // efpkJobVacancies: {
         //   select: {
         //     status: true,
@@ -57,11 +60,14 @@ export async function getAllFullyApprovedFpk(offset, perPage) {
   } catch (e) {
     console.log(e);
 
-    return [];
+    return {
+      data: [],
+      total: 0,
+    };
   }
 }
 
-export async function getAllFullyApprovedFpkTotal() {
+export async function getAllFpkTotal() {
   try {
     // const db = await getDb(poolName);
 
@@ -76,7 +82,7 @@ export async function getAllFullyApprovedFpkTotal() {
   } catch (e) {
     console.log(e);
 
-    return [];
+    return 0;
   }
 }
 
@@ -190,6 +196,7 @@ export async function searchFpk(query, offset, perPage) {
             taId: true,
           },
         },
+        efpkJobVacancies: true,
         // efpkJobVacancies: {
         //   select: {
         //     status: true,
@@ -285,12 +292,12 @@ export async function searchFpk(query, offset, perPage) {
 
     return {
       data: [],
-      total: [],
+      total: 0,
     };
   }
 }
 
-export async function getAllTaData() {
+export async function getAllTa() {
   try {
     // const db = await getDb(poolName);
 
@@ -327,7 +334,9 @@ export async function getAllTaData() {
   } catch (e) {
     console.log(e);
 
-    return [];
+    return {
+      data: [],
+    };
   }
 }
 
@@ -361,7 +370,5 @@ export async function assignTaToFpk(efpkId, taId) {
     });
   } catch (e) {
     console.log(e);
-
-    return [];
   }
 }
