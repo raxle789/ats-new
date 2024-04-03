@@ -11,14 +11,25 @@ import CryptoJS from 'crypto-js';
 const EmployJobParameter = async ({ searchParams }) => {
   const query = searchParams ?? {};
 
-  const encryptedValue = Object?.keys(query)?.map((key) => query[key]);
+  const encryptedQuery = Object?.keys(query)?.map((key) => query[key]);
+  const encryptedValue = JSON.stringify({ encryptedQuery }).toString();
 
-  const decryptedValue = CryptoJS.Rabbit.decrypt(
-    String(encryptedValue[0]),
-    process.env.NEXT_PUBLIC_SECRET_KEY,
-  );
+  console.info('encryptedQuery: ', encryptedQuery);
+  console.info('encryptedValue: ', encryptedValue);
+
+  // const info2 = CryptoJS.AES.decrypt(
+  //   encryptedValue,
+  //   process.env.NEXT_PUBLIC_SECRET_KEY,
+  // ).toString(CryptoJS.enc.Utf8);
+
+  const key: string | WordArray = process.env.NEXT_PUBLIC_SECRET_KEY;
+
+  const decryptedValue = CryptoJS.Rabbit.decrypt(encryptedValue[0], key);
+
+  console.info('decryptedValue: ', decryptedValue);
 
   const originalValue = decryptedValue.toString(CryptoJS.enc.Utf8);
+  console.log('originalValue: ', originalValue);
 
   const positionLevelRequirementData = await getPositionLevelRequirementData(
     Number(originalValue),
