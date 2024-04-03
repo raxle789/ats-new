@@ -80,7 +80,7 @@ const RegisterArea = () => {
                 role="tabpanel"
               >
                 <RegisterForm />
-                <div className="d-flex align-items-center mt-30 mb-10">
+                <div className="d-flex align-items-center mt-20 mb-10">
                   <div className="line"></div>
                   <span className="pe-3 ps-3">OR</span>
                   <div className="line"></div>

@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import * as Yup from 'yup';
 import { Resolver, useForm, SubmitHandler } from 'react-hook-form';
@@ -10,13 +10,12 @@ import icon from '@/assets/images/icon/icon_60.svg';
 type IFormData = {
   email: string;
   password: string;
+  otp: string;
 };
 
-// schema
-const schema = Yup.object().shape({
-  email: Yup.string().required().email().label('Email'),
-  password: Yup.string().required().min(6).label('Password'),
-});
+interface LoginFormProps {
+  checkedEmployee: boolean;
+}
 
 // resolver
 const resolver: Resolver<IFormData> = async (values) => {
@@ -34,6 +33,12 @@ const resolver: Resolver<IFormData> = async (values) => {
       message: 'Password is required.',
     };
   }
+  if (!values.otp) {
+    errors.otp = {
+      type: 'required',
+      message: 'OTP is required.',
+    };
+  }
 
   return {
     values: Object.keys(errors).length > 0 ? {} : values,
@@ -41,8 +46,9 @@ const resolver: Resolver<IFormData> = async (values) => {
   };
 };
 
-const LoginForm = () => {
+const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
   const [showPass, setShowPass] = useState<boolean>(false);
+  const clientKey = process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY;
   // react hook form
   const {
     register,
@@ -58,11 +64,17 @@ const LoginForm = () => {
     }
     reset();
   };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mt-10">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="mt-10"
+      action=""
+      method="POST"
+    >
       <div className="row">
         <div className="col-12">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-20">
             <label>Email*</label>
             <input
               type="email"
@@ -98,6 +110,32 @@ const LoginForm = () => {
             </div>
           </div>
         </div>
+        {checkedEmployee && (
+          <div className="col-12 mb-15">
+            <div className="input-group-meta position-relative">
+              <label>OTP*</label>
+              <input
+                type="text"
+                placeholder="OTP Code"
+                {...register('otp', { required: `OTP is required!` })}
+                name="otp"
+              />
+              <div className="help-block with-errors">
+                <ErrorMsg msg={errors.otp?.message!} />
+              </div>
+            </div>
+          </div>
+        )}
+        {!checkedEmployee && (
+          <div className="col-12 mb-10">
+            <div
+              className="g-recaptcha"
+              data-sitekey={clientKey}
+              data-action="LOGIN"
+            ></div>
+          </div>
+        )}
+
         <div className="col-12">
           <div className="agreement-checkbox d-flex justify-content-between align-items-center">
             <div>

@@ -94,7 +94,7 @@ const RegisterForm = () => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className="row">
         <div className="col-12">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-20">
             <label>Email*</label>
             <input
               type="email"
@@ -166,7 +166,7 @@ const RegisterForm = () => {
           )} */}
           <button
             type="submit"
-            className="btn-eleven fw-500 tran3s d-block mt-20"
+            className="btn-eleven fw-500 tran3s d-block mt-10"
           >
             Next
           </button>

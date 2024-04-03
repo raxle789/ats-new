@@ -25,6 +25,7 @@ const jobTitle: string[] = [
 ];
 const lineIndustry: string[] = ['Agribusiness', 'Apparel', 'Automotive'];
 const level: string[] = ['Director', 'VP', 'General Manager'];
+const school: string[] = ['University X', 'University Y', 'University Z'];
 
 // form data type
 type IFormData = {
@@ -194,7 +195,7 @@ const RegisterFormStep2 = () => {
     <form>
       <div className="row">
         <div className="col-6">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-20">
             <label>Gender*</label>
             <select
               className="form-select"
@@ -231,7 +232,7 @@ const RegisterFormStep2 = () => {
           </div>
         </div> */}
         <div className="col-6">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-20">
             <label>Last Education Level*</label>
             <select
               className="form-select"
@@ -253,7 +254,7 @@ const RegisterFormStep2 = () => {
           </div>
         </div>
         <div className="col-6">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-20">
             <label>Major*</label>
             <select
               className="form-select"
@@ -274,7 +275,27 @@ const RegisterFormStep2 = () => {
             </div>
           </div>
         </div>
-        <div className="col-12">
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-20">
+            <label>University/School*</label>
+            <select
+              className="form-select"
+              aria-label="Default select example"
+              {...register('school', { required: `School is required!` })}
+            >
+              <option value="choose-school">Please choose</option>
+              {school.map((item, index) => (
+                <option key={index} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+            <div className="help-block with-errors">
+              <ErrorMsg msg={errors.school?.message!} />
+            </div>
+          </div>
+        </div>
+        {/* <div className="col-12">
           <div className="input-group-meta position-relative mb-25">
             <label>University/School*</label>
             <input
@@ -287,9 +308,9 @@ const RegisterFormStep2 = () => {
               <ErrorMsg msg={errors.school?.message!} />
             </div>
           </div>
-        </div>
+        </div> */}
         <div className="col-6">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-20">
             <label>Start Year*</label>
             <input
               type="number"
@@ -305,7 +326,7 @@ const RegisterFormStep2 = () => {
           </div>
         </div>
         <div className="col-6">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-20">
             <label>End Year*</label>
             <input
               type="number"
@@ -321,10 +342,11 @@ const RegisterFormStep2 = () => {
           </div>
         </div>
         <div className="col-6">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-20">
             <label>GPA*</label>
             <input
               type="text"
+              placeholder="3.70"
               {...register('gpa', {
                 required: `GPA is required!`,
               })}
@@ -336,7 +358,7 @@ const RegisterFormStep2 = () => {
           </div>
         </div>
         <div className="col-6">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-20">
             <label>Source*</label>
             <select
               className="form-select"
@@ -357,7 +379,7 @@ const RegisterFormStep2 = () => {
             </div>
           </div>
         </div>
-        <div className="position-relative mb-25">
+        <div className="position-relative mb-20">
           {/* <label>LinkedIn*</label> */}
           <div className="form-check">
             <input
@@ -415,7 +437,7 @@ const RegisterFormStep2 = () => {
         ) : (
           <>
             <div className="col-12">
-              <div className="input-group-meta position-relative mb-25">
+              <div className="input-group-meta position-relative mb-20">
                 <label>Company Name - Last*</label>
                 <input
                   type="text"
@@ -431,7 +453,7 @@ const RegisterFormStep2 = () => {
               </div>
             </div>
             <div className="col-6">
-              <div className="input-group-meta position-relative mb-25">
+              <div className="input-group-meta position-relative mb-20">
                 <label>Job Function*</label>
                 <select
                   className="form-select"
@@ -453,7 +475,7 @@ const RegisterFormStep2 = () => {
               </div>
             </div>
             <div className="col-6">
-              <div className="input-group-meta position-relative mb-25">
+              <div className="input-group-meta position-relative mb-20">
                 <label>Job Title*</label>
                 <select
                   className="form-select"
@@ -475,7 +497,7 @@ const RegisterFormStep2 = () => {
               </div>
             </div>
             <div className="col-6">
-              <div className="input-group-meta position-relative mb-25">
+              <div className="input-group-meta position-relative mb-20">
                 <label>Line Industry*</label>
                 <select
                   className="form-select"
@@ -497,7 +519,7 @@ const RegisterFormStep2 = () => {
               </div>
             </div>
             <div className="col-6">
-              <div className="input-group-meta position-relative mb-25">
+              <div className="input-group-meta position-relative mb-20">
                 <label>Level*</label>
                 <select
                   className="form-select"
@@ -519,7 +541,7 @@ const RegisterFormStep2 = () => {
               </div>
             </div>
             <div className="col-6">
-              <div className="input-group-meta position-relative mb-25">
+              <div className="input-group-meta position-relative mb-20">
                 <label>Period Start*</label>
                 <div className="form-group">
                   <input
@@ -538,7 +560,7 @@ const RegisterFormStep2 = () => {
               </div>
             </div>
             <div className="col-6">
-              <div className="input-group-meta position-relative mb-25">
+              <div className="input-group-meta position-relative mb-20">
                 <label>Period End*</label>
                 <div className="form-group">
                   <input
@@ -593,7 +615,7 @@ const RegisterFormStep2 = () => {
           </>
         )}
         <div className="">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-20">
             <label>Upload CV*</label>
             <div className="upload-container">
               <input
@@ -620,7 +642,7 @@ const RegisterFormStep2 = () => {
           </div>
         </div>
         <div className="col-6">
-          <div className="position-relative mb-25">
+          <div className="position-relative mb-20">
             <label>Do you have a LinkedIn Account?*</label>
             <div className="form-check">
               <input
@@ -752,12 +774,11 @@ const RegisterFormStep2 = () => {
         </div>
         <div className="col-5 col-sm-6">
           <button
-            className="btn-eleven fw-500 tran3s mt-20"
+            className="btn-eleven fw-500 tran3s mt-10"
             onClick={(e) => {
               e.preventDefault();
               dispatch(setStep({ newStep: 2 }));
             }}
-            // onClick={() => dispatch(setStep({ newStep: 2 }))}
           >
             Back
           </button>
@@ -765,7 +786,7 @@ const RegisterFormStep2 = () => {
         <div className="col-5 col-sm-6">
           <button
             type="submit"
-            className="btn-eleven fw-500 tran3s mt-20"
+            className="btn-eleven fw-500 tran3s mt-10"
             onClick={handleSubmit(onSubmit)}
           >
             Register

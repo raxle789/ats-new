@@ -175,7 +175,7 @@ const RegisterFormStep1 = () => {
     <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
       <div className="row">
         <div className="col-12">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-20">
             <label>Full Name*</label>
             <input
               type="text"
@@ -203,7 +203,7 @@ const RegisterFormStep1 = () => {
           </div>
         </div> */}
         <div className="col-12">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-20">
             <label>Phone Number*</label>
             <input
               type="text"
@@ -275,12 +275,11 @@ const RegisterFormStep1 = () => {
 
         <div className="col-5 col-sm-6">
           <button
-            className="btn-eleven fw-500 tran3s mt-20"
+            className="btn-eleven fw-500 tran3s mt-10"
             onClick={(e) => {
               e.preventDefault();
               dispatch(setStep({ newStep: 1 }));
             }}
-            // onClick={() => dispatch(setStep({ newStep: 2 }))}
           >
             Back
           </button>
@@ -291,7 +290,7 @@ const RegisterFormStep1 = () => {
               Please fill in all required fields.
             </div>
           )} */}
-          <button type="submit" className="btn-eleven fw-500 tran3s mt-20">
+          <button type="submit" className="btn-eleven fw-500 tran3s mt-10">
             Next
           </button>
         </div>

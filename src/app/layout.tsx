@@ -70,6 +70,11 @@ export default function RootLayout({
         <link rel="icon" href="./favicon.ico" sizes="any" />
         <link rel="stylesheet" href="@/assets/css/font-awesome/all.min.css" />
         <Script src="./node_modules/reflect-metadata/Reflect.js"></Script>
+        <Script
+          src="https://www.google.com/recaptcha/enterprise.js"
+          async
+          defer
+        ></Script>
       </head>
       <body
         suppressHydrationWarning={true}

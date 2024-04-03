@@ -55,15 +55,15 @@ const ApplyModal = () => {
             ></button>
             <div className="text-center">
               <h2>Hi, Welcome Back!</h2>
-              <p>
+              {/* <p>
                 Still do not have an account?{' '}
                 <a id="signUpButton" className="fw-500 sign-up-link">
                   Sign up
                 </a>
-              </p>
+              </p> */}
             </div>
             <div className="form-wrapper m-auto">
-              <LoginForm />
+              {/* <LoginForm /> */}
               <div className="d-flex align-items-center mt-30 mb-10">
                 <div className="line"></div>
                 <span className="pe-3 ps-3">OR</span>
@@ -125,12 +125,12 @@ const ApplyModal = () => {
                   </div>
                 </div> */}
               </div>
-              <p className="text-center mt-10">
+              {/* <p className="text-center mt-10">
                 Do not have an account?{' '}
                 <a id="signUpButton2" className="fw-500 sign-up-link">
                   Sign up
                 </a>
-              </p>
+              </p> */}
             </div>
           </div>
         </div>

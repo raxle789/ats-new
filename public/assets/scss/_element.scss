@@ -396,7 +396,7 @@
     .input-group-meta {
       input {
         width: 100%;
-        height: 55px;
+        height: 48px;
         font-size: 16px;
         border: 1px solid rgba($color: #000000, $alpha: 0.06);
         border-radius: 8px;
@@ -413,7 +413,7 @@
       }
       .placeholder_icon {
         position: absolute;
-        height: 55px;
+        height: 48px;
         top: 27px;
         right: 0;
         bottom: 0;
@@ -442,7 +442,7 @@
         height: 26px;
         background: #000;
         position: absolute;
-        top: 14px;
+        top: 11px;
         left: 24px;
         transform: rotate(45deg);
         z-index: 5;
@@ -542,6 +542,7 @@
   }
 }
 
+// Custom Styles
 .step-1 {
   border: 2px solid $color-one;
   background-color: white;
@@ -556,4 +557,8 @@
 
 .sign-up-link {
   cursor: pointer;
+}
+
+.form-select {
+  height: 48px;
 }

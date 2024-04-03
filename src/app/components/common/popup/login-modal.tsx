@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import LoginForm from '../../forms/login-form';
 import linkedin from '@/assets/images/icon/linkedin.png';
@@ -9,6 +9,11 @@ import { useEffect } from 'react';
 
 const LoginModal = () => {
   const router = useRouter();
+  const [isEmployeeChecked, setIsEmployeeChecked] = useState<boolean>(false);
+
+  const handleEmployeeCheckboxChange = (event: any) => {
+    setIsEmployeeChecked(event.target.checked);
+  };
 
   useEffect(() => {
     const handleSignUpClick = () => {
@@ -61,10 +66,19 @@ const LoginModal = () => {
                   Sign up
                 </a>
               </p>
+              <div className="agreement-checkbox">
+                <input
+                  type="checkbox"
+                  id="login-employee"
+                  checked={isEmployeeChecked}
+                  onChange={handleEmployeeCheckboxChange}
+                />
+                <label htmlFor="login-employee">Login as Employee</label>
+              </div>
             </div>
             <div className="form-wrapper m-auto">
-              <LoginForm />
-              <div className="d-flex align-items-center mt-30 mb-10">
+              <LoginForm checkedEmployee={isEmployeeChecked} />
+              <div className="d-flex align-items-center mt-20 mb-10">
                 <div className="line"></div>
                 <span className="pe-3 ps-3">OR</span>
                 <div className="line"></div>
@@ -80,7 +94,7 @@ const LoginModal = () => {
                   </a>
                 </div>
               </div>
-              <p className="text-center mt-10">
+              {/* <p className="text-center mt-10">
                 Do not have an account?{' '}
                 <a
                   id="signUpButton2"
@@ -90,7 +104,7 @@ const LoginModal = () => {
                 >
                   Sign up
                 </a>
-              </p>
+              </p> */}
             </div>
           </div>
         </div>
