@@ -38,6 +38,7 @@ const EmployJobParameterItem = ({
   positionLevelData,
   lineIndustryData,
   educationLevelData,
+  setPositionLevelRequirementData,
 }) => {
   const [api, contextHolder] = notification.useNotification();
 
@@ -51,19 +52,56 @@ const EmployJobParameterItem = ({
   //   });
   // };
 
-  const formRef = useRef({});
+  // const formRef = useRef({});
 
   // console.info(positionLevelRequirementData);
 
-  console.info(positionLevelData);
+  // console.info(positionLevelData);
 
   useEffect(() => {
     positionLevelRequirementData?.positionLevelRequirements?.forEach((data) => {
-      formRef.current[data?.requirementFieldId]?.setFieldsValue({
-        [data?.requirementFields?.name]: data?.value,
-      });
+      if (data?.requirementFields?.name !== 'salary') {
+        try {
+          const data2 = JSON.parse(data?.value);
+
+          const isArray = Array.isArray(data2);
+
+          if (isArray) {
+            form.setFieldsValue({
+              [data?.requirementFields?.name]: data2,
+            });
+          } else {
+            const numberValue = Number(data?.value);
+            form.setFieldsValue({
+              [data?.requirementFields?.name]: isNaN(numberValue)
+                ? data?.value
+                : numberValue,
+            });
+          }
+        } catch (e) {
+          const numberValue = Number(data?.value);
+          form.setFieldsValue({
+            [data?.requirementFields?.name]: isNaN(numberValue)
+              ? data?.value
+              : numberValue,
+          });
+        }
+      } else if (data?.requirementFields?.name === 'salary') {
+        const data2 = JSON.parse(data?.value);
+
+        form.setFieldsValue({
+          [data?.requirementFields?.name]: {
+            start_salary: data2 ? Number(data2[0]) : 0,
+            end_salary: data2 ? Number(data2[1]) : 0,
+          },
+        });
+      }
     });
-  });
+
+    form.setFieldsValue({
+      positionLevelId: positionLevelRequirementData.id,
+    });
+  }, [positionLevelRequirementData]);
 
   function handleJobParameter(values) {
     confirm({
@@ -80,8 +118,14 @@ const EmployJobParameterItem = ({
               description: <p>Successfully Create New Job Parameter</p>,
               placement: 'topRight',
             });
-            console.info(values);
-            form.resetFields();
+            // console.info(values);
+            setPositionLevelRequirementData(values)
+              .then(() => {
+                form.resetFields();
+              })
+              .catch((e) =>
+                console.log('Error set position level requirement data: ', e),
+              );
             resolve();
           }, 2000);
         }).catch(() => console.log('Oops errors!'));
@@ -192,7 +236,6 @@ const EmployJobParameterItem = ({
       {contextHolder}
       <Form
         form={form}
-        ref={formRef}
         className="bg-white card-box border-20"
         layout="vertical"
         variant="filled"
@@ -253,6 +296,9 @@ const EmployJobParameterItem = ({
         </div> */}
 
         <h4 className="dash-title-three">Requirement Settings</h4>
+        <Form.Item className="" name="positionLevelId">
+          <Input className="" />
+        </Form.Item>
         <div className="dash-input-wrapper mb-30">
           <Form.Item
             label="Position Level"

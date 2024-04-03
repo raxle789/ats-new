@@ -2,6 +2,9 @@
 
 import {
   getAllPositionLevelRequirement,
+  getLineIndustry,
+  getPositionLevel,
+  getEducationLevel,
   getAllPositionLevel,
   getAllEducationLevel,
   getAllLineIndustry,
@@ -58,12 +61,46 @@ export async function getAllEducationLevelData() {
   return data;
 }
 
-export async function setPositionLevelRequirementData(
-  positionLevelId,
-  requirementFieldId,
-  value,
-) {
-  await setPositionLevelRequirement(positionLevelId, requirementFieldId, value);
+export async function setPositionLevelRequirementData(values) {
+  const positionLevelId = await values?.positionLevelId;
+
+  for (const [key, value] of Object?.entries(values)) {
+    if (key !== 'positionLevelId') {
+      if (key === 'line_industry') {
+        await setPositionLevelRequirement(
+          positionLevelId,
+          key,
+          JSON.stringify(value),
+        );
+      } else if (key === 'salary') {
+        await setPositionLevelRequirement(
+          positionLevelId,
+          key,
+          JSON.stringify([value.start_salary, value.end_salary]),
+        );
+      } else {
+        await setPositionLevelRequirement(positionLevelId, key, String(value));
+      }
+    }
+  }
 
   revalidatePath('/dashboard/ta/parameter');
+}
+
+export async function getEducationLevelData(educationLevelId) {
+  const data = await getEducationLevel(educationLevelId);
+
+  return data;
+}
+
+export async function getPositionLevelData(positionLevelId) {
+  const data = await getPositionLevel(positionLevelId);
+
+  return data;
+}
+
+export async function getLineIndustryData(lineIndustryId) {
+  const data = await getLineIndustry(lineIndustryId);
+
+  return data;
 }

@@ -181,31 +181,81 @@ export async function getAllEducationLevel() {
 
 export async function setPositionLevelRequirement(
   positionLevelId,
-  requirementFieldId,
+  requirementFieldName,
   value,
 ) {
   try {
+    const data = await prisma.requirementFields.findUnique({
+      where: {
+        name: requirementFieldName,
+      },
+    });
+
     await prisma.positionLevelRequirements.upsert({
       where: {
-        AND: [
-          {
-            positionLevelId: positionLevelId,
-          },
-          {
-            requirementFieldId: requirementFieldId,
-          },
-        ],
+        positionLevelId_requirementFieldId: {
+          positionLevelId: positionLevelId,
+          requirementFieldId: data.id,
+        },
       },
       update: {
         value: value,
       },
       create: {
         positionLevelId: positionLevelId,
-        requirementFieldId: requirementFieldId,
+        requirementFieldId: data.id,
         value: value,
       },
     });
   } catch (e) {
     console.log(e);
+  }
+}
+
+export async function getEducationLevel(educationLevelId) {
+  try {
+    const data = await prisma.educationLevels.findUnique({
+      where: {
+        id: educationLevelId,
+      },
+    });
+
+    return data;
+  } catch (e) {
+    console.log(e);
+
+    return [];
+  }
+}
+
+export async function getPositionLevel(positionLevelId) {
+  try {
+    const data = await prisma.positionLevels.findUnique({
+      where: {
+        id: positionLevelId,
+      },
+    });
+
+    return data;
+  } catch (e) {
+    console.log(e);
+
+    return [];
+  }
+}
+
+export async function getLineIndustry(lineIndustryId) {
+  try {
+    const data = await prisma.lineIndustries.findUnique({
+      where: {
+        id: lineIndustryId,
+      },
+    });
+
+    return data;
+  } catch (e) {
+    console.log(e);
+
+    return [];
   }
 }

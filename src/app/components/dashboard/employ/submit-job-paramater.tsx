@@ -1,6 +1,7 @@
 import EmployJobParameterItem from './submit-job-parameter-item';
 import {
   getPositionLevelRequirementData,
+  setPositionLevelRequirementData,
   getAllPositionLevelData,
   getAllLineIndustryData,
   getAllEducationLevelData,
@@ -62,6 +63,7 @@ const EmployJobParameter = async ({ searchParams }) => {
         positionLevelData={positionLevelData}
         lineIndustryData={lineIndustryData}
         educationLevelData={educationLevelData}
+        setPositionLevelRequirementData={setPositionLevelRequirementData}
       />
     </>
   );

@@ -381,7 +381,7 @@ model EducationLevels {
 
 model RequirementFields {
   id                        Int                         @id() @default(autoincrement()) @db.Int
-  name                      String                      @db.NVarChar(510)
+  name                      String                      @unique @db.NVarChar(510)
   createdAt                 DateTime?                   @default(now()) @map("created_at") @db.DateTime
   updatedAt                 DateTime?                   @updatedAt @map("updated_at") @db.DateTime
   positionLevelRequirements PositionLevelRequirements[]
