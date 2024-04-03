@@ -1,6 +1,9 @@
 'use client';
 
 import React from 'react';
+import CryptoJS from 'crypto-js';
+import Link from 'next/link';
+import { FaEdit } from 'react-icons/fa';
 import ActionDropdown from '../candidate/action-dropdown';
 import { useState } from 'react';
 import { ExpendableButton } from './expendable-button';
@@ -50,8 +53,21 @@ const EmployJobParameter = ({ positionLevelRequirementData }) => {
                         />
                       </td>
                       <td>
-                        <div className="action-dots float-end">
-                          <button
+                        <div className="">
+                          <Link
+                            href={{
+                              pathname: '/dashboard/ta/submit-parameter',
+                              query: {
+                                '': CryptoJS.Rabbit.encrypt(
+                                  String(data.id),
+                                  process.env.NEXT_PUBLIC_SECRET_KEY,
+                                ).toString(),
+                              },
+                            }}
+                          >
+                            <FaEdit />
+                          </Link>
+                          {/* <button
                             className="action-btn dropdown-toggle"
                             type="button"
                             data-bs-toggle="dropdown"
@@ -59,7 +75,7 @@ const EmployJobParameter = ({ positionLevelRequirementData }) => {
                           >
                             <span></span>
                           </button>
-                          <ActionDropdown />
+                          <ActionDropdown /> */}
                           {/* <i className="fa-solid fa-trash-can">oke</i> */}
                         </div>
                       </td>
@@ -80,7 +96,7 @@ const EmployJobParameter = ({ positionLevelRequirementData }) => {
                                 (d, index) => {
                                   return (
                                     <p key={index}>
-                                      <b>{`${d?.positionLevelRequirementFields?.name}: `}</b>
+                                      <b>{`${d?.requirementFields?.name}: `}</b>
                                       {`${d?.value ?? '-'}`}
                                     </p>
                                   );

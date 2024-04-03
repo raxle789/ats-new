@@ -3,7 +3,7 @@
 import React from 'react';
 // import DashboardHeader from '../candidate/dashboard-header';
 import {
-  getPositionLevelRequirementData,
+  getAllPositionLevelRequirementData,
   searchPositionLevelRequirementData,
 } from '@/lib/action/positionLevelRequirement/action';
 import EmployJobParameter from './job-parameter-item';
@@ -57,10 +57,6 @@ const parameterData = [
   },
 ];
 
-// props type
-type IProps = {
-  setIsOpenSidebar: React.Dispatch<React.SetStateAction<boolean>>;
-};
 const EmployParameterArea = async ({ searchParams }) => {
   const page = searchParams?.page ?? '1';
 
@@ -84,16 +80,14 @@ const EmployParameterArea = async ({ searchParams }) => {
           };
         })
         .catch((e) =>
-          console.log('Error search position level requirements: ', e),
+          console.log('Error searching position level requirements: ', e),
         );
     } else {
-      return getPositionLevelRequirementData(offset, Number(perPage))
+      return getAllPositionLevelRequirementData(offset, Number(perPage))
         .then((res) => {
           const data = res?.data ?? [];
 
           const total = res?.total ? res?.total : 0;
-
-          console.info(data[0].positionLevelRequirements);
 
           return {
             data: data,
@@ -101,7 +95,7 @@ const EmployParameterArea = async ({ searchParams }) => {
           };
         })
         .catch((e) =>
-          console.log('Error get position level requirements: ', e),
+          console.log('Error getting position level requirements: ', e),
         );
     }
   };

@@ -2,13 +2,16 @@
 
 import {
   getAllPositionLevelRequirement,
+  getAllEducationLevel,
+  getAllLineIndustry,
+  getPositionLevelRequirement,
   setPositionLevelRequirement,
   searchPositionLevelRequirement,
   getUser,
 } from '../../../app/services/positionRequirement/service';
 import { revalidatePath } from 'next/cache';
 
-export async function getPositionLevelRequirementData(offset, perPage) {
+export async function getAllPositionLevelRequirementData(offset, perPage) {
   const data = await getAllPositionLevelRequirement(offset, perPage);
 
   return data;
@@ -29,6 +32,24 @@ export async function searchPositionLevelRequirementData(
 
 //   return data;
 // }
+
+export async function getPositionLevelRequirementData(positionLevelId) {
+  const data = await getPositionLevelRequirement(positionLevelId);
+
+  return data;
+}
+
+export async function getAllLineIndustryData() {
+  const data = await getAllLineIndustry();
+
+  return data;
+}
+
+export async function getAllEducationLevelData() {
+  const data = await getAllEducationLevel();
+
+  return data;
+}
 
 export async function setPositionLevelRequirementData(
   positionLevelId,

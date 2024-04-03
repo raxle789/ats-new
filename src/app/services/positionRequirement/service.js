@@ -1,4 +1,4 @@
-'use server';
+import 'server-only';
 
 import prisma from '../connection/db';
 
@@ -10,7 +10,7 @@ export async function getAllPositionLevelRequirement(offset, perPage) {
       include: {
         positionLevelRequirements: {
           include: {
-            positionLevelRequirementFields: true,
+            requirementFields: true,
           },
         },
       },
@@ -68,7 +68,7 @@ export async function searchPositionLevelRequirement(query, offset, perPage) {
       include: {
         positionLevelRequirements: {
           select: {
-            positionLevelRequirementFields: true,
+            requirementFields: true,
           },
         },
       },
@@ -104,6 +104,63 @@ export async function searchPositionLevelRequirement(query, offset, perPage) {
       data: [],
       total: 0,
     };
+  }
+}
+
+export async function getPositionLevelRequirement(positionLevelId) {
+  try {
+    const data = await prisma.positionLevels.findUnique({
+      where: {
+        id: positionLevelId,
+      },
+      include: {
+        positionLevelRequirements: {
+          include: {
+            requirementFields: true,
+          },
+        },
+      },
+    });
+
+    return data;
+  } catch (e) {
+    console.log(e);
+
+    return {};
+  }
+}
+
+export async function getAllLineIndustry() {
+  try {
+    const data = await prisma.lineIndustries.findMany();
+
+    const aliasedData = data.map((d) => ({
+      value: d.id,
+      label: d.name,
+    }));
+
+    return aliasedData;
+  } catch (e) {
+    console.log(e);
+
+    return [];
+  }
+}
+
+export async function getAllEducationLevel() {
+  try {
+    const data = await prisma.educationLevels.findMany();
+
+    const aliasedData = data.map((d) => ({
+      value: d.id,
+      label: d.name,
+    }));
+
+    return aliasedData;
+  } catch (e) {
+    console.log(e);
+
+    return [];
   }
 }
 

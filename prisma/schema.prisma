@@ -321,7 +321,7 @@ model skill_types {
 }
 
 model Users {
-  id                        Int                         @id(map: "PK_a3ffb1c0c8416b9fc6f907b7433") @db.Int
+  id                        Int                         @id(map: "PK_a3ffb1c0c8416b9fc6f907b7433") @default(autoincrement()) @db.Int
   name                      String                      @db.NVarChar(256)
   email                     String                      @unique(map: "UQ_97672ac88f789774dd47f7c8be3") @db.NVarChar(128)
   is_email_verified         Boolean?
@@ -385,11 +385,11 @@ model RequirementFields {
 }
 
 model PositionLevelRequirements {
-  positionLevelId                Int               @map("position_level_id") @db.Int
-  requirementFieldId             Int               @map("requirement_field_id") @db.Int
-  value                          String?           @db.Text
-  positionLevels                 PositionLevels    @relation(fields: [positionLevelId], references: [id])
-  positionLevelRequirementFields RequirementFields @relation(fields: [requirementFieldId], references: [id])
+  positionLevelId    Int               @map("position_level_id") @db.Int
+  requirementFieldId Int               @map("requirement_field_id") @db.Int
+  value              String?           @db.Text
+  positionLevels     PositionLevels    @relation(fields: [positionLevelId], references: [id])
+  requirementFields  RequirementFields @relation(fields: [requirementFieldId], references: [id])
 
   @@id([positionLevelId, requirementFieldId])
   @@map("position_level_requirements")

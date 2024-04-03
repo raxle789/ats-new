@@ -102,7 +102,7 @@ async function main() {
 
   await prisma.$executeRaw`INSERT INTO roles(name, guard, created_at, updated_at) SELECT name, guard, created_at, updated_at FROM ats.dbo.roles ORDER BY id;`;
 
-  await prisma.$executeRaw`INSERT INTO users(id, name, email, password, created_at, updated_at) SELECT id, name, email, password, created_at, updated_at FROM ats.dbo.users ORDER BY id;`;
+  await prisma.$executeRaw`SET IDENTITY_INSERT users ON INSERT INTO users(id, name, email, password, created_at, updated_at) SELECT id, name, email, password, created_at, updated_at FROM ats.dbo.users ORDER BY id SET IDENTITY_INSERT users OFF;`;
 
   await prisma.$executeRaw`INSERT INTO user_has_roles(role_id, user_id) SELECT role_id, user_id FROM ats.dbo.user_has_roles;`;
 
