@@ -2,6 +2,7 @@
 
 import {
   getAllPositionLevelRequirement,
+  getAllPositionLevel,
   getAllEducationLevel,
   getAllLineIndustry,
   getPositionLevelRequirement,
@@ -35,6 +36,12 @@ export async function searchPositionLevelRequirementData(
 
 export async function getPositionLevelRequirementData(positionLevelId) {
   const data = await getPositionLevelRequirement(positionLevelId);
+
+  return data;
+}
+
+export async function getAllPositionLevelData() {
+  const data = await getAllPositionLevel();
 
   return data;
 }

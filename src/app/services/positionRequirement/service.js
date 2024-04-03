@@ -130,6 +130,21 @@ export async function getPositionLevelRequirement(positionLevelId) {
   }
 }
 
+export async function getAllPositionLevel() {
+  try {
+    const data = await prisma.positionLevels.findMany();
+
+    const aliasedData = data.map((d) => ({
+      value: d.id,
+      label: d.name,
+    }));
+
+    return aliasedData;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 export async function getAllLineIndustry() {
   try {
     const data = await prisma.lineIndustries.findMany();
