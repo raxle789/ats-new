@@ -2,8 +2,8 @@
 import React from 'react';
 import JobAssessmentResult from '@/app/components/dashboard/employ/job-assessment-result';
 
-const reviewAssessmentPage = () => {
+const ReviewAssessmentPage = () => {
   return <JobAssessmentResult />;
 };
 
-export default reviewAssessmentPage;
+export default ReviewAssessmentPage;

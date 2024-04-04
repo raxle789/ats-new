@@ -1,5 +1,3 @@
-'use server';
-
 import EmployShortSelect from './short-select';
 import React from 'react';
 import EmployJobFpkItem from './job-fpk-item';
