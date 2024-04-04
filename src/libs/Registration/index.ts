@@ -169,7 +169,7 @@ export async function createEducation_Experience(formData: any, document: any, a
       byte_size: document.size,
       path: 'no-path',
       file_base: binaryData,
-      candidate_id: regSession.candate_id
+      candidate_id: regSession.candidate_id
     }
   });
 
