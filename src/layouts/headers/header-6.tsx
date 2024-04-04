@@ -7,14 +7,36 @@ import dark_logo from '@/assets/images/logo/logo_04.png';
 import Menus from './component/menus';
 import useSticky from '@/hooks/use-sticky';
 import LoginModal from '@/app/components/common/popup/login-modal';
+import { useAppSessionContext } from '@/libs/Sessions/AppSession';
 /* server components */
 // import { getSession } from '@/lib/Authentication';
 
 const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
+  /* session wrapper by fatkhur */
+  // const [session, setSession] = useState<any>({
+  //   session: {
+  //     auth: null
+  //   }
+  // }); // session state
   const { sticky } = useSticky();
   const [scrollDistance, setScrollDistance] = useState<number>(0);
 
+  /* get user-session from server-side */
+  // const getSession = async () => {
+  //   const response = await fetch('api/sessions', {
+  //     method: 'GET'
+  //   });
+
+  //   const body = await response.json();
+  //   console.log('body server-side', body);
+
+  //   setSession(body);
+  // };
+
   useEffect(() => {
+    /* call funct */
+    // getSession();
+
     const handleScroll = () => {
       setScrollDistance(window.scrollY);
     };
@@ -26,6 +48,7 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
       <header
         className={`theme-main-menu menu-overlay ${dark_style ? '' : 'menu-style-two'} sticky-menu ${sticky ? 'fixed' : ''}`}
       >
+        {/* {("auth" in session) ? (<span className="">LoggedIn</span>) : (<span className="">Not LoggedIn</span>)} */}
         <div className="inner-content position-relative">
           <div className="top-header">
             <div className="d-flex align-items-center justify-content-between">

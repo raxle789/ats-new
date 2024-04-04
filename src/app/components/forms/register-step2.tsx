@@ -171,7 +171,7 @@ const RegisterFormStep2 = () => {
       return console.error(send.message);
     }
 
-    router.push('/main/job');
+    router.push('/');
   }
 
   return (

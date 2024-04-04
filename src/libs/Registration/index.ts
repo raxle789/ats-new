@@ -3,12 +3,11 @@
 import { getUserSession, setUserSession } from "../Sessions";
 import { userRegister1 } from "../validations/Register";
 import bcrypt from 'bcrypt';
-import prisma from "@/root/prisma";
 import { fileToBase64, toDatetime } from "./utils";
 import { v4 as uuidV4 } from 'uuid';
 import { cookies } from "next/headers";
 import * as Utils from "../Sessions/utils";
-import { Prisma } from "@prisma/client";
+import prisma from "@/root/prisma";
 
 export async function createUser(formData: any) {
   const validate = userRegister1.safeParse(formData);

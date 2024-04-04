@@ -59,3 +59,5 @@ export async function setUserSession(sessionName: 'auth' | 'reg', payload: any, 
       break;
   }
 }
+
+export { Utils };

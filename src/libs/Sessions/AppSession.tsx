@@ -5,14 +5,14 @@ import { getUserSession } from ".";
 // import { JwtPayload } from "jsonwebtoken";
 
 type AppSession = {
-  name?: string;
-  value?: string;
+  session: { name?: string, value?: string }[];
+  fetchSession?: () => Promise<void>;
 }
 
-const SessionContext = createContext({});
+const SessionContext = createContext<any>(undefined);
 
 export default function AppSession({ children } : { children: React.ReactNode }) {
-  const [session, setSession] = useState<any>();
+  const [session, setSession] = useState(undefined);
 
   /* FETCH TO GET SESSION */
   // const getSession = async () => {
@@ -21,8 +21,9 @@ export default function AppSession({ children } : { children: React.ReactNode })
   //   });
 
   //   const body = await response.json();
-  //   console.log(body);
-  //   debugger;
+  //   console.log('body server-side', body);
+
+  //   setSession(body);
   // };
 
   // useEffect(() => {
@@ -30,7 +31,11 @@ export default function AppSession({ children } : { children: React.ReactNode })
   // }, []);
 
   return (
-    <SessionContext.Provider value={session}>
+    <SessionContext.Provider value={{
+      session,
+      // getSession
+    }
+    }>
       {children}
     </SessionContext.Provider>
   );

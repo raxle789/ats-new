@@ -5,61 +5,65 @@ import * as Yup from 'yup';
 import { Resolver, useForm, SubmitHandler } from 'react-hook-form';
 import ErrorMsg from '../common/error-msg';
 import icon from '@/assets/images/icon/icon_60.svg';
+import { userAuth } from '@/libs/Login';
+import { useRouter } from 'next/navigation';
 
-// form data type
-type IFormData = {
+type formData = {
   email: string;
   password: string;
-};
-
-// schema
-const schema = Yup.object().shape({
-  email: Yup.string().required().email().label('Email'),
-  password: Yup.string().required().min(6).label('Password'),
-});
-
-// resolver
-const resolver: Resolver<IFormData> = async (values) => {
-  const errors: Record<string, any> = {};
-
-  if (!values.email) {
-    errors.email = {
-      type: 'required',
-      message: 'Email is required.',
-    };
-  }
-  if (!values.password) {
-    errors.password = {
-      type: 'required',
-      message: 'Password is required.',
-    };
-  }
-
-  return {
-    values: Object.keys(errors).length > 0 ? {} : values,
-    errors,
-  };
-};
+  is_rememberOn: string;
+}
 
 const LoginForm = () => {
+  const router = useRouter();
+
   const [showPass, setShowPass] = useState<boolean>(false);
-  // react hook form
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<IFormData>({ resolver });
-  // on submit
-  const onSubmit = (data: IFormData) => {
-    if (data) {
-      console.log(data);
-      alert('Login successfully!');
-    }
-    reset();
+  
+  const [formData, setFormData] = useState<formData>({
+    email: '',
+    password: '',
+    is_rememberOn: 'off'
+  });
+
+  const [errors, setErrors] = useState<{ [key: string]: string[] }>({
+    email: [''],
+    password: [''],
+    userNotFound: [''],
+    invalidPassword: [''],
+    login: ['']
+  });
+
+  const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value
+    }));
   };
+
+  const formOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    console.log(formData);
+
+    const authorizing = await userAuth(formData);
+    if(!authorizing.success) {
+      setErrors(authorizing.message as { [key: string]: string[] });
+      return;
+    };
+
+    console.log('check if user logged in successfully', authorizing);
+
+    setErrors(authorizing.message as { [key: string]: string[] });
+
+    setTimeout(() => {
+      router.push('/main/job');
+    }, 3000);
+  }
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mt-10">
+    <form
+      onSubmit={formOnSubmit}
+      className="mt-10">
       <div className="row">
         <div className="col-12">
           <div className="input-group-meta position-relative mb-25">
@@ -67,11 +71,12 @@ const LoginForm = () => {
             <input
               type="email"
               placeholder="james@example.com"
-              {...register('email', { required: `Email is required!` })}
               name="email"
+              value={formData.email}
+              onChange={inputOnChange}
             />
             <div className="help-block with-errors">
-              <ErrorMsg msg={errors.email?.message!} />
+              {errors.email && <span className="text-danger">{errors.email}</span>}
             </div>
           </div>
         </div>
@@ -82,8 +87,9 @@ const LoginForm = () => {
               type={`${showPass ? 'text' : 'password'}`}
               placeholder="Enter Password"
               className="pass_log_id"
-              {...register('password', { required: `Password is required!` })}
               name="password"
+              value={formData.password}
+              onChange={inputOnChange}
             />
             <span
               className="placeholder_icon"
@@ -94,20 +100,20 @@ const LoginForm = () => {
               </span>
             </span>
             <div className="help-block with-errors">
-              <ErrorMsg msg={errors.password?.message!} />
+              {errors.password && <span className="text-danger">{errors.password}</span>}
             </div>
           </div>
         </div>
         <div className="col-12">
           <div className="agreement-checkbox d-flex justify-content-between align-items-center">
             <div>
-              <input type="checkbox" id="remember" />
+              <input type="checkbox" id="remember"  name='is_rememberOn' onChange={inputOnChange} />
               <label htmlFor="remember">Keep me logged in</label>
             </div>
             <a href="#">Forget Password?</a>
           </div>
         </div>
-        <div className="col-12">
+        <div className="col-12 mb-3">
           <button
             type="submit"
             className="btn-eleven fw-500 tran3s d-block mt-20"
@@ -115,6 +121,9 @@ const LoginForm = () => {
             Login
           </button>
         </div>
+        {errors.userNotFound && <span className="text-center text-danger">{errors.userNotFound}</span>}
+        {errors.invalidPassword && <span className="text-center text-danger">{errors.invalidPassword}</span>}
+        {errors.login && <span className="text-center text-success">{errors.login}</span>}
       </div>
     </form>
   );
