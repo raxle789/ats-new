@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Cascader,
   DatePicker,
@@ -35,8 +35,10 @@ const { confirm } = Modal;
 
 const EmployJobParameterItem = ({
   positionLevelRequirementData,
+  positionLevelData,
   lineIndustryData,
   educationLevelData,
+  setPositionLevelRequirementData,
 }) => {
   const [api, contextHolder] = notification.useNotification();
 
@@ -50,11 +52,56 @@ const EmployJobParameterItem = ({
   //   });
   // };
 
-  const formModalRef = useRef(null);
-  function handleFpkModal(values) {
-    console.info(values);
-    // setModalOpen(false);
-  }
+  // const formRef = useRef({});
+
+  // console.info(positionLevelRequirementData);
+
+  // console.info(positionLevelData);
+
+  useEffect(() => {
+    positionLevelRequirementData?.positionLevelRequirements?.forEach((data) => {
+      if (data?.requirementFields?.name !== 'salary') {
+        try {
+          const data2 = JSON.parse(data?.value);
+
+          const isArray = Array.isArray(data2);
+
+          if (isArray) {
+            form.setFieldsValue({
+              [data?.requirementFields?.name]: data2,
+            });
+          } else {
+            const numberValue = Number(data?.value);
+            form.setFieldsValue({
+              [data?.requirementFields?.name]: isNaN(numberValue)
+                ? data?.value
+                : numberValue,
+            });
+          }
+        } catch (e) {
+          const numberValue = Number(data?.value);
+          form.setFieldsValue({
+            [data?.requirementFields?.name]: isNaN(numberValue)
+              ? data?.value
+              : numberValue,
+          });
+        }
+      } else if (data?.requirementFields?.name === 'salary') {
+        const data2 = JSON.parse(data?.value);
+
+        form.setFieldsValue({
+          [data?.requirementFields?.name]: {
+            start_salary: data2 ? Number(data2[0]) : 0,
+            end_salary: data2 ? Number(data2[1]) : 0,
+          },
+        });
+      }
+    });
+
+    form.setFieldsValue({
+      positionLevelId: positionLevelRequirementData.id,
+    });
+  }, [positionLevelRequirementData]);
 
   function handleJobParameter(values) {
     confirm({
@@ -71,8 +118,14 @@ const EmployJobParameterItem = ({
               description: <p>Successfully Create New Job Parameter</p>,
               placement: 'topRight',
             });
-            console.info(values);
-            form.resetFields();
+            // console.info(values);
+            setPositionLevelRequirementData(values)
+              .then(() => {
+                form.resetFields();
+              })
+              .catch((e) =>
+                console.log('Error set position level requirement data: ', e),
+              );
             resolve();
           }, 2000);
         }).catch(() => console.log('Oops errors!'));
@@ -243,11 +296,41 @@ const EmployJobParameterItem = ({
         </div> */}
 
         <h4 className="dash-title-three">Requirement Settings</h4>
+        <Form.Item className="" name="positionLevelId">
+          <Input className="" />
+        </Form.Item>
+        <div className="dash-input-wrapper mb-30">
+          <Form.Item
+            label="Position Level"
+            name="job_level"
+            rules={[
+              { required: true, message: 'Please Select Position Level!' },
+            ]}
+          >
+            <Select
+              className="select"
+              size="large"
+              showSearch
+              allowClear
+              placeholder="Select Position Level"
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                (option?.label ?? '').includes(input)
+              }
+              filterSort={(optionA, optionB) =>
+                (optionA?.label ?? '')
+                  .toLowerCase()
+                  .localeCompare((optionB?.label ?? '').toLowerCase())
+              }
+              options={positionLevelData}
+            />
+          </Form.Item>
+        </div>
         <div className="dash-input-wrapper mb-30">
           <div className="col-lg-12">
             <Form.Item
               // name="minimumYearOfExperienceParameter"
-              name="totalExperienceParameter"
+              name="min_year_experience"
               label="Total Experience"
               rules={[
                 {
@@ -314,7 +397,7 @@ const EmployJobParameterItem = ({
           <div className="col-lg-12">
             <Form.Item
               label="Line Industry"
-              name="lineIndustryParameter"
+              name="line_industry"
               rules={[
                 {
                   required: true,
@@ -339,32 +422,7 @@ const EmployJobParameterItem = ({
                     .toLowerCase()
                     .localeCompare((optionB?.label ?? '').toLowerCase())
                 }
-                options={[
-                  {
-                    value: '1',
-                    label: 'Not Identified',
-                  },
-                  {
-                    value: '2',
-                    label: 'Closed',
-                  },
-                  {
-                    value: '3',
-                    label: 'Communicated',
-                  },
-                  {
-                    value: '4',
-                    label: 'Identified',
-                  },
-                  {
-                    value: '5',
-                    label: 'Resolved',
-                  },
-                  {
-                    value: '6',
-                    label: 'Cancelled',
-                  },
-                ]}
+                options={lineIndustryData}
               />
             </Form.Item>
           </div>
@@ -373,7 +431,7 @@ const EmployJobParameterItem = ({
           <div className="col-lg-12">
             <Form.Item
               label="Education Level"
-              name="educationLevelParameter"
+              name="education_level"
               rules={[
                 {
                   required: true,
@@ -397,32 +455,7 @@ const EmployJobParameterItem = ({
                     .toLowerCase()
                     .localeCompare((optionB?.label ?? '').toLowerCase())
                 }
-                options={[
-                  {
-                    value: '1',
-                    label: 'Not Identified',
-                  },
-                  {
-                    value: '2',
-                    label: 'Closed',
-                  },
-                  {
-                    value: '3',
-                    label: 'Communicated',
-                  },
-                  {
-                    value: '4',
-                    label: 'Identified',
-                  },
-                  {
-                    value: '5',
-                    label: 'Resolved',
-                  },
-                  {
-                    value: '6',
-                    label: 'Cancelled',
-                  },
-                ]}
+                options={educationLevelData}
               />
             </Form.Item>
           </div>
@@ -490,12 +523,12 @@ const EmployJobParameterItem = ({
         <div className="dash-input-wrapper mb-30">
           <div className="col-lg-12">
             <Form.Item
-              label="GPA"
-              name="gpaParameter"
+              label="Grade"
+              name="grade"
               rules={[
                 {
                   required: true,
-                  message: 'Please Input GPA!',
+                  message: 'Please Input Grade!',
                 },
               ]}
             >
@@ -591,62 +624,74 @@ const EmployJobParameterItem = ({
         {/* </div> */}
         <div className="dash-input-wrapper mb-5">
           <div className="row">
-            <div className="col-lg-5">
-              <Form.Item
-                label="Start Salary Range"
-                name="startSalaryRangeParameter"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please Input Start Salary Range!',
-                  },
-                ]}
-              >
-                <InputNumber
-                  className="select d-flex align-items-center w-100"
-                  min={0}
-                  placeholder="Input Start Salary Range"
-                  style={{ height: '40px' }}
-                  formatter={(value) =>
-                    `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-                  }
-                  parser={(value) => value!.replace(/\Rp\s?|(,*)/g, '')}
-                  // formatter={handleFormatter}
-                  // parser={handleParser}
-                  // disabled={!salaryRangeParameterState}
-                />
-              </Form.Item>
-            </div>
-            <div className="col-lg-2 d-flex align-items-center justify-content-center">
-              <b>
-                <p className="text-center">__</p>
-              </b>
-            </div>
+            <Form.Item label="Salary Range" name="salary">
+              <Form.List name="salary">
+                {() => (
+                  <>
+                    <div className="col-lg-5">
+                      <Form.Item
+                        label="Start Salary Range"
+                        name="start_salary"
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Please Input Start Salary Range!',
+                          },
+                        ]}
+                      >
+                        <InputNumber
+                          className="select d-flex align-items-center w-100"
+                          min={0}
+                          placeholder="Input Start Salary Range"
+                          style={{ height: '40px' }}
+                          formatter={(value) =>
+                            `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                          }
+                          parser={(value) =>
+                            value!.replace(/\Rp\s?|(\.*)/g, '')
+                          }
+                          // formatter={handleFormatter}
+                          // parser={handleParser}
+                          // disabled={!salaryRangeParameterState}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="col-lg-2 d-flex align-items-center justify-content-center">
+                      <b>
+                        <p className="text-center">__</p>
+                      </b>
+                    </div>
+                    <div className="col-lg-5">
+                      <Form.Item
+                        label="End Salary Range"
+                        name="end_salary"
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Please Input End Salary Range!',
+                          },
+                        ]}
+                      >
+                        <InputNumber
+                          className="select d-flex align-items-center w-100"
+                          min={0}
+                          placeholder="Input End Salary Range"
+                          style={{ height: '40px' }}
+                          formatter={(value) =>
+                            `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                          }
+                          parser={(value) =>
+                            value!.replace(/\Rp\s?|(\.*)/g, '')
+                          }
+                          // disabled={!salaryRangeParameterState}
+                        />
+                      </Form.Item>
+                    </div>
+                  </>
+                )}
+              </Form.List>
+            </Form.Item>
             {/* <div>-</div> */}
-            <div className="col-lg-5">
-              <Form.Item
-                label="End Salary Range"
-                name="endSalaryRangeParameter"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please Input End Salary Range!',
-                  },
-                ]}
-              >
-                <InputNumber
-                  className="select d-flex align-items-center w-100"
-                  min={0}
-                  placeholder="Input End Salary Range"
-                  style={{ height: '40px' }}
-                  formatter={(value) =>
-                    `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-                  }
-                  parser={(value) => value!.replace(/\Rp\s?|(,*)/g, '')}
-                  // disabled={!salaryRangeParameterState}
-                />
-              </Form.Item>
-            </div>
           </div>
         </div>
 

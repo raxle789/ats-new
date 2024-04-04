@@ -26,11 +26,16 @@ export class Candidates {
     user!: Users
 
     /* birth_city_id -> Many to One -> Candidates(domicile) contains multiple instances of City */
-    @ManyToOne(() => Citys, (city) => city.birth_citys, { nullable: false })
+    @ManyToOne(() => Citys, (city) => city.birth_citys, { nullable: true })
     birth_city!: Citys;
 
+    @Column({
+        type: 'date'
+    })
+    date_of_birth: string;
+
     /* domicile_id -> Many to One -> Candidates(birth_city) contains multiple instances of City */
-    @ManyToOne(() => Citys, (city) => city.domiciles, { nullable: false })
+    @ManyToOne(() => Citys, (city) => city.domiciles, { nullable: true })
     domicile!: Citys;
 
     /* identity_info_id -> One to One -> Candidates contains only one instance Identity Info */
@@ -141,5 +146,5 @@ export class Candidates {
     families!: Familys[];
 
     // @OneToMany(() => Documents, (document) => document.candidate)
-    // documents!: Documents[];
+    documents!: Documents[];
 }

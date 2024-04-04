@@ -26,10 +26,66 @@ const subTitle: TSubTitle = {
   salary: 'Salary',
 };
 
-const EmployJobParameter = ({ positionLevelRequirementData }) => {
+type TSubTitle = {
+  education_level: string;
+  job_level: string;
+  min_year_experience: string;
+  grade: string;
+  line_industry: string;
+  salary: string;
+};
+
+const subTitle: TSubTitle = {
+  education_level: 'Education Level',
+  job_level: 'Job Level',
+  min_year_experience: 'Min Year Experience',
+  grade: 'Grade',
+  line_industry: 'Line Industry',
+  salary: 'Salary',
+};
+
+const EmployJobParameter = ({
+  positionLevelRequirementData,
+  getLineIndustryData,
+  getEducationLevelData,
+  getPositionLevelData,
+}) => {
   const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
     {},
   );
+
+  function getPositionLevelRequirementValue(name, value) {
+    if (value === null || value === undefined) {
+      return '-';
+    } else {
+      if (name === 'line_industry') {
+        const parsedValue = JSON.parse(value);
+        const data = '';
+
+        for (let i = 0; i < parsedValue.length; i++) {
+          const newData = getLineIndustryData(Number(parsedValue[i]));
+
+          data.concat(newData?.name + ', ');
+        }
+
+        return data;
+      } else if (name === 'education_level') {
+        const data = getEducationLevelData(Number(value));
+
+        return data;
+      } else if (name === 'position_level') {
+        const data = getPositionLevelData(Number(value));
+
+        return data;
+      } else if (name === 'salary') {
+        const data = `${value[0]} - ${value[1]}`;
+
+        return data;
+      }
+    }
+
+    return value;
+  }
 
   const toggleRowExpansion = (index: number) => {
     setExpandedRows((prevExpandedRows) => ({
@@ -117,7 +173,10 @@ const EmployJobParameter = ({ positionLevelRequirementData }) => {
                                       <p>
                                         {/* <b>{`${d?.requirementFields?.name}: `}</b> */}
                                         <b>{`${subTitle[d?.requirementFields?.name ?? '']}: `}</b>
-                                        {`${d?.value ?? '-'}`}
+                                        {getPositionLevelRequirementValue(
+                                          d.requirementFields.name,
+                                          d.value,
+                                        )}
                                       </p>
                                     </div>
                                   );

@@ -1,0 +1,22 @@
+BEGIN TRY
+
+BEGIN TRAN;
+
+-- AddForeignKey
+ALTER TABLE [dbo].[educations] ADD CONSTRAINT [FK_da1ce5966e5d5a43a9e0797e0c0] FOREIGN KEY ([candidateId]) REFERENCES [dbo].[candidates]([id]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE [dbo].[working_experiences] ADD CONSTRAINT [FK_fdb1fb1f815620c2f82557fdc39] FOREIGN KEY ([candidateId]) REFERENCES [dbo].[candidates]([id]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+COMMIT TRAN;
+
+END TRY
+BEGIN CATCH
+
+IF @@TRANCOUNT > 0
+BEGIN
+    ROLLBACK TRAN;
+END;
+THROW
+
+END CATCH

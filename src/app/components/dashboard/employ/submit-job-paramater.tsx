@@ -1,8 +1,8 @@
-'use server';
-
 import EmployJobParameterItem from './submit-job-parameter-item';
 import {
   getPositionLevelRequirementData,
+  setPositionLevelRequirementData,
+  getAllPositionLevelData,
   getAllLineIndustryData,
   getAllEducationLevelData,
 } from '@/lib/action/positionLevelRequirement/action';
@@ -41,6 +41,14 @@ const EmployJobParameter = async ({ searchParams }) => {
     })
     .catch((e) => console.log('Error getting position level data: ', e));
 
+  const positionLevelData = await getAllPositionLevelData()
+    .then((res) => {
+      const data = res ?? [];
+
+      return data;
+    })
+    .catch((e) => console.log('Error getting position level data: ', e));
+
   const lineIndustryData = await getAllLineIndustryData()
     .then((res) => {
       const data = res ?? [];
@@ -63,8 +71,10 @@ const EmployJobParameter = async ({ searchParams }) => {
 
       <EmployJobParameterItem
         positionLevelRequirementData={positionLevelRequirementData}
+        positionLevelData={positionLevelData}
         lineIndustryData={lineIndustryData}
         educationLevelData={educationLevelData}
+        setPositionLevelRequirementData={setPositionLevelRequirementData}
       />
     </>
   );

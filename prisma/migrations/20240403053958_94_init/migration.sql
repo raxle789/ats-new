@@ -1,0 +1,37 @@
+BEGIN TRY
+
+BEGIN TRAN;
+
+-- AddForeignKey
+ALTER TABLE [dbo].[candidates] ADD CONSTRAINT [FK_02cb34982ecd17fda09c240254e] FOREIGN KEY ([emengencyContactId]) REFERENCES [dbo].[emergency_contacts]([id]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE [dbo].[candidates] ADD CONSTRAINT [FK_10d0384a816526f8c7f6b1e67b3] FOREIGN KEY ([userId]) REFERENCES [dbo].[users]([id]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE [dbo].[candidates] ADD CONSTRAINT [FK_45d141f5577c4588067ed62ba75] FOREIGN KEY ([birthCityId]) REFERENCES [dbo].[citys]([id]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE [dbo].[candidates] ADD CONSTRAINT [FK_4942769253874bef2bc42d1858d] FOREIGN KEY ([bankId]) REFERENCES [dbo].[banks]([id]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE [dbo].[candidates] ADD CONSTRAINT [FK_8f15bc1632f7f52ca9821727621] FOREIGN KEY ([domicileId]) REFERENCES [dbo].[citys]([id]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE [dbo].[candidates] ADD CONSTRAINT [FK_a53ea01ce0f52efa194dbb49f39] FOREIGN KEY ([addressId]) REFERENCES [dbo].[addresses]([id]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+-- AddForeignKey
+ALTER TABLE [dbo].[candidates] ADD CONSTRAINT [FK_bbd440878ce26abdc91d67a0af8] FOREIGN KEY ([identityInfoId]) REFERENCES [dbo].[identity_info]([id]) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+COMMIT TRAN;
+
+END TRY
+BEGIN CATCH
+
+IF @@TRANCOUNT > 0
+BEGIN
+    ROLLBACK TRAN;
+END;
+THROW
+
+END CATCH

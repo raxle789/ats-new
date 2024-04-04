@@ -18,6 +18,8 @@ import { Sims } from './Entity/sim';
 import { example_1 } from './Entity/Test/exmaple_1';
 import { example_2 } from './Entity/Test/exmaple_2';
 import { Educations } from './Entity/educations';
+import { Familys } from './Entity/families';
+import { example_3 } from './Entity/Test/exmaple_3';
 
 const LocalAppDataStore = new DataSource({
     type: 'mssql',
@@ -64,18 +66,20 @@ const CloudAppDataStore = new DataSource({
         Addresses,
         Candidates,
         Educations,
-        Documents,
         DocumentTypes,
+        Documents,
         Certifications,
         WorkingExperiences,
+        Familys,
         SkillTypes,
         CandidatesDiseases,
         Sims,
-        example_2,
         example_1,
+        example_2,
+        example_3
     ],
-    synchronize: true,
-    logging: false,
+    synchronize: false,
+    logging: true,
     pool: {
         min: 0,
         max: 20,
@@ -87,12 +91,12 @@ const CloudAppDataStore = new DataSource({
 });
 
 /* Initialize Cloud Connection */
-// CloudAppDataStore.initialize()
-//     .then((connection) => {
-//     console.info('IS CLOUD MS SQL SERVER CONNECTED: ', connection.isInitialized);
-//     }).catch((error) => {
-//     console.info('ERROR OCCURED ON CLOUD SQL SERVER: ', error);
-// });
+CloudAppDataStore.initialize()
+    .then((connection) => {
+    console.info('IS CLOUD MS SQL SERVER CONNECTED: ', connection.isInitialized);
+    }).catch((error) => {
+    console.info('ERROR OCCURED ON CLOUD SQL SERVER: ', error);
+});
 
 console.info('direktori index: ', __dirname);
 

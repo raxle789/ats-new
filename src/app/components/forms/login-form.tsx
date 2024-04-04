@@ -5,11 +5,13 @@ import * as Yup from 'yup';
 import { Resolver, useForm, SubmitHandler } from 'react-hook-form';
 import ErrorMsg from '../common/error-msg';
 import icon from '@/assets/images/icon/icon_60.svg';
+import { userAuth } from '@/libs/Login';
+import { useRouter } from 'next/navigation';
 
-// form data type
-type IFormData = {
+type formData = {
   email: string;
   password: string;
+  is_rememberOn: string;
   otp: string;
 };
 
@@ -47,31 +49,55 @@ const resolver: Resolver<IFormData> = async (values) => {
 };
 
 const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
+  const router = useRouter();
+
   const [showPass, setShowPass] = useState<boolean>(false);
   const clientKey = process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY;
-  // react hook form
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<IFormData>({ resolver });
-  // on submit
-  const onSubmit = (data: IFormData) => {
-    if (data) {
-      console.log(data);
-      alert('Login successfully!');
+
+  const [formData, setFormData] = useState<formData>({
+    email: '',
+    password: '',
+    is_rememberOn: 'off',
+  });
+
+  const [errors, setErrors] = useState<{ [key: string]: string[] }>({
+    email: [''],
+    password: [''],
+    userNotFound: [''],
+    invalidPassword: [''],
+    login: [''],
+  });
+
+  const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const formOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    console.log(formData);
+
+    const authorizing = await userAuth(formData);
+    if (!authorizing.success) {
+      setErrors(authorizing.message as { [key: string]: string[] });
+      return;
     }
-    reset();
+
+    console.log('check if user logged in successfully', authorizing);
+
+    setErrors(authorizing.message as { [key: string]: string[] });
+
+    setTimeout(() => {
+      router.push('/main/job');
+    }, 3000);
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="mt-10"
-      action=""
-      method="POST"
-    >
+    <form onSubmit={formOnSubmit} className="mt-10" action="" method="POST">
       <div className="row">
         <div className="col-12">
           <div className="input-group-meta position-relative mb-20">
@@ -79,11 +105,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
             <input
               type="email"
               placeholder="james@example.com"
-              {...register('email', { required: `Email is required!` })}
               name="email"
+              value={formData.email}
+              onChange={inputOnChange}
             />
             <div className="help-block with-errors">
-              <ErrorMsg msg={errors.email?.message!} />
+              {errors.email && (
+                <span className="text-danger">{errors.email}</span>
+              )}
             </div>
           </div>
         </div>
@@ -94,8 +123,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
               type={`${showPass ? 'text' : 'password'}`}
               placeholder="Enter Password"
               className="pass_log_id"
-              {...register('password', { required: `Password is required!` })}
               name="password"
+              value={formData.password}
+              onChange={inputOnChange}
             />
             <span
               className="placeholder_icon"
@@ -106,7 +136,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
               </span>
             </span>
             <div className="help-block with-errors">
-              <ErrorMsg msg={errors.password?.message!} />
+              {errors.password && (
+                <span className="text-danger">{errors.password}</span>
+              )}
             </div>
           </div>
         </div>
@@ -139,13 +171,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
         <div className="col-12">
           <div className="agreement-checkbox d-flex justify-content-between align-items-center">
             <div>
-              <input type="checkbox" id="remember" />
+              <input
+                type="checkbox"
+                id="remember"
+                name="is_rememberOn"
+                onChange={inputOnChange}
+              />
               <label htmlFor="remember">Keep me logged in</label>
             </div>
             <a href="#">Forget Password?</a>
           </div>
         </div>
-        <div className="col-12">
+        <div className="col-12 mb-3">
           <button
             type="submit"
             className="btn-eleven fw-500 tran3s d-block mt-20"
@@ -153,6 +190,17 @@ const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
             Login
           </button>
         </div>
+        {errors.userNotFound && (
+          <span className="text-center text-danger">{errors.userNotFound}</span>
+        )}
+        {errors.invalidPassword && (
+          <span className="text-center text-danger">
+            {errors.invalidPassword}
+          </span>
+        )}
+        {errors.login && (
+          <span className="text-center text-success">{errors.login}</span>
+        )}
       </div>
     </form>
   );

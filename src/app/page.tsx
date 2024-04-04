@@ -1,9 +1,6 @@
 import { Metadata } from 'next';
 import Wrapper from '@/layouts/wrapper';
 import HeaderSix from '@/layouts/headers/header-6';
-import { Users } from './services/connection/entity/users';
-import { isEstablished } from '@/app/services/connection/db';
-import db from './services/connection/db';
 import HeroBannerSix from './components/hero-banners/hero-banner-six';
 import CategorySectionSix from './components/category/category-section-6';
 import { TrendingJobs } from './components/category/category-section-3';
@@ -13,38 +10,26 @@ import SpiritSection from './components/home/spirit-section';
 import EngageSection from './components/home/engage-section';
 import VerticalSection from './components/home/vertical-section';
 // import FancyBannerThree from './components/fancy-banner/fancy-banner-3';
-import EventSection from './components/home/event-section';
+// import EventSection from './components/home/event-section';
 // import VisionSection from './components/home/vision-section';
 import FeatureNine from './components/features/feature-nine';
 import FeedbackFive from './components/feedBacks/feedback-five';
 // import FancyBannerSix from './components/fancy-banner/fancy-banner-6';
 import FooterOne from '@/layouts/footers/footer-one';
 import Link from 'next/link';
-
-import { getFatkhur, migrateFromATS } from '@/libs/MsSQL/FETCH_EXISTING';
-import { getSession } from '@/libs/Authentication/session';
+import prisma from '@/root/prisma';
 
 export const metadata: Metadata = {
   title: 'Home',
 };
 
 export default async function Home() {
-  // const session = await getSession();
-  // console.info(session);
-  // await getFatkhur();
-
-  // const ayam = async () => {
-  //   await isEstablished();
-
-  //   const data = await db.manager.find(Users);
-
-  //   console.info(data);
-  // };
-
-  // ayam();
-
-  // console.info(db);
-
+  const user = await prisma.users.findUnique({
+    where: {
+      id: 1
+    }
+  });
+  console.info(user);
   return (
     <Wrapper>
       <div className="main-page-wrapper">
