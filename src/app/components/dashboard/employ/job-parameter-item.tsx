@@ -1,14 +1,55 @@
 'use client';
 
 import React from 'react';
+import CryptoJS from 'crypto-js';
+import Link from 'next/link';
+import { FaEdit } from 'react-icons/fa';
 import ActionDropdown from '../candidate/action-dropdown';
 import { useState } from 'react';
 import { ExpendableButton } from './expendable-button';
 
-const EmployJobParameter = ({ positionLevelRequirementData }) => {
+const EmployJobParameter = ({
+  positionLevelRequirementData,
+  getLineIndustryData,
+  getEducationLevelData,
+  getPositionLevelData,
+}) => {
   const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
     {},
   );
+
+  function getPositionLevelRequirementValue(name, value) {
+    if (value === null || value === undefined) {
+      return '-';
+    } else {
+      if (name === 'line_industry') {
+        const parsedValue = JSON.parse(value);
+        const data = '';
+
+        for (let i = 0; i < parsedValue.length; i++) {
+          const newData = getLineIndustryData(Number(parsedValue[i]));
+
+          data.concat(newData?.name + ', ');
+        }
+
+        return data;
+      } else if (name === 'education_level') {
+        const data = getEducationLevelData(Number(value));
+
+        return data;
+      } else if (name === 'position_level') {
+        const data = getPositionLevelData(Number(value));
+
+        return data;
+      } else if (name === 'salary') {
+        const data = `${value[0]} - ${value[1]}`;
+
+        return data;
+      }
+    }
+
+    return value;
+  }
 
   const toggleRowExpansion = (index: number) => {
     setExpandedRows((prevExpandedRows) => ({
@@ -50,8 +91,21 @@ const EmployJobParameter = ({ positionLevelRequirementData }) => {
                         />
                       </td>
                       <td>
-                        <div className="action-dots float-end">
-                          <button
+                        <div className="">
+                          <Link
+                            href={{
+                              pathname: '/dashboard/ta/submit-parameter',
+                              query: {
+                                '': CryptoJS.Rabbit.encrypt(
+                                  String(data.id),
+                                  process.env.NEXT_PUBLIC_SECRET_KEY,
+                                ).toString(),
+                              },
+                            }}
+                          >
+                            <FaEdit />
+                          </Link>
+                          {/* <button
                             className="action-btn dropdown-toggle"
                             type="button"
                             data-bs-toggle="dropdown"
@@ -59,7 +113,7 @@ const EmployJobParameter = ({ positionLevelRequirementData }) => {
                           >
                             <span></span>
                           </button>
-                          <ActionDropdown />
+                          <ActionDropdown /> */}
                           {/* <i className="fa-solid fa-trash-can">oke</i> */}
                         </div>
                       </td>
@@ -80,8 +134,11 @@ const EmployJobParameter = ({ positionLevelRequirementData }) => {
                                 (d, index) => {
                                   return (
                                     <p key={index}>
-                                      <b>{`${d?.positionLevelRequirementFields?.name}: `}</b>
-                                      {`${d?.value ?? '-'}`}
+                                      <b>{`${d?.requirementFields?.name}: `}</b>
+                                      {getPositionLevelRequirementValue(
+                                        d.requirementFields.name,
+                                        d.value,
+                                      )}
                                     </p>
                                   );
                                 },

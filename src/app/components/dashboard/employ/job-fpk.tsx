@@ -1,10 +1,13 @@
-'use server';
-
 import EmployShortSelect from './short-select';
 import React from 'react';
 import EmployJobFpkItem from './job-fpk-item';
 import SearchBar from '@/ui/search-bar';
-import { getFpkData, searchFpkData, getTaData } from '@/lib/action/fpk/action';
+import {
+  getFpkData,
+  searchFpkData,
+  getTaData,
+  assignTa,
+} from '@/lib/action/fpk/action';
 import Pagination from '@/ui/pagination';
 
 export const fpkData = [
@@ -135,6 +138,7 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
           fpkData={fpkData.data}
           offset={offset}
           taData={taData}
+          assignTa={assignTa}
         />
       </div>
 
