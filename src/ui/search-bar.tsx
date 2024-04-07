@@ -40,6 +40,7 @@ const SearchBar = () => {
         <input
           type="text"
           placeholder="Search here.."
+          defaultValue={searchParams.get('query') ?? ''}
           onChange={(e) => handleSearch(e.target.value)}
         />
         <button type="submit">

@@ -24,6 +24,8 @@ import Link from 'next/link';
 import { getFatkhur, migrateFromATS } from '@/libs/MsSQL/FETCH_EXISTING';
 import { getSession } from '@/libs/Authentication/session';
 
+import { proint } from '@/app/services/connection/db';
+
 export const metadata: Metadata = {
   title: 'Home',
 };
@@ -44,6 +46,14 @@ export default async function Home() {
   // ayam();
 
   // console.info(db);
+
+  // const ayam = async () => {
+  //   const data = await proint.ERA_MasterAddress.findMany();
+
+  //   console.info(data);
+  // };
+
+  // await ayam();
 
   return (
     <Wrapper>

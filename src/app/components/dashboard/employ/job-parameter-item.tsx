@@ -1,12 +1,15 @@
 'use client';
 
 import React from 'react';
+import { Spin } from 'antd';
 import CryptoJS from 'crypto-js';
 import Link from 'next/link';
 import { FaEdit } from 'react-icons/fa';
 import ActionDropdown from '../candidate/action-dropdown';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ExpendableButton } from './expendable-button';
+
+const _ = require('lodash');
 
 const EmployJobParameter = ({
   positionLevelRequirementData,
@@ -18,38 +21,94 @@ const EmployJobParameter = ({
     {},
   );
 
-  function getPositionLevelRequirementValue(name, value) {
-    if (value === null || value === undefined) {
-      return '-';
-    } else {
-      if (name === 'line_industry') {
-        const parsedValue = JSON.parse(value);
-        const data = '';
+  // console.info(positionLevelRequirementData);
 
-        for (let i = 0; i < parsedValue.length; i++) {
-          const newData = getLineIndustryData(Number(parsedValue[i]));
+  // const [positionLevelRequirement, setPositionLevelRequirement] = useState([]);
 
-          data.concat(newData?.name + ', ');
-        }
+  // function formatFieldName(fieldName) {
+  //   const newFieldName = fieldName.split('_').map((word) => {
+  //     return word.charAt(0).toUpperCase() + word.slice(1);
+  //   });
 
-        return data;
-      } else if (name === 'education_level') {
-        const data = getEducationLevelData(Number(value));
+  //   return newFieldName.join(' ');
+  // }
 
-        return data;
-      } else if (name === 'position_level') {
-        const data = getPositionLevelData(Number(value));
+  // async function updatePositionLevelRequirementData() {
+  //   // if (!_.isEmpty(positionLevelRequirementData)) {
+  //   //   await positionLevelRequirementData.forEach(async (data) => {
+  //   //     data.positionLevelRequirements.forEach(async (d) => {
+  //   // if (!d.value) {
+  //   //   d.value = '-';
+  //   // }
+  //   // else {
+  //   // if (d.requirementFields.name === 'line_industry') {
+  //   //   if (d.value && typeof d.value === 'string') {
+  //   //     try {
+  //   //       const parsedValue = JSON.parse(d.value);
+  //   //       const isArray = Array.isArray(parsedValue);
+  //   //       if (isArray) {
+  //   //         d.value = await getLineIndustryData(parsedValue);
+  //   //         // const getData = async () => {
+  //   //         //   const newData = await getLineIndustryData(parsedValue);
+  //   //         //   d.value = newData.toString();
+  //   //         // };
+  //   //         // getData();
+  //   //       }
+  //   //     } catch (e) {
+  //   //       console.log(e);
+  //   //     }
+  //   //   }
+  //   // } else if (d.requirementFields.name === 'education_level') {
+  //   //   if (d.value && typeof d.value === 'string') {
+  //   //     d.value = await getEducationLevelData(Number(d.value));
+  //   //     // const getData = async () => {
+  //   //     //   const newData = await getEducationLevelData(Number(d.value));
+  //   //     //   d.value = newData;
+  //   //     // };
+  //   //     // getData();
+  //   //   }
+  //   // } else if (d.requirementFields.name === 'job_level') {
+  //   //   if (d.value && typeof d.value === 'string') {
+  //   //     d.value = await getPositionLevelData(Number(d.value));
+  //   //     // const getData = async () => {
+  //   //     //   const newData = await getPositionLevelData(Number(d.value));
+  //   //     //   d.value = newData;
+  //   //     // };
+  //   //     // getData();
+  //   //   }
+  //   // } else if (d.requirementFields.name === 'salary') {
+  //   //   if (d.value && typeof d.value === 'string') {
+  //   //     try {
+  //   //       const parsedValue = JSON.parse(d.value);
+  //   //       const isArray = Array.isArray(parsedValue);
+  //   //       if (d.value && isArray && parsedValue.length === 2) {
+  //   //         const formatter = new Intl.NumberFormat('id-ID', {
+  //   //           style: 'currency',
+  //   //           currency: 'IDR',
+  //   //         });
+  //   //         d.value = `${formatter.format(Number(parsedValue[0]))} - ${formatter.format(Number(parsedValue[1]))}`;
+  //   //       }
+  //   //     } catch (e) {
+  //   //       console.log(e);
+  //   //     }
+  //   //   }
+  //   // }
+  //   //     }
+  //   //   });
+  //   // });
+  //   // await positionLevelRequirementData.forEach(async (data) => {
+  //   //   data.positionLevelRequirements.forEach(async (d) => {
+  //   //     d.requirementFields.name = await formatFieldName(
+  //   //       d.requirementFields.name,
+  //   //     );
+  //   //   });
+  //   // });
+  //   // }
+  // }
 
-        return data;
-      } else if (name === 'salary') {
-        const data = `${value[0]} - ${value[1]}`;
-
-        return data;
-      }
-    }
-
-    return value;
-  }
+  // useEffect(() => {
+  //   updatePositionLevelRequirementData();
+  // }, [positionLevelRequirementData]);
 
   const toggleRowExpansion = (index: number) => {
     setExpandedRows((prevExpandedRows) => ({
@@ -58,8 +117,17 @@ const EmployJobParameter = ({
     }));
   };
 
+  const [spinning, setSpinning] = React.useState(false);
+  const showLoader = () => {
+    setSpinning(true);
+    // setTimeout(() => {
+    //   setSpinning(false);
+    // }, 3000);
+  };
+
   return (
     <>
+      <Spin spinning={spinning} fullscreen />
       <div className="tab-content" id="nav-tabContent">
         <div className="tab-pane fade show active" id="a1" role="tabpanel">
           <div className="table-responsive">
@@ -80,7 +148,7 @@ const EmployJobParameter = ({
                         style={{ width: '136.66px' }}
                       >{`${index + 1 ?? ''}`}</td>
                       {/* <td>{parameterData?.parameterIndex + 1}</td> */}
-                      <td>{`${data?.name ?? ''} (Level: ${data?.level})`}</td>
+                      <td>{`${data?.name ?? '-'} (Level: ${data?.level ?? '-'})`}</td>
                       <td
                         className="d-flex align-items-center justify-content-center"
                         style={{ height: '73px' }}
@@ -94,14 +162,20 @@ const EmployJobParameter = ({
                         <div className="">
                           <Link
                             href={{
-                              pathname: '/dashboard/ta/submit-parameter',
-                              query: {
-                                '': CryptoJS.Rabbit.encrypt(
+                              pathname: `/dashboard/ta/submit-parameter/${encodeURIComponent(
+                                CryptoJS.Rabbit.encrypt(
                                   String(data.id),
                                   process.env.NEXT_PUBLIC_SECRET_KEY,
                                 ).toString(),
-                              },
+                              )}`,
+                              // query: {
+                              //   '': CryptoJS.Rabbit.encrypt(
+                              //     String(data.id),
+                              //     process.env.NEXT_PUBLIC_SECRET_KEY,
+                              //   ).toString(),
+                              // },
                             }}
+                            onClick={showLoader}
                           >
                             <FaEdit />
                           </Link>
@@ -134,11 +208,8 @@ const EmployJobParameter = ({
                                 (d, index) => {
                                   return (
                                     <p key={index}>
-                                      <b>{`${d?.requirementFields?.name}: `}</b>
-                                      {getPositionLevelRequirementValue(
-                                        d.requirementFields.name,
-                                        d.value,
-                                      )}
+                                      <b>{`${d?.requirementFields?.name ?? '-'}: `}</b>
+                                      {d?.value ?? '-'}
                                     </p>
                                   );
                                 },

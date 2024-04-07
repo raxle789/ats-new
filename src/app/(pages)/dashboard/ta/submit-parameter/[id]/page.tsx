@@ -3,8 +3,8 @@ import EmployJobParameter from '@/app/components/dashboard/employ/submit-job-par
 
 export const revalidate = 0;
 
-const jobParameterPage = ({ searchParams }) => {
-  return <EmployJobParameter searchParams={searchParams} />;
+const jobParameterPage = ({ params }) => {
+  return <EmployJobParameter params={params} />;
 };
 
 export default jobParameterPage;

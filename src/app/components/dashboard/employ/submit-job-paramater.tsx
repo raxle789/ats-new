@@ -8,17 +8,27 @@ import {
 } from '@/lib/action/positionLevelRequirement/action';
 import CryptoJS from 'crypto-js';
 
-const EmployJobParameter = async ({ searchParams }) => {
-  const query = searchParams ?? {};
+const EmployJobParameter = async ({ params }) => {
+  // const encryptedValue = Object?.keys(query)?.map((key) => query[key]);
 
-  const encryptedValue = Object?.keys(query)?.map((key) => query[key]);
+  const decryptValue = async () => {
+    try {
+      const query = (await decodeURIComponent(params.id)) ?? '';
 
-  const decryptedValue = CryptoJS.Rabbit.decrypt(
-    String(encryptedValue[0]),
-    process.env.NEXT_PUBLIC_SECRET_KEY,
-  );
+      const decryptedValue = await CryptoJS.Rabbit.decrypt(
+        String(query),
+        process.env.NEXT_PUBLIC_SECRET_KEY,
+      );
 
-  const originalValue = decryptedValue.toString(CryptoJS.enc.Utf8);
+      const convertString = await decryptedValue.toString(CryptoJS.enc.Utf8);
+
+      return convertString;
+    } catch (e) {
+      return '';
+    }
+  };
+
+  const originalValue = await decryptValue();
 
   const positionLevelRequirementData = await getPositionLevelRequirementData(
     Number(originalValue),
