@@ -342,7 +342,7 @@ export async function getAllTa() {
         userRoles: {
           some: {
             roles: {
-              name: 'interviewer',
+              name: 'ta_non_admin',
             },
           },
         },
