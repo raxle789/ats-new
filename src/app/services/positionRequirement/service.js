@@ -4,19 +4,34 @@ import prisma from '../connection/db';
 
 export async function getAllPositionLevelRequirement(offset, perPage) {
   try {
-    const data = await prisma.positionLevels.findMany({
-      skip: offset,
-      take: perPage,
-      include: {
-        positionLevelRequirements: {
-          include: {
-            requirementFields: true,
+    const [data, total] = await prisma.$transaction([
+      prisma.positionLevels.findMany({
+        skip: offset,
+        take: perPage,
+        include: {
+          positionLevelRequirements: {
+            include: {
+              requirementFields: true,
+            },
           },
         },
-      },
-    });
+      }),
+      prisma.positionLevels.count(),
+    ]);
 
-    const total = await prisma.positionLevels.count();
+    // const data = await prisma.positionLevels.findMany({
+    //   skip: offset,
+    //   take: perPage,
+    //   include: {
+    //     positionLevelRequirements: {
+    //       include: {
+    //         requirementFields: true,
+    //       },
+    //     },
+    //   },
+    // });
+
+    // const total = await prisma.positionLevels.count();
 
     return {
       data: data,
@@ -48,50 +63,96 @@ export async function getAllPositionLevelRequirement(offset, perPage) {
 
 export async function searchPositionLevelRequirement(query, offset, perPage) {
   try {
-    const data = await prisma.positionLevels.findMany({
-      skip: offset,
-      take: perPage,
-      where: {
-        OR: [
-          {
-            name: {
-              contains: query,
+    const [data, total] = await prisma.$transaction([
+      prisma.positionLevels.findMany({
+        skip: offset,
+        take: perPage,
+        where: {
+          OR: [
+            {
+              name: {
+                contains: query,
+              },
             },
-          },
-          {
-            level: {
-              contains: query,
+            {
+              level: {
+                equals: isNaN(query) ? -1 : Number(query),
+              },
             },
-          },
-        ],
-      },
-      include: {
-        positionLevelRequirements: {
-          select: {
-            requirementFields: true,
+          ],
+        },
+        include: {
+          positionLevelRequirements: {
+            include: {
+              requirementFields: true,
+            },
           },
         },
-      },
-    });
+      }),
+      prisma.positionLevels.count({
+        skip: offset,
+        take: perPage,
+        where: {
+          OR: [
+            {
+              name: {
+                contains: query,
+              },
+            },
+            {
+              level: {
+                equals: isNaN(query) ? -1 : Number(query),
+              },
+            },
+          ],
+        },
+      }),
+    ]);
 
-    const total = await prisma.positionLevels.count({
-      skip: offset,
-      take: perPage,
-      where: {
-        OR: [
-          {
-            name: {
-              contains: query,
-            },
-          },
-          {
-            level: {
-              contains: query,
-            },
-          },
-        ],
-      },
-    });
+    // const data = await prisma.positionLevels.findMany({
+    //   skip: offset,
+    //   take: perPage,
+    //   where: {
+    //     OR: [
+    //       {
+    //         name: {
+    //           contains: query,
+    //         },
+    //       },
+    //       {
+    //         level: {
+    //           equals: isNaN(query) ? -1 : Number(query),
+    //         },
+    //       },
+    //     ],
+    //   },
+    //   include: {
+    //     positionLevelRequirements: {
+    //       include: {
+    //         requirementFields: true,
+    //       },
+    //     },
+    //   },
+    // });
+
+    // const total = await prisma.positionLevels.count({
+    //   skip: offset,
+    //   take: perPage,
+    //   where: {
+    //     OR: [
+    //       {
+    //         name: {
+    //           contains: query,
+    //         },
+    //       },
+    //       {
+    //         level: {
+    //           equals: isNaN(query) ? -1 : Number(query),
+    //         },
+    //       },
+    //     ],
+    //   },
+    // });
 
     return {
       data: data,
@@ -142,6 +203,8 @@ export async function getAllPositionLevel() {
     return aliasedData;
   } catch (e) {
     console.log(e);
+
+    return [];
   }
 }
 
@@ -185,27 +248,29 @@ export async function setPositionLevelRequirement(
   value,
 ) {
   try {
-    const data = await prisma.requirementFields.findUnique({
-      where: {
-        name: requirementFieldName,
-      },
-    });
-
-    await prisma.positionLevelRequirements.upsert({
-      where: {
-        positionLevelId_requirementFieldId: {
-          positionLevelId: positionLevelId,
-          requirementFieldId: data.id,
+    prisma.$transaction(async (tx) => {
+      const data = await tx.requirementFields.findUnique({
+        where: {
+          name: requirementFieldName,
         },
-      },
-      update: {
-        value: value,
-      },
-      create: {
-        positionLevelId: positionLevelId,
-        requirementFieldId: data.id,
-        value: value,
-      },
+      });
+
+      await tx.positionLevelRequirements.upsert({
+        where: {
+          positionLevelId_requirementFieldId: {
+            positionLevelId: positionLevelId,
+            requirementFieldId: data?.id,
+          },
+        },
+        update: {
+          value: value,
+        },
+        create: {
+          positionLevelId: positionLevelId,
+          requirementFieldId: data?.id,
+          value: value,
+        },
+      });
     });
   } catch (e) {
     console.log(e);
@@ -218,13 +283,16 @@ export async function getEducationLevel(educationLevelId) {
       where: {
         id: educationLevelId,
       },
+      select: {
+        name: true,
+      },
     });
 
-    return data;
+    return data.name;
   } catch (e) {
     console.log(e);
 
-    return [];
+    return '';
   }
 }
 
@@ -234,13 +302,16 @@ export async function getPositionLevel(positionLevelId) {
       where: {
         id: positionLevelId,
       },
+      select: {
+        name: true,
+      },
     });
 
-    return data;
+    return data.name;
   } catch (e) {
     console.log(e);
 
-    return [];
+    return '';
   }
 }
 
@@ -250,12 +321,15 @@ export async function getLineIndustry(lineIndustryId) {
       where: {
         id: lineIndustryId,
       },
+      select: {
+        name: true,
+      },
     });
 
-    return data;
+    return data.name;
   } catch (e) {
     console.log(e);
 
-    return [];
+    return '';
   }
 }

@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import {
   Cascader,
+  Spin,
   DatePicker,
   Form,
   Input,
@@ -22,6 +24,7 @@ import {
 } from 'antd';
 
 import { ExclamationCircleFilled } from '@ant-design/icons';
+import Link from 'next/link';
 // import {
 //   yearOfExperienceMarks,
 //   educationLevelMarks,
@@ -58,48 +61,76 @@ const EmployJobParameterItem = ({
 
   // console.info(positionLevelData);
 
+  const router = useRouter();
+
+  const pathname = usePathname();
+
   useEffect(() => {
     positionLevelRequirementData?.positionLevelRequirements?.forEach((data) => {
-      if (data?.requirementFields?.name !== 'salary') {
-        try {
-          const data2 = JSON.parse(data?.value);
-
-          const isArray = Array.isArray(data2);
-
-          if (isArray) {
-            form.setFieldsValue({
-              [data?.requirementFields?.name]: data2,
-            });
-          } else {
-            const numberValue = Number(data?.value);
-            form.setFieldsValue({
-              [data?.requirementFields?.name]: isNaN(numberValue)
-                ? data?.value
-                : numberValue,
-            });
-          }
-        } catch (e) {
-          const numberValue = Number(data?.value);
-          form.setFieldsValue({
-            [data?.requirementFields?.name]: isNaN(numberValue)
-              ? data?.value
-              : numberValue,
-          });
-        }
-      } else if (data?.requirementFields?.name === 'salary') {
-        const data2 = JSON.parse(data?.value);
-
+      if (data?.requirementFields?.name === 'salary') {
         form.setFieldsValue({
           [data?.requirementFields?.name]: {
-            start_salary: data2 ? Number(data2[0]) : 0,
-            end_salary: data2 ? Number(data2[1]) : 0,
+            start_salary: data?.value ? data.value[0] : null,
+            end_salary: data?.value ? data.value[1] : null,
           },
         });
+      } else {
+        form.setFieldsValue({
+          [data?.requirementFields?.name]:
+            data?.value === null || data?.value === undefined || !data?.value
+              ? null
+              : data.value,
+        });
       }
+
+      // if (data?.requirementFields?.name !== 'salary') {
+      //   try {
+      //     const data2 = JSON.parse(data?.value);
+
+      //     const isArray = Array.isArray(data2);
+
+      //     if (isArray) {
+      //       form.setFieldsValue({
+      //         [data?.requirementFields?.name]: data2,
+      //       });
+      //     } else {
+      //       if (data.value === null || data.value === '') {
+      //         form.setFieldsValue({ [data.requirementFields.name]: null });
+      //       } else {
+      //         const numberValue = Number(data?.value);
+      //         form.setFieldsValue({
+      //           [data?.requirementFields?.name]: isNaN(numberValue)
+      //             ? data?.value
+      //             : numberValue,
+      //         });
+      //       }
+      //     }
+      //   } catch (e) {
+      //     if (data.value === null || data.value === '') {
+      //       form.setFieldsValue({ [data.requirementFields.name]: null });
+      //     } else {
+      //       const numberValue = Number(data?.value);
+      //       form.setFieldsValue({
+      //         [data?.requirementFields?.name]: isNaN(numberValue)
+      //           ? data?.value
+      //           : numberValue,
+      //       });
+      //     }
+      //   }
+      // } else if (data?.requirementFields?.name === 'salary') {
+      //   const data2 = JSON.parse(data?.value);
+
+      //   form.setFieldsValue({
+      //     [data?.requirementFields?.name]: {
+      //       start_salary: data2 ? Number(data2[0]) : null,
+      //       end_salary: data2 ? Number(data2[1]) : null,
+      //     },
+      //   });
+      // }
     });
 
     form.setFieldsValue({
-      positionLevelId: positionLevelRequirementData.id,
+      positionLevelId: Number(positionLevelRequirementData.id),
     });
   }, [positionLevelRequirementData]);
 
@@ -126,6 +157,8 @@ const EmployJobParameterItem = ({
               .catch((e) =>
                 console.log('Error set position level requirement data: ', e),
               );
+            setSpinning(true);
+            // router.replace('/dashboard/ta/parameter');
             resolve();
           }, 2000);
         }).catch(() => console.log('Oops errors!'));
@@ -169,16 +202,16 @@ const EmployJobParameterItem = ({
 
   // const [raceParameterState, setRaceParameterState] = useState(false);
 
-  const [lineIndustryParameterState, setLineIndustryParameterState] =
-    useState(false);
-  const [jobFunctionParameterState, setJobFunctionParameterState] =
-    useState(false);
-  const [positionLevelParameterState, setPositionLevelParameterState] =
-    useState(false);
+  // const [lineIndustryParameterState, setLineIndustryParameterState] =
+  //   useState(false);
+  // const [jobFunctionParameterState, setJobFunctionParameterState] =
+  //   useState(false);
+  // const [positionLevelParameterState, setPositionLevelParameterState] =
+  //   useState(false);
 
-  const handleCategory = (item: { value: string; label: string }) => {};
-  const handleJobType = (item: { value: string; label: string }) => {};
-  const handleSalary = (item: { value: string; label: string }) => {};
+  // const handleCategory = (item: { value: string; label: string }) => {};
+  // const handleJobType = (item: { value: string; label: string }) => {};
+  // const handleSalary = (item: { value: string; label: string }) => {};
 
   // const handleFormatter = (value) => {
   //   if (value) {
@@ -231,8 +264,24 @@ const EmployJobParameterItem = ({
   //   return parseFloat(rupiahRemovedValue || '0'); // Parse menjadi float, atau 0 jika kosong
   // };
 
+  const toggleRowExpansion = (index: number) => {
+    setExpandedRows((prevExpandedRows) => ({
+      ...prevExpandedRows,
+      [index]: !prevExpandedRows[index],
+    }));
+  };
+
+  const [spinning, setSpinning] = React.useState(false);
+  const showLoader = () => {
+    setSpinning(true);
+    // setTimeout(() => {
+    //   setSpinning(false);
+    // }, 3000);
+  };
+
   return (
     <>
+      <Spin spinning={spinning} fullscreen />
       {contextHolder}
       <Form
         form={form}
@@ -296,8 +345,8 @@ const EmployJobParameterItem = ({
         </div> */}
 
         <h4 className="dash-title-three">Requirement Settings</h4>
-        <Form.Item className="" name="positionLevelId">
-          <Input className="" />
+        <Form.Item className="d-none" name="positionLevelId">
+          <Input className="d-none" type="hidden" />
         </Form.Item>
         <div className="dash-input-wrapper mb-30">
           <Form.Item
@@ -430,12 +479,12 @@ const EmployJobParameterItem = ({
         <div className="dash-input-wrapper mb-30">
           <div className="col-lg-12">
             <Form.Item
-              label="Education Level"
+              label="Minimum Education Level"
               name="education_level"
               rules={[
                 {
                   required: true,
-                  message: 'Please Select Education Level!',
+                  message: 'Please Select Minimum Education Level!',
                 },
               ]}
             >
@@ -445,7 +494,7 @@ const EmployJobParameterItem = ({
                 showSearch
                 allowClear
                 // disabled={!educationLevelParameterState}
-                placeholder="Select Education Level"
+                placeholder="Select Minimum Education Level"
                 optionFilterProp="children"
                 filterOption={(input, option) =>
                   (option?.label ?? '').includes(input)
@@ -523,12 +572,12 @@ const EmployJobParameterItem = ({
         <div className="dash-input-wrapper mb-30">
           <div className="col-lg-12">
             <Form.Item
-              label="Grade"
+              label="Minimum GPA"
               name="grade"
               rules={[
                 {
                   required: true,
-                  message: 'Please Input Grade!',
+                  message: 'Please Input Minimum GPA!',
                 },
               ]}
             >
@@ -538,7 +587,7 @@ const EmployJobParameterItem = ({
                 min={1}
                 max={4}
                 step={0.01}
-                placeholder="Input Grade"
+                placeholder="Input Minimum GPA"
                 style={{ height: '40px' }}
                 // disabled={!gradeParameterState}
               />
@@ -1038,9 +1087,14 @@ const EmployJobParameterItem = ({
           {/* <a href="#" className="dash-btn-two tran3s me-3">
               Next
             </a> */}
-          <button className="dash-cancel-btn tran3s" type="button">
+          <Link
+            href="/dashboard/ta/parameter"
+            className="dash-cancel-btn tran3s"
+            type="button"
+            onClick={showLoader}
+          >
             Cancel
-          </button>
+          </Link>
         </div>
       </Form>
     </>

@@ -11,12 +11,33 @@ const { confirm } = Modal;
 const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
   const formRef = useRef({});
 
-  const [form] = Form.useForm();
-
   const [loading, setLoading] = useState(false);
   const [api, contextHolder] = notification.useNotification();
   const [assignDisabled, setAssignDisabled] = useState({});
   const router = useRouter();
+  const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
+    {},
+  );
+
+  const toggleRowExpansion = (index: number) => {
+    setExpandedRows((prevExpandedRows) => ({
+      ...prevExpandedRows,
+      [index]: !prevExpandedRows[index],
+    }));
+  };
+
+  const setFormDefaultValue = async () => {
+    if (fpkData) {
+      await Promise.all(
+        fpkData?.map(async (data) => {
+          await formRef.current[data?.requestNo]?.setFieldsValue({
+            efpkRequestNo: data?.requestNo,
+            taId: data?.taId,
+          });
+        }),
+      );
+    }
+  };
 
   const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
     {},
@@ -29,46 +50,41 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
   };
 
   useEffect(() => {
-    fpkData.forEach((data) => {
-      formRef.current[data?.id]?.setFieldsValue({
-        taId: data?.efpkTa?.taId,
-        efpkId: data?.id,
-      });
-    });
+    setFormDefaultValue();
   }, [fpkData, offset]);
 
-  const convertDate = (dateTime: any) => {
-    const monthNames = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Okt',
-      'Nov',
-      'Des',
-    ];
+  // const convertDate = (dateTime: any) => {
+  //   const monthNames = [
+  //     'Jan',
+  //     'Feb',
+  //     'Mar',
+  //     'Apr',
+  //     'May',
+  //     'Jun',
+  //     'Jul',
+  //     'Aug',
+  //     'Sep',
+  //     'Okt',
+  //     'Nov',
+  //     'Des',
+  //   ];
 
-    if (!dateTime) {
-      return 'Undefined';
-    } else if (typeof dateTime === 'string') {
-      const newDate = dateTime.replaceAll('/', ' ');
-      const day = newDate.slice(0, 2);
-      const month = monthNames[Number(newDate.slice(3, 5)) - 1];
-      const year = newDate.slice(6, 10);
-      return `${day}-${month}-${year}`;
-    } else {
-      const date = new Date(dateTime);
-      const day = String(date.getDate());
-      const month = monthNames[date.getMonth()];
-      const year = String(date.getFullYear());
-      return `${day}-${month}-${year}`;
-    }
-  };
+  //   if (!dateTime) {
+  //     return 'Undefined';
+  //   } else if (typeof dateTime === 'string') {
+  //     const newDate = dateTime.replaceAll('/', ' ');
+  //     const day = newDate.slice(0, 2);
+  //     const month = monthNames[Number(newDate.slice(3, 5)) - 1];
+  //     const year = newDate.slice(6, 10);
+  //     return `${day}-${month}-${year}`;
+  //   } else {
+  //     const date = new Date(dateTime);
+  //     const day = String(date.getDate());
+  //     const month = monthNames[date.getMonth()];
+  //     const year = String(date.getFullYear());
+  //     return `${day}-${month}-${year}`;
+  //   }
+  // };
 
   const handleAssignTa = (values: any) => {
     setLoading(true);
@@ -89,9 +105,9 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                 placement: 'topRight',
               });
               resolve();
-              assignTa(values.efpkId, values.taId)
+              assignTa(values)
                 .then(() => {
-                  form.resetFields();
+                  // form.resetFields();
                   router.refresh();
                 })
                 .catch((e) => console.log('Error assigning TA: ', e));
@@ -103,7 +119,7 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
         },
       });
 
-      assignTa('assignTa', values.requestNo, values.taId);
+      // assignTa('assignTa', values.requestNo, values.taId);
       setLoading(false);
     }, 2000);
   };
@@ -137,9 +153,9 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                     <tr>
                       <td>{index + 1 + offset}</td>
                       <td>
-                        <b>{`${data?.jobTitleName ?? ''}`}</b>
+                        <b>{`${data?.jobTitleName ?? '-'}`}</b>
                         <br />
-                        {`${data?.requestNo ?? ''}`}
+                        {`${data?.requestNo ?? '-'}`}
                       </td>
                       <td>{`${data?.jobLvlCode ?? ''}`}</td>
                       <td>{`${data?.compCode ?? ''}`}</td>
@@ -154,15 +170,15 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                       </td>
                       <td>
                         <Form
-                          form={form}
-                          ref={(el) => (formRef.current[data.id] = el)}
-                          name={`assignTaForm${data.id}`}
+                          // form={form}
+                          ref={(el) => (formRef.current[data?.requestNo] = el)}
+                          name={`assignTaForm${data?.requestNo}`}
                           layout="vertical"
                           variant="filled"
-                          initialValues={{
-                            ['taId']: data?.efpkTa?.taId,
-                            ['efpkId']: data?.id,
-                          }}
+                          // initialValues={{
+                          //   ['taId']: data?.taId,
+                          //   ['efpkRequestNo']: data?.requestNo,
+                          // }}
                           onFinish={handleAssignTa}
                         >
                           <Form.Item name="taId">
@@ -173,7 +189,7 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                               onChange={() =>
                                 setAssignDisabled((prevState) => ({
                                   ...prevState,
-                                  [data.id]: true,
+                                  [data?.requestNo]: true,
                                 }))
                               }
                               placeholder="Select TA"
@@ -182,10 +198,10 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                               filterOption={(input, option) =>
                                 (option?.label ?? '').includes(input)
                               }
-                              options={taData.map((item) => ({
+                              options={taData?.map((item) => ({
                                 value: item.value,
                                 label: item.label,
-                                disabled: item.value === data?.efpkTa?.taId,
+                                disabled: item.value === data?.taId,
                               }))}
                             />
                             {/* {taData.map((item) => {
@@ -206,13 +222,13 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                               })}
                             </Select> */}
                           </Form.Item>
-                          <Form.Item className="d-none" name="efpkId">
+                          <Form.Item className="d-none" name="efpkRequestNo">
                             <Input className="d-none" type="hidden" />
                           </Form.Item>
                           <Form.Item>
                             <Button
                               htmlType="submit"
-                              disabled={!assignDisabled[data.id]}
+                              disabled={!assignDisabled[data?.requestNo]}
                             >
                               Assign
                             </Button>
@@ -243,7 +259,7 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                               <div className="col-6">
                                 <p>
                                   <b>Initiator: </b>
-                                  {`${data?.initiatorName ?? ''}`}
+                                  {`${data?.initiatorName ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Position: </b>
@@ -251,37 +267,37 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                                 </p>
                                 <p>
                                   <b>Email: </b>
-                                  {`${data.initiatorEmail ?? ''}`}
+                                  {`${data.initiatorEmail ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Phone Number: </b>
-                                  {`${data.efpkInitiatorInformations.phone ?? ''}`}
+                                  {`${data.initiatorPhone ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Location: </b>
-                                  {`${data?.locationName ?? ''}`}
+                                  {`${data?.locationName ?? '-'}`}
                                 </p>
                               </div>
                               <div className="col-lg-6">
                                 <p>
                                   <b>Create FPK: </b>
-                                  {`${convertDate(data?.createDate ?? '')}`}
+                                  {`${data?.createDate ?? ''}`}
                                 </p>
                                 <p>
                                   <b>Status Mpp: </b>
-                                  {`${data?.reason ?? ''}`}
+                                  {`${data?.reason ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Job Posting: </b>
-                                  {`${data?.efpkJobVacancies ? 'Yes' : 'No'}`}
+                                  {`${data?.totalJobVacancies ? 'Yes (' + data.totalJobVacancies + ')' : 'No'}`}
                                 </p>
                                 <p>
                                   <b>Total Need: </b>
-                                  {`${data?.totalNeed ?? ''}`}
+                                  {`${data?.totalNeed ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Total Relized: </b>
-                                  {`${data?.totalRelized ?? ''}`}
+                                  {`${data?.totalRelized ?? '-'}`}
                                 </p>
                               </div>
                             </div>

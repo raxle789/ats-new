@@ -8,28 +8,26 @@ import {
 } from '@/lib/action/positionLevelRequirement/action';
 import CryptoJS from 'crypto-js';
 
-const EmployJobParameter = async ({ searchParams }) => {
-  const query = searchParams ?? {};
+const EmployJobParameter = async ({ params }) => {
+  // const encryptedValue = Object?.keys(query)?.map((key) => query[key]);
+  const decryptValue = async () => {
+    try {
+      const query = (await decodeURIComponent(params.id)) ?? '';
 
-  const encryptedQuery = Object?.keys(query)?.map((key) => query[key]);
-  const encryptedValue = JSON.stringify({ encryptedQuery }).toString();
+      const decryptedValue = await CryptoJS.Rabbit.decrypt(
+        String(query),
+        process.env.NEXT_PUBLIC_SECRET_KEY,
+      );
 
-  console.info('encryptedQuery: ', encryptedQuery);
-  console.info('encryptedValue: ', encryptedValue);
+      const convertString = await decryptedValue.toString(CryptoJS.enc.Utf8);
 
-  // const info2 = CryptoJS.AES.decrypt(
-  //   encryptedValue,
-  //   process.env.NEXT_PUBLIC_SECRET_KEY,
-  // ).toString(CryptoJS.enc.Utf8);
+      return convertString;
+    } catch (e) {
+      return '';
+    }
+  };
 
-  const key: string | WordArray = process.env.NEXT_PUBLIC_SECRET_KEY;
-
-  const decryptedValue = CryptoJS.Rabbit.decrypt(encryptedValue[0], key);
-
-  console.info('decryptedValue: ', decryptedValue);
-
-  const originalValue = decryptedValue.toString(CryptoJS.enc.Utf8);
-  console.log('originalValue: ', originalValue);
+  const originalValue = await decryptValue();
 
   const positionLevelRequirementData = await getPositionLevelRequirementData(
     Number(originalValue),
