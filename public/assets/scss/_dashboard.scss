@@ -1757,3 +1757,8 @@
 //   width: 300px;
 //   height: 200px;
 // }
+
+.fade-out {
+  transition: opacity 0.3s ease-out;
+  opacity: 0;
+}

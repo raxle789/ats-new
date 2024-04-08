@@ -7,6 +7,9 @@ import ErrorMsg from '../common/error-msg';
 import icon from '@/assets/images/icon/icon_60.svg';
 import { userAuth } from '@/libs/Login';
 import { useRouter } from 'next/navigation';
+import { useAppDispatch } from '@/redux/hook';
+import { setAuthState } from '@/redux/features/authorizingSlice';
+import { Input } from 'antd';
 
 type formData = {
   email: string;
@@ -50,7 +53,7 @@ const resolver: Resolver<IFormData> = async (values) => {
 
 const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
   const router = useRouter();
-
+  const dispatch = useAppDispatch();
   const [showPass, setShowPass] = useState<boolean>(false);
   const clientKey = process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY;
 
@@ -78,7 +81,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
 
   const formOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     console.log(formData);
 
     const authorizing = await userAuth(formData);
@@ -88,27 +90,37 @@ const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
     }
 
     console.log('check if user logged in successfully', authorizing);
-
     setErrors(authorizing.message as { [key: string]: string[] });
 
     setTimeout(() => {
       router.push('/main/job');
+      if (authorizing) {
+        dispatch(setAuthState({ newAuthState: true }));
+      }
     }, 3000);
   };
 
+  useEffect(() => {
+    // if (!checkedEmployee) {
+    //   console.log('merefresh');
+    //   router.refresh();
+    // }
+  }, [checkedEmployee]);
   return (
     <form onSubmit={formOnSubmit} className="mt-10" action="" method="POST">
       <div className="row">
         <div className="col-12">
-          <div className="input-group-meta position-relative mb-20">
+          <div className="input-group-meta position-relative mb-10">
             <label>Email*</label>
             <input
+              className="login-input"
               type="email"
               placeholder="james@example.com"
               name="email"
               value={formData.email}
               onChange={inputOnChange}
             />
+            {/* <Input /> */}
             <div className="help-block with-errors">
               {errors.email && (
                 <span className="text-danger">{errors.email}</span>
@@ -117,16 +129,17 @@ const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
           </div>
         </div>
         <div className="col-12">
-          <div className="input-group-meta position-relative mb-20">
+          <div className="input-group-meta position-relative mb-10">
             <label>Password*</label>
             <input
               type={`${showPass ? 'text' : 'password'}`}
               placeholder="Enter Password"
-              className="pass_log_id"
+              className="pass_log_id login-input"
               name="password"
               value={formData.password}
               onChange={inputOnChange}
             />
+            {/* <Input.Password /> */}
             <span
               className="placeholder_icon"
               onClick={() => setShowPass(!showPass)}
@@ -148,18 +161,19 @@ const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
               <label>OTP*</label>
               <input
                 type="text"
+                className="login-input"
                 placeholder="OTP Code"
-                {...register('otp', { required: `OTP is required!` })}
+                // {...register('otp', { required: `OTP is required!` })}
                 name="otp"
               />
               <div className="help-block with-errors">
-                <ErrorMsg msg={errors.otp?.message!} />
+                {/* <ErrorMsg msg={errors.otp?.message!} /> */}
               </div>
             </div>
           </div>
         )}
         {!checkedEmployee && (
-          <div className="col-12 mb-10">
+          <div className="col-12 mt-10 mb-10">
             <div
               className="g-recaptcha"
               data-sitekey={clientKey}
@@ -185,7 +199,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
         <div className="col-12 mb-3">
           <button
             type="submit"
-            className="btn-eleven fw-500 tran3s d-block mt-20"
+            className="btn-eleven btn-login fw-500 tran3s d-block mt-20"
+            data-bs-dismiss="modal"
+            aria-label="Close"
           >
             Login
           </button>

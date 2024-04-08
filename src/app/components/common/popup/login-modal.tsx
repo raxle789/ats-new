@@ -20,6 +20,7 @@ const LoginModal = () => {
       // Navigasi ke halaman pendaftaran
       router.push('/register');
     };
+    // console.log('nilai check: ', isEmployeeChecked);
 
     // Menambahkan event listener ke tombol sign up
     const signUpButton = document.getElementById('signUpButton');
@@ -36,7 +37,7 @@ const LoginModal = () => {
     //     signUpButton2.removeEventListener('click', handleSignUpClick);
     //   }
     // });
-  }, [router]);
+  }, [router, isEmployeeChecked]);
   return (
     <div
       id="loginModal"
@@ -44,9 +45,9 @@ const LoginModal = () => {
       tabIndex={-1}
       aria-hidden="true"
     >
-      <div className="modal-dialog modal-fullscreen modal-dialog-centered">
+      <div className="modal-dialog modal-fullscreen modal-dialog-centered vertical-center">
         <div className="container">
-          <div className="user-data-form modal-content">
+          <div className="user-data-form modal-content login-content">
             <button
               type="button"
               className="btn-close"
@@ -54,8 +55,8 @@ const LoginModal = () => {
               aria-label="Close"
             ></button>
             <div className="text-center">
-              <h2>Hi, Welcome Back!</h2>
-              <p>
+              <h2 className="login-title">Hi, Welcome Back!</h2>
+              {/* <p>
                 Still do not have an account?{' '}
                 <a
                   id="signUpButton"
@@ -65,7 +66,7 @@ const LoginModal = () => {
                 >
                   Sign up
                 </a>
-              </p>
+              </p> */}
               <div className="agreement-checkbox">
                 <input
                   type="checkbox"
@@ -76,9 +77,9 @@ const LoginModal = () => {
                 <label htmlFor="login-employee">Login as Employee</label>
               </div>
             </div>
-            <div className="form-wrapper m-auto">
+            <div className="form-wrapper m-auto mt-5 login-pop-up">
               <LoginForm checkedEmployee={isEmployeeChecked} />
-              <div className="d-flex align-items-center mt-20 mb-10">
+              {/* <div className="d-flex align-items-center mt-0 mb-10">
                 <div className="line"></div>
                 <span className="pe-3 ps-3">OR</span>
                 <div className="line"></div>
@@ -93,7 +94,7 @@ const LoginModal = () => {
                     <span className="ps-2">Login with LinkedIn</span>
                   </a>
                 </div>
-              </div>
+              </div> */}
               {/* <p className="text-center mt-10">
                 Do not have an account?{' '}
                 <a

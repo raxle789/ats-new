@@ -373,17 +373,28 @@
   .modal-content {
     margin: 40px auto;
   }
+  .login-content {
+    margin: 0px auto;
+  }
+}
+.vertical-center {
+  display: flex;
+  align-items: center;
+  min-height: 100vh;
 }
 .user-data-form {
   background: #fff;
   margin: 0 auto;
-  max-width: 720px;
+  max-width: 480px;
   border-radius: 20px !important;
-  padding: 50px 15px 20px;
+  padding: 40px 0px 20px;
   h2 {
     font-size: 50px;
     font-weight: normal;
     color: $color-one;
+  }
+  .login-title {
+    font-size: 34px;
   }
   p a {
     color: $color-five;
@@ -392,7 +403,7 @@
     }
   }
   .form-wrapper {
-    max-width: 565px;
+    max-width: 380px;
     .input-group-meta {
       input {
         width: 100%;
@@ -403,6 +414,11 @@
         padding: 0 52px 0 20px;
         color: #000;
         background: rgba($color: #31795a, $alpha: 0.09);
+      }
+      .login-input {
+        height: 33px;
+        font-size: 14px;
+        // background-color: white;
       }
       label {
         font-size: 14px;
@@ -425,7 +441,7 @@
       }
       .placeholder_icon img {
         position: relative;
-        top: 50%;
+        top: 35%;
         margin: 0 auto;
         transform: translateY(-50%);
       }
@@ -442,7 +458,7 @@
         height: 26px;
         background: #000;
         position: absolute;
-        top: 11px;
+        top: 4px;
         left: 24px;
         transform: rotate(45deg);
         z-index: 5;
@@ -453,9 +469,15 @@
       }
     }
   }
+  .apply-wrapper {
+    max-width: 420px;
+  }
+  .register-wrapper {
+    max-width: 440px;
+  }
   .agreement-checkbox label {
     position: relative;
-    font-size: 15px;
+    font-size: 14px;
     letter-spacing: -0.5px;
     color: $color-one;
     cursor: pointer;
@@ -492,7 +514,7 @@
   }
   .agreement-checkbox a {
     position: relative;
-    font-size: 15px;
+    font-size: 14px;
     color: #1e1e1e;
   }
   .agreement-checkbox a:hover {
@@ -505,7 +527,7 @@
     background: rgba($color: #000000, $alpha: 0.2);
   }
   .social-use-btn {
-    font-size: 15px;
+    font-size: 14px;
     color: #000;
     height: 55px;
     border: 1px solid #e5e5e5;
@@ -526,6 +548,9 @@
     border-radius: 40px;
     .nav-item {
       width: 50%;
+      height: 40px;
+      display: flex;
+      align-items: center;
       .nav-link {
         display: block;
         width: 100%;
@@ -540,6 +565,12 @@
       }
     }
   }
+}
+.user-apply-form {
+  max-width: 520px;
+}
+.user-register-form {
+  max-width: 540px;
 }
 
 // Custom Styles
@@ -560,5 +591,6 @@
 }
 
 .form-select {
-  height: 48px;
+  height: 33px;
+  font-size: 14px;
 }

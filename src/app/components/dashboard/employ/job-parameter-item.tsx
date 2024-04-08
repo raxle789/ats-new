@@ -26,24 +26,6 @@ const subTitle: TSubTitle = {
   salary: 'Salary',
 };
 
-type TSubTitle = {
-  education_level: string;
-  job_level: string;
-  min_year_experience: string;
-  grade: string;
-  line_industry: string;
-  salary: string;
-};
-
-const subTitle: TSubTitle = {
-  education_level: 'Education Level',
-  job_level: 'Job Level',
-  min_year_experience: 'Min Year Experience',
-  grade: 'Grade',
-  line_industry: 'Line Industry',
-  salary: 'Salary',
-};
-
 const EmployJobParameter = ({
   positionLevelRequirementData,
   getLineIndustryData,

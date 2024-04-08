@@ -1,21 +1,24 @@
-"use server";
+'use server';
 
-import { getUserSession, setUserSession } from "../Sessions";
-import { userRegister1 } from "../validations/Register";
+import { getUserSession, setUserSession } from '../Sessions';
+import { userRegister1 } from '../validations/Register';
 import bcrypt from 'bcrypt';
-import { fileToBase64, toDatetime } from "./utils";
+import { fileToBase64, toDatetime } from './utils';
 import { v4 as uuidV4 } from 'uuid';
-import { cookies } from "next/headers";
-import * as Utils from "../Sessions/utils";
-import prisma from "@/root/prisma";
+import { cookies } from 'next/headers';
+import * as Utils from '../Sessions/utils';
+import prisma from '@/root/prisma';
 
 export async function createUser(formData: any) {
   const validate = userRegister1.safeParse(formData);
-  
-  if(!validate.success) {
+
+  if (!validate.success) {
     return {
       success: false,
-      message: Object.keys(validate.error.flatten().fieldErrors).length === 0 ? { saveUser: validate.error.flatten().formErrors } : validate.error.flatten().fieldErrors
+      message:
+        Object.keys(validate.error.flatten().fieldErrors).length === 0
+          ? { saveUser: validate.error.flatten().formErrors }
+          : validate.error.flatten().fieldErrors,
     };
   }
 
@@ -25,22 +28,22 @@ export async function createUser(formData: any) {
     data: {
       name: formData.name,
       email: formData.email,
-      password: hash
-    }
+      password: hash,
+    },
   });
 
   console.info(user);
-  if(!user) {
+  if (!user) {
     return {
       success: false,
       message: {
-        saveUser: ['failed to create user']
-      }
+        saveUser: ['failed to create user'],
+      },
     };
   }
 
   const registerPayloadSession = {
-    user_id: user.id
+    user_id: user.id,
   };
 
   /* set-register session */
@@ -49,10 +52,10 @@ export async function createUser(formData: any) {
   return {
     success: true,
     data: {
-      user_id: user.id
-    }
+      user_id: user.id,
+    },
   };
-};
+}
 
 export async function createCandidates(formData: any) {
   /* ADD VALIDATION PLEASE */
@@ -69,30 +72,30 @@ export async function createCandidates(formData: any) {
       source_referer: formData.source_referer,
       current_salary: Number(formData.current_salary),
       linkedin_profile_url: formData.linkedin_profile_url,
-    }
+    },
   });
 
   console.info(candidate);
 
-  if(!candidate) {
+  if (!candidate) {
     return {
       success: false,
-      message: `Cannot find user with id: ${regSession.user_id}`
-    }
-  };
+      message: `Cannot find user with id: ${regSession.user_id}`,
+    };
+  }
 
-  if(!candidate) {
+  if (!candidate) {
     return {
       success: false,
       message: {
-        saveUser: ['failed to create candidate']
-      }
+        saveUser: ['failed to create candidate'],
+      },
     };
-  };
+  }
 
   const registerPayloadSession = {
     user_id: regSession.user_id,
-    candidate_id: candidate.id
+    candidate_id: candidate.id,
   };
 
   /* set register-session */
@@ -100,11 +103,15 @@ export async function createCandidates(formData: any) {
 
   return {
     success: true,
-    data: registerPayloadSession
+    data: registerPayloadSession,
   };
-};
+}
 
-export async function createEducation_Experience(formData: any, document: any, agreement: boolean) {
+export async function createEducation_Experience(
+  formData: any,
+  document: any,
+  agreement: boolean,
+) {
   /* get reg-session */
   const regSession = await getUserSession('reg');
   console.log(regSession);
@@ -120,19 +127,19 @@ export async function createEducation_Experience(formData: any, document: any, a
       gpa: parseFloat(formData.education.gpa),
       language: 'Indonesian',
       is_latest: false,
-      is_graduate: false
-    }
+      is_graduate: false,
+    },
   });
 
   console.log(education);
-  if(!education) {
+  if (!education) {
     return {
       success: false,
       message: {
-        saveEducation: ['failed to create education']
-      }
+        saveEducation: ['failed to create education'],
+      },
     };
-  };
+  }
 
   const experience = await prisma.working_experiences.create({
     data: {
@@ -147,18 +154,18 @@ export async function createEducation_Experience(formData: any, document: any, a
       end_at: new Date(formData.experience.end_at), // looks must be converted to Date
       salary: Number(formData.experience.salary),
       is_currently: false,
-    }
+    },
   });
 
   console.log(experience);
-  if(!experience) {
+  if (!experience) {
     return {
       success: false,
       message: {
-        saveExperience: ['failed to create experience!']
-      }
+        saveExperience: ['failed to create experience!'],
+      },
     };
-  };
+  }
 
   const documenUUID: string = uuidV4();
   const binaryData = Buffer.from(document.file_base, 'base64');
@@ -169,29 +176,33 @@ export async function createEducation_Experience(formData: any, document: any, a
       byte_size: document.size,
       path: 'no-path',
       file_base: binaryData,
-      candidate_id: regSession.candidate_id
-    }
+      candidate_id: regSession.candidate_id,
+    },
   });
 
   console.log(userDocument);
-  if(!userDocument) {
+  if (!userDocument) {
     return {
       success: false,
       message: {
-        saveDocument: ['failed to create document!']
-      }
+        saveDocument: ['failed to create document!'],
+      },
     };
-  };
+  }
 
   /* delete reg-session */
   cookies().delete(Utils.regSession);
   /* set auth-session */
-  await setUserSession('auth', { user_id: regSession.id, candidate_id: regSession.candidate_id }, undefined);
+  await setUserSession(
+    'auth',
+    { user_id: regSession.id, candidate_id: regSession.candidate_id },
+    undefined,
+  );
 
   return {
     success: true,
     message: {
-      createAccount: ['Create account successfully!']
-    }
-  }
+      createAccount: ['Create account successfully!'],
+    },
+  };
 }

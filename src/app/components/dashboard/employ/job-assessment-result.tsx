@@ -64,16 +64,16 @@ const items: CollapseProps['items'] = [
     label: 'TIU',
     children: <p>{text}</p>,
   },
-  {
-    key: '3',
-    label: 'PAPIKOSTIK',
-    children: <p>{text}</p>,
-  },
-  {
-    key: '4',
-    label: 'I-Lead A',
-    children: <p>{text}</p>,
-  },
+  // {
+  //   key: '3',
+  //   label: 'PAPIKOSTIK',
+  //   children: <p>{text}</p>,
+  // },
+  // {
+  //   key: '4',
+  //   label: 'I-Lead A',
+  //   children: <p>{text}</p>,
+  // },
 ];
 
 const JobAssessmentResult = () => {
@@ -86,61 +86,61 @@ const JobAssessmentResult = () => {
       </div>
 
       <div className="bg-white card-box border-20 mb-20">
-        <div className="mb-30 d-flex justify-content-end">
-          <Link
-            href="#"
-            className="view-result-btn tran3s"
-            style={{ width: '245px' }}
-          >
-            View Result Assessment
-          </Link>
-        </div>
         <div className="row">
-          <div className="col-lg-4">
+          <div className="col-lg-3">
             <b>
-              <p>Full Name</p>
+              {/* <p>Full Name</p>
               <p>Email</p>
               <p>Phone</p>
               <p>Domicile</p>
               <p>Education</p>
               <p>University / School</p>
-              <p>Education Major</p>
+              <p>Education Major</p> */}
               <p>Position</p>
               <p>Level</p>
-              <p>Source</p>
+              {/* <p>Source</p> */}
               <p>Start Test</p>
               <p>End Test</p>
               <p>Status</p>
               <p>Test Name</p>
-              <p>Assessment</p>
-              <p>Recruiter</p>
+              {/* <p>Assessment</p>
+              <p>Recruiter</p> */}
             </b>
           </div>
           <div className="col-lg-6">
-            <p>Fatkhur Rozak</p>
+            {/* <p>Fatkhur Rozak</p>
             <p>oujakdev.rep@gmail.com</p>
             <p>085784464441</p>
             <p>-</p>
             <p>D4</p>
             <p>Jember State Polytechnic</p>
-            <p>TEKNIK INFORMATIKA</p>
+            <p>TEKNIK INFORMATIKA</p> */}
             <p>Testing Purpose - Assessment and Interview</p>
             <p>1</p>
-            <p>database</p>
+            {/* <p>database</p> */}
             <p>22-02-2024 01:00:00</p>
             <p>26-02-2024 23:59:59</p>
             <p>Tidak direkomendasikan</p>
             <p>Psikotes Online - 1</p>
-            <p>ATS</p>
-            <p>ATS</p>
+            {/* <p>ATS</p>
+            <p>ATS</p> */}
           </div>
         </div>
         <div>
           <Collapse items={items} defaultActiveKey={['0']} />
         </div>
+        <div className="mt-30 d-flex align-items-center justify-content-center">
+          <Link
+            href="#"
+            className="view-result-btn tran3s"
+            style={{ width: '295px' }}
+          >
+            Download Assessment Result
+          </Link>
+        </div>
       </div>
 
-      <div className="bg-white card-box border-20">
+      {/* <div className="bg-white card-box border-20">
         <h5 className="sub-main-title">Review Assessment</h5>
         <br />
         <div className="row">
@@ -174,10 +174,6 @@ const JobAssessmentResult = () => {
                   <p className="ant-upload-text">
                     Click or drag file to this area to upload
                   </p>
-                  {/* <p className="ant-upload-hint">
-                    Support for a single or bulk upload. Strictly prohibited from
-                    uploading company data or other banned files.
-                  </p> */}
                 </Dragger>
               </div>
             </div>
@@ -200,10 +196,6 @@ const JobAssessmentResult = () => {
                   <p className="ant-upload-text">
                     Click or drag file to this area to upload
                   </p>
-                  {/* <p className="ant-upload-hint">
-                    Support for a single or bulk upload. Strictly prohibited from
-                    uploading company data or other banned files.
-                  </p> */}
                 </Dragger>
               </div>
             </div>
@@ -226,16 +218,12 @@ const JobAssessmentResult = () => {
                   <p className="ant-upload-text">
                     Click or drag file to this area to upload
                   </p>
-                  {/* <p className="ant-upload-hint">
-                    Support for a single or bulk upload. Strictly prohibited from
-                    uploading company data or other banned files.
-                  </p> */}
                 </Dragger>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   );
 };

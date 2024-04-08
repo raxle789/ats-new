@@ -17,19 +17,12 @@ import FeedbackFive from './components/feedBacks/feedback-five';
 // import FancyBannerSix from './components/fancy-banner/fancy-banner-6';
 import FooterOne from '@/layouts/footers/footer-one';
 import Link from 'next/link';
-import prisma from '@/root/prisma';
 
 export const metadata: Metadata = {
   title: 'Home',
 };
 
 export default async function Home() {
-  const user = await prisma.users.findUnique({
-    where: {
-      id: 1
-    }
-  });
-  console.info(user);
   return (
     <Wrapper>
       <div className="main-page-wrapper">
@@ -102,13 +95,13 @@ export default async function Home() {
                 Explore all jobs
               </Link>
             </div>
-            <div className="text-center mt-50 wow fadeInUp">
+            {/* <div className="text-center mt-50 wow fadeInUp">
               <div className="btn-eight fw-500">
                 Do you want to post a job for your company?{' '}
                 <span>We can help.</span>{' '}
                 <Link href="/auth/register">Click here</Link>
               </div>
-            </div>
+            </div> */}
           </div>
         </section>
         {/* job list items end */}
