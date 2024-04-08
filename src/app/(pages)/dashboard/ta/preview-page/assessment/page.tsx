@@ -2,8 +2,8 @@
 import React from 'react';
 import CandidateAssessment from '@/app/components/dashboard/employ/candidate-assessment';
 
-const jobApplicantPage = () => {
+const JobApplicantPage = () => {
   return <CandidateAssessment />;
 };
 
-export default jobApplicantPage;
+export default JobApplicantPage;

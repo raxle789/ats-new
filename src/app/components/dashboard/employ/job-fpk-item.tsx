@@ -12,11 +12,8 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
   const formRef = useRef({});
 
   const [loading, setLoading] = useState(false);
-
   const [api, contextHolder] = notification.useNotification();
-
   const [assignDisabled, setAssignDisabled] = useState({});
-
   const router = useRouter();
   const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
     {},
@@ -40,6 +37,16 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
         }),
       );
     }
+  };
+
+  const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
+    {},
+  );
+  const toggleRowExpansion = (index: number) => {
+    setExpandedRows((prevExpandedRows) => ({
+      ...prevExpandedRows,
+      [index]: !prevExpandedRows[index],
+    }));
   };
 
   useEffect(() => {
@@ -124,7 +131,6 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
       <div className="tab-content" id="nav-tabContent">
         <div className="tab-pane fade show active" id="a1" role="tabpanel">
           <div className="table-responsive">
-            {/* <> */}
             <table className="table job-alert-table w-100">
               <thead>
                 <tr>
@@ -138,7 +144,7 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                   </th>
                   <th scope="col">Status EFPK</th>
                   <th scope="col">PIC TA</th>
-                  <th scope="col"></th>
+                  <th scope="col">More</th>
                 </tr>
               </thead>
               <tbody>
@@ -151,21 +157,17 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                         <br />
                         {`${data?.requestNo ?? '-'}`}
                       </td>
-                      <td>{`${data?.jobLvlCode ?? '-'}`}</td>
-                      <td>{`${data?.compCode ?? '-'}`}</td>
-                      {/* <td>{`${data?.InitiatorName ?? ''}\n${data.InitiatorEmail ?? ''}`}</td> */}
-                      {/* <td>{`${data?.LocationName ?? ''}`}</td> */}
-                      {/* <td>{`${data?.Reason ?? ''}`}</td> */}
-                      {/* <td>{`${convertDate(data?.CreateDate ?? '')}`}</td> */}
-                      {/* <td>{`${convertDate(data?.ApprovalDate ?? '')}`}</td> */}
+                      <td>{`${data?.jobLvlCode ?? ''}`}</td>
+                      <td>{`${data?.compCode ?? ''}`}</td>
                       <td>
                         <b>
-                          <span className="approved">{`Fully ${data?.status ?? '-'}`}</span>
+                          <span
+                            className={`${data?.status === 'Approved' ? 'approved' : 'not-approved'}`}
+                          >{`${data?.status ?? ''}`}</span>
                         </b>
                         <br />
-                        {`${data?.approvalDate ?? ''}`}
+                        {`${convertDate(data?.approvalDate) === 'Undefined' ? 'No Date' : convertDate(data?.approvalDate)}`}
                       </td>
-                      {/* <td>{`${data?.CandidateSource ? 'Yes' : 'No'}`}</td> */}
                       <td>
                         <Form
                           // form={form}
@@ -234,10 +236,12 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                         </Form>
                       </td>
                       <td>
-                        <ExpendableButton
-                          isOpen={expandedRows[index]}
-                          toggle={() => toggleRowExpansion(index)}
-                        />
+                        <div className="d-flex align-items-center justify-content-center">
+                          <ExpendableButton
+                            isOpen={expandedRows[index]}
+                            toggle={() => toggleRowExpansion(index)}
+                          />
+                        </div>
                       </td>
                     </tr>
                     {expandedRows[index] && (
@@ -258,6 +262,10 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                                   {`${data?.initiatorName ?? '-'}`}
                                 </p>
                                 <p>
+                                  <b>Position: </b>
+                                  {`${data.efpkInitiatorInformations.position ?? ''}`}
+                                </p>
+                                <p>
                                   <b>Email: </b>
                                   {`${data.initiatorEmail ?? '-'}`}
                                 </p>
@@ -266,15 +274,11 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                                   {`${data.initiatorPhone ?? '-'}`}
                                 </p>
                                 <p>
-                                  <b>Position: </b>
-                                  {`${data.initiatorJobTitleName ?? '-'}`}
-                                </p>
-                              </div>
-                              <div className="col-lg-6">
-                                <p>
                                   <b>Location: </b>
                                   {`${data?.locationName ?? '-'}`}
                                 </p>
+                              </div>
+                              <div className="col-lg-6">
                                 <p>
                                   <b>Create FPK: </b>
                                   {`${data?.createDate ?? ''}`}
@@ -306,7 +310,6 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                 ))}
               </tbody>
             </table>
-            {/* </> */}
           </div>
         </div>
       </div>

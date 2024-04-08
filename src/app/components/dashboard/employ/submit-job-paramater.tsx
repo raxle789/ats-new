@@ -10,7 +10,6 @@ import CryptoJS from 'crypto-js';
 
 const EmployJobParameter = async ({ params }) => {
   // const encryptedValue = Object?.keys(query)?.map((key) => query[key]);
-
   const decryptValue = async () => {
     try {
       const query = (await decodeURIComponent(params.id)) ?? '';

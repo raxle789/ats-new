@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import Image from 'next/image';
+import ApplyModal from '../../common/popup/apply-modal';
 import Link from 'next/link';
 import { IJobType } from '@/types/job-data-type';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
@@ -17,35 +18,35 @@ const ListItemTwo = ({ item }: { item: IJobType }) => {
   return (
     <div className="job-list-one style-two position-relative border-style mb-20">
       <div className="row justify-content-between align-items-center">
-        <div className="col-md-5">
+        <div className="col-md-6">
           <div className="job-title d-flex align-items-center">
-            <Link href={`/main/job/${item.id}`} className="logo">
+            {/* <Link href={`/main/job/${item.id}`} className="logo">
               <Image src={item.logo} alt="logo" className="lazy-img m-auto" />
-            </Link>
+            </Link> */}
             <div className="split-box1">
-              <Link
-                href={`/main/job/${item.id}`}
-                className="job-duration fw-500"
-              >
-                {item.duration}
-              </Link>
               <Link
                 href={`/main/job/${item.id}`}
                 className="title fw-500 tran3s"
               >
-                {item.title.slice(0, 22)} {item.title.length > 20 ? '..' : ''}
+                {item.title.slice(0, 30)} {item.title.length > 30 ? '..' : ''}
               </Link>
+              <p
+                // href={`/main/job/${item.id}`}
+                className="job-duration fw-500 m-0"
+              >
+                {item.job_function}
+              </p>
             </div>
           </div>
         </div>
-        <div className="col-md-4 col-sm-6">
+        <div className="col-md-3 col-sm-6">
           <div className="job-location">
             <Link href={`/main/job/${item.id}`}>{item.location}</Link>
           </div>
-          <div className="job-salary">
+          {/* <div className="job-salary">
             <span className="fw-500 text-dark">${item.salary}</span> /{' '}
             {item.salary_duration} . {item.experience}
-          </div>
+          </div> */}
         </div>
         <div className="col-md-3 col-sm-6">
           <div className="btn-group d-flex align-items-center justify-content-sm-end xs-mt-20">
@@ -59,12 +60,18 @@ const ListItemTwo = ({ item }: { item: IJobType }) => {
             <Link
               href={`/main/job/${item.id}`}
               className="apply-btn text-center tran3s"
+              data-bs-toggle="modal"
+              data-bs-target="#applyModal"
             >
               APPLY
             </Link>
           </div>
         </div>
       </div>
+
+      {/* Apply Modal Start */}
+      <ApplyModal />
+      {/* Apply Modal End */}
     </div>
   );
 };

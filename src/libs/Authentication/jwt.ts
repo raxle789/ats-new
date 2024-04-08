@@ -1,6 +1,6 @@
 'use server';
 
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 const privateKey = 'atsphase2';
 export async function sessionEncrypt(payload: any) {
@@ -10,11 +10,12 @@ export async function sessionEncrypt(payload: any) {
             alg: 'HS256',
             typ: 'JWT',
         },
-        issuer: 'hc-database-taeb'
+        issuer: 'hc-ats-developers'
     });
 };
 
-export async function sessionDecrypt(value: string) {
+export async function sessionDecrypt(value: string | undefined): Promise<any> {
+    if(value === undefined) return 'no-data';
     const decrypted = await jwt.verify(value, privateKey, {
         algorithms: ['HS256'],
         complete: true,

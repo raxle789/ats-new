@@ -11,6 +11,24 @@ import { ExpendableButton } from './expendable-button';
 
 const _ = require('lodash');
 
+type TSubTitle = {
+  education_level: string;
+  job_level: string;
+  min_year_experience: string;
+  grade: string;
+  line_industry: string;
+  salary: string;
+};
+
+const subTitle: TSubTitle = {
+  education_level: 'Education Level',
+  job_level: 'Job Level',
+  min_year_experience: 'Min Year Experience',
+  grade: 'Grade',
+  line_industry: 'Line Industry',
+  salary: 'Salary',
+};
+
 const EmployJobParameter = ({
   positionLevelRequirementData,
   getLineIndustryData,
@@ -148,19 +166,19 @@ const EmployJobParameter = ({
                         style={{ width: '136.66px' }}
                       >{`${index + 1 ?? ''}`}</td>
                       {/* <td>{parameterData?.parameterIndex + 1}</td> */}
-                      <td>{`${data?.name ?? '-'} (Level: ${data?.level ?? '-'})`}</td>
-                      <td
-                        className="d-flex align-items-center justify-content-center"
-                        style={{ height: '73px' }}
-                      >
-                        <ExpendableButton
-                          isOpen={expandedRows[index]}
-                          toggle={() => toggleRowExpansion(index)}
-                        />
+                      <td>{`${data?.name ?? ''} (Level: ${data?.level})`}</td>
+                      <td>
+                        <div className="d-flex justify-content-center align-items-center">
+                          <ExpendableButton
+                            isOpen={expandedRows[index]}
+                            toggle={() => toggleRowExpansion(index)}
+                          />
+                        </div>
                       </td>
                       <td>
-                        <div className="">
+                        <div>
                           <Link
+                            className="edit-container"
                             href={{
                               pathname: `/dashboard/ta/submit-parameter/${encodeURIComponent(
                                 CryptoJS.Rabbit.encrypt(
@@ -177,7 +195,7 @@ const EmployJobParameter = ({
                             }}
                             onClick={showLoader}
                           >
-                            <FaEdit />
+                            <FaEdit className="edit-action" />
                           </Link>
                           {/* <button
                             className="action-btn dropdown-toggle"
@@ -207,10 +225,16 @@ const EmployJobParameter = ({
                               {data?.positionLevelRequirements?.map(
                                 (d, index) => {
                                   return (
-                                    <p key={index}>
-                                      <b>{`${d?.requirementFields?.name ?? '-'}: `}</b>
-                                      {d?.value ?? '-'}
-                                    </p>
+                                    <div key={index} className="col-lg-6">
+                                      <p>
+                                        {/* <b>{`${d?.requirementFields?.name}: `}</b> */}
+                                        <b>{`${subTitle[d?.requirementFields?.name ?? '']}: `}</b>
+                                        {getPositionLevelRequirementValue(
+                                          d.requirementFields.name,
+                                          d.value,
+                                        )}
+                                      </p>
+                                    </div>
                                   );
                                 },
                               )}

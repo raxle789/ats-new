@@ -5,9 +5,11 @@ import stepSlice from './features/stepSlice';
 import registerSlice from './features/registerSlice';
 import sidebarSlice from './features/sidebarSlice';
 import applicantStepSlice from './features/applicantStepSlice';
+import authSlice from './features/authorizingSlice';
 
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+import userRegisterStepSlice from './features/fatkhur/registerSlice';
 
 const rootReducer = combineReducers({
   filter: filterSlice,
@@ -16,12 +18,15 @@ const rootReducer = combineReducers({
   step: stepSlice,
   register: registerSlice,
   applicantStep: applicantStepSlice,
+  auth: authSlice,
+  // fatkhur
+  userRegisterStep: userRegisterStepSlice,
 });
 
 const persistConfig = {
   key: 'ats-erajaya',
   storage,
-  whitelist: ['applicantStep'],
+  whitelist: ['applicantStep', 'auth'],
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

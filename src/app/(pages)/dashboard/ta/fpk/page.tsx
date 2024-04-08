@@ -3,8 +3,8 @@ import EmployJobFpk from '@/app/components/dashboard/employ/job-fpk';
 
 export const revalidate = 0;
 
-const jobFpkPage = ({ searchParams }) => {
+const JobFpkPage = async ({ searchParams }) => {
   return <EmployJobFpk searchParams={searchParams} />;
 };
 
-export default jobFpkPage;
+export default JobFpkPage;

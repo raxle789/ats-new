@@ -53,4 +53,7 @@ export class Documents {
         type: 'datetime'
     })
     updated_at!: string;
+
+    // @ManyToOne(() => Candidates, (candidate) => candidate.documents)
+    // candidate: Candidates;
 }

@@ -23,7 +23,7 @@ const RegisterPage = () => {
         {/*breadcrumb start */}
         <CompanyBreadcrumb
           title="Register"
-          subtitle="Create an account & Start posting or hiring talents"
+          subtitle="Create an account & find your dream job"
         />
         {/* <div className="header-register">
           <div className="container">

@@ -77,4 +77,4 @@ export const {
   setMandatoryInformation,
 } = userRegisterSlice.actions;
 
-export default userRegisterSlice.reducer;
+// export default userRegisterSlice.reducer;
