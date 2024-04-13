@@ -378,7 +378,7 @@ const EmployJobParameterItem = ({
           </Form.Item>
         </div>
         <div className="dash-input-wrapper mb-30">
-          <div className="col-xxl-8">
+          <div className="col-lg-12">
             <Form.Item
               // name="minimumYearOfExperienceParameter"
               name="min_year_experience"
@@ -445,7 +445,7 @@ const EmployJobParameterItem = ({
         </div>
         {/* </div> */}
         <div className="dash-input-wrapper mb-30">
-          <div className="col-xxl-8">
+          <div className="col-lg-12">
             <Form.Item
               label="Line Industry"
               name="line_industry"
@@ -479,7 +479,7 @@ const EmployJobParameterItem = ({
           </div>
         </div>
         <div className="dash-input-wrapper mb-30">
-          <div className="col-xxl-8">
+          <div className="col-lg-12">
             <Form.Item
               label="Minimum Education Level"
               name="education_level"
@@ -513,7 +513,7 @@ const EmployJobParameterItem = ({
         </div>
         {/* </div> */}
         {/* <div className="dash-input-wrapper mb-30">
-          <div className="col-xxl-8">
+          <div className="col-lg-12">
             <Form.Item
               label="Major of Studies"
               name="majorOfStudiesParameter"

@@ -945,6 +945,9 @@
     .approved {
       color: $color-five;
     }
+    .not-approved {
+      color: $color-six;
+    }
     .job-posting {
       width: 120px;
     }
@@ -1677,21 +1680,19 @@
   }
 }
 
+// Custom Styles
 .nav-bar-responsive::-webkit-scrollbar {
   height: 7px;
 }
-
 /* Track */
 .nav-bar-responsive::-webkit-scrollbar-track {
   background: #f1f1f1;
 }
-
 /* Handle */
 .nav-bar-responsive::-webkit-scrollbar-thumb {
   background: #888;
   border-radius: 10px;
 }
-
 /* Hover */
 .nav-bar-responsive::-webkit-scrollbar-thumb:hover {
   background: #555;
@@ -1733,7 +1734,31 @@
   }
 }
 
+.edit-container {
+  border: 1px solid #707378;
+  width: 30px;
+  height: 30px;
+  border-radius: 4px;
+  .edit-action {
+    width: 17px;
+    height: auto;
+    color: #707378;
+  }
+}
+
+.edit-container:hover {
+  background-color: #e8e8e8;
+}
+.edit-container:active {
+  background-color: white;
+}
+
 // .ant-upload-drag {
 //   width: 300px;
 //   height: 200px;
 // }
+
+.fade-out {
+  transition: opacity 0.3s ease-out;
+  opacity: 0;
+}

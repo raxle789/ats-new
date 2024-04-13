@@ -1,9 +1,6 @@
 import { Metadata } from 'next';
 import Wrapper from '@/layouts/wrapper';
 import HeaderSix from '@/layouts/headers/header-6';
-import { Users } from './services/connection/entity/users';
-import { isEstablished } from '@/app/services/connection/db';
-import db from './services/connection/db';
 import HeroBannerSix from './components/hero-banners/hero-banner-six';
 import CategorySectionSix from './components/category/category-section-6';
 import { TrendingJobs } from './components/category/category-section-3';
@@ -13,7 +10,7 @@ import SpiritSection from './components/home/spirit-section';
 import EngageSection from './components/home/engage-section';
 import VerticalSection from './components/home/vertical-section';
 // import FancyBannerThree from './components/fancy-banner/fancy-banner-3';
-import EventSection from './components/home/event-section';
+// import EventSection from './components/home/event-section';
 // import VisionSection from './components/home/vision-section';
 import FeatureNine from './components/features/feature-nine';
 import FeedbackFive from './components/feedBacks/feedback-five';
@@ -23,7 +20,6 @@ import Link from 'next/link';
 
 import { getFatkhur, migrateFromATS } from '@/libs/MsSQL/FETCH_EXISTING';
 import { getSession } from '@/libs/Authentication/session';
-
 import { proint } from '@/app/services/connection/db';
 
 export const metadata: Metadata = {
@@ -31,30 +27,6 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  // const session = await getSession();
-  // console.info(session);
-  // await getFatkhur();
-
-  // const ayam = async () => {
-  //   await isEstablished();
-
-  //   const data = await db.manager.find(Users);
-
-  //   console.info(data);
-  // };
-
-  // ayam();
-
-  // console.info(db);
-
-  // const ayam = async () => {
-  //   const data = await proint.ERA_MasterAddress.findMany();
-
-  //   console.info(data);
-  // };
-
-  // await ayam();
-
   return (
     <Wrapper>
       <div className="main-page-wrapper">
@@ -127,13 +99,13 @@ export default async function Home() {
                 Explore all jobs
               </Link>
             </div>
-            <div className="text-center mt-50 wow fadeInUp">
+            {/* <div className="text-center mt-50 wow fadeInUp">
               <div className="btn-eight fw-500">
                 Do you want to post a job for your company?{' '}
                 <span>We can help.</span>{' '}
                 <Link href="/auth/register">Click here</Link>
               </div>
-            </div>
+            </div> */}
           </div>
         </section>
         {/* job list items end */}

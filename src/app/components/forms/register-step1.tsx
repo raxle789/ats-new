@@ -1,297 +1,501 @@
 'use client';
-import React, { useState, ChangeEvent, useEffect } from 'react';
-import Image from 'next/image';
-// import * as Yup from 'yup';
-import { Resolver, useForm, SubmitHandler } from 'react-hook-form';
-import ErrorMsg from '../common/error-msg';
-import uploadIcon from '@/assets/images/icon/icon_11.svg';
-import { useAppDispatch, useAppSelector } from '@/redux/hook';
-import { setStep } from '@/redux/features/stepSlice';
-import { setRegister } from '@/redux/features/registerSlice';
 
-import axios from 'axios';
+import { createCandidates } from '@/libs/Registration';
+import { userRegister2 } from '@/libs/validations/Register';
+import { setRegisterStep } from '@/redux/features/fatkhur/registerSlice';
+import { useAppDispatch } from '@/redux/hook';
+import { useState } from 'react';
 
-// form data type
-type IFormData = {
-  fullName: string;
-  email: string;
-  phoneNumber: string;
-  dateOfBirth: string;
-  uploadPhoto: string;
-};
+const source: string[] = ['Email', 'Erajaya Career Fest', 'Instagram'];
+const jobFunction: string[] = ['Accounting', 'Business', 'Client'];
+const jobTitle: string[] = [
+  'Internship Announce Radio',
+  'Internship Administration',
+  'Internship Application Developer',
+];
+const lineIndustry: string[] = ['Agribusiness', 'Apparel', 'Automotive'];
+const level: string[] = ['Director', 'VP', 'General Manager'];
 
-// schema
-// const schema = Yup.object().shape({
-//   fullName: Yup.string().required().label('Name'),
-//   email: Yup.string().required().email().label('Email'),
-//   password: Yup.string().required().min(6).label('Password'),
-// });
-
-// resolver
-const resolver: Resolver<IFormData> = async (values) => {
-  const errors: Record<string, any> = {};
-
-  if (!values.fullName) {
-    errors.fullName = {
-      type: 'required',
-      message: 'Full Name is required.',
-    };
-  }
-  if (!values.email) {
-    errors.email = {
-      type: 'required',
-      message: 'Email is required.',
-    };
-  }
-  if (!values.phoneNumber) {
-    errors.phoneNumber = {
-      type: 'required',
-      message: 'Phone Number is required.',
-    };
-  }
-  if (!values.dateOfBirth) {
-    errors.dateOfBirth = {
-      type: 'required',
-      message: 'Date of Birth is required.',
-    };
-  }
-  if (!values.uploadPhoto) {
-    errors.uploadPhoto = {
-      type: 'required',
-      message: 'Photo is required.',
-    };
-  }
-
-  return {
-    values: Object.keys(errors).length > 0 ? {} : values,
-    errors,
+type FormData = {
+  gender: string;
+  phone_number: number;
+  date_of_birth: string;
+  source_referer: string;
+  current_salary: number;
+  linkedin_profile_url: string;
+  experience: {
+    company_name: string;
+    job_function: string;
+    job_title: string;
+    job_level: string;
+    line_industry: string;
+    start_at: string;
+    end_at: string;
+    salary: string;
   };
 };
 
 const RegisterFormStep1 = () => {
   const dispatch = useAppDispatch();
-  const step1Data = useAppSelector((state) => state.register.dataCandidate);
-  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
-  const [file, setFile] = useState<File | undefined>(undefined);
+  const [hasLinkedIn, setHasLinkedIn] = useState<string>('you-choose');
 
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-
-    if (file) {
-      setUploadedFileName(file.name);
-    }
-    setFile(file);
+  const [hasExperience, setHasExperience] = useState<string>('you-choose');
+  const hasExperienceOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setHasExperience(e.target.value);
   };
 
-  const handleUpload = async () => {
-    if (!file) {
-      alert('Silakan pilih file terlebih dahulu');
-      return;
-    }
+  const [formData, setFormData] = useState<FormData>({
+    gender: 'default',
+    phone_number: 0,
+    date_of_birth: '',
+    source_referer: 'default',
+    current_salary: 0,
+    linkedin_profile_url: '',
+    experience: {
+      company_name: '',
+      job_function: '',
+      job_title: '',
+      job_level: '',
+      line_industry: '',
+      start_at: '',
+      end_at: '',
+      salary: '',
+    },
+  });
 
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      await axios.post('/api/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      alert('File berhasil diunggah');
-    } catch (error: any) {
-      if (error.response) {
-        alert(
-          'Terjadi kesalahan saat mengunggah file: ' +
-            error.response.data.message,
-        );
-      } else if (error.request) {
-        alert('Terjadi kesalahan saat mengirim permintaan ke server.');
-      } else {
-        alert('Terjadi kesalahan: ' + error.message);
-      }
-    }
+  const linkedInRadiosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setHasLinkedIn(e.target.value);
   };
 
-  //   const handleUpload = async () => {
-  //     const formData = new FormData();
-  //     formData.append('image', file);
-
-  //     try {
-  //       await axios.post('/api/upload', formData, {
-  //         headers: {
-  //           'Content-Type': 'multipart/form-data',
-  //         },
-  //       });
-
-  //       alert('File berhasil diunggah');
-  //     } catch (error) {
-  //       if (error.response) {
-  //         alert('Terjadi kesalahan saat mengunggah file: ' + error.response.data.message);
-  //       } else if (error.request) {
-  //         alert('Terjadi kesalahan saat mengirim permintaan ke server.');
-  //       } else {
-  //         alert('Terjadi kesalahan: ' + error.message);
-  //       }
-  //     }
-  // };
-
-  // react hook form
-  const {
-    register,
-    handleSubmit,
-    watch,
-    reset,
-    formState: { errors },
-  } = useForm<IFormData>({ resolver, defaultValues: step1Data });
-  const watchedValues = watch();
-  // const fullName = watch('fullName');
-
-  const onSubmit: SubmitHandler<IFormData> = (data) => {
-    // const uploadedFiles = Array.from(data.uploadPhoto as FileList).map(
-    //   (file) => file.name,
-    // );
-
-    console.log('watchedValues: ', watchedValues);
-    dispatch(setRegister(data));
-    // handleUpload();
-    // dispatch(setRegister({ ...data, uploadPhoto: uploadedFiles[0] }));
-    console.log('data form 2: ', data);
-    console.log('nama file: ', uploadedFileName);
-    // console.log('fullname: ', fullName);
-    dispatch(setStep({ newStep: 3 }));
+  const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
   };
 
-  useEffect(() => {
-    // setValue('fullName', step1Data.fullName);
-    // setValue('email', step1Data.email);
-    // setValue('phoneNumber', step1Data.phoneNumber);
-    // setValue('dateOfBirth', step1Data.dateOfBirth);
-    reset(step1Data);
-    console.log('data form 2: ', step1Data);
-  }, [step1Data]);
+  const selectOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const formOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    console.info('the data', formData);
+    const validate = userRegister2.safeParse(formData);
+    if (!validate.success) {
+      console.log('validate', validate.error.flatten());
+    }
+
+    const candidate = await createCandidates(formData);
+    console.info(candidate);
+    if (candidate.success === false) {
+      return console.info('failed');
+    }
+
+    dispatch(setRegisterStep('third'));
+  };
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
-      <div className="row">
+    <form onSubmit={formOnSubmit}>
+      <div className="row mb-20">
         <div className="col-12">
-          <div className="input-group-meta position-relative mb-25">
-            <label>Full Name*</label>
-            <input
-              type="text"
-              placeholder="James Brower"
-              {...register('fullName', { required: `Full Name is required!` })}
-              name="fullName"
-            />
-            <div className="help-block with-errors">
-              <ErrorMsg msg={errors.fullName?.message!} />
-            </div>
-          </div>
-        </div>
-        {/* <div className="col-12">
-          <div className="input-group-meta position-relative mb-25">
-            <label>Email*</label>
-            <input
-              type="email"
-              placeholder="james@example.com"
-              {...register('email', { required: `Email is required!` })}
-              name="email"
-            />
-            <div className="help-block with-errors">
-              <ErrorMsg msg={errors.email?.message!} />
-            </div>
-          </div>
-        </div> */}
-        <div className="col-12">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-15">
             <label>Phone Number*</label>
             <input
-              type="text"
+              className="login-input"
+              type="number"
               placeholder="081234567890"
-              {...register('phoneNumber', {
-                required: `Phone Number is required!`,
-              })}
-              name="phoneNumber"
+              name="phone_number"
+              value={formData.phone_number}
+              onChange={inputOnChange}
+              style={{ paddingRight: '11px' }}
             />
-            <div className="help-block with-errors">
-              <ErrorMsg msg={errors.phoneNumber?.message!} />
-            </div>
+            <div className="help-block with-errors"></div>
           </div>
         </div>
         <div className="col-12">
-          <div className="input-group-meta position-relative mb-20">
+          <div className="input-group-meta position-relative mb-15">
             <label>Date of Birth*</label>
             <div className="form-group">
               <input
                 type="date"
-                className="form-control"
+                className="form-control login-input"
                 id="date-of-birth"
-                {...register('dateOfBirth', {
-                  required: `Date of Birth is required!`,
-                })}
-                name="dateOfBirth"
+                name="date_of_birth"
+                value={formData.date_of_birth}
+                onChange={inputOnChange}
+                style={{ paddingRight: '11px' }}
               />
             </div>
-            <div className="help-block with-errors">
-              <ErrorMsg msg={errors.dateOfBirth?.message!} />
-            </div>
+            <div className="help-block with-errors"></div>
           </div>
         </div>
-        {/* <div className="">
-          <div className="input-group-meta position-relative mb-25">
-            <label>Upload Photo*</label>
-            <div className="upload-container">
-              <input
-                className="upload-photo-btn"
-                type="file"
-                id="upload-photo"
-                accept="image/*"
-                {...register('uploadPhoto', {
-                  required: `Photo is required!`,
-                })}
-                name="uploadPhoto"
-                onChange={handleFileChange}
-              />
-              <label htmlFor="photo-input" className="photo-input">
-                <Image
-                  src={uploadIcon}
-                  alt="upload-icon"
-                  className="upload-img"
-                />
-                <span className="fw-500 ms-2 text-dark upload-label">
-                  Upload your Photo
-                </span>
-              </label>
-              <button onClick={handleUpload}>Upload Image</button>
-            </div>
-            <div className="help-block with-errors">
-              <ErrorMsg msg={errors.uploadPhoto?.message!} />
-            </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Gender*</label>
+            <select
+              className="form-select"
+              aria-label="Default select example"
+              name="gender"
+              value={formData.gender}
+              onChange={selectOnChange}
+            >
+              <option value="default">Please choose</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+            <div className="help-block with-errors"></div>
           </div>
         </div>
-        <div className="col-12">
-          {uploadedFileName && <p>Uploaded File: {uploadedFileName}</p>}
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Source*</label>
+            <select
+              className="form-select"
+              aria-label="Default select example"
+              name="source_referer"
+              value={formData.source_referer}
+              onChange={selectOnChange}
+            >
+              <option value="default">Please choose</option>
+              {source.map((item, index) => (
+                <option key={index} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+            <div className="help-block with-errors"></div>
+          </div>
+        </div>
+        {/* <div className="col-12">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Expected Salary (Gross / Month)*</label>
+            <input
+              type="number"
+              placeholder="Enter Expected Salary"
+              className="pass_log_id login-input"
+              name="current_salary"
+              value={formData.current_salary}
+              onChange={inputOnChange}
+              style={{ paddingRight: '11px' }}
+            />
+            <div className="help-block with-errors"></div>
+          </div>
         </div> */}
+        <div className="col-6">
+          <div className="position-relative mb-15">
+            <label style={{ fontSize: '14px' }}>
+              Do you have a LinkedIn Account?*
+            </label>
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="flexRadioDefault"
+                id="flexRadioDefault1"
+                value={'yes'}
+                checked={hasLinkedIn === 'yes'}
+                onChange={linkedInRadiosChange}
+              />
+              <label
+                className="form-check-label"
+                htmlFor="flexRadioDefault1"
+                style={{ fontSize: '14px' }}
+              >
+                Yes
+              </label>
+            </div>
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="flexRadioDefault"
+                id="flexRadioDefault2"
+                value="no"
+                checked={hasLinkedIn === 'no'}
+                onChange={linkedInRadiosChange}
+              />
+              <label
+                className="form-check-label"
+                htmlFor="flexRadioDefault2"
+                style={{ fontSize: '14px' }}
+              >
+                No
+              </label>
+            </div>
+          </div>
+        </div>
+        {hasLinkedIn === 'yes' && (
+          <div className="col-6">
+            <div className="input-group-meta position-relative mb-15">
+              <label>LinkedIn URL*</label>
+              <input
+                type="text"
+                placeholder="Enter LinkedIn URL"
+                className="pass_log_id login-input"
+                name="linkedin_profile_url"
+                value={formData.linkedin_profile_url}
+                onChange={inputOnChange}
+              />
+              <div className="help-block with-errors"></div>
+            </div>
+          </div>
+        )}
+        {hasLinkedIn === 'no' && <div className="col-6"></div>}
+
+        <div className="col-12">
+          <div className="position-relative mb-25">
+            {/* <label>LinkedIn*</label> */}
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="RadioFreshGraduate"
+                id="RadioFreshGraduateValue1"
+                value="no"
+                checked={hasExperience === 'no'}
+                onChange={hasExperienceOnChange}
+              />
+              <label
+                className="form-check-label"
+                htmlFor="RadioFreshGraduateValue1"
+                style={{ fontSize: '14px' }}
+              >
+                Fresh Graduate
+              </label>
+            </div>
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="RadioFreshGraduate"
+                id="RadioFreshGraduateValue2"
+                value="yes"
+                checked={hasExperience === 'yes'}
+                onChange={hasExperienceOnChange}
+              />
+              <label
+                className="form-check-label"
+                htmlFor="RadioFreshGraduateValue2"
+                style={{ fontSize: '14px' }}
+              >
+                Experience
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {hasExperience === 'yes' && (
+          <>
+            <div className="col-12">
+              <div className="input-group-meta position-relative mb-20">
+                <label>Company Name - Last*</label>
+                <input
+                  type="text"
+                  className="login-input"
+                  placeholder="Company Name"
+                  name="company_name"
+                  value={formData.experience.company_name}
+                  onChange={inputOnChange}
+                />
+                <div className="help-block with-errors"></div>
+              </div>
+            </div>
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-20">
+                <label>Job Function*</label>
+                <select
+                  className="form-select"
+                  aria-label="Default select example"
+                  name="job_function"
+                  value={formData.experience.job_function}
+                  onChange={selectOnChange}
+                >
+                  <option value="choose-job-function">Please choose</option>
+                  {jobFunction.map((item, index) => (
+                    <option key={index} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+                <div className="help-block with-errors"></div>
+              </div>
+            </div>
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-20">
+                <label>Job Title*</label>
+                <select
+                  className="form-select"
+                  aria-label="Default select example"
+                  name="job_title"
+                  value={formData.experience.job_title}
+                  onChange={selectOnChange}
+                >
+                  <option value="choose-job-title">Please choose</option>
+                  {jobTitle.map((item, index) => (
+                    <option key={index} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+                <div className="help-block with-errors"></div>
+              </div>
+            </div>
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-20">
+                <label>Line Industry*</label>
+                <select
+                  className="form-select"
+                  aria-label="Default select example"
+                  name="line_industry"
+                  value={formData.experience.line_industry}
+                  onChange={selectOnChange}
+                >
+                  <option value="choose-line-industry">Please choose</option>
+                  {lineIndustry.map((item, index) => (
+                    <option key={index} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+                <div className="help-block with-errors"></div>
+              </div>
+            </div>
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-20">
+                <label>Level*</label>
+                <select
+                  className="form-select"
+                  aria-label="Default select example"
+                  name="job_level"
+                  value={formData.experience.job_level}
+                  onChange={selectOnChange}
+                >
+                  <option value="choose-level">Please choose</option>
+                  {level.map((item, index) => (
+                    <option key={index} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+                <div className="help-block with-errors"></div>
+              </div>
+            </div>
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-20">
+                <label>Period Start*</label>
+                <div className="form-group">
+                  <input
+                    type="date"
+                    className="form-control login-input"
+                    id="period-start"
+                    name="start_at"
+                    value={formData.experience.start_at}
+                    onChange={inputOnChange}
+                    style={{ paddingRight: '11px' }}
+                  />
+                </div>
+                <div className="help-block with-errors"></div>
+              </div>
+            </div>
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-20">
+                <label>Period End*</label>
+                <div className="form-group">
+                  <input
+                    type="date"
+                    className="form-control login-input"
+                    id="period-end"
+                    name="end_at"
+                    value={formData.experience.end_at}
+                    onChange={inputOnChange}
+                    style={{ paddingRight: '11px' }}
+                  />
+                </div>
+                <div className="help-block with-errors"></div>
+              </div>
+            </div>
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-20">
+                <label>Current Salary (Gross / Month)*</label>
+                <input
+                  type="text"
+                  placeholder="Enter Expected Salary"
+                  className="pass_log_id login-input"
+                  name="salary"
+                  value={formData.experience.salary}
+                  onChange={inputOnChange}
+                  style={{ paddingRight: '11px' }}
+                />
+                <div className="help-block with-errors"></div>
+              </div>
+            </div>
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-20">
+                <label>Expected Salary (Gross / Month)*</label>
+                <input
+                  type="number"
+                  placeholder="Enter Expected Salary"
+                  className="pass_log_id login-input"
+                  name="current_salary"
+                  value={formData.current_salary}
+                  onChange={inputOnChange}
+                  style={{ paddingRight: '11px' }}
+                />
+                <div className="help-block with-errors">
+                  {/* <ErrorMsg msg={errors.expectedSalary?.message!} /> */}
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {hasExperience === 'no' && (
+          <>
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-20">
+                <label>Expected Salary (Gross / Month)*</label>
+                <input
+                  type="number"
+                  placeholder="Enter Expected Salary"
+                  className="pass_log_id login-input"
+                  name="current_salary"
+                  value={formData.current_salary}
+                  onChange={inputOnChange}
+                  style={{ paddingRight: '11px' }}
+                />
+                <div className="help-block with-errors">
+                  {/* <ErrorMsg msg={errors.expectedSalary?.message!} /> */}
+                </div>
+              </div>
+            </div>
+            <div className="col-6"></div>
+          </>
+        )}
 
         <div className="col-5 col-sm-6">
           <button
-            className="btn-eleven fw-500 tran3s mt-20"
+            className="btn-eleven fw-500 tran3s mt-10 btn-login btn-back"
             onClick={(e) => {
-              e.preventDefault();
-              dispatch(setStep({ newStep: 1 }));
+              e.preventDefault;
+              dispatch(setRegisterStep(''));
             }}
-            // onClick={() => dispatch(setStep({ newStep: 2 }))}
           >
             Back
           </button>
         </div>
         <div className="col-5 col-sm-6">
-          {/* {isFormSubmitted && Object.keys(errors).length > 0 && (
-            <div className="alert alert-danger" role="alert">
-              Please fill in all required fields.
-            </div>
-          )} */}
-          <button type="submit" className="btn-eleven fw-500 tran3s mt-20">
+          <button
+            type="submit"
+            className="btn-eleven fw-500 tran3s mt-10 btn-login btn-next"
+            // onClick={() => dispatch(setRegisterStep('third'))}
+          >
             Next
           </button>
         </div>

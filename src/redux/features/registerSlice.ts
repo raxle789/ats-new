@@ -3,22 +3,38 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 // Define a type for the slice state
 interface IRegisterState {
   dataCandidate: {
-    fullName: string;
+    name: string;
     email: string;
+    password: string;
+    confirm_password: string;
+    gender: string;
     phoneNumber: string;
     dateOfBirth: string;
-    uploadPhoto: string;
+    // uploadPhoto: string;
+    source: string;
+    haveLinkedin: string;
+    linkedinURL: string;
+    isExperienced: string;
+    expectedSalary: number;
   };
 }
 
 // Define the initial state using that type
 const initialState: IRegisterState = {
   dataCandidate: {
-    fullName: '',
+    name: '',
     email: '',
+    password: '',
+    confirm_password: '',
+    gender: '',
     phoneNumber: '',
     dateOfBirth: '',
-    uploadPhoto: '',
+    // uploadPhoto: '',
+    source: '',
+    haveLinkedin: '',
+    linkedinURL: '',
+    isExperienced: '',
+    expectedSalary: 0,
   },
 };
 
@@ -29,11 +45,19 @@ export const registerSlice = createSlice({
     setRegister: (
       state,
       action: PayloadAction<{
-        fullName: string;
+        name: string;
         email: string;
+        password: string;
+        confirm_password: string;
+        gender: string;
         phoneNumber: string;
         dateOfBirth: string;
-        uploadPhoto: string;
+        // uploadPhoto: string;
+        source: string;
+        haveLinkedin: string;
+        linkedinURL: string;
+        isExperienced: string;
+        expectedSalary: number;
       }>,
     ) => {
       state.dataCandidate = action.payload;

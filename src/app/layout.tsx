@@ -5,6 +5,7 @@ import { EB_Garamond } from 'next/font/google';
 import BackToTopCom from './components/common/back-to-top-com';
 import { Providers } from '@/redux/provider';
 import Script from 'next/script';
+import AppSession from '../libs/Sessions/AppSession';
 
 const gordita = localFont({
   src: [
@@ -70,12 +71,20 @@ export default function RootLayout({
         <link rel="icon" href="./favicon.ico" sizes="any" />
         <link rel="stylesheet" href="@/assets/css/font-awesome/all.min.css" />
         <Script src="./node_modules/reflect-metadata/Reflect.js"></Script>
+        <Script
+          src="https://www.google.com/recaptcha/enterprise.js"
+          async
+          defer
+        ></Script>
       </head>
       <body
         suppressHydrationWarning={true}
-        className={`${gordita.variable} ${garamond.variable} ${plusJakartaSans.variable}`}
-      >
-        <Providers>{children}</Providers>
+        className={`${gordita.variable} ${garamond.variable} ${plusJakartaSans.variable}`}>
+        <Providers>
+          <AppSession>
+            {children}
+          </AppSession>
+        </Providers>
         <BackToTopCom />
 
         <Script src="./node_modules/reflect-metadata/Reflect.js"></Script>

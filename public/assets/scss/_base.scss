@@ -392,7 +392,7 @@ hr {
   }
 }
 .btn-eleven {
-  height: 60px;
+  height: 48px;
   border-radius: 7px;
   font-size: 14px;
   text-transform: uppercase;
@@ -404,6 +404,25 @@ hr {
   &:focus {
     background: $color-three;
   }
+}
+.btn-login {
+  height: 33px;
+  font-size: 13px;
+}
+.btn-back {
+  border: 2px solid #0c1d5c;
+  color: #0c1d5c;
+  background: white;
+}
+.btn-back:hover {
+  background: #0c1d5c;
+  color: white;
+}
+.btn-next {
+  background: #1e87f0;
+}
+.btn-next:hover {
+  background: #0c1d5c;
 }
 // Title Style
 .title-one h2 {

@@ -17,6 +17,12 @@ export class WorkingExperiences {
         length: 256
     })
     company_name!: string;
+    
+    @Column({
+        type: 'nvarchar',
+        length: '64'
+    })
+    job_level: string;
 
     @Column({
         type: 'nvarchar',

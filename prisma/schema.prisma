@@ -3,9 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider          = "sqlserver"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("DATABASE_SHADOW_URL")
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
 }
 
 model addresses {
@@ -48,7 +47,7 @@ model candidates {
   identityInfoId                      Int?
   date_of_birth                       DateTime?             @db.Date
   emergency_contacts                  emergency_contacts?   @relation(fields: [emengencyContactId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_02cb34982ecd17fda09c240254e")
-  users                               Users?                @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_10d0384a816526f8c7f6b1e67b3")
+  users                               users?                @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_10d0384a816526f8c7f6b1e67b3")
   citys_candidates_birthCityIdTocitys citys?                @relation("candidates_birthCityIdTocitys", fields: [birthCityId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_45d141f5577c4588067ed62ba75")
   banks                               banks?                @relation(fields: [bankId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_4942769253874bef2bc42d1858d")
   citys_candidates_domicileIdTocitys  citys?                @relation("candidates_domicileIdTocitys", fields: [domicileId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_8f15bc1632f7f52ca9821727621")
@@ -127,10 +126,19 @@ model documents {
   documentTypeId                                    Int?
   candidate_id                                      Int?
   candidate                                         candidates?     @relation(fields: [candidate_id], references: [id])
+  // candidates                                        candidates?     @relation(fields: [candidate_id], references: [id])
   document_types                                    document_types? @relation(fields: [documentTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_6c6b9775baa0c8973bd829a8e46")
   identity_info_identity_info_ktpPhotoIdTodocuments identity_info[] @relation("identity_info_ktpPhotoIdTodocuments")
   identity_info_identity_info_avatarIdTodocuments   identity_info[] @relation("identity_info_avatarIdTodocuments")
   sims                                              sims[]
+}
+
+model education_levels {
+  id         Int       @id @default(autoincrement())
+  name       String    @db.NVarChar(510)
+  proint_id  Int?
+  created_at DateTime? @default(now()) @db.DateTime
+  updated_at DateTime? @db.DateTime
 }
 
 model educations {
@@ -270,7 +278,91 @@ model EfpkJobVacancies {
 
   @@id([efpkRequestNo, jobVacancyId])
   @@map("efpk_job_vacancies")
-}
+
+// model efpk {
+  // request_no                  String                       @db.NVarChar(25)
+  // job_title_code              String?                      @db.NVarChar(15)
+  // job_title_name              String?                      @db.NVarChar(80)
+  // candidate_source            String?                      @db.NVarChar(8)
+  // total_need                  Int                          @db.SmallInt
+  // total_relized               Int                          @db.SmallInt
+  // total_hold                  Int                          @db.SmallInt
+  // flag_over_budget_mpp        String                       @db.NVarChar(14)
+  // over_budget_mpp_reason      String                       @db.Text
+  // create_date                 DateTime?                    @db.DateTime
+  // required_date               DateTime?                    @db.DateTime
+  // status                      String?                      @db.NVarChar(17)
+  // reason                      String                       @db.NVarChar(11)
+  // employee_replacement        String?                      @db.NVarChar(108)
+  // replaced_caused_by          String?                      @db.NVarChar(30)
+  // organization_recruit        String?                      @db.NVarChar(48)
+  // org_code                    String?                      @db.NVarChar(25)
+  // org_name                    String?                      @db.NVarChar(80)
+  // job_lvl_code                String?                      @db.NVarChar(10)
+  // job_lvl_name                String?                      @db.NVarChar(80)
+  // location_code               String?                      @db.NVarChar(15)
+  // location_name               String?                      @db.NVarChar(80)
+  // comp_code                   String?                      @db.NVarChar(15)
+  // comp_name                   String?                      @db.NVarChar(80)
+  // emp_type                    String?                      @db.NVarChar(30)
+  // req_need_date               DateTime?                    @db.DateTime
+  // req_closing_date            DateTime?                    @db.DateTime
+  // initiator_nik               String?                      @db.NVarChar(25)
+  // initiator_name              String?                      @db.NVarChar(80)
+  // initiator_email             String?                      @db.NVarChar(60)
+  // lead_time                   DateTime?                    @db.DateTime
+  // description                 String?                      @db.Text
+  // approval_nik                String?                      @db.NVarChar(25)
+  // approval_name               String?                      @db.NVarChar(80)
+  // approval_date               String?                      @db.NVarChar(30)
+  // reject_date                 String?                      @db.NVarChar(30)
+  // approval_description        String?                      @db.NVarChar(255)
+  // upd_date                    DateTime                     @db.DateTime
+  // upd_user                    String                       @db.NVarChar(30)
+  // id                          Int                          @id @default(autoincrement())
+  // efpk_initiator_informations efpk_initiator_informations?
+  // efpk_job_vacancies          efpk_job_vacancies[]
+  // efpk_ta                     efpk_ta?
+  // efpk_ta_transactions        efpk_ta_transactions[]
+// }
+
+// model efpk_initiator_informations {
+  // id       Int     @id @default(autoincrement())
+  // nik      String? @db.NVarChar(510)
+  // name     String? @db.NVarChar(510)
+  // email    String? @db.NVarChar(510)
+  // phone    String? @db.NVarChar(510)
+  // position String? @db.NVarChar(510)
+  // efpk_id  Int     @unique
+  // user_id  Int?
+  // efpk     efpk    @relation(fields: [efpk_id], references: [id])
+  // users    users?  @relation(fields: [user_id], references: [id])
+// }
+
+// model efpk_job_vacancies {
+  // efpk_id        Int
+  // job_vacancy_id Int
+  // efpk           efpk @relation(fields: [efpk_id], references: [id])
+
+  // @@id([efpk_id, job_vacancy_id])
+// }
+
+// model efpk_ta {
+  // id      Int   @id @default(autoincrement())
+  // ta_id   Int
+  // efpk_id Int   @unique
+  // efpk    efpk  @relation(fields: [efpk_id], references: [id])
+  // users   users @relation(fields: [ta_id], references: [id])
+// }
+
+// model efpk_ta_transactions {
+  // id          Int      @id @default(autoincrement())
+  // ta_id       Int
+  // efpk_id     Int
+  // assigned_at DateTime @default(now()) @db.DateTime
+  // efpk        efpk     @relation(fields: [efpk_id], references: [id])
+  // users       users    @relation(fields: [ta_id], references: [id])
+// }
 
 model emergency_contacts {
   id           Int          @id(map: "PK_8be191845b6fca1c4e5ba5bd7d1") @default(autoincrement())
@@ -369,8 +461,61 @@ model UserRoles {
   roles  Roles @relation(fields: [roleId], references: [id])
   users  Users @relation(fields: [userId], references: [id])
 
-  @@id([roleId, userId])
-  @@map("user_has_roles")
+// model line_industries {
+  // id         Int       @id @default(autoincrement())
+  // name       String    @db.NVarChar(510)
+  // created_at DateTime? @default(now()) @db.DateTime
+  // updated_at DateTime? @db.DateTime
+// }
+
+// model phones {
+  // id         Int       @id @default(autoincrement())
+  // user_id    Int
+  // type       String?   @db.NVarChar(510)
+  // number     String?   @db.NVarChar(510)
+  // status     String?   @db.NVarChar(510)
+  // current    Int?
+  // created_at DateTime? @default(now()) @db.DateTime
+  // updated_at DateTime? @db.DateTime
+  // users      users     @relation(fields: [user_id], references: [id])
+// }
+
+// model position_level_requirements {
+  // value                String?            @db.Text
+  // position_level_id    Int
+  // requirement_field_id Int
+  // position_levels      position_levels    @relation(fields: [position_level_id], references: [id])
+  // requirement_fields   requirement_fields @relation(fields: [requirement_field_id], references: [id])
+
+  // @@id([position_level_id, requirement_field_id])
+// }
+
+// model position_levels {
+  // id                          Int                           @id @default(autoincrement())
+  // name                        String                        @db.NVarChar(510)
+  // level                       Int
+  // score                       Int
+  // sla_days                    Int?
+  // created_at                  DateTime?                     @default(now()) @db.DateTime
+  // updated_at                  DateTime?                     @db.DateTime
+  // position_level_requirements position_level_requirements[]
+// }
+
+// model requirement_fields {
+  // id                          Int                           @id @default(autoincrement())
+  // name                        String                        @unique @db.NVarChar(510)
+  // created_at                  DateTime?                     @default(now()) @db.DateTime
+  // updated_at                  DateTime?                     @db.DateTime
+  // position_level_requirements position_level_requirements[]
+// }
+
+model roles {
+  id             Int              @id @default(autoincrement())
+  name           String           @db.NVarChar(255)
+  guard          String           @db.NVarChar(255)
+  created_at     DateTime?        @default(now()) @db.DateTime
+  updated_at     DateTime?        @db.DateTime
+  user_has_roles user_has_roles[]
 }
 
 model sims {
@@ -403,7 +548,29 @@ model Users {
   // Phones             Phones[]
   userRoles          UserRoles[]
 
-  @@map("users")
+// model user_has_roles {
+  // role_id Int
+  // user_id Int
+  // roles   roles @relation(fields: [role_id], references: [id])
+  // users   users @relation(fields: [user_id], references: [id])
+
+  // @@id([role_id, user_id])
+// }
+
+model users {
+  id                          Int                           @id(map: "PK_a3ffb1c0c8416b9fc6f907b7433") @default(autoincrement())
+  name                        String                        @db.NVarChar(256)
+  email                       String                        @unique(map: "UQ_97672ac88f789774dd47f7c8be3") @db.NVarChar(128)
+  is_email_verified           Boolean?
+  password                    String                        @db.NVarChar(512)
+  created_at                  DateTime?                     @default(now(), map: "DF_c9b5b525a96ddc2c5647d7f7fa5") @db.DateTime
+  updated_at                  DateTime?                     @default(now(), map: "DF_6d596d799f9cb9dac6f7bf7c23c") @db.DateTime
+  candidates                  candidates[]
+  efpk_initiator_informations efpk_initiator_informations[]
+  efpk_ta                     efpk_ta[]
+  efpk_ta_transactions        efpk_ta_transactions[]
+  phones                      phones[]
+  user_has_roles              user_has_roles[]
 }
 
 model working_experiences {
@@ -430,8 +597,34 @@ model LineIndustries {
   createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
   updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
 
-  @@map("line_industries")
-}
+// model Corporations {
+//   id         Int       @id() @default(autoincrement()) @db.Int
+//   code       String?   @db.NVarChar(255)
+//   name       String    @db.NVarChar(255)
+//   createdAt DateTime?  @default(now()) @map("created_at") @db.DateTime
+//   updatedAt DateTime?  @updatedAt  @map("updated_at") @db.DateTime
+
+//   @@map("corporations")
+// }
+
+// model Job_Titles {
+  // id         Int       @id() @default(autoincrement()) @db.Int
+  // name       String    @db.NVarChar(255)
+  // score      Int
+  // createdAt DateTime?  @default(now()) @map("created_at") @db.DateTime
+  // updatedAt DateTime?  @updatedAt  @map("updated_at") @db.DateTime
+
+  // @@map("job_titles")
+// }
+
+// model Job_Functions {
+  // id         Int       @id() @default(autoincrement()) @db.Int
+  // name       String    @db.NVarChar(255)
+  // createdAt DateTime?  @default(now()) @map("created_at") @db.DateTime
+  // updatedAt DateTime?  @updatedAt  @map("updated_at") @db.DateTime
+
+  // @@map("job_functions")
+// }
 
 model EducationLevels {
   id        Int       @id @default(autoincrement())
@@ -440,7 +633,13 @@ model EducationLevels {
   createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
   updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
 
-  @@map("education_levels")
+// model Regions {
+  // id         Int       @id() @default(autoincrement()) @db.Int
+  // name       String    @db.NVarChar(255)
+  // createdAt DateTime?  @default(now()) @map("created_at") @db.DateTime
+  // updatedAt DateTime?  @updatedAt  @map("updated_at") @db.DateTime
+
+  // @@map("regions")
 }
 
 model RequirementFields {
@@ -449,8 +648,15 @@ model RequirementFields {
   createdAt                 DateTime?                   @default(now()) @map("created_at") @db.DateTime
   updatedAt                 DateTime?                   @updatedAt @map("updated_at") @db.DateTime
   positionLevelRequirements PositionLevelRequirements[]
+  
+// model Categories {
+  // id         Int       @id() @default(autoincrement()) @db.Int
+  // name       String    @db.NVarChar(255)
+  // icon       String    @db.NVarChar(255)
+  // createdAt DateTime?  @default(now()) @map("created_at") @db.DateTime
+  // updatedAt DateTime?  @updatedAt  @map("updated_at") @db.DateTime
 
-  @@map("requirement_fields")
+  // @@map("categories")
 }
 
 // model RequirementFieldRelations {
@@ -474,8 +680,13 @@ model PositionLevelRequirements {
   positionLevels     PositionLevels    @relation(fields: [positionLevelId], references: [id])
   requirementFields  RequirementFields @relation(fields: [requirementFieldId], references: [id])
 
-  @@id([positionLevelId, requirementFieldId])
-  @@map("position_level_requirements")
+// model Departments {
+  // id         Int       @id() @default(autoincrement()) @db.Int
+  // name       String    @db.NVarChar(255)
+  // createdAt DateTime?  @default(now()) @map("created_at") @db.DateTime
+  // updatedAt DateTime?  @updatedAt  @map("updated_at") @db.DateTime
+
+  // @@map("departments")
 }
 
 model PositionLevels {
@@ -488,7 +699,17 @@ model PositionLevels {
   updatedAt                 DateTime?                   @updatedAt @map("updated_at") @db.DateTime
   positionLevelRequirements PositionLevelRequirements[]
 
-  @@map("position_levels")
+// model Work_Locations {
+  // id         Int       @id() @default(autoincrement()) @db.Int
+  // code        String    @db.NVarChar(255)
+  // name        String    @db.NVarChar(255)
+  // city_id     Decimal   @db.Decimal(20, 0)
+  // grp_id      Decimal?  @db.Decimal(20, 0)
+  // comp_grp_id Decimal?  @db.Decimal(20, 0)
+  // createdAt DateTime?  @default(now()) @map("created_at") @db.DateTime
+  // updatedAt DateTime?  @updatedAt  @map("updated_at") @db.DateTime
+
+  // @@map("work_locations")
 }
 
 model JobVacancies {
@@ -528,3 +749,12 @@ model JobVacancies {
 
   @@map("job_vacancies")
 }
+
+// model Employment_Status {
+  // id         Int       @id() @default(autoincrement()) @db.Int
+  // name       String    @db.NVarChar(255)
+  // createdAt DateTime?  @default(now()) @map("created_at") @db.DateTime
+  // updatedAt DateTime?  @updatedAt  @map("updated_at") @db.DateTime
+
+  // @@map("employment_status")
+// }

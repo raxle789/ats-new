@@ -8,237 +8,247 @@ import icon from '@/assets/images/icon/icon_60.svg';
 import uploadIcon from '@/assets/images/icon/icon_11.svg';
 import { useAppDispatch } from '@/redux/hook';
 import { setStep } from '@/redux/features/stepSlice';
+import { setRegisterStep } from '@/redux/features/fatkhur/registerSlice';
+import { createEducation_Experience } from '@/libs/Registration';
+import { string } from 'zod';
+import { fileToBase64 } from '@/libs/Registration/utils';
+import { useRouter } from 'next/navigation';
 
-const domicile: string[] = ['Aceh', 'Jawa', 'Kalimantan'];
 const lastEducation: string[] = ['SMA/SMK', 'D1', 'S1/Sarjana'];
 const major: string[] = [
   'Accounting',
   'Accounting Information',
   'Acturial Science',
 ];
-const source: string[] = ['Email', 'Erajaya Career Fest', 'Instagram'];
-const jobFunction: string[] = ['Accounting', 'Business', 'Client'];
-const jobTitle: string[] = [
-  'Internship Announce Radio',
-  'Internship Administration',
-  'Internship Application Developer',
+const noticePeriodValue: string[] = [
+  'Ready join now',
+  'Less than 1 month',
+  '1 month',
+  '2 months',
+  '3 months',
+  'More than 3 months',
 ];
-const lineIndustry: string[] = ['Agribusiness', 'Apparel', 'Automotive'];
-const level: string[] = ['Director', 'VP', 'General Manager'];
 
-// form data type
-type IFormData = {
-  gender: string;
-  domicile: string;
-  lastEducation: string;
-  major: string;
-  school: string;
-  startYear: string;
-  endYear: string;
-  gpa: string;
-  source: string;
-  expectedSalary: string;
-  companyName: string;
-  jobFunction: string;
-  jobTitle: string;
-  lineIndustry: string;
-  level: string;
-  periodStart: string;
-  periodEnd: string;
-  currentSalary: string;
-  uploadCV: string;
-  linkedin: string;
-  password: string;
-  confirmPass: string;
-  termsOfUse: string;
-};
-
-// schema
-// const schema = Yup.object().shape({
-//   fullName: Yup.string().required().label('Name'),
-//   email: Yup.string().required().email().label('Email'),
-//   password: Yup.string().required().min(6).label('Password'),
-// });
-// resolver
-const resolver: Resolver<IFormData> = async (values) => {
-  return {
-    values: values.gender ? values : {},
-    errors: !values.gender
-      ? {
-          gender: {
-            type: 'required',
-            message: 'Gender is required.',
-          },
-          domicile: {
-            type: 'required',
-            message: 'Domicile is required.',
-          },
-          lastEducation: {
-            type: 'required',
-            message: 'Last Education Level is required.',
-          },
-          major: {
-            type: 'required',
-            message: 'Major is required.',
-          },
-          school: {
-            type: 'required',
-            message: 'School is required.',
-          },
-          startYear: {
-            type: 'required',
-            message: 'Start Year is required.',
-          },
-          endYear: {
-            type: 'required',
-            message: 'End Year is required.',
-          },
-          gpa: {
-            type: 'required',
-            message: 'GPA is required.',
-          },
-          source: {
-            type: 'required',
-            message: 'Source is required.',
-          },
-          expectedSalary: {
-            type: 'required',
-            message: 'Expected Salary is required.',
-          },
-          companyName: {
-            type: 'required',
-            message: 'Company Name is required.',
-          },
-          jobFunction: {
-            type: 'required',
-            message: 'Job Function is required.',
-          },
-          jobTitle: {
-            type: 'required',
-            message: 'Job Title is required.',
-          },
-          lineIndustry: {
-            type: 'required',
-            message: 'Line Industry is required.',
-          },
-          level: {
-            type: 'required',
-            message: 'Level is required.',
-          },
-          periodStart: {
-            type: 'required',
-            message: 'Period Start is required.',
-          },
-          periodEnd: {
-            type: 'required',
-            message: 'Period End is required.',
-          },
-          currentSalary: {
-            type: 'required',
-            message: 'Current Salary is required.',
-          },
-          uploadCV: {
-            type: 'required',
-            message: 'CV is required.',
-          },
-          linkedin: {
-            type: 'required',
-            message: 'LinkedIn URL is required.',
-          },
-          password: {
-            type: 'required',
-            message: 'Password is required.',
-          },
-          confirmPass: {
-            type: 'required',
-            message: 'Confirm Password is required.',
-          },
-          termsOfUse: {
-            type: 'required',
-            message: 'To continue, you must agree to our terms.',
-          },
-        }
-      : {},
+type FormData = {
+  education: {
+    level: string;
+    major: string;
+    university_name: string;
+    start_year: string;
+    end_year: string;
+    gpa: string;
   };
+  other_question: {
+    noticePeriod: string;
+    ever_worked_start_year: string;
+    ever_worked_end_year: string;
+    disease_name: string;
+    disease_year: string;
+    relation_name: string;
+    relation_position: string;
+  };
+  // experience: {
+  //   company_name: string;
+  //   job_function: string;
+  //   job_title: string;
+  //   job_level: string;
+  //   line_industry: string;
+  //   start_at: string;
+  //   end_at: string;
+  //   salary: string;
+  // };
 };
 
 const RegisterFormStep2 = () => {
   const dispatch = useAppDispatch();
-  const [showPass, setShowPass] = useState<boolean>(false);
-  const [showConfirmPass, setShowConfirmPass] = useState<boolean>(false);
-  const [linkedinValue, setLinkedinValue] = useState<string>('No');
-  const [freshGraduate, setFreshGraduate] = useState<string>('Fresh Graduate');
+  const router = useRouter();
 
-  const handleLinkedInChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setLinkedinValue(event.target.value);
+  // const [noticePeriod, setNoticePeriod] = useState<string>('you-choose');
+  // const noticePeriodChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setNoticePeriod(e.target.value);
+  // };
+
+  const [everWorked, setEverWorked] = useState<string>('you-choose');
+  const everWorkedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEverWorked(e.target.value);
   };
-  const handleFreshGraduateChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setFreshGraduate(event.target.value);
+
+  const [disease, setdisease] = useState<string>('you-choose');
+  const diseaseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setdisease(e.target.value);
   };
-  // react hook form
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<IFormData>({ resolver });
-  // on submit
-  const onSubmit = (data: IFormData) => {
-    if (data) {
-      // alert('Register successfully!');
-      console.log('data form 3', data);
-      // reset();
+
+  const [haveRelation, setHaveRelation] = useState<string>('you-choose');
+  const haveRelationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setHaveRelation(e.target.value);
+  };
+
+  const [formData, setFormData] = useState<FormData>({
+    education: {
+      level: 'default',
+      major: 'default',
+      university_name: '',
+      start_year: '',
+      end_year: '',
+      gpa: '',
+    },
+    other_question: {
+      noticePeriod: '',
+      ever_worked_start_year: '',
+      ever_worked_end_year: '',
+      disease_name: '',
+      disease_year: '',
+      relation_name: '',
+      relation_position: '',
+    },
+    // experience: {
+    //   company_name: '',
+    //   job_function: '',
+    //   job_title: '',
+    //   job_level: '',
+    //   line_industry: '',
+    //   start_at: '',
+    //   end_at: '',
+    //   salary: '',
+    // },
+  });
+
+  const [agreement, setAgreement] = useState<boolean>(false);
+  console.log(agreement);
+
+  const agreementOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('checked', e.target.checked);
+    setAgreement(e.target.checked);
+  };
+
+  const [document, setDocument] = useState<File | null | string>(null);
+  if (document !== null) {
+    const { name, size, type } = document as File;
+    console.info('name: ', name);
+    console.info('name: ', size);
+    console.info('name: ', type);
+  }
+  const documentOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const cv = e.target.files && e.target.files[0];
+    setDocument(cv);
+  };
+
+  const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (name in formData.education) {
+      setFormData((prevState) => ({
+        ...prevState,
+        education: {
+          ...prevState.education,
+          [name]: value,
+        },
+      }));
+      return;
+    } else if (name in formData.other_question) {
+      setFormData((prevState) => ({
+        ...prevState,
+        other_question: {
+          ...prevState.other_question,
+          [name]: value,
+        },
+      }));
+      return;
     }
+    // else if (name in formData.experience) {
+    //   setFormData((prevState) => ({
+    //     ...prevState,
+    //     experience: {
+    //       ...prevState.experience,
+    //       [name]: value,
+    //     },
+    //   }));
+    //   return;
+    // }
   };
+
+  const selectOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    if (name in formData.education) {
+      setFormData((prevState) => ({
+        ...prevState,
+        education: {
+          ...prevState.education,
+          [name]: value,
+        },
+      }));
+      return;
+    } else if (name in formData.other_question) {
+      setFormData((prevState) => ({
+        ...prevState,
+        other_question: {
+          ...prevState.other_question,
+          [name]: value,
+        },
+      }));
+      return;
+    }
+    // else if (name in formData?.experience) {
+    //   setFormData((prevState) => ({
+    //     ...prevState,
+    //     experience: {
+    //       ...prevState.experience,
+    //       [name]: value,
+    //     },
+    //   }));
+    //   return;
+    // }
+  };
+
+  const formOnSubmit = async (e: React.ChangeEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    console.log('form data', formData);
+    console.log('document', document);
+    console.log('agreement', agreement);
+
+    let formattedValue: string = formData.education.university_name;
+    // Format value to capitalize first letter of each word
+    formattedValue = formattedValue.replace(/\b\w/g, (char) =>
+      char.toUpperCase(),
+    );
+    // tolong tur nama universitasnya pake yg ini ya, soalnya udh keformat
+
+    /* destructure */
+    const { name, size, type } = document as File;
+    const stringBase64 = await fileToBase64(document as File);
+    const userDocument = {
+      name: name,
+      size: size,
+      type: type,
+      file_base: stringBase64,
+    };
+
+    /* call server-side function */
+    const send = await createEducation_Experience(
+      formData,
+      userDocument,
+      agreement,
+    );
+    console.info(send);
+    if (!send.success) {
+      return console.error(send.message);
+    }
+
+    router.push('/');
+  };
+
   return (
-    <form>
-      <div className="row">
+    <form onSubmit={formOnSubmit}>
+      <div className="row mb-20">
         <div className="col-6">
-          <div className="input-group-meta position-relative mb-25">
-            <label>Gender*</label>
-            <select
-              className="form-select"
-              aria-label="Default select example"
-              {...register('gender', { required: `Gender is required!` })}
-            >
-              <option value="choose-gender">Please choose gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-            <div className="help-block with-errors">
-              <ErrorMsg msg={errors.gender?.message!} />
-            </div>
-          </div>
-        </div>
-        {/* <div className="col-6">
-          <div className="input-group-meta position-relative mb-25">
-            <label>Domicile*</label>
-            <select
-              className="form-select"
-              aria-label="Default select example"
-              {...register('domicile', { required: `Domicile is required!` })}
-            >
-              <option value="choose-domicile">Please choose domicile</option>
-              {domicile.map((item, index) => (
-                <option key={index} value={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
-            <div className="help-block with-errors">
-              <ErrorMsg msg={errors.domicile?.message!} />
-            </div>
-          </div>
-        </div> */}
-        <div className="col-6">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-15">
             <label>Last Education Level*</label>
             <select
               className="form-select"
               aria-label="Default select example"
-              {...register('lastEducation', {
-                required: `Last Education Level is required!`,
-              })}
+              name="level"
+              value={formData.education.level}
+              onChange={selectOnChange}
             >
               <option value="choose-education">Please choose</option>
               {lastEducation.map((item, index) => (
@@ -247,20 +257,18 @@ const RegisterFormStep2 = () => {
                 </option>
               ))}
             </select>
-            <div className="help-block with-errors">
-              <ErrorMsg msg={errors.lastEducation?.message!} />
-            </div>
+            <div className="help-block with-errors"></div>
           </div>
         </div>
         <div className="col-6">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-15">
             <label>Major*</label>
             <select
               className="form-select"
               aria-label="Default select example"
-              {...register('major', {
-                required: `Major is required!`,
-              })}
+              name="major"
+              value={formData.education.major}
+              onChange={selectOnChange}
             >
               <option value="choose-major">Please choose</option>
               {major.map((item, index) => (
@@ -269,339 +277,77 @@ const RegisterFormStep2 = () => {
                 </option>
               ))}
             </select>
-            <div className="help-block with-errors">
-              <ErrorMsg msg={errors.major?.message!} />
-            </div>
+            <div className="help-block with-errors"></div>
           </div>
         </div>
         <div className="col-12">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-15">
             <label>University/School*</label>
             <input
               type="text"
+              className="login-input"
               placeholder="Universitas..."
-              {...register('school', { required: `School is required!` })}
-              name="school"
+              name="university_name"
+              value={formData.education.university_name}
+              onChange={inputOnChange}
             />
-            <div className="help-block with-errors">
-              <ErrorMsg msg={errors.school?.message!} />
-            </div>
+            <div className="help-block with-errors"></div>
           </div>
         </div>
         <div className="col-6">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-15">
             <label>Start Year*</label>
             <input
               type="number"
+              className="login-input"
               placeholder="2020"
-              {...register('startYear', {
-                required: `Start Year is required!`,
-              })}
-              name="Start Year"
+              name="start_year"
+              value={formData.education.start_year}
+              onChange={inputOnChange}
+              style={{ paddingRight: '11px' }}
             />
-            <div className="help-block with-errors">
-              <ErrorMsg msg={errors.startYear?.message!} />
-            </div>
+            <div className="help-block with-errors"></div>
           </div>
         </div>
         <div className="col-6">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-15">
             <label>End Year*</label>
             <input
               type="number"
+              className="login-input"
               placeholder="2024"
-              {...register('endYear', {
-                required: `End Year is required!`,
-              })}
-              name="End Year"
+              name="end_year"
+              value={formData.education.end_year}
+              onChange={inputOnChange}
+              style={{ paddingRight: '11px' }}
             />
-            <div className="help-block with-errors">
-              <ErrorMsg msg={errors.endYear?.message!} />
-            </div>
+            <div className="help-block with-errors"></div>
           </div>
         </div>
         <div className="col-6">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-15">
             <label>GPA*</label>
             <input
               type="text"
-              {...register('gpa', {
-                required: `GPA is required!`,
-              })}
-              name="GPA"
+              className="login-input"
+              name="gpa"
+              value={formData.education.gpa}
+              onChange={inputOnChange}
             />
-            <div className="help-block with-errors">
-              <ErrorMsg msg={errors.gpa?.message!} />
-            </div>
+            <div className="help-block with-errors"></div>
           </div>
         </div>
         <div className="col-6">
-          <div className="input-group-meta position-relative mb-25">
-            <label>Source*</label>
-            <select
-              className="form-select"
-              aria-label="Default select example"
-              {...register('source', {
-                required: `Source is required!`,
-              })}
-            >
-              <option value="choose-source">Please choose</option>
-              {source.map((item, index) => (
-                <option key={index} value={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
-            <div className="help-block with-errors">
-              <ErrorMsg msg={errors.source?.message!} />
-            </div>
-          </div>
-        </div>
-        <div className="position-relative mb-25">
-          {/* <label>LinkedIn*</label> */}
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="RadioFreshGraduate"
-              id="RadioFreshGraduateValue1"
-              value="Fresh Graduate"
-              checked={freshGraduate === 'Fresh Graduate'}
-              onChange={handleFreshGraduateChange}
-            />
-            <label
-              className="form-check-label"
-              htmlFor="RadioFreshGraduateValue1"
-            >
-              Fresh Graduate
-            </label>
-          </div>
-          <div className="form-check">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="RadioFreshGraduate"
-              id="RadioFreshGraduateValue2"
-              value="Experience"
-              checked={freshGraduate === 'Experience'}
-              onChange={handleFreshGraduateChange}
-            />
-            <label
-              className="form-check-label"
-              htmlFor="RadioFreshGraduateValue2"
-            >
-              Experience
-            </label>
-          </div>
-        </div>
-        {freshGraduate === 'Fresh Graduate' ? (
-          <div className="col-6">
-            <div className="input-group-meta position-relative mb-20">
-              <label>Expected Salary (Gross / Month)*</label>
-              <input
-                type="text"
-                placeholder="Enter Expected Salary"
-                className="pass_log_id"
-                {...register('expectedSalary', {
-                  required: `Expected Salary is required!`,
-                })}
-                name="expected-salary"
-              />
-              <div className="help-block with-errors">
-                <ErrorMsg msg={errors.expectedSalary?.message!} />
-              </div>
-            </div>
-          </div>
-        ) : (
-          <>
-            <div className="col-12">
-              <div className="input-group-meta position-relative mb-25">
-                <label>Company Name - Last*</label>
-                <input
-                  type="text"
-                  placeholder="Company Name"
-                  {...register('companyName', {
-                    required: `Company Name is required!`,
-                  })}
-                  name="company-name"
-                />
-                <div className="help-block with-errors">
-                  <ErrorMsg msg={errors.companyName?.message!} />
-                </div>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-25">
-                <label>Job Function*</label>
-                <select
-                  className="form-select"
-                  aria-label="Default select example"
-                  {...register('jobFunction', {
-                    required: `Job Function is required!`,
-                  })}
-                >
-                  <option value="choose-job-function">Please choose</option>
-                  {jobFunction.map((item, index) => (
-                    <option key={index} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-                <div className="help-block with-errors">
-                  <ErrorMsg msg={errors.jobFunction?.message!} />
-                </div>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-25">
-                <label>Job Title*</label>
-                <select
-                  className="form-select"
-                  aria-label="Default select example"
-                  {...register('jobTitle', {
-                    required: `Job Title is required!`,
-                  })}
-                >
-                  <option value="choose-job-title">Please choose</option>
-                  {jobTitle.map((item, index) => (
-                    <option key={index} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-                <div className="help-block with-errors">
-                  <ErrorMsg msg={errors.jobTitle?.message!} />
-                </div>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-25">
-                <label>Line Industry*</label>
-                <select
-                  className="form-select"
-                  aria-label="Default select example"
-                  {...register('lineIndustry', {
-                    required: `Line Industry is required!`,
-                  })}
-                >
-                  <option value="choose-line-industry">Please choose</option>
-                  {lineIndustry.map((item, index) => (
-                    <option key={index} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-                <div className="help-block with-errors">
-                  <ErrorMsg msg={errors.lineIndustry?.message!} />
-                </div>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-25">
-                <label>Level*</label>
-                <select
-                  className="form-select"
-                  aria-label="Default select example"
-                  {...register('level', {
-                    required: `Level is required!`,
-                  })}
-                >
-                  <option value="choose-level">Please choose</option>
-                  {level.map((item, index) => (
-                    <option key={index} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-                <div className="help-block with-errors">
-                  <ErrorMsg msg={errors.level?.message!} />
-                </div>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-25">
-                <label>Period Start*</label>
-                <div className="form-group">
-                  <input
-                    type="date"
-                    className="form-control"
-                    id="period-start"
-                    {...register('periodStart', {
-                      required: `Period Start is required!`,
-                    })}
-                    name="period-start"
-                  />
-                </div>
-                <div className="help-block with-errors">
-                  <ErrorMsg msg={errors.periodStart?.message!} />
-                </div>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-25">
-                <label>Period End*</label>
-                <div className="form-group">
-                  <input
-                    type="date"
-                    className="form-control"
-                    id="period-end"
-                    {...register('periodEnd', {
-                      required: `Period End is required!`,
-                    })}
-                    name="period-end"
-                  />
-                </div>
-                <div className="help-block with-errors">
-                  <ErrorMsg msg={errors.periodEnd?.message!} />
-                </div>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-20">
-                <label>Expected Salary (Gross / Month)*</label>
-                <input
-                  type="text"
-                  placeholder="Enter Expected Salary"
-                  className="pass_log_id"
-                  {...register('expectedSalary', {
-                    required: `Expected Salary is required!`,
-                  })}
-                  name="expected-salary"
-                />
-                <div className="help-block with-errors">
-                  <ErrorMsg msg={errors.expectedSalary?.message!} />
-                </div>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-20">
-                <label>Current Salary (Gross / Month)*</label>
-                <input
-                  type="text"
-                  placeholder="Enter Current Salary"
-                  className="pass_log_id"
-                  {...register('currentSalary', {
-                    required: `Current Salary is required!`,
-                  })}
-                  name="current-salary"
-                />
-                <div className="help-block with-errors">
-                  <ErrorMsg msg={errors.currentSalary?.message!} />
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-        <div className="">
-          <div className="input-group-meta position-relative mb-25">
+          <div className="input-group-meta position-relative mb-15">
             <label>Upload CV*</label>
             <div className="upload-container">
               <input
-                className="upload-photo-btn"
+                className="upload-photo-btn btn-login"
                 type="file"
                 id="upload-CV"
-                name="uploadCV"
+                name="document"
                 accept=".pdf"
+                onChange={documentOnChange}
               />
               <label htmlFor="photo-input" className="photo-input">
                 <Image
@@ -614,150 +360,300 @@ const RegisterFormStep2 = () => {
                 </span>
               </label>
             </div>
-            <div className="help-block with-errors">
-              <ErrorMsg msg={errors.uploadCV?.message!} />
-            </div>
+            <div className="help-block with-errors"></div>
           </div>
         </div>
-        <div className="col-6">
-          <div className="position-relative mb-25">
-            <label>Do you have a LinkedIn Account?*</label>
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="radio"
-                name="flexRadioDefault"
-                id="flexRadioDefault1"
-                value="Yes"
-                checked={linkedinValue === 'Yes'}
-                onChange={handleLinkedInChange}
-              />
-              <label className="form-check-label" htmlFor="flexRadioDefault1">
-                Yes
-              </label>
-            </div>
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="radio"
-                name="flexRadioDefault"
-                id="flexRadioDefault2"
-                value="No"
-                checked={linkedinValue === 'No'}
-                onChange={handleLinkedInChange}
-              />
-              <label className="form-check-label" htmlFor="flexRadioDefault2">
-                No
-              </label>
-            </div>
+
+        <div className="col-12">
+          <div className="input-group-meta position-relative mb-15">
+            <label>How long your notice period?*</label>
+            <select
+              className="form-select"
+              aria-label="Default select example"
+              name="noticePeriod"
+              value={formData.other_question.noticePeriod}
+              onChange={selectOnChange}
+            >
+              <option value="choose-notice-period">Please choose</option>
+              {noticePeriodValue.map((item, index) => (
+                <option key={index} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+            <div className="help-block with-errors"></div>
           </div>
         </div>
-        {linkedinValue === 'Yes' ? (
-          <div className="col-6">
-            <div className="input-group-meta position-relative mb-20">
-              <label>LinkedIn URL*</label>
-              <input
-                type="text"
-                placeholder="Enter LinkedIn URL"
-                className="pass_log_id"
-                {...register('password', { required: `Password is required!` })}
-                name="linkedin-url"
-              />
-              <div className="help-block with-errors">
-                <ErrorMsg msg={errors.linkedin?.message!} />
+
+        <div className="col-12">
+          <div className="position-relative mb-20">
+            <label style={{ fontSize: '14px' }}>
+              Have you ever worked in Erajaya group of companies?*
+            </label>
+            <div className="row" style={{ paddingLeft: '11px' }}>
+              <div className="form-check col-2">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="RadioEverWorked"
+                  id="RadioEverWorkedValue1"
+                  value="no"
+                  checked={everWorked === 'no'}
+                  onChange={everWorkedChange}
+                />
+                <label
+                  className="form-check-label"
+                  htmlFor="RadioEverWorkedValue1"
+                  style={{ fontSize: '14px' }}
+                >
+                  No
+                </label>
               </div>
+              <div className="col-10"></div>
+              <div className="form-check col-2">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="RadioEverWorked"
+                  id="RadioEverWorkedValue2"
+                  value="yes"
+                  checked={everWorked === 'yes'}
+                  onChange={everWorkedChange}
+                />
+                <label
+                  className="form-check-label"
+                  htmlFor="RadioEverWorkedValue2"
+                  style={{ fontSize: '14px' }}
+                >
+                  Yes
+                </label>
+              </div>
+              {everWorked === 'yes' ? (
+                <>
+                  <div className="col-5">
+                    <div className="input-group-meta position-relative mb-15">
+                      <input
+                        type="number"
+                        className="login-input"
+                        placeholder="Start Year"
+                        name="ever_worked_start_year"
+                        value={formData.other_question.ever_worked_start_year}
+                        onChange={inputOnChange}
+                        style={{ paddingRight: '11px' }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-5">
+                    <div className="input-group-meta position-relative mb-15">
+                      <input
+                        type="number"
+                        className="login-input"
+                        placeholder="End Year"
+                        name="ever_worked_end_year"
+                        value={formData.other_question.ever_worked_end_year}
+                        onChange={inputOnChange}
+                        style={{ paddingRight: '11px' }}
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="col-10"></div>
+              )}
             </div>
-          </div>
-        ) : (
-          <div className="col-6"></div>
-        )}
-        {/* <div className="col-6">
-          <div className="input-group-meta position-relative mb-20">
-            <label>Password*</label>
-            <input
-              type={`${showPass ? 'text' : 'password'}`}
-              placeholder="Enter Password"
-              className="pass_log_id"
-              {...register('password', { required: `Password is required!` })}
-              name="password"
-            />
-            <span
-              className="placeholder_icon"
-              onClick={() => setShowPass(!showPass)}
-            >
-              <span className={`passVicon ${showPass ? 'eye-slash' : ''}`}>
-                <Image src={icon} alt="pass-icon" />
-              </span>
-            </span>
             <div className="help-block with-errors">
-              <ErrorMsg msg={errors.password?.message!} />
+              {/* <ErrorMsg msg={errors.expectedSalary?.message!} /> */}
             </div>
           </div>
-        </div> */}
-        {/* <div className="col-6">
-          <div className="input-group-meta position-relative mb-20">
-            <label>Confirm Password*</label>
-            <input
-              type={`${showConfirmPass ? 'text' : 'password'}`}
-              placeholder="Confirm Your Password"
-              className="pass_log_id"
-              {...register('confirmPass', {
-                required: `Confirm Password is required!`,
-              })}
-              name="password"
-            />
-            <span
-              className="placeholder_icon"
-              onClick={() => setShowConfirmPass(!showConfirmPass)}
-            >
-              <span
-                className={`passVicon ${showConfirmPass ? 'eye-slash' : ''}`}
-              >
-                <Image src={icon} alt="pass-icon" />
-              </span>
-            </span>
+        </div>
+        <div className="col-12">
+          <div className="position-relative mb-20">
+            <label style={{ fontSize: '14px' }}>
+              Do you have any prior medical conditions, illnesses, or congenital
+              diseases?*
+            </label>
+            <div className="row" style={{ paddingLeft: '11px' }}>
+              <div className="form-check col-2">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="RadioDisease"
+                  id="RadioDiseaseValue1"
+                  value="no"
+                  checked={disease === 'no'}
+                  onChange={diseaseChange}
+                />
+                <label
+                  className="form-check-label"
+                  htmlFor="RadioDiseaseValue1"
+                  style={{ fontSize: '14px' }}
+                >
+                  No
+                </label>
+              </div>
+              <div className="col-10"></div>
+              <div className="form-check col-2">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="RadioDisease"
+                  id="RadioDiseaseValue2"
+                  value="yes"
+                  checked={disease === 'yes'}
+                  onChange={diseaseChange}
+                />
+                <label
+                  className="form-check-label"
+                  htmlFor="RadioDiseaseValue2"
+                  style={{ fontSize: '14px' }}
+                >
+                  Yes
+                </label>
+              </div>
+              {disease === 'yes' ? (
+                <>
+                  <div className="col-5">
+                    <div className="input-group-meta position-relative mb-15">
+                      <input
+                        type="text"
+                        className="login-input"
+                        placeholder="Medical Condition"
+                        name="disease_name"
+                        value={formData.other_question.disease_name}
+                        onChange={inputOnChange}
+                        style={{ paddingRight: '11px' }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-5">
+                    <div className="input-group-meta position-relative mb-15">
+                      <input
+                        type="number"
+                        className="login-input"
+                        placeholder="Year"
+                        name="disease_year"
+                        value={formData.other_question.disease_year}
+                        onChange={inputOnChange}
+                        style={{ paddingRight: '11px' }}
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="col-10"></div>
+              )}
+            </div>
             <div className="help-block with-errors">
-              <ErrorMsg msg={errors.confirmPass?.message!} />
+              {/* <ErrorMsg msg={errors.expectedSalary?.message!} /> */}
             </div>
           </div>
-        </div> */}
+        </div>
+        <div className="col-12">
+          <div className="position-relative mb-20">
+            <label style={{ fontSize: '14px' }}>
+              Do you have any friends, colleague, relative or family who is
+              working at Erajaya Group Companies?*
+            </label>
+            <div className="row" style={{ paddingLeft: '11px' }}>
+              <div className="form-check col-2">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="RadioHaveRelation"
+                  id="RadioHaveRelationValue1"
+                  value="no"
+                  checked={haveRelation === 'no'}
+                  onChange={haveRelationChange}
+                />
+                <label
+                  className="form-check-label"
+                  htmlFor="RadioHaveRelationValue1"
+                  style={{ fontSize: '14px' }}
+                >
+                  No
+                </label>
+              </div>
+              <div className="col-10"></div>
+              <div className="form-check col-2">
+                <input
+                  className="form-check-input"
+                  type="radio"
+                  name="RadioHaveRelation"
+                  id="RadioHaveRelationValue2"
+                  value="yes"
+                  checked={haveRelation === 'yes'}
+                  onChange={haveRelationChange}
+                />
+                <label
+                  className="form-check-label"
+                  htmlFor="RadioHaveRelationValue2"
+                  style={{ fontSize: '14px' }}
+                >
+                  Yes
+                </label>
+              </div>
+              {haveRelation === 'yes' ? (
+                <>
+                  <div className="col-5">
+                    <div className="input-group-meta position-relative mb-15">
+                      <input
+                        type="text"
+                        className="login-input"
+                        placeholder="Name"
+                        name="relation_name"
+                        value={formData.other_question.relation_name}
+                        onChange={inputOnChange}
+                        style={{ paddingRight: '11px' }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-5">
+                    <div className="input-group-meta position-relative mb-15">
+                      <input
+                        type="text"
+                        className="login-input"
+                        placeholder="Position"
+                        name="relation_position"
+                        value={formData.other_question.relation_position}
+                        onChange={inputOnChange}
+                        style={{ paddingRight: '11px' }}
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="col-10"></div>
+              )}
+            </div>
+            <div className="help-block with-errors">
+              {/* <ErrorMsg msg={errors.expectedSalary?.message!} /> */}
+            </div>
+          </div>
+        </div>
+
         <div className="col-12">
           <div className="agreement-checkbox d-flex justify-content-between align-items-center">
             <div>
               <input
                 className="form-check-input"
                 type="checkbox"
-                value=""
-                name="agreement"
+                name="check_agreement"
                 id="agreement"
+                checked={agreement === true}
+                onChange={agreementOnChange}
               />
               <label className="form-check-label" htmlFor="agreement">
                 By hitting the Register button, you agree to the{' '}
                 <a href="#">Terms conditions</a> &{' '}
                 <a href="#">Privacy Policy</a>
               </label>
-              {/* <input
-                type="checkbox"
-                name="remember"
-                checked={termsState}
-                onChange={handleTermsStateChange}
-              />
-              <label htmlFor="remember">
-                By hitting the Register button, you agree to the{' '}
-                <a href="#">Terms conditions</a> &{' '}
-                <a href="#">Privacy Policy</a>
-              </label> */}
             </div>
           </div>
         </div>
         <div className="col-5 col-sm-6">
           <button
-            className="btn-eleven fw-500 tran3s mt-20"
-            onClick={(e) => {
-              e.preventDefault();
-              dispatch(setStep({ newStep: 2 }));
-            }}
-            // onClick={() => dispatch(setStep({ newStep: 2 }))}
+            className="btn-eleven btn-login btn-back fw-500 tran3s mt-20"
+            onClick={() => dispatch(setRegisterStep('second'))}
           >
             Back
           </button>
@@ -765,20 +661,11 @@ const RegisterFormStep2 = () => {
         <div className="col-5 col-sm-6">
           <button
             type="submit"
-            className="btn-eleven fw-500 tran3s mt-20"
-            onClick={handleSubmit(onSubmit)}
+            className="btn-eleven btn-login btn-next fw-500 tran3s mt-20"
           >
             Register
           </button>
         </div>
-        {/* <div className="col-12">
-          <button
-            type="submit"
-            className="btn-eleven fw-500 tran3s d-block mt-20"
-          >
-            Register
-          </button>
-        </div> */}
       </div>
     </form>
   );

@@ -2,19 +2,48 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import logo from '@/assets/images/logo/logo_06.png';
 import dark_logo from '@/assets/images/logo/logo_04.png';
 import Menus from './component/menus';
 import useSticky from '@/hooks/use-sticky';
 import LoginModal from '@/app/components/common/popup/login-modal';
+import { useAppSessionContext } from '@/libs/Sessions/AppSession';
+import { setAuthState } from '@/redux/features/authorizingSlice';
+import { useAppSelector, useAppDispatch } from '@/redux/hook';
 /* server components */
 // import { getSession } from '@/lib/Authentication';
 
 const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
+  /* session wrapper by fatkhur */
+  // const [session, setSession] = useState<any>({
+  //   session: {
+  //     auth: null
+  //   }
+  // }); // session state
+  const dispatch = useAppDispatch();
   const { sticky } = useSticky();
   const [scrollDistance, setScrollDistance] = useState<number>(0);
+  const isLogin = useAppSelector((state) => state.auth.authState);
+
+  // console.log('isLoginHeader: ', isLogin);
+
+  /* get user-session from server-side */
+  // const getSession = async () => {
+  //   const response = await fetch('api/sessions', {
+  //     method: 'GET'
+  //   });
+
+  //   const body = await response.json();
+  //   console.log('body server-side', body);
+
+  //   setSession(body);
+  // };
 
   useEffect(() => {
+    /* call funct */
+    // getSession();
+
     const handleScroll = () => {
       setScrollDistance(window.scrollY);
     };
@@ -26,6 +55,7 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
       <header
         className={`theme-main-menu menu-overlay ${dark_style ? '' : 'menu-style-two'} sticky-menu ${sticky ? 'fixed' : ''}`}
       >
+        {/* {("auth" in session) ? (<span className="">LoggedIn</span>) : (<span className="">Not LoggedIn</span>)} */}
         <div className="inner-content position-relative">
           <div className="top-header">
             <div className="d-flex align-items-center justify-content-between">
@@ -40,29 +70,40 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
               </div>
               <div className="right-widget ms-auto ms-lg-0 order-lg-2">
                 <ul className="d-flex align-items-center style-none">
-                  <li>
-                    <a
-                      href="#"
-                      className={`fw-500 login-btn-three ${dark_style ? 'dark-style' : ''} tran3s`}
-                      data-bs-toggle="modal"
-                      data-bs-target="#loginModal"
-                    >
-                      Login
-                    </a>
-                  </li>
-                  {/* <li>
-                    <a
-                      href="/auth/login"
-                      className={`fw-500 login-btn-three ${dark_style ? 'dark-style' : ''} tran3s`}
-                    >
-                      Login
-                    </a>
-                  </li> */}
-                  <li className="d-none d-md-block ms-3">
-                    <Link href="/register" className="btn-five">
-                      Register
-                    </Link>
-                  </li>
+                  {isLogin && (
+                    <>
+                      <li>
+                        <Link
+                          href="/register"
+                          className="btn-five w-100"
+                          onClick={() =>
+                            dispatch(setAuthState({ newAuthState: false }))
+                          }
+                        >
+                          Logout
+                        </Link>
+                      </li>
+                    </>
+                  )}
+                  {!isLogin && (
+                    <>
+                      <li>
+                        <a
+                          href="#"
+                          className={`fw-500 login-btn-three ${dark_style ? 'dark-style' : ''} tran3s`}
+                          data-bs-toggle="modal"
+                          data-bs-target="#loginModal"
+                        >
+                          Login
+                        </a>
+                      </li>
+                      <li className="d-none d-md-block ms-3">
+                        <Link href="/register" className="btn-five">
+                          Register
+                        </Link>
+                      </li>
+                    </>
+                  )}
                 </ul>
                 {/* check session here */}
                 {/* {getSession() ? (
@@ -101,11 +142,26 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
                     {/* menus start */}
                     <Menus />
                     {/* menus end */}
-                    <li className="d-md-none mt-5">
-                      <Link href="/register" className="btn-five w-100">
-                        Register
-                      </Link>
-                    </li>
+                    {isLogin && (
+                      <li className="d-md-none mt-5">
+                        <Link
+                          href="#"
+                          className="btn-five w-100"
+                          onClick={() =>
+                            dispatch(setAuthState({ newAuthState: false }))
+                          }
+                        >
+                          Logout
+                        </Link>
+                      </li>
+                    )}
+                    {!isLogin && (
+                      <li className="d-md-none mt-5">
+                        <Link href="/register" className="btn-five w-100">
+                          Register
+                        </Link>
+                      </li>
+                    )}
                   </ul>
                 </div>
               </nav>
