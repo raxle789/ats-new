@@ -11,12 +11,7 @@ import { ExpendableButton } from './expendable-button';
 
 const _ = require('lodash');
 
-const EmployJobParameter = ({
-  positionLevelRequirementData,
-  getLineIndustryData,
-  getEducationLevelData,
-  getPositionLevelData,
-}) => {
+const EmployJobParameter = ({ positionLevelRequirementData }) => {
   const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
     {},
   );

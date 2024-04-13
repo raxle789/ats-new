@@ -45,6 +45,10 @@ const EmployJobParameterItem = ({
 }) => {
   const [api, contextHolder] = notification.useNotification();
 
+  const [form] = Form.useForm();
+
+  const [spinning, setSpinning] = React.useState(false);
+
   // const openNotification = (placement) => {
   //   api.info({
   //     message: `Notification ${placement}`,
@@ -134,7 +138,23 @@ const EmployJobParameterItem = ({
     });
   }, [positionLevelRequirementData]);
 
+  const toggleRowExpansion = (index: number) => {
+    setExpandedRows((prevExpandedRows) => ({
+      ...prevExpandedRows,
+      [index]: !prevExpandedRows[index],
+    }));
+  };
+
+  const showLoader = (show) => {
+    setSpinning(show);
+    // setTimeout(() => {
+    //   setSpinning(false);
+    // }, 3000);
+  };
+
   function handleJobParameter(values) {
+    showLoader(true);
+
     confirm({
       title: 'Do you want to create new job parameter?',
       icon: <ExclamationCircleFilled />,
@@ -157,7 +177,6 @@ const EmployJobParameterItem = ({
               .catch((e) =>
                 console.log('Error set position level requirement data: ', e),
               );
-            setSpinning(true);
             // router.replace('/dashboard/ta/parameter');
             resolve();
           }, 2000);
@@ -166,8 +185,6 @@ const EmployJobParameterItem = ({
       onCancel() {},
     });
   }
-
-  const [form] = Form.useForm();
 
   // const [
   //   minimumYearOfExperienceParameterState,
@@ -263,21 +280,6 @@ const EmployJobParameterItem = ({
   //   const rupiahRemovedValue = dotRemovedValue.replace(/^IDR\s?|,/g, '');
   //   return parseFloat(rupiahRemovedValue || '0'); // Parse menjadi float, atau 0 jika kosong
   // };
-
-  const toggleRowExpansion = (index: number) => {
-    setExpandedRows((prevExpandedRows) => ({
-      ...prevExpandedRows,
-      [index]: !prevExpandedRows[index],
-    }));
-  };
-
-  const [spinning, setSpinning] = React.useState(false);
-  const showLoader = () => {
-    setSpinning(true);
-    // setTimeout(() => {
-    //   setSpinning(false);
-    // }, 3000);
-  };
 
   return (
     <>
@@ -1091,7 +1093,7 @@ const EmployJobParameterItem = ({
             href="/dashboard/ta/parameter"
             className="dash-cancel-btn tran3s"
             type="button"
-            onClick={showLoader}
+            onClick={() => showLoader(true)}
           >
             Cancel
           </Link>

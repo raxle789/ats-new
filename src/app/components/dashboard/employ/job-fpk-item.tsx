@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Button, Form, Select, Input, Modal, notification } from 'antd';
+import { Button, Spin, Form, Select, Input, Modal, notification } from 'antd';
 import { useRouter } from 'next/navigation';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useState, useEffect, useRef } from 'react';
@@ -11,16 +11,19 @@ const { confirm } = Modal;
 const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
   const formRef = useRef({});
 
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
 
   const [api, contextHolder] = notification.useNotification();
 
   const [assignDisabled, setAssignDisabled] = useState({});
 
   const router = useRouter();
+
   const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
     {},
   );
+
+  const [spinning, setSpinning] = React.useState(false);
 
   const toggleRowExpansion = (index: number) => {
     setExpandedRows((prevExpandedRows) => ({
@@ -46,41 +49,22 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
     setFormDefaultValue();
   }, [fpkData, offset]);
 
-  // const convertDate = (dateTime: any) => {
-  //   const monthNames = [
-  //     'Jan',
-  //     'Feb',
-  //     'Mar',
-  //     'Apr',
-  //     'May',
-  //     'Jun',
-  //     'Jul',
-  //     'Aug',
-  //     'Sep',
-  //     'Okt',
-  //     'Nov',
-  //     'Des',
-  //   ];
-
-  //   if (!dateTime) {
-  //     return 'Undefined';
-  //   } else if (typeof dateTime === 'string') {
-  //     const newDate = dateTime.replaceAll('/', ' ');
-  //     const day = newDate.slice(0, 2);
-  //     const month = monthNames[Number(newDate.slice(3, 5)) - 1];
-  //     const year = newDate.slice(6, 10);
-  //     return `${day}-${month}-${year}`;
-  //   } else {
-  //     const date = new Date(dateTime);
-  //     const day = String(date.getDate());
-  //     const month = monthNames[date.getMonth()];
-  //     const year = String(date.getFullYear());
-  //     return `${day}-${month}-${year}`;
-  //   }
-  // };
+  const showLoader = (show) => {
+    setSpinning(show);
+    // setTimeout(() => {
+    //   setSpinning(false);
+    // }, 3000);
+  };
 
   const handleAssignTa = (values: any) => {
-    setLoading(true);
+    setAssignDisabled((prevState) => ({
+      ...prevState,
+      [values.efpkRequestNo]: false,
+    }));
+
+    showLoader(true);
+
+    // setLoading(true);
 
     setTimeout(() => {
       confirm({
@@ -102,6 +86,8 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                 .then(() => {
                   // form.resetFields();
                   router.refresh();
+
+                  showLoader(false);
                 })
                 .catch((e) => console.log('Error assigning TA: ', e));
             }, 2000);
@@ -113,14 +99,14 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
       });
 
       // assignTa('assignTa', values.requestNo, values.taId);
-      setLoading(false);
+      // setLoading(false);
     }, 2000);
   };
 
   return (
     <>
+      <Spin spinning={spinning} fullscreen />
       {contextHolder}
-
       <div className="tab-content" id="nav-tabContent">
         <div className="tab-pane fade show active" id="a1" role="tabpanel">
           <div className="table-responsive">

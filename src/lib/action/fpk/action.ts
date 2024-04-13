@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { validateEfpkSchema } from './validation';
 import {
   getAllFpk,
   getAllFpkTotal,
@@ -97,7 +98,13 @@ export async function getTaData() {
 }
 
 export async function assignTa({ efpkRequestNo, taId }) {
-  await assignTaToFpk(efpkRequestNo, taId);
+  const validate = await validateEfpkSchema.safeParse({ efpkRequestNo, taId });
 
-  revalidatePath('/dashboard/ta/fpk');
+  if (validate.success) {
+    await assignTaToFpk(efpkRequestNo, taId);
+
+    revalidatePath('/dashboard/ta/fpk');
+  } else {
+    console.log(validate.error);
+  }
 }

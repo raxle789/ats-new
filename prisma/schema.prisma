@@ -453,6 +453,20 @@ model RequirementFields {
   @@map("requirement_fields")
 }
 
+// model RequirementFieldRelations {
+//   id                 Int               @id @default(autoincrement())
+//   requirementFieldId Int               @map("requirement_field_id")
+//   educationLevelId   Int?              @map("education_level_id")
+//   positionLevelId    Int?              @map("position_level_id")
+//   lineIndustryId     Int?              @map("line_industry_id")
+//   requirementFields  RequirementFields @relation(fields: [requirementFieldId], references: [id])
+//   educationLevels    EducationLevels?  @relation(fields: [educationLevelId], references: [id])
+//   positionLevels     PositionLevels?   @relation(fields: [positionLevelId], references: [id])
+//   lineIndustries     LineIndustries?   @relation(fields: [lineIndustryId], references: [id])
+
+//   @@map("requirement_field_relations")
+// }
+
 model PositionLevelRequirements {
   value              String?           @db.Text
   positionLevelId    Int               @map("position_level_id")

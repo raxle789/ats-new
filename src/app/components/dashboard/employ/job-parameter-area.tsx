@@ -2,9 +2,6 @@ import React from 'react';
 // import DashboardHeader from '../candidate/dashboard-header';
 import {
   getAllPositionLevelRequirementData,
-  getLineIndustryData,
-  getEducationLevelData,
-  getPositionLevelData,
   searchPositionLevelRequirementData,
 } from '@/lib/action/positionLevelRequirement/action';
 import EmployJobParameter from './job-parameter-item';
@@ -153,9 +150,6 @@ const EmployParameterArea = async ({ searchParams }) => {
       <div className="bg-white card-box border-20">
         <EmployJobParameter
           positionLevelRequirementData={positionLevelRequirementData?.data}
-          getLineIndustryData={getLineIndustryData}
-          getEducationLevelData={getEducationLevelData}
-          getPositionLevelData={getPositionLevelData}
         />
       </div>
 
