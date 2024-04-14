@@ -43,16 +43,6 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
     }
   };
 
-  const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
-    {},
-  );
-  const toggleRowExpansion = (index: number) => {
-    setExpandedRows((prevExpandedRows) => ({
-      ...prevExpandedRows,
-      [index]: !prevExpandedRows[index],
-    }));
-  };
-
   useEffect(() => {
     setFormDefaultValue();
   }, [fpkData, offset]);
@@ -103,6 +93,8 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
         },
         onCancel() {
           router.refresh();
+
+          showLoader(false);
         },
       });
 
@@ -144,16 +136,16 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                         <br />
                         {`${data?.requestNo ?? '-'}`}
                       </td>
-                      <td>{`${data?.jobLvlCode ?? ''}`}</td>
-                      <td>{`${data?.compCode ?? ''}`}</td>
+                      <td>{`${data?.jobLvlCode ?? '-'}`}</td>
+                      <td>{`${data?.compCode ?? '-'}`}</td>
                       <td>
                         <b>
                           <span
                             className={`${data?.status === 'Approved' ? 'approved' : 'not-approved'}`}
-                          >{`${data?.status ?? ''}`}</span>
+                          >{`${data?.status ?? '-'}`}</span>
                         </b>
                         <br />
-                        {`${convertDate(data?.approvalDate) === 'Undefined' ? 'No Date' : convertDate(data?.approvalDate)}`}
+                        {`${data?.approvalDate ?? '-'}`}
                       </td>
                       <td>
                         <Form
@@ -250,15 +242,15 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                                 </p>
                                 <p>
                                   <b>Position: </b>
-                                  {`${data.efpkInitiatorInformations.position ?? ''}`}
+                                  {`${data?.initiatorJobTitleName ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Email: </b>
-                                  {`${data.initiatorEmail ?? '-'}`}
+                                  {`${data?.initiatorEmail ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Phone Number: </b>
-                                  {`${data.initiatorPhone ?? '-'}`}
+                                  {`${data?.initiatorPhone ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Location: </b>
@@ -268,7 +260,7 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                               <div className="col-lg-6">
                                 <p>
                                   <b>Create FPK: </b>
-                                  {`${data?.createDate ?? ''}`}
+                                  {`${data?.createDate ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Status Mpp: </b>

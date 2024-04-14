@@ -40,6 +40,8 @@ const Pagination = ({ pageRangeDisplayed, totalData, disabled }) => {
   return (
     <ReactPaginate
       className={`pagination-one d-flex align-items-center justify-content-center style-none ${disabled ? 'd-none' : ''}`}
+      pageLinkClassName="page-link"
+      pageClassName="page-item"
       initialPage={Number(page) - 1}
       breakLabel="..."
       activeClassName="active"

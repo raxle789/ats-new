@@ -182,7 +182,11 @@ const EmployJobParameterItem = ({
           }, 2000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() {},
+      onCancel() {
+        router.refresh();
+
+        showLoader(false);
+      },
     });
   }
 

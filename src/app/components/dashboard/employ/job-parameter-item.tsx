@@ -16,6 +16,8 @@ const EmployJobParameter = ({ positionLevelRequirementData }) => {
     {},
   );
 
+  const [spinning, setSpinning] = React.useState(false);
+
   // console.info(positionLevelRequirementData);
 
   // const [positionLevelRequirement, setPositionLevelRequirement] = useState([]);
@@ -112,7 +114,6 @@ const EmployJobParameter = ({ positionLevelRequirementData }) => {
     }));
   };
 
-  const [spinning, setSpinning] = React.useState(false);
   const showLoader = () => {
     setSpinning(true);
     // setTimeout(() => {
@@ -204,12 +205,9 @@ const EmployJobParameter = ({ positionLevelRequirementData }) => {
                                   return (
                                     <div key={index} className="col-lg-6">
                                       <p>
-                                        {/* <b>{`${d?.requirementFields?.name}: `}</b> */}
-                                        <b>{`${subTitle[d?.requirementFields?.name ?? '']}: `}</b>
-                                        {getPositionLevelRequirementValue(
-                                          d.requirementFields.name,
-                                          d.value,
-                                        )}
+                                        <b>{`${d?.requirementFields?.name}: `}</b>
+                                        {/* <b>{`${subTitle[d?.requirementFields?.name ?? '']}: `}</b> */}
+                                        {d?.value ?? '-'}
                                       </p>
                                     </div>
                                   );

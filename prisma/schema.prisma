@@ -276,10 +276,7 @@ model EfpkJobVacancies {
   efpkRequestNo String @map("efpk_request_no") @db.NVarChar(255)
   jobVacancyId  Int    @map("job_vacancy_id") @db.Int
 
-  @@id([efpkRequestNo, jobVacancyId])
-  @@map("efpk_job_vacancies")
-
-// model efpk {
+  // model efpk {
   // request_no                  String                       @db.NVarChar(25)
   // job_title_code              String?                      @db.NVarChar(15)
   // job_title_name              String?                      @db.NVarChar(80)
@@ -324,9 +321,9 @@ model EfpkJobVacancies {
   // efpk_job_vacancies          efpk_job_vacancies[]
   // efpk_ta                     efpk_ta?
   // efpk_ta_transactions        efpk_ta_transactions[]
-// }
+  // }
 
-// model efpk_initiator_informations {
+  // model efpk_initiator_informations {
   // id       Int     @id @default(autoincrement())
   // nik      String? @db.NVarChar(510)
   // name     String? @db.NVarChar(510)
@@ -337,38 +334,41 @@ model EfpkJobVacancies {
   // user_id  Int?
   // efpk     efpk    @relation(fields: [efpk_id], references: [id])
   // users    users?  @relation(fields: [user_id], references: [id])
-// }
+  // }
 
-// model efpk_job_vacancies {
+  // model efpk_job_vacancies {
   // efpk_id        Int
   // job_vacancy_id Int
   // efpk           efpk @relation(fields: [efpk_id], references: [id])
 
   // @@id([efpk_id, job_vacancy_id])
-// }
+  // }
 
-// model efpk_ta {
+  // model efpk_ta {
   // id      Int   @id @default(autoincrement())
   // ta_id   Int
   // efpk_id Int   @unique
   // efpk    efpk  @relation(fields: [efpk_id], references: [id])
   // users   users @relation(fields: [ta_id], references: [id])
-// }
+  // }
 
-// model efpk_ta_transactions {
+  // model efpk_ta_transactions {
   // id          Int      @id @default(autoincrement())
   // ta_id       Int
   // efpk_id     Int
   // assigned_at DateTime @default(now()) @db.DateTime
   // efpk        efpk     @relation(fields: [efpk_id], references: [id])
   // users       users    @relation(fields: [ta_id], references: [id])
-// }
+  // }
 
-model emergency_contacts {
+  model emergency_contacts {
   id           Int          @id(map: "PK_8be191845b6fca1c4e5ba5bd7d1") @default(autoincrement())
   contact_name String       @db.NVarChar(126)
   phone_number String       @db.NVarChar(16)
   candidates   candidates[]
+
+  @@id([efpkRequestNo, jobVacancyId])
+  @@map("efpk_job_vacancies")
 }
 
 model example_1 {
@@ -461,14 +461,14 @@ model UserRoles {
   roles  Roles @relation(fields: [roleId], references: [id])
   users  Users @relation(fields: [userId], references: [id])
 
-// model line_industries {
+  // model line_industries {
   // id         Int       @id @default(autoincrement())
   // name       String    @db.NVarChar(510)
   // created_at DateTime? @default(now()) @db.DateTime
   // updated_at DateTime? @db.DateTime
-// }
+  // }
 
-// model phones {
+  // model phones {
   // id         Int       @id @default(autoincrement())
   // user_id    Int
   // type       String?   @db.NVarChar(510)
@@ -478,9 +478,9 @@ model UserRoles {
   // created_at DateTime? @default(now()) @db.DateTime
   // updated_at DateTime? @db.DateTime
   // users      users     @relation(fields: [user_id], references: [id])
-// }
+  // }
 
-// model position_level_requirements {
+  // model position_level_requirements {
   // value                String?            @db.Text
   // position_level_id    Int
   // requirement_field_id Int
@@ -488,9 +488,9 @@ model UserRoles {
   // requirement_fields   requirement_fields @relation(fields: [requirement_field_id], references: [id])
 
   // @@id([position_level_id, requirement_field_id])
-// }
+  // }
 
-// model position_levels {
+  // model position_levels {
   // id                          Int                           @id @default(autoincrement())
   // name                        String                        @db.NVarChar(510)
   // level                       Int
@@ -499,17 +499,17 @@ model UserRoles {
   // created_at                  DateTime?                     @default(now()) @db.DateTime
   // updated_at                  DateTime?                     @db.DateTime
   // position_level_requirements position_level_requirements[]
-// }
+  // }
 
-// model requirement_fields {
+  // model requirement_fields {
   // id                          Int                           @id @default(autoincrement())
   // name                        String                        @unique @db.NVarChar(510)
   // created_at                  DateTime?                     @default(now()) @db.DateTime
   // updated_at                  DateTime?                     @db.DateTime
   // position_level_requirements position_level_requirements[]
-// }
+  // }
 
-model roles {
+  model roles {
   id             Int              @id @default(autoincrement())
   name           String           @db.NVarChar(255)
   guard          String           @db.NVarChar(255)
@@ -548,16 +548,16 @@ model Users {
   // Phones             Phones[]
   userRoles          UserRoles[]
 
-// model user_has_roles {
+  // model user_has_roles {
   // role_id Int
   // user_id Int
   // roles   roles @relation(fields: [role_id], references: [id])
   // users   users @relation(fields: [user_id], references: [id])
 
   // @@id([role_id, user_id])
-// }
+  // }
 
-model users {
+  model users {
   id                          Int                           @id(map: "PK_a3ffb1c0c8416b9fc6f907b7433") @default(autoincrement())
   name                        String                        @db.NVarChar(256)
   email                       String                        @unique(map: "UQ_97672ac88f789774dd47f7c8be3") @db.NVarChar(128)
@@ -597,17 +597,17 @@ model LineIndustries {
   createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
   updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
 
-// model Corporations {
-//   id         Int       @id() @default(autoincrement()) @db.Int
-//   code       String?   @db.NVarChar(255)
-//   name       String    @db.NVarChar(255)
-//   createdAt DateTime?  @default(now()) @map("created_at") @db.DateTime
-//   updatedAt DateTime?  @updatedAt  @map("updated_at") @db.DateTime
+  // model Corporations {
+  //   id         Int       @id() @default(autoincrement()) @db.Int
+  //   code       String?   @db.NVarChar(255)
+  //   name       String    @db.NVarChar(255)
+  //   createdAt DateTime?  @default(now()) @map("created_at") @db.DateTime
+  //   updatedAt DateTime?  @updatedAt  @map("updated_at") @db.DateTime
 
-//   @@map("corporations")
-// }
+  //   @@map("corporations")
+  // }
 
-// model Job_Titles {
+  // model Job_Titles {
   // id         Int       @id() @default(autoincrement()) @db.Int
   // name       String    @db.NVarChar(255)
   // score      Int
@@ -615,25 +615,25 @@ model LineIndustries {
   // updatedAt DateTime?  @updatedAt  @map("updated_at") @db.DateTime
 
   // @@map("job_titles")
-// }
+  // }
 
-// model Job_Functions {
+  // model Job_Functions {
   // id         Int       @id() @default(autoincrement()) @db.Int
   // name       String    @db.NVarChar(255)
   // createdAt DateTime?  @default(now()) @map("created_at") @db.DateTime
   // updatedAt DateTime?  @updatedAt  @map("updated_at") @db.DateTime
 
   // @@map("job_functions")
-// }
+  // }
 
-model EducationLevels {
+  model EducationLevels {
   id        Int       @id @default(autoincrement())
   name      String    @db.NVarChar(510)
   prointId  Int?      @map("proint_id")
   createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
   updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
 
-// model Regions {
+  // model Regions {
   // id         Int       @id() @default(autoincrement()) @db.Int
   // name       String    @db.NVarChar(255)
   // createdAt DateTime?  @default(now()) @map("created_at") @db.DateTime
@@ -648,8 +648,8 @@ model RequirementFields {
   createdAt                 DateTime?                   @default(now()) @map("created_at") @db.DateTime
   updatedAt                 DateTime?                   @updatedAt @map("updated_at") @db.DateTime
   positionLevelRequirements PositionLevelRequirements[]
-  
-// model Categories {
+
+  // model Categories {
   // id         Int       @id() @default(autoincrement()) @db.Int
   // name       String    @db.NVarChar(255)
   // icon       String    @db.NVarChar(255)
@@ -680,7 +680,7 @@ model PositionLevelRequirements {
   positionLevels     PositionLevels    @relation(fields: [positionLevelId], references: [id])
   requirementFields  RequirementFields @relation(fields: [requirementFieldId], references: [id])
 
-// model Departments {
+  // model Departments {
   // id         Int       @id() @default(autoincrement()) @db.Int
   // name       String    @db.NVarChar(255)
   // createdAt DateTime?  @default(now()) @map("created_at") @db.DateTime
@@ -699,7 +699,7 @@ model PositionLevels {
   updatedAt                 DateTime?                   @updatedAt @map("updated_at") @db.DateTime
   positionLevelRequirements PositionLevelRequirements[]
 
-// model Work_Locations {
+  // model Work_Locations {
   // id         Int       @id() @default(autoincrement()) @db.Int
   // code        String    @db.NVarChar(255)
   // name        String    @db.NVarChar(255)
@@ -751,10 +751,10 @@ model JobVacancies {
 }
 
 // model Employment_Status {
-  // id         Int       @id() @default(autoincrement()) @db.Int
-  // name       String    @db.NVarChar(255)
-  // createdAt DateTime?  @default(now()) @map("created_at") @db.DateTime
-  // updatedAt DateTime?  @updatedAt  @map("updated_at") @db.DateTime
+// id         Int       @id() @default(autoincrement()) @db.Int
+// name       String    @db.NVarChar(255)
+// createdAt DateTime?  @default(now()) @map("created_at") @db.DateTime
+// updatedAt DateTime?  @updatedAt  @map("updated_at") @db.DateTime
 
-  // @@map("employment_status")
+// @@map("employment_status")
 // }
