@@ -48,6 +48,7 @@ model candidates {
   identityInfoId                      Int?
   date_of_birth                       DateTime?             @db.Date
   candidate_questions                 CandidateQuestions[]
+  CandidateStates                     CandidateStates[]
   emergency_contacts                  emergency_contacts?   @relation(fields: [emengencyContactId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_02cb34982ecd17fda09c240254e")
   users                               Users?                @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_10d0384a816526f8c7f6b1e67b3")
   citys_candidates_birthCityIdTocitys citys?                @relation("candidates_birthCityIdTocitys", fields: [birthCityId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_45d141f5577c4588067ed62ba75")
@@ -61,7 +62,6 @@ model candidates {
   familys                             familys[]
   sims                                sims[]
   working_experiences                 working_experiences[]
-  CandidateStates                     CandidateStates[]
 }
 
 model candidates_diseases {
@@ -372,7 +372,7 @@ model JobVacancies {
 }
 
 model Questions {
-  id                 Int                  @id @default(autoincrement()) @db.Int
+  id                 Int                  @id @default(autoincrement())
   question           String               @db.Text
   createdAt          DateTime?            @default(now()) @map("created_at") @db.DateTime
   updatedAt          DateTime?            @map("updated_at") @db.DateTime
@@ -382,8 +382,8 @@ model Questions {
 }
 
 model CandidateQuestions {
-  candidateId Int        @map("candidate_id") @db.Int
-  questionId  Int        @map("question_id") @db.Int
+  candidateId Int        @map("candidate_id")
+  questionId  Int        @map("question_id")
   answer      String     @db.Text
   created_at  DateTime?  @default(now()) @db.DateTime
   updated_at  DateTime?  @db.DateTime
@@ -405,9 +405,9 @@ model States {
 }
 
 model CandidateStates {
-  candidateId  Int          @map("candidate_id") @db.Int
-  jobVacancyId Int          @map("job_vacancy_id") @db.Int
-  stateId      Int          @map("state_id") @db.Int
+  candidateId  Int          @map("candidate_id")
+  jobVacancyId Int          @map("job_vacancy_id")
+  stateId      Int          @map("state_id")
   assignedAt   DateTime     @default(now()) @map("assigned_at") @db.DateTime
   candidates   candidates   @relation(fields: [candidateId], references: [id])
   jobVacancies JobVacancies @relation(fields: [jobVacancyId], references: [id])

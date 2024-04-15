@@ -141,11 +141,12 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                       <td>
                         <b>
                           <span
-                            className={`${data?.status === 'Approved' ? 'approved' : 'not-approved'}`}
+                            // className={`${data?.status === statusColor.approve ? 'approved' : 'not-approved'}`}
+                            className={`${data?.status}Color`}
                           >{`${data?.status ?? '-'}`}</span>
                         </b>
                         <br />
-                        {`${data?.approvalDate ?? '-'}`}
+                        {`${data?.approvalDate === 'Undefined' ? 'No Date' : data?.approvalDate}`}
                       </td>
                       <td>
                         <Form
