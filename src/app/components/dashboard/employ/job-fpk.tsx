@@ -115,7 +115,7 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
     }
   };
 
-  const fpkData = await getData();
+  const fpkData: any = await getData();
   const taData = await getTaData().then((res) => res);
 
   return (

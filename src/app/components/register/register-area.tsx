@@ -8,7 +8,6 @@ import RegisterFormStep2 from '../forms/register-step2';
 import linkedin from '@/assets/images/icon/linkedin.png';
 import uploadIcon from '@/assets/images/icon/icon_11.svg';
 import { useAppSelector, useAppDispatch } from '@/redux/hook';
-import ArrowBack from '@/assets/images/icon/arrow-left-solid.svg';
 import { setRegisterStep } from '@/redux/features/fatkhur/registerSlice';
 /* libs */
 // import { createdLinkedInOAuth } from '@/lib/Authentication';

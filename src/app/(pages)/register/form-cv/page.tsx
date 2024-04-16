@@ -23,33 +23,19 @@ const jobTitle: string[] = [
 const lineIndustry: string[] = ['Agribusiness', 'Apparel', 'Automotive'];
 const level: string[] = ['Director', 'VP', 'General Manager'];
 
-// type FormData = {
-//   education: {
-//     level: string;
-//     major: string;
-//     university_name: string;
-//     start_year: string;
-//     end_year: string;
-//     gpa: string;
-//   };
-//   experience: {
-//     company_name: string;
-//     job_function: string;
-//     job_title: string;
-//     job_level: string;
-//     line_industry: string;
-//     start_at: string;
-//     end_at: string;
-//     salary: string;
-//   };
-// };
+const noticePeriodValue: string[] = [
+  'Ready join now',
+  'Less than 1 month',
+  '1 month',
+  '2 months',
+  '3 months',
+  'More than 3 months',
+];
 
 const FormCV = () => {
   const dispatch = useAppDispatch();
   const [showPass, setShowPass] = useState<boolean>(false);
   const [showConfirmPass, setShowConfirmPass] = useState<boolean>(false);
-  const [hasLinkedIn, setHasLinkedIn] = useState('no');
-
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -61,14 +47,6 @@ const FormCV = () => {
     source_referer: 'default',
     current_salary: 0,
     linkedin_profile_url: '',
-    education: {
-      level: 'default',
-      major: 'default',
-      university_name: '',
-      start_year: '',
-      end_year: '',
-      gpa: '',
-    },
     experience: {
       company_name: '',
       job_function: '',
@@ -79,72 +57,73 @@ const FormCV = () => {
       end_at: '',
       salary: '',
     },
+    education: {
+      level: 'default',
+      major: 'default',
+      university_name: '',
+      start_year: '',
+      end_year: '',
+      gpa: '',
+    },
+    other_question: {
+      noticePeriod: '',
+      ever_worked_start_year: '',
+      ever_worked_end_year: '',
+      disease_name: '',
+      disease_year: '',
+      relation_name: '',
+      relation_position: '',
+    },
   });
 
+  const [hasLinkedIn, setHasLinkedIn] = useState('you-choose');
   const linkedInRadiosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setHasLinkedIn(e.target.value);
   };
-
-  const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const selectOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const [errors, setErrors] = useState<{ [key: string]: string[] }>({
-    name: [''],
-    email: [''],
-    password: [''],
-    confirm_password: [''],
-    saveUser: [''],
-  });
 
   const [hasExperience, setHasExperience] = useState('you-choose');
   const hasExperienceOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setHasExperience(e.target.value);
   };
 
-  // const [formData, setFormData] = useState<FormData>({
+  const [everWorked, setEverWorked] = useState<string>('you-choose');
+  const everWorkedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEverWorked(e.target.value);
+  };
 
-  // });
+  const [disease, setdisease] = useState<string>('you-choose');
+  const diseaseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setdisease(e.target.value);
+  };
+
+  const [haveRelation, setHaveRelation] = useState<string>('you-choose');
+  const haveRelationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setHaveRelation(e.target.value);
+  };
 
   const [agreement, setAgreement] = useState<boolean>(false);
   console.log(agreement);
-
   const agreementOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log('checked', e.target.checked);
     setAgreement(e.target.checked);
   };
 
-  const [document, setDocument] = useState<File | null | string>(null);
-  if (document !== null) {
-    const { name, size, type } = document as File;
-    console.info('name: ', name);
-    console.info('name: ', size);
-    console.info('name: ', type);
-  }
-  const documentOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const cv = e.target.files && e.target.files[0];
-    setDocument(cv);
-  };
-
-  const inputOnChange2 = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     if (name in formData.education) {
       setFormData((prevState) => ({
         ...prevState,
         education: {
           ...prevState.education,
+          [name]: value,
+        },
+      }));
+      return;
+    } else if (name in formData.other_question) {
+      setFormData((prevState) => ({
+        ...prevState,
+        other_question: {
+          ...prevState.other_question,
           [name]: value,
         },
       }));
@@ -158,16 +137,31 @@ const FormCV = () => {
         },
       }));
       return;
+    } else {
+      setFormData((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+      return;
     }
   };
 
-  const selectOnChange2 = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const selectOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
     if (name in formData.education) {
       setFormData((prevState) => ({
         ...prevState,
         education: {
           ...prevState.education,
+          [name]: value,
+        },
+      }));
+      return;
+    } else if (name in formData.other_question) {
+      setFormData((prevState) => ({
+        ...prevState,
+        other_question: {
+          ...prevState.other_question,
           [name]: value,
         },
       }));
@@ -181,22 +175,37 @@ const FormCV = () => {
         },
       }));
       return;
+    } else {
+      setFormData((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+      return;
     }
+  };
+
+  const [errors, setErrors] = useState<{ [key: string]: string[] }>({
+    name: [''],
+    email: [''],
+    password: [''],
+    confirm_password: [''],
+    saveUser: [''],
+  });
+
+  const [document, setDocument] = useState<File | null | string>(null);
+  if (document !== null) {
+    const { name, size, type } = document as File;
+    console.info('name: ', name);
+    console.info('name: ', size);
+    console.info('name: ', type);
+  }
+  const documentOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const cv = e.target.files && e.target.files[0];
+    setDocument(cv);
   };
 
   const formOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    console.log('form-data', formData);
-    /* server-side creating user */
-    const store = await createUser(formData);
-    console.log(store);
-    if (!store.success) {
-      setErrors(store.message as { [key: string]: string[] });
-      return;
-    }
-
-    setErrors({});
   };
   return (
     <section className="registration-section position-relative pt-50 lg-pt-80 pb-50 lg-pb-80">
@@ -251,8 +260,8 @@ const FormCV = () => {
                     <div className="input-group-meta position-relative mb-15">
                       <label>Phone Number*</label>
                       <input
-                        type="number"
                         className="login-input"
+                        type="number"
                         placeholder="081234567890"
                         name="phone_number"
                         value={formData.phone_number}
@@ -316,21 +325,6 @@ const FormCV = () => {
                       <div className="help-block with-errors"></div>
                     </div>
                   </div>
-                  <div className="col-12">
-                    <div className="input-group-meta position-relative mb-15">
-                      <label>Expected Salary (Gross / Month)*</label>
-                      <input
-                        type="number"
-                        placeholder="Enter Expected Salary"
-                        className="pass_log_id login-input"
-                        name="current_salary"
-                        value={formData.current_salary}
-                        onChange={inputOnChange}
-                        style={{ paddingRight: '11px' }}
-                      />
-                      <div className="help-block with-errors"></div>
-                    </div>
-                  </div>
                   <div className="col-6">
                     <div className="position-relative mb-15">
                       <label style={{ fontSize: '14px' }}>
@@ -391,132 +385,12 @@ const FormCV = () => {
                     </div>
                   )}
                   {hasLinkedIn === 'no' && <div className="col-6"></div>}
-                  <div className="col-6">
-                    <div className="input-group-meta position-relative mb-15">
-                      <label>Last Education Level*</label>
-                      <select
-                        className="form-select"
-                        aria-label="Default select example"
-                        name="level"
-                        value={formData.education.level}
-                        onChange={selectOnChange2}
-                      >
-                        <option value="choose-education">Please choose</option>
-                        {lastEducation.map((item, index) => (
-                          <option key={index} value={item}>
-                            {item}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="help-block with-errors"></div>
-                    </div>
-                  </div>
-                  <div className="col-6">
-                    <div className="input-group-meta position-relative mb-15">
-                      <label>Major*</label>
-                      <select
-                        className="form-select"
-                        aria-label="Default select example"
-                        name="major"
-                        value={formData.education.major}
-                        onChange={selectOnChange2}
-                      >
-                        <option value="choose-major">Please choose</option>
-                        {major.map((item, index) => (
-                          <option key={index} value={item}>
-                            {item}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="help-block with-errors"></div>
-                    </div>
-                  </div>
+
                   <div className="col-12">
-                    <div className="input-group-meta position-relative mb-15">
-                      <label>University/School*</label>
-                      <input
-                        type="text"
-                        className="login-input"
-                        placeholder="Universitas..."
-                        name="university_name"
-                        value={formData.education.university_name}
-                        onChange={inputOnChange2}
-                      />
-                      <div className="help-block with-errors"></div>
-                    </div>
-                  </div>
-                  <div className="col-6">
-                    <div className="input-group-meta position-relative mb-15">
-                      <label>Start Year*</label>
-                      <input
-                        type="number"
-                        className="login-input"
-                        placeholder="2020"
-                        name="start_year"
-                        value={formData.education.start_year}
-                        onChange={inputOnChange2}
-                        style={{ paddingRight: '11px' }}
-                      />
-                      <div className="help-block with-errors"></div>
-                    </div>
-                  </div>
-                  <div className="col-6">
-                    <div className="input-group-meta position-relative mb-15">
-                      <label>End Year*</label>
-                      <input
-                        type="number"
-                        className="login-input"
-                        placeholder="2024"
-                        name="end_year"
-                        value={formData.education.end_year}
-                        onChange={inputOnChange2}
-                        style={{ paddingRight: '11px' }}
-                      />
-                      <div className="help-block with-errors"></div>
-                    </div>
-                  </div>
-                  <div className="col-6">
-                    <div className="input-group-meta position-relative mb-15">
-                      <label>GPA*</label>
-                      <input
-                        type="text"
-                        className="login-input"
-                        name="gpa"
-                        value={formData.education.gpa}
-                        onChange={inputOnChange2}
-                      />
-                      <div className="help-block with-errors"></div>
-                    </div>
-                  </div>
-                  <div className="col-6">
-                    <div className="input-group-meta position-relative mb-15">
-                      <label>Upload CV*</label>
-                      <div className="upload-container">
-                        <input
-                          className="upload-photo-btn"
-                          type="file"
-                          id="upload-CV"
-                          name="document"
-                          accept=".pdf"
-                          onChange={documentOnChange}
-                        />
-                        <label htmlFor="photo-input" className="photo-input">
-                          <Image
-                            src={uploadIcon}
-                            alt="upload-icon"
-                            className="upload-img"
-                          />
-                          <span className="fw-500 ms-2 text-dark upload-label">
-                            Upload your CV
-                          </span>
-                        </label>
-                      </div>
-                      <div className="help-block with-errors"></div>
-                    </div>
-                  </div>
-                  <div className="col-12">
-                    <div className="position-relative mb-15">
-                      {/* <label>LinkedIn*</label> */}
+                    <div className="position-relative mb-25">
+                      <label style={{ fontSize: '14px' }}>
+                        Work Experience*
+                      </label>
                       <div className="form-check">
                         <input
                           className="form-check-input"
@@ -555,10 +429,11 @@ const FormCV = () => {
                       </div>
                     </div>
                   </div>
+
                   {hasExperience === 'yes' && (
                     <>
                       <div className="col-12">
-                        <div className="input-group-meta position-relative mb-15">
+                        <div className="input-group-meta position-relative mb-20">
                           <label>Company Name - Last*</label>
                           <input
                             type="text"
@@ -566,20 +441,20 @@ const FormCV = () => {
                             placeholder="Company Name"
                             name="company_name"
                             value={formData.experience.company_name}
-                            onChange={inputOnChange2}
+                            onChange={inputOnChange}
                           />
                           <div className="help-block with-errors"></div>
                         </div>
                       </div>
                       <div className="col-6">
-                        <div className="input-group-meta position-relative mb-15">
+                        <div className="input-group-meta position-relative mb-20">
                           <label>Job Function*</label>
                           <select
                             className="form-select"
                             aria-label="Default select example"
                             name="job_function"
                             value={formData.experience.job_function}
-                            onChange={selectOnChange2}
+                            onChange={selectOnChange}
                           >
                             <option value="choose-job-function">
                               Please choose
@@ -594,14 +469,14 @@ const FormCV = () => {
                         </div>
                       </div>
                       <div className="col-6">
-                        <div className="input-group-meta position-relative mb-15">
+                        <div className="input-group-meta position-relative mb-20">
                           <label>Job Title*</label>
                           <select
                             className="form-select"
                             aria-label="Default select example"
                             name="job_title"
                             value={formData.experience.job_title}
-                            onChange={selectOnChange2}
+                            onChange={selectOnChange}
                           >
                             <option value="choose-job-title">
                               Please choose
@@ -616,14 +491,14 @@ const FormCV = () => {
                         </div>
                       </div>
                       <div className="col-6">
-                        <div className="input-group-meta position-relative mb-15">
+                        <div className="input-group-meta position-relative mb-20">
                           <label>Line Industry*</label>
                           <select
                             className="form-select"
                             aria-label="Default select example"
                             name="line_industry"
                             value={formData.experience.line_industry}
-                            onChange={selectOnChange2}
+                            onChange={selectOnChange}
                           >
                             <option value="choose-line-industry">
                               Please choose
@@ -638,14 +513,14 @@ const FormCV = () => {
                         </div>
                       </div>
                       <div className="col-6">
-                        <div className="input-group-meta position-relative mb-15">
+                        <div className="input-group-meta position-relative mb-20">
                           <label>Level*</label>
                           <select
                             className="form-select"
                             aria-label="Default select example"
                             name="job_level"
                             value={formData.experience.job_level}
-                            onChange={selectOnChange2}
+                            onChange={selectOnChange}
                           >
                             <option value="choose-level">Please choose</option>
                             {level.map((item, index) => (
@@ -658,7 +533,7 @@ const FormCV = () => {
                         </div>
                       </div>
                       <div className="col-6">
-                        <div className="input-group-meta position-relative mb-15">
+                        <div className="input-group-meta position-relative mb-20">
                           <label>Period Start*</label>
                           <div className="form-group">
                             <input
@@ -667,7 +542,7 @@ const FormCV = () => {
                               id="period-start"
                               name="start_at"
                               value={formData.experience.start_at}
-                              onChange={inputOnChange2}
+                              onChange={inputOnChange}
                               style={{ paddingRight: '11px' }}
                             />
                           </div>
@@ -675,7 +550,7 @@ const FormCV = () => {
                         </div>
                       </div>
                       <div className="col-6">
-                        <div className="input-group-meta position-relative mb-15">
+                        <div className="input-group-meta position-relative mb-20">
                           <label>Period End*</label>
                           <div className="form-group">
                             <input
@@ -684,7 +559,7 @@ const FormCV = () => {
                               id="period-end"
                               name="end_at"
                               value={formData.experience.end_at}
-                              onChange={inputOnChange2}
+                              onChange={inputOnChange}
                               style={{ paddingRight: '11px' }}
                             />
                           </div>
@@ -692,31 +567,30 @@ const FormCV = () => {
                         </div>
                       </div>
                       <div className="col-6">
-                        <div className="input-group-meta position-relative mb-15">
+                        <div className="input-group-meta position-relative mb-20">
                           <label>Current Salary (Gross / Month)*</label>
                           <input
                             type="text"
-                            placeholder="Enter Current Salary"
+                            placeholder="Enter Expected Salary"
                             className="pass_log_id login-input"
                             name="salary"
                             value={formData.experience.salary}
-                            onChange={inputOnChange2}
+                            onChange={inputOnChange}
                             style={{ paddingRight: '11px' }}
                           />
                           <div className="help-block with-errors"></div>
                         </div>
                       </div>
                       <div className="col-6">
-                        <div className="input-group-meta position-relative mb-15">
+                        <div className="input-group-meta position-relative mb-20">
                           <label>Expected Salary (Gross / Month)*</label>
                           <input
-                            type="text"
+                            type="number"
                             placeholder="Enter Expected Salary"
                             className="pass_log_id login-input"
-                            // {...register('expectedSalary', {
-                            //   required: `Expected Salary is required!`,
-                            // })}
-                            name="expected-salary"
+                            name="current_salary"
+                            value={formData.current_salary}
+                            onChange={inputOnChange}
                             style={{ paddingRight: '11px' }}
                           />
                           <div className="help-block with-errors">
@@ -730,17 +604,16 @@ const FormCV = () => {
                   {hasExperience === 'no' && (
                     <>
                       <div className="col-6">
-                        <div className="input-group-meta position-relative mb-15">
+                        <div className="input-group-meta position-relative mb-20">
                           <label>Expected Salary (Gross / Month)*</label>
                           <input
-                            type="text"
+                            type="number"
                             placeholder="Enter Expected Salary"
                             className="pass_log_id login-input"
+                            name="current_salary"
+                            value={formData.current_salary}
+                            onChange={inputOnChange}
                             style={{ paddingRight: '11px' }}
-                            // {...register('expectedSalary', {
-                            //   required: `Expected Salary is required!`,
-                            // })}
-                            name="expected-salary"
                           />
                           <div className="help-block with-errors">
                             {/* <ErrorMsg msg={errors.expectedSalary?.message!} /> */}
@@ -753,12 +626,411 @@ const FormCV = () => {
 
                   <div className="col-6">
                     <div className="input-group-meta position-relative mb-15">
+                      <label>Last Education Level*</label>
+                      <select
+                        className="form-select"
+                        aria-label="Default select example"
+                        name="level"
+                        value={formData.education.level}
+                        onChange={selectOnChange}
+                      >
+                        <option value="choose-education">Please choose</option>
+                        {lastEducation.map((item, index) => (
+                          <option key={index} value={item}>
+                            {item}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="help-block with-errors"></div>
+                    </div>
+                  </div>
+                  <div className="col-6">
+                    <div className="input-group-meta position-relative mb-15">
+                      <label>Major*</label>
+                      <select
+                        className="form-select"
+                        aria-label="Default select example"
+                        name="major"
+                        value={formData.education.major}
+                        onChange={selectOnChange}
+                      >
+                        <option value="choose-major">Please choose</option>
+                        {major.map((item, index) => (
+                          <option key={index} value={item}>
+                            {item}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="help-block with-errors"></div>
+                    </div>
+                  </div>
+                  <div className="col-12">
+                    <div className="input-group-meta position-relative mb-15">
+                      <label>University/School*</label>
+                      <input
+                        type="text"
+                        className="login-input"
+                        placeholder="Universitas..."
+                        name="university_name"
+                        value={formData.education.university_name}
+                        onChange={inputOnChange}
+                      />
+                      <div className="help-block with-errors"></div>
+                    </div>
+                  </div>
+                  <div className="col-6">
+                    <div className="input-group-meta position-relative mb-15">
+                      <label>Start Year*</label>
+                      <input
+                        type="number"
+                        className="login-input"
+                        placeholder="2020"
+                        name="start_year"
+                        value={formData.education.start_year}
+                        onChange={inputOnChange}
+                        style={{ paddingRight: '11px' }}
+                      />
+                      <div className="help-block with-errors"></div>
+                    </div>
+                  </div>
+                  <div className="col-6">
+                    <div className="input-group-meta position-relative mb-15">
+                      <label>End Year*</label>
+                      <input
+                        type="number"
+                        className="login-input"
+                        placeholder="2024"
+                        name="end_year"
+                        value={formData.education.end_year}
+                        onChange={inputOnChange}
+                        style={{ paddingRight: '11px' }}
+                      />
+                      <div className="help-block with-errors"></div>
+                    </div>
+                  </div>
+                  <div className="col-6">
+                    <div className="input-group-meta position-relative mb-15">
+                      <label>GPA*</label>
+                      <input
+                        type="text"
+                        className="login-input"
+                        name="gpa"
+                        value={formData.education.gpa}
+                        onChange={inputOnChange}
+                      />
+                      <div className="help-block with-errors"></div>
+                    </div>
+                  </div>
+                  <div className="col-6">
+                    <div className="input-group-meta position-relative mb-15">
+                      <label>Upload CV*</label>
+                      <div className="upload-container">
+                        <input
+                          className="upload-photo-btn btn-login"
+                          type="file"
+                          id="upload-CV"
+                          name="document"
+                          accept=".pdf"
+                          onChange={documentOnChange}
+                        />
+                        <label htmlFor="photo-input" className="photo-input">
+                          <Image
+                            src={uploadIcon}
+                            alt="upload-icon"
+                            className="upload-img"
+                          />
+                          <span className="fw-500 ms-2 text-dark upload-label">
+                            Upload your CV
+                          </span>
+                        </label>
+                      </div>
+                      <div className="help-block with-errors"></div>
+                    </div>
+                  </div>
+
+                  <div className="col-12">
+                    <div className="input-group-meta position-relative mb-15">
+                      <label>How long your notice period?*</label>
+                      <select
+                        className="form-select"
+                        aria-label="Default select example"
+                        name="noticePeriod"
+                        value={formData.other_question.noticePeriod}
+                        onChange={selectOnChange}
+                      >
+                        <option value="choose-notice-period">
+                          Please choose
+                        </option>
+                        {noticePeriodValue.map((item, index) => (
+                          <option key={index} value={item}>
+                            {item}
+                          </option>
+                        ))}
+                      </select>
+                      <div className="help-block with-errors"></div>
+                    </div>
+                  </div>
+
+                  <div className="col-12">
+                    <div className="position-relative mb-20">
+                      <label style={{ fontSize: '14px' }}>
+                        Have you ever worked in Erajaya group of companies?*
+                      </label>
+                      <div className="row" style={{ paddingLeft: '11px' }}>
+                        <div className="form-check col-2">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="RadioEverWorked"
+                            id="RadioEverWorkedValue1"
+                            value="no"
+                            checked={everWorked === 'no'}
+                            onChange={everWorkedChange}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="RadioEverWorkedValue1"
+                            style={{ fontSize: '14px' }}
+                          >
+                            No
+                          </label>
+                        </div>
+                        <div className="col-10"></div>
+                        <div className="form-check col-2">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="RadioEverWorked"
+                            id="RadioEverWorkedValue2"
+                            value="yes"
+                            checked={everWorked === 'yes'}
+                            onChange={everWorkedChange}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="RadioEverWorkedValue2"
+                            style={{ fontSize: '14px' }}
+                          >
+                            Yes
+                          </label>
+                        </div>
+                        {everWorked === 'yes' ? (
+                          <>
+                            <div className="col-5">
+                              <div className="input-group-meta position-relative mb-15">
+                                <input
+                                  type="number"
+                                  className="login-input"
+                                  placeholder="Start Year"
+                                  name="ever_worked_start_year"
+                                  value={
+                                    formData.other_question
+                                      .ever_worked_start_year
+                                  }
+                                  onChange={inputOnChange}
+                                  style={{ paddingRight: '11px' }}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-5">
+                              <div className="input-group-meta position-relative mb-15">
+                                <input
+                                  type="number"
+                                  className="login-input"
+                                  placeholder="End Year"
+                                  name="ever_worked_end_year"
+                                  value={
+                                    formData.other_question.ever_worked_end_year
+                                  }
+                                  onChange={inputOnChange}
+                                  style={{ paddingRight: '11px' }}
+                                />
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="col-10"></div>
+                        )}
+                      </div>
+                      <div className="help-block with-errors">
+                        {/* <ErrorMsg msg={errors.expectedSalary?.message!} /> */}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-12">
+                    <div className="position-relative mb-20">
+                      <label style={{ fontSize: '14px' }}>
+                        Do you have any prior medical conditions, illnesses, or
+                        congenital diseases?*
+                      </label>
+                      <div className="row" style={{ paddingLeft: '11px' }}>
+                        <div className="form-check col-2">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="RadioDisease"
+                            id="RadioDiseaseValue1"
+                            value="no"
+                            checked={disease === 'no'}
+                            onChange={diseaseChange}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="RadioDiseaseValue1"
+                            style={{ fontSize: '14px' }}
+                          >
+                            No
+                          </label>
+                        </div>
+                        <div className="col-10"></div>
+                        <div className="form-check col-2">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="RadioDisease"
+                            id="RadioDiseaseValue2"
+                            value="yes"
+                            checked={disease === 'yes'}
+                            onChange={diseaseChange}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="RadioDiseaseValue2"
+                            style={{ fontSize: '14px' }}
+                          >
+                            Yes
+                          </label>
+                        </div>
+                        {disease === 'yes' ? (
+                          <>
+                            <div className="col-5">
+                              <div className="input-group-meta position-relative mb-15">
+                                <input
+                                  type="text"
+                                  className="login-input"
+                                  placeholder="Medical Condition"
+                                  name="disease_name"
+                                  value={formData.other_question.disease_name}
+                                  onChange={inputOnChange}
+                                  style={{ paddingRight: '11px' }}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-5">
+                              <div className="input-group-meta position-relative mb-15">
+                                <input
+                                  type="number"
+                                  className="login-input"
+                                  placeholder="Year"
+                                  name="disease_year"
+                                  value={formData.other_question.disease_year}
+                                  onChange={inputOnChange}
+                                  style={{ paddingRight: '11px' }}
+                                />
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="col-10"></div>
+                        )}
+                      </div>
+                      <div className="help-block with-errors">
+                        {/* <ErrorMsg msg={errors.expectedSalary?.message!} /> */}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-12">
+                    <div className="position-relative mb-20">
+                      <label style={{ fontSize: '14px' }}>
+                        Do you have any friends, colleague, relative or family
+                        who is working at Erajaya Group Companies?*
+                      </label>
+                      <div className="row" style={{ paddingLeft: '11px' }}>
+                        <div className="form-check col-2">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="RadioHaveRelation"
+                            id="RadioHaveRelationValue1"
+                            value="no"
+                            checked={haveRelation === 'no'}
+                            onChange={haveRelationChange}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="RadioHaveRelationValue1"
+                            style={{ fontSize: '14px' }}
+                          >
+                            No
+                          </label>
+                        </div>
+                        <div className="col-10"></div>
+                        <div className="form-check col-2">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            name="RadioHaveRelation"
+                            id="RadioHaveRelationValue2"
+                            value="yes"
+                            checked={haveRelation === 'yes'}
+                            onChange={haveRelationChange}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="RadioHaveRelationValue2"
+                            style={{ fontSize: '14px' }}
+                          >
+                            Yes
+                          </label>
+                        </div>
+                        {haveRelation === 'yes' ? (
+                          <>
+                            <div className="col-5">
+                              <div className="input-group-meta position-relative mb-15">
+                                <input
+                                  type="text"
+                                  className="login-input"
+                                  placeholder="Name"
+                                  name="relation_name"
+                                  value={formData.other_question.relation_name}
+                                  onChange={inputOnChange}
+                                  style={{ paddingRight: '11px' }}
+                                />
+                              </div>
+                            </div>
+                            <div className="col-5">
+                              <div className="input-group-meta position-relative mb-15">
+                                <input
+                                  type="text"
+                                  className="login-input"
+                                  placeholder="Position"
+                                  name="relation_position"
+                                  value={
+                                    formData.other_question.relation_position
+                                  }
+                                  onChange={inputOnChange}
+                                  style={{ paddingRight: '11px' }}
+                                />
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="col-10"></div>
+                        )}
+                      </div>
+                      <div className="help-block with-errors">
+                        {/* <ErrorMsg msg={errors.expectedSalary?.message!} /> */}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="col-6">
+                    <div className="input-group-meta position-relative mb-15">
                       <label>Password*</label>
                       <input
                         type={`${showPass ? 'text' : 'password'}`}
                         placeholder="Enter Password"
                         className="pass_log_id login-input"
-                        // {...register('password', { required: `Password is required!` })}
                         name="password"
                         value={formData.password}
                         onChange={inputOnChange}
@@ -788,14 +1060,11 @@ const FormCV = () => {
                         type={`${showConfirmPass ? 'text' : 'password'}`}
                         placeholder="Confirm Your Password"
                         className="pass_log_id login-input"
-                        style={{ paddingRight: '40px' }}
-                        // {...register('confirmPass', {
-                        //   required: `Confirm Password is required!`,
-                        // })}
                         name="confirm_password"
                         value={formData.confirm_password}
                         onChange={inputOnChange}
                         autoComplete="off"
+                        style={{ paddingRight: '40px' }}
                       />
                       <span
                         className="placeholder_icon"
@@ -816,7 +1085,6 @@ const FormCV = () => {
                       </div>
                     </div>
                   </div>
-
                   <div className="col-12 mt-5 mb-5">
                     <div className="agreement-checkbox d-flex justify-content-between align-items-center">
                       <div>

@@ -1,10 +1,10 @@
 'use client';
-
 import React from 'react';
 import Wrapper from '@/layouts/wrapper';
-import EmployAside from '../../../components/dashboard/employ/aside';
+// import EmployAside from '@/app/components/dashboard/employ/aside';
+import CandidateAside from '@/app/components/dashboard/candidate/aside';
 // import DashboardHeader from '@/app/components/dashboard/candidate/dashboard-header';
-import TaDashboardHeader from '@/app/components/dashboard/employ/ta-dashboard-header';
+import CandidateDashboardHeader from '@/app/components/dashboard/candidate/dashboard-header';
 
 export default function MainLayout({
   children,
@@ -14,10 +14,10 @@ export default function MainLayout({
   return (
     <Wrapper>
       <div className="main-page-wrapper">
-        <EmployAside />
+        <CandidateAside />
         <div className="dashboard-body">
           <div className="position-relative">
-            <TaDashboardHeader />
+            <CandidateDashboardHeader />
             {children}
           </div>
         </div>

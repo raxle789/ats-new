@@ -37,7 +37,6 @@ type FormData = {
 
 const RegisterFormStep1 = () => {
   const dispatch = useAppDispatch();
-  const [hasLinkedIn, setHasLinkedIn] = useState<string>('you-choose');
 
   const [hasExperience, setHasExperience] = useState<string>('you-choose');
   const hasExperienceOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,24 +62,49 @@ const RegisterFormStep1 = () => {
     },
   });
 
+  const [hasLinkedIn, setHasLinkedIn] = useState<string>('you-choose');
   const linkedInRadiosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setHasLinkedIn(e.target.value);
   };
 
   const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    if (name in formData.experience) {
+      setFormData((prevState) => ({
+        ...prevState,
+        experience: {
+          ...prevState.experience,
+          [name]: value,
+        },
+      }));
+      return;
+    } else {
+      setFormData((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+      return;
+    }
   };
 
   const selectOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    if (name in formData?.experience) {
+      setFormData((prevState) => ({
+        ...prevState,
+        experience: {
+          ...prevState.experience,
+          [name]: value,
+        },
+      }));
+      return;
+    } else {
+      setFormData((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+      return;
+    }
   };
 
   const formOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -251,7 +275,7 @@ const RegisterFormStep1 = () => {
 
         <div className="col-12">
           <div className="position-relative mb-25">
-            {/* <label>LinkedIn*</label> */}
+            <label style={{ fontSize: '14px' }}>Work Experience*</label>
             <div className="form-check">
               <input
                 className="form-check-input"

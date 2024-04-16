@@ -37,7 +37,7 @@ function NotificationItem({
 // type IProps = {
 //   setIsOpenSidebar?: React.Dispatch<React.SetStateAction<boolean>>
 // }
-const CandidateDashboardHeader = () => {
+const TaDashboardHeader = () => {
   const isOpenSidebar = useAppSelector((state) => state.sidebar.isOpen);
 
   const dispatch = useAppDispatch();
@@ -104,7 +104,7 @@ const CandidateDashboardHeader = () => {
             href="/dashboard/employ-dashboard/submit-job"
             className="job-post-btn tran3s"
           >
-            Apply a Job
+            Post a Job
           </Link>
         </div>
       </div>
@@ -112,4 +112,4 @@ const CandidateDashboardHeader = () => {
   );
 };
 
-export default CandidateDashboardHeader;
+export default TaDashboardHeader;

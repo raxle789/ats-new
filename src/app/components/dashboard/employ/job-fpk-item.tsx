@@ -1,24 +1,35 @@
 'use client';
 import React from 'react';
-import { Button, Form, Select, Input, Modal, notification } from 'antd';
+import { Button, Spin, Form, Select, Input, Modal, notification } from 'antd';
 import { useRouter } from 'next/navigation';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useState, useEffect, useRef } from 'react';
 import { ExpendableButton } from './expendable-button';
-
 const { confirm } = Modal;
 
-const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
-  const formRef = useRef({});
+interface FPKItemProps {
+  fpkData: any;
+  offset: number;
+  taData: any;
+  assignTa: any;
+}
 
-  const [loading, setLoading] = useState(false);
+const EmployJobFpkItem: React.FC<FPKItemProps> = ({
+  fpkData,
+  offset,
+  taData,
+  assignTa,
+}) => {
+  const formRef = useRef({});
+  // const [loading, setLoading] = useState(false);
   const [api, contextHolder] = notification.useNotification();
   const [assignDisabled, setAssignDisabled] = useState({});
   const router = useRouter();
+  const [spinning, setSpinning] = useState<boolean>(false);
+
   const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
     {},
   );
-
   const toggleRowExpansion = (index: number) => {
     setExpandedRows((prevExpandedRows) => ({
       ...prevExpandedRows,
@@ -39,19 +50,16 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
     }
   };
 
-  const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
-    {},
-  );
-  const toggleRowExpansion = (index: number) => {
-    setExpandedRows((prevExpandedRows) => ({
-      ...prevExpandedRows,
-      [index]: !prevExpandedRows[index],
-    }));
-  };
-
   useEffect(() => {
     setFormDefaultValue();
   }, [fpkData, offset]);
+
+  const showLoader = (show: boolean) => {
+    setSpinning(show);
+    // setTimeout(() => {
+    //   setSpinning(false);
+    // }, 3000);
+  };
 
   // const convertDate = (dateTime: any) => {
   //   const monthNames = [
@@ -86,8 +94,53 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
   //   }
   // };
 
+  // const handleAssignTa = (values: any) => {
+  //   setLoading(true);
+
+  //   setTimeout(() => {
+  //     confirm({
+  //       title: 'Do you want to assign fpk?',
+  //       icon: <ExclamationCircleFilled />,
+  //       centered: true,
+  //       content:
+  //         'When clicked the OK button, this dialog will be closed after 1 second',
+  //       onOk() {
+  //         return new Promise<void>((resolve, reject) => {
+  //           setTimeout(() => {
+  //             api.success({
+  //               message: 'Notification',
+  //               description: <p>Successfully Assign FPK</p>,
+  //               placement: 'topRight',
+  //             });
+  //             resolve();
+  //             assignTa(values)
+  //               .then(() => {
+  //                 // form.resetFields();
+  //                 router.refresh();
+  //               })
+  //               .catch((e) => console.log('Error assigning TA: ', e));
+  //           }, 2000);
+  //         }).catch((e) => console.log('Error assigning TA: ', e));
+  //       },
+  //       onCancel() {
+  //         router.refresh();
+  //       },
+  //     });
+
+  //     // assignTa('assignTa', values.requestNo, values.taId);
+  //     setLoading(false);
+  //   }, 2000);
+  // };
+
   const handleAssignTa = (values: any) => {
-    setLoading(true);
+    setAssignDisabled((prevState) => ({
+      ...prevState,
+      [values.efpkRequestNo]: false,
+    }));
+
+    showLoader(true);
+
+    // setLoading(true);
 
     setTimeout(() => {
       confirm({
@@ -109,6 +162,8 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                 .then(() => {
                   // form.resetFields();
                   router.refresh();
+
+                  showLoader(false);
                 })
                 .catch((e) => console.log('Error assigning TA: ', e));
             }, 2000);
@@ -120,12 +175,13 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
       });
 
       // assignTa('assignTa', values.requestNo, values.taId);
-      setLoading(false);
+      // setLoading(false);
     }, 2000);
   };
 
   return (
     <>
+      <Spin spinning={spinning} fullscreen />
       {contextHolder}
 
       <div className="tab-content" id="nav-tabContent">
@@ -148,7 +204,7 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                 </tr>
               </thead>
               <tbody>
-                {fpkData?.map((data, index) => (
+                {fpkData?.map((data: any, index: number) => (
                   <React.Fragment key={index}>
                     <tr>
                       <td>{index + 1 + offset}</td>
@@ -166,7 +222,8 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                           >{`${data?.status ?? ''}`}</span>
                         </b>
                         <br />
-                        {`${convertDate(data?.approvalDate) === 'Undefined' ? 'No Date' : convertDate(data?.approvalDate)}`}
+                        {/* {`${convertDate(data?.approvalDate) === 'Undefined' ? 'No Date' : convertDate(data?.approvalDate)}`} */}
+                        {`${data?.approvalDate === 'Undefined' ? 'No Date' : data?.approvalDate}`}
                       </td>
                       <td>
                         <Form
@@ -198,29 +255,16 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                               filterOption={(input, option) =>
                                 (option?.label ?? '').includes(input)
                               }
-                              options={taData?.map((item) => ({
-                                value: item.value,
-                                label: item.label,
-                                disabled: item.value === data?.taId,
-                              }))}
+                              options={
+                                Array.isArray(taData)
+                                  ? taData.map((item) => ({
+                                      value: item.value,
+                                      label: item.label,
+                                      disabled: item.value === data?.taId,
+                                    }))
+                                  : []
+                              }
                             />
-                            {/* {taData.map((item) => {
-                                return (
-                                  <Select.Option
-                                    key={item.value}
-                                    value={item.value}
-                                    disabled={
-                                      item.value === data.TaId ? true : false
-                                    }
-                                    filterOption={(input, option) =>
-                                      (option?.label ?? '').includes(input)
-                                    }
-                                  >
-                                    {item.label}
-                                  </Select.Option>
-                                );
-                              })}
-                            </Select> */}
                           </Form.Item>
                           <Form.Item className="d-none" name="efpkRequestNo">
                             <Input className="d-none" type="hidden" />

@@ -3,7 +3,7 @@ import EmployParameterArea from '@/app/components/dashboard/employ/job-parameter
 
 export const revalidate = 0;
 
-const EmployDashboardParameterPage = ({ searchParams }) => {
+const EmployDashboardParameterPage = ({ searchParams }: any) => {
   return <EmployParameterArea searchParams={searchParams} />;
 };
 

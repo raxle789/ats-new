@@ -1,18 +1,19 @@
-import React from "react";
-import DashboardHeader from "./dashboard-header";
-import ChangePasswordArea from "./change-password";
+import React from 'react';
+import DashboardHeader from './dashboard-header';
+import ChangePasswordArea from './change-password';
 
-// props type 
+// props type
 type IProps = {
-  setIsOpenSidebar: React.Dispatch<React.SetStateAction<boolean>>
-}
+  setIsOpenSidebar: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
-const DashboardSettingArea = ({setIsOpenSidebar}:IProps) => {
+const DashboardSettingArea = ({ setIsOpenSidebar }: IProps) => {
   return (
     <div className="dashboard-body">
       <div className="position-relative">
         {/* header start */}
-        <DashboardHeader setIsOpenSidebar={setIsOpenSidebar} />
+        {/* <DashboardHeader setIsOpenSidebar={setIsOpenSidebar} /> */}
+        <DashboardHeader />
         {/* header end */}
 
         <h2 className="main-title">Account Settings</h2>

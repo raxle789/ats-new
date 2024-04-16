@@ -11,6 +11,7 @@ import DashboardHeader from '../candidate/dashboard-header';
 import { CardItem } from '../candidate/dashboard-area';
 import NiceSelect from '@/ui/nice-select';
 import { useState, useEffect } from 'react';
+import { IJobType } from '@/types/job-data-type';
 
 // props type
 // type IProps = {

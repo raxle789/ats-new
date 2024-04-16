@@ -31,9 +31,9 @@ const subTitle: TSubTitle = {
 
 const EmployJobParameter = ({
   positionLevelRequirementData,
-  getLineIndustryData,
-  getEducationLevelData,
-  getPositionLevelData,
+  // getLineIndustryData,
+  // getEducationLevelData,
+  // getPositionLevelData,
 }) => {
   const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
     {},
@@ -146,6 +146,7 @@ const EmployJobParameter = ({
   return (
     <>
       <Spin spinning={spinning} fullscreen />
+
       <div className="tab-content" id="nav-tabContent">
         <div className="tab-pane fade show active" id="a1" role="tabpanel">
           <div className="table-responsive">

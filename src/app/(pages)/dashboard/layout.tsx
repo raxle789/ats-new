@@ -1,5 +1,5 @@
 import React from 'react';
-import DashboardHeader from '../../components/dashboard/candidate/dashboard-header';
+// import DashboardHeader from '../../components/dashboard/candidate/dashboard-header';
 
 export default function MainLayout({
   children,

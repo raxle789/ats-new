@@ -3,7 +3,12 @@ import ActionJobVacancies from '../candidate/action-job-vacancies';
 import { ExpendableButton } from './expendable-button';
 import { notification } from 'antd';
 
-const EmployJobItem = ({ jobData }) => {
+// interface JobItem { jobId?: number, jobPosition?: string, jobDepartment?: string, jobStatus?: string, jobEndPosted?: string, jobApplicants?: number, jobApplicantsAssessment?: number, jobApplicantsInterview?: number, jobApplicantsOffering?: number, jobRemainingSLA?: string, jobRecruiter?: string, jobFpkStatus?: string, }
+interface JobItemProps {
+  jobData: any;
+}
+
+const EmployJobItem: React.FC<JobItemProps> = ({ jobData }) => {
   const [api, contextHolder] = notification.useNotification();
   const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
     {},
@@ -35,7 +40,7 @@ const EmployJobItem = ({ jobData }) => {
                 </tr>
               </thead>
               <tbody>
-                {jobData?.map((data, index) => (
+                {jobData?.map((data: any, index: number) => (
                   <React.Fragment key={index}>
                     <tr>
                       <td></td>
