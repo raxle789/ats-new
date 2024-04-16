@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 const initialRegisterState = {
-  next: 'second',
+  next: '',
 };
 
 const userRegisterStepSlice = createSlice({

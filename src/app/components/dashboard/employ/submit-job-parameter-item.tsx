@@ -36,7 +36,15 @@ import Link from 'next/link';
 // const { TextArea } = Input;
 const { confirm } = Modal;
 
-const EmployJobParameterItem = ({
+type Props = {
+  positionLevelRequirementData: any;
+  positionLevelData: any;
+  lineIndustryData: any;
+  educationLevelData: any;
+  setPositionLevelRequirementData: any;
+};
+
+const EmployJobParameterItem: React.FC<Props> = ({
   positionLevelRequirementData,
   positionLevelData,
   lineIndustryData,
@@ -70,89 +78,91 @@ const EmployJobParameterItem = ({
   const pathname = usePathname();
 
   useEffect(() => {
-    positionLevelRequirementData?.positionLevelRequirements?.forEach((data) => {
-      if (data?.requirementFields?.name === 'salary') {
-        form.setFieldsValue({
-          [data?.requirementFields?.name]: {
-            start_salary: data?.value ? data.value[0] : null,
-            end_salary: data?.value ? data.value[1] : null,
-          },
-        });
-      } else {
-        form.setFieldsValue({
-          [data?.requirementFields?.name]:
-            data?.value === null || data?.value === undefined || !data?.value
-              ? null
-              : data.value,
-        });
-      }
+    positionLevelRequirementData?.positionLevelRequirements?.forEach(
+      (data: any) => {
+        if (data?.requirementFields?.name === 'salary') {
+          form.setFieldsValue({
+            [data?.requirementFields?.name]: {
+              start_salary: data?.value ? data.value[0] : null,
+              end_salary: data?.value ? data.value[1] : null,
+            },
+          });
+        } else {
+          form.setFieldsValue({
+            [data?.requirementFields?.name]:
+              data?.value === null || data?.value === undefined || !data?.value
+                ? null
+                : data.value,
+          });
+        }
 
-      // if (data?.requirementFields?.name !== 'salary') {
-      //   try {
-      //     const data2 = JSON.parse(data?.value);
+        // if (data?.requirementFields?.name !== 'salary') {
+        //   try {
+        //     const data2 = JSON.parse(data?.value);
 
-      //     const isArray = Array.isArray(data2);
+        //     const isArray = Array.isArray(data2);
 
-      //     if (isArray) {
-      //       form.setFieldsValue({
-      //         [data?.requirementFields?.name]: data2,
-      //       });
-      //     } else {
-      //       if (data.value === null || data.value === '') {
-      //         form.setFieldsValue({ [data.requirementFields.name]: null });
-      //       } else {
-      //         const numberValue = Number(data?.value);
-      //         form.setFieldsValue({
-      //           [data?.requirementFields?.name]: isNaN(numberValue)
-      //             ? data?.value
-      //             : numberValue,
-      //         });
-      //       }
-      //     }
-      //   } catch (e) {
-      //     if (data.value === null || data.value === '') {
-      //       form.setFieldsValue({ [data.requirementFields.name]: null });
-      //     } else {
-      //       const numberValue = Number(data?.value);
-      //       form.setFieldsValue({
-      //         [data?.requirementFields?.name]: isNaN(numberValue)
-      //           ? data?.value
-      //           : numberValue,
-      //       });
-      //     }
-      //   }
-      // } else if (data?.requirementFields?.name === 'salary') {
-      //   const data2 = JSON.parse(data?.value);
+        //     if (isArray) {
+        //       form.setFieldsValue({
+        //         [data?.requirementFields?.name]: data2,
+        //       });
+        //     } else {
+        //       if (data.value === null || data.value === '') {
+        //         form.setFieldsValue({ [data.requirementFields.name]: null });
+        //       } else {
+        //         const numberValue = Number(data?.value);
+        //         form.setFieldsValue({
+        //           [data?.requirementFields?.name]: isNaN(numberValue)
+        //             ? data?.value
+        //             : numberValue,
+        //         });
+        //       }
+        //     }
+        //   } catch (e) {
+        //     if (data.value === null || data.value === '') {
+        //       form.setFieldsValue({ [data.requirementFields.name]: null });
+        //     } else {
+        //       const numberValue = Number(data?.value);
+        //       form.setFieldsValue({
+        //         [data?.requirementFields?.name]: isNaN(numberValue)
+        //           ? data?.value
+        //           : numberValue,
+        //       });
+        //     }
+        //   }
+        // } else if (data?.requirementFields?.name === 'salary') {
+        //   const data2 = JSON.parse(data?.value);
 
-      //   form.setFieldsValue({
-      //     [data?.requirementFields?.name]: {
-      //       start_salary: data2 ? Number(data2[0]) : null,
-      //       end_salary: data2 ? Number(data2[1]) : null,
-      //     },
-      //   });
-      // }
-    });
+        //   form.setFieldsValue({
+        //     [data?.requirementFields?.name]: {
+        //       start_salary: data2 ? Number(data2[0]) : null,
+        //       end_salary: data2 ? Number(data2[1]) : null,
+        //     },
+        //   });
+        // }
+      },
+    );
 
     form.setFieldsValue({
       positionLevelId: Number(positionLevelRequirementData.id),
     });
   }, [positionLevelRequirementData]);
 
-  const toggleRowExpansion = (index: number) => {
-    setExpandedRows((prevExpandedRows) => ({
-      ...prevExpandedRows,
-      [index]: !prevExpandedRows[index],
-    }));
-  };
+  // const toggleRowExpansion = (index: number) => {
+  //   setExpandedRows((prevExpandedRows) => ({
+  //     ...prevExpandedRows,
+  //     [index]: !prevExpandedRows[index],
+  //   }));
+  // };
 
-  const showLoader = (show) => {
+  const showLoader = (show: boolean) => {
     setSpinning(show);
     // setTimeout(() => {
     //   setSpinning(false);
     // }, 3000);
   };
 
-  function handleJobParameter(values) {
+  function handleJobParameter(values: boolean) {
     showLoader(true);
 
     confirm({
@@ -174,7 +184,7 @@ const EmployJobParameterItem = ({
               .then(() => {
                 form.resetFields();
               })
-              .catch((e) =>
+              .catch((e: string) =>
                 console.log('Error set position level requirement data: ', e),
               );
             // router.replace('/dashboard/ta/parameter');

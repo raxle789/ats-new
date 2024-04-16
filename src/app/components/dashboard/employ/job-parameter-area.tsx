@@ -55,7 +55,11 @@ const parameterData = [
   },
 ];
 
-const EmployParameterArea = async ({ searchParams }) => {
+type Props = {
+  searchParams: any;
+};
+
+const EmployParameterArea: React.FC<Props> = async ({ searchParams }) => {
   const page = searchParams?.page ?? '1';
 
   const perPage = searchParams?.perPage ?? '10';

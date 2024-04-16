@@ -8,16 +8,18 @@ import {
 } from '@/lib/action/positionLevelRequirement/action';
 import CryptoJS from 'crypto-js';
 
-const EmployJobParameter = async ({ params }) => {
+type Props = {
+  params: any;
+};
+
+const EmployJobParameter: React.FC<Props> = async ({ params }) => {
   // const encryptedValue = Object?.keys(query)?.map((key) => query[key]);
+  const key: any = process.env.NEXT_PUBLIC_SECRET_KEY;
   const decryptValue = async () => {
     try {
       const query = (await decodeURIComponent(params.id)) ?? '';
 
-      const decryptedValue = await CryptoJS.Rabbit.decrypt(
-        String(query),
-        process.env.NEXT_PUBLIC_SECRET_KEY,
-      );
+      const decryptedValue = await CryptoJS.Rabbit.decrypt(String(query), key);
 
       const convertString = await decryptedValue.toString(CryptoJS.enc.Utf8);
 

@@ -65,13 +65,6 @@ const EmployJobFpkItem: React.FC<FPKItemProps> = ({
     // }, 3000);
   };
 
-  const showLoader = (show) => {
-    setSpinning(show);
-    // setTimeout(() => {
-    //   setSpinning(false);
-    // }, 3000);
-  };
-
   const handleAssignTa = (values: any) => {
     setAssignDisabled((prevState) => ({
       ...prevState,
@@ -105,7 +98,7 @@ const EmployJobFpkItem: React.FC<FPKItemProps> = ({
 
                   showLoader(false);
                 })
-                .catch((e) => console.log('Error assigning TA: ', e));
+                .catch((e: string) => console.log('Error assigning TA: ', e));
             }, 2000);
           }).catch((e) => console.log('Error assigning TA: ', e));
         },

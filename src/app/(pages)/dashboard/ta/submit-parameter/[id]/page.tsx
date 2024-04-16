@@ -3,7 +3,11 @@ import EmployJobParameter from '@/app/components/dashboard/employ/submit-job-par
 
 export const revalidate = 0;
 
-const jobParameterPage = ({ params }) => {
+type IProps = {
+  params: string;
+};
+
+const jobParameterPage: React.FC<IProps> = ({ params }) => {
   return <EmployJobParameter params={params} />;
 };
 

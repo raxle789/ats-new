@@ -8,20 +8,21 @@ import icon_2 from '@/assets/images/icon/icon_69.svg';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 // prop type
-// type IProps = {
-//   page: string;
-//   perPage: string;
-// };
+type IProps = {
+  pageRangeDisplayed: number;
+  totalData: number;
+  disabled: boolean;
+};
 
-const Pagination = ({ pageRangeDisplayed, totalData, disabled }) => {
+const Pagination: React.FC<IProps> = ({
+  pageRangeDisplayed,
+  totalData,
+  disabled,
+}) => {
   const searchParams = useSearchParams();
-
   const router = useRouter();
-
   const pathname = usePathname();
-
   const page = searchParams.get('page') ?? '1';
-
   const perPage = searchParams.get('perPage') ?? '10';
 
   function handleClick({ selected }: { selected: any }) {
