@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import { Button, Form, Select, Input, Modal, notification } from 'antd';
+import { Button, Spin, Form, Select, Input, Modal, notification } from 'antd';
 import { useRouter } from 'next/navigation';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useState, useEffect, useRef } from 'react';
@@ -11,13 +11,17 @@ const { confirm } = Modal;
 const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
   const formRef = useRef({});
 
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
+
   const [api, contextHolder] = notification.useNotification();
   const [assignDisabled, setAssignDisabled] = useState({});
   const router = useRouter();
+
   const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
     {},
   );
+
+  const [spinning, setSpinning] = React.useState(false);
 
   const toggleRowExpansion = (index: number) => {
     setExpandedRows((prevExpandedRows) => ({
@@ -39,55 +43,26 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
     }
   };
 
-  const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
-    {},
-  );
-  const toggleRowExpansion = (index: number) => {
-    setExpandedRows((prevExpandedRows) => ({
-      ...prevExpandedRows,
-      [index]: !prevExpandedRows[index],
-    }));
-  };
-
   useEffect(() => {
     setFormDefaultValue();
   }, [fpkData, offset]);
 
-  // const convertDate = (dateTime: any) => {
-  //   const monthNames = [
-  //     'Jan',
-  //     'Feb',
-  //     'Mar',
-  //     'Apr',
-  //     'May',
-  //     'Jun',
-  //     'Jul',
-  //     'Aug',
-  //     'Sep',
-  //     'Okt',
-  //     'Nov',
-  //     'Des',
-  //   ];
-
-  //   if (!dateTime) {
-  //     return 'Undefined';
-  //   } else if (typeof dateTime === 'string') {
-  //     const newDate = dateTime.replaceAll('/', ' ');
-  //     const day = newDate.slice(0, 2);
-  //     const month = monthNames[Number(newDate.slice(3, 5)) - 1];
-  //     const year = newDate.slice(6, 10);
-  //     return `${day}-${month}-${year}`;
-  //   } else {
-  //     const date = new Date(dateTime);
-  //     const day = String(date.getDate());
-  //     const month = monthNames[date.getMonth()];
-  //     const year = String(date.getFullYear());
-  //     return `${day}-${month}-${year}`;
-  //   }
-  // };
+  const showLoader = (show) => {
+    setSpinning(show);
+    // setTimeout(() => {
+    //   setSpinning(false);
+    // }, 3000);
+  };
 
   const handleAssignTa = (values: any) => {
-    setLoading(true);
+    setAssignDisabled((prevState) => ({
+      ...prevState,
+      [values.efpkRequestNo]: false,
+    }));
+
+    showLoader(true);
+
+    // setLoading(true);
 
     setTimeout(() => {
       confirm({
@@ -109,6 +84,8 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                 .then(() => {
                   // form.resetFields();
                   router.refresh();
+
+                  showLoader(false);
                 })
                 .catch((e) => console.log('Error assigning TA: ', e));
             }, 2000);
@@ -116,18 +93,20 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
         },
         onCancel() {
           router.refresh();
+
+          showLoader(false);
         },
       });
 
       // assignTa('assignTa', values.requestNo, values.taId);
-      setLoading(false);
+      // setLoading(false);
     }, 2000);
   };
 
   return (
     <>
+      <Spin spinning={spinning} fullscreen />
       {contextHolder}
-
       <div className="tab-content" id="nav-tabContent">
         <div className="tab-pane fade show active" id="a1" role="tabpanel">
           <div className="table-responsive">
@@ -157,16 +136,17 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                         <br />
                         {`${data?.requestNo ?? '-'}`}
                       </td>
-                      <td>{`${data?.jobLvlCode ?? ''}`}</td>
-                      <td>{`${data?.compCode ?? ''}`}</td>
+                      <td>{`${data?.jobLvlCode ?? '-'}`}</td>
+                      <td>{`${data?.compCode ?? '-'}`}</td>
                       <td>
                         <b>
                           <span
-                            className={`${data?.status === 'Approved' ? 'approved' : 'not-approved'}`}
-                          >{`${data?.status ?? ''}`}</span>
+                            // className={`${data?.status === statusColor.approve ? 'approved' : 'not-approved'}`}
+                            className={`${data?.status}Color`}
+                          >{`${data?.status ?? '-'}`}</span>
                         </b>
                         <br />
-                        {`${convertDate(data?.approvalDate) === 'Undefined' ? 'No Date' : convertDate(data?.approvalDate)}`}
+                        {`${data?.approvalDate === 'Undefined' ? 'No Date' : data?.approvalDate}`}
                       </td>
                       <td>
                         <Form
@@ -263,15 +243,15 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                                 </p>
                                 <p>
                                   <b>Position: </b>
-                                  {`${data.efpkInitiatorInformations.position ?? ''}`}
+                                  {`${data?.initiatorJobTitleName ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Email: </b>
-                                  {`${data.initiatorEmail ?? '-'}`}
+                                  {`${data?.initiatorEmail ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Phone Number: </b>
-                                  {`${data.initiatorPhone ?? '-'}`}
+                                  {`${data?.initiatorPhone ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Location: </b>
@@ -281,7 +261,7 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa }) => {
                               <div className="col-lg-6">
                                 <p>
                                   <b>Create FPK: </b>
-                                  {`${data?.createDate ?? ''}`}
+                                  {`${data?.createDate ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Status Mpp: </b>

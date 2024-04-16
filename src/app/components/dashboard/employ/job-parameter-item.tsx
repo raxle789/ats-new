@@ -11,33 +11,12 @@ import { ExpendableButton } from './expendable-button';
 
 const _ = require('lodash');
 
-type TSubTitle = {
-  education_level: string;
-  job_level: string;
-  min_year_experience: string;
-  grade: string;
-  line_industry: string;
-  salary: string;
-};
-
-const subTitle: TSubTitle = {
-  education_level: 'Education Level',
-  job_level: 'Job Level',
-  min_year_experience: 'Min Year Experience',
-  grade: 'Grade',
-  line_industry: 'Line Industry',
-  salary: 'Salary',
-};
-
-const EmployJobParameter = ({
-  positionLevelRequirementData,
-  getLineIndustryData,
-  getEducationLevelData,
-  getPositionLevelData,
-}) => {
+const EmployJobParameter = ({ positionLevelRequirementData }) => {
   const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
     {},
   );
+
+  const [spinning, setSpinning] = React.useState(false);
 
   // console.info(positionLevelRequirementData);
 
@@ -135,7 +114,6 @@ const EmployJobParameter = ({
     }));
   };
 
-  const [spinning, setSpinning] = React.useState(false);
   const showLoader = () => {
     setSpinning(true);
     // setTimeout(() => {
@@ -227,12 +205,9 @@ const EmployJobParameter = ({
                                   return (
                                     <div key={index} className="col-lg-6">
                                       <p>
-                                        {/* <b>{`${d?.requirementFields?.name}: `}</b> */}
-                                        <b>{`${subTitle[d?.requirementFields?.name ?? '']}: `}</b>
-                                        {getPositionLevelRequirementValue(
-                                          d.requirementFields.name,
-                                          d.value,
-                                        )}
+                                        <b>{`${d?.requirementFields?.name}: `}</b>
+                                        {/* <b>{`${subTitle[d?.requirementFields?.name ?? '']}: `}</b> */}
+                                        {d?.value ?? '-'}
                                       </p>
                                     </div>
                                   );

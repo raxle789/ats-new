@@ -15,9 +15,12 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 
 const Pagination = ({ pageRangeDisplayed, totalData, disabled }) => {
   const searchParams = useSearchParams();
+
   const router = useRouter();
+
   const pathname = usePathname();
-  // const page = searchParams.get('page') ?? '1';
+
+  const page = searchParams.get('page') ?? '1';
 
   const perPage = searchParams.get('perPage') ?? '10';
 
@@ -37,6 +40,9 @@ const Pagination = ({ pageRangeDisplayed, totalData, disabled }) => {
   return (
     <ReactPaginate
       className={`pagination-one d-flex align-items-center justify-content-center style-none ${disabled ? 'd-none' : ''}`}
+      pageLinkClassName="page-link"
+      pageClassName="page-item"
+      initialPage={Number(page) - 1}
       breakLabel="..."
       activeClassName="active"
       nextLabel={

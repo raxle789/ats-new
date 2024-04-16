@@ -118,7 +118,32 @@ img:focus {
 }
 
 .pagination-one {
+  .page-item {
+    margin: 0 10px;
+  }
+  .page-link {
+    padding: 0;
+    width: 60px;
+    height: 40px;
+    border-radius: 50%;
+    line-height: 40px;
+    font-size: 16px;
+    color: #31795a;
+    background: #f4f8f6;
+    border: 1px solid #f4f8f6;
+    transition: 0.3s;
+    &:hover {
+      background: #31795a;
+      color: #fff;
+    }
+  }
   & li {
+    &.active {
+      & a {
+        background: #31795a;
+        color: #fff;
+      }
+    }
     &.previous {
       &.disabled {
         display: none;
