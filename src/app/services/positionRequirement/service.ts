@@ -19,20 +19,6 @@ export async function getAllPositionLevelRequirement(offset, perPage) {
       prisma.positionLevels.count(),
     ]);
 
-    // const data = await prisma.positionLevels.findMany({
-    //   skip: offset,
-    //   take: perPage,
-    //   include: {
-    //     positionLevelRequirements: {
-    //       include: {
-    //         requirementFields: true,
-    //       },
-    //     },
-    //   },
-    // });
-
-    // const total = await prisma.positionLevels.count();
-
     return {
       data: data,
       total: total,

@@ -21,15 +21,19 @@ const EmployJobFpkItem: React.FC<FPKItemProps> = ({
   assignTa,
 }) => {
   const formRef = useRef({});
+
   // const [loading, setLoading] = useState(false);
+
   const [api, contextHolder] = notification.useNotification();
   const [assignDisabled, setAssignDisabled] = useState({});
   const router = useRouter();
-  const [spinning, setSpinning] = useState<boolean>(false);
 
   const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
     {},
   );
+
+  const [spinning, setSpinning] = React.useState(false);
+
   const toggleRowExpansion = (index: number) => {
     setExpandedRows((prevExpandedRows) => ({
       ...prevExpandedRows,
@@ -61,76 +65,12 @@ const EmployJobFpkItem: React.FC<FPKItemProps> = ({
     // }, 3000);
   };
 
-  // const convertDate = (dateTime: any) => {
-  //   const monthNames = [
-  //     'Jan',
-  //     'Feb',
-  //     'Mar',
-  //     'Apr',
-  //     'May',
-  //     'Jun',
-  //     'Jul',
-  //     'Aug',
-  //     'Sep',
-  //     'Okt',
-  //     'Nov',
-  //     'Des',
-  //   ];
-
-  //   if (!dateTime) {
-  //     return 'Undefined';
-  //   } else if (typeof dateTime === 'string') {
-  //     const newDate = dateTime.replaceAll('/', ' ');
-  //     const day = newDate.slice(0, 2);
-  //     const month = monthNames[Number(newDate.slice(3, 5)) - 1];
-  //     const year = newDate.slice(6, 10);
-  //     return `${day}-${month}-${year}`;
-  //   } else {
-  //     const date = new Date(dateTime);
-  //     const day = String(date.getDate());
-  //     const month = monthNames[date.getMonth()];
-  //     const year = String(date.getFullYear());
-  //     return `${day}-${month}-${year}`;
-  //   }
-  // };
-
-  // const handleAssignTa = (values: any) => {
-  //   setLoading(true);
-
-  //   setTimeout(() => {
-  //     confirm({
-  //       title: 'Do you want to assign fpk?',
-  //       icon: <ExclamationCircleFilled />,
-  //       centered: true,
-  //       content:
-  //         'When clicked the OK button, this dialog will be closed after 1 second',
-  //       onOk() {
-  //         return new Promise<void>((resolve, reject) => {
-  //           setTimeout(() => {
-  //             api.success({
-  //               message: 'Notification',
-  //               description: <p>Successfully Assign FPK</p>,
-  //               placement: 'topRight',
-  //             });
-  //             resolve();
-  //             assignTa(values)
-  //               .then(() => {
-  //                 // form.resetFields();
-  //                 router.refresh();
-  //               })
-  //               .catch((e) => console.log('Error assigning TA: ', e));
-  //           }, 2000);
-  //         }).catch((e) => console.log('Error assigning TA: ', e));
-  //       },
-  //       onCancel() {
-  //         router.refresh();
-  //       },
-  //     });
-
-  //     // assignTa('assignTa', values.requestNo, values.taId);
-  //     setLoading(false);
-  //   }, 2000);
-  // };
+  const showLoader = (show) => {
+    setSpinning(show);
+    // setTimeout(() => {
+    //   setSpinning(false);
+    // }, 3000);
+  };
 
   const handleAssignTa = (values: any) => {
     setAssignDisabled((prevState) => ({
@@ -171,6 +111,8 @@ const EmployJobFpkItem: React.FC<FPKItemProps> = ({
         },
         onCancel() {
           router.refresh();
+
+          showLoader(false);
         },
       });
 
@@ -183,7 +125,6 @@ const EmployJobFpkItem: React.FC<FPKItemProps> = ({
     <>
       <Spin spinning={spinning} fullscreen />
       {contextHolder}
-
       <div className="tab-content" id="nav-tabContent">
         <div className="tab-pane fade show active" id="a1" role="tabpanel">
           <div className="table-responsive">
@@ -213,16 +154,16 @@ const EmployJobFpkItem: React.FC<FPKItemProps> = ({
                         <br />
                         {`${data?.requestNo ?? '-'}`}
                       </td>
-                      <td>{`${data?.jobLvlCode ?? ''}`}</td>
-                      <td>{`${data?.compCode ?? ''}`}</td>
+                      <td>{`${data?.jobLvlCode ?? '-'}`}</td>
+                      <td>{`${data?.compCode ?? '-'}`}</td>
                       <td>
                         <b>
                           <span
-                            className={`${data?.status === 'Approved' ? 'approved' : 'not-approved'}`}
-                          >{`${data?.status ?? ''}`}</span>
+                            // className={`${data?.status === statusColor.approve ? 'approved' : 'not-approved'}`}
+                            className={`${data?.status}Color`}
+                          >{`${data?.status ?? '-'}`}</span>
                         </b>
                         <br />
-                        {/* {`${convertDate(data?.approvalDate) === 'Undefined' ? 'No Date' : convertDate(data?.approvalDate)}`} */}
                         {`${data?.approvalDate === 'Undefined' ? 'No Date' : data?.approvalDate}`}
                       </td>
                       <td>
@@ -307,15 +248,15 @@ const EmployJobFpkItem: React.FC<FPKItemProps> = ({
                                 </p>
                                 <p>
                                   <b>Position: </b>
-                                  {`${data.efpkInitiatorInformations.position ?? ''}`}
+                                  {`${data?.initiatorJobTitleName ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Email: </b>
-                                  {`${data.initiatorEmail ?? '-'}`}
+                                  {`${data?.initiatorEmail ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Phone Number: </b>
-                                  {`${data.initiatorPhone ?? '-'}`}
+                                  {`${data?.initiatorPhone ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Location: </b>
@@ -325,7 +266,7 @@ const EmployJobFpkItem: React.FC<FPKItemProps> = ({
                               <div className="col-lg-6">
                                 <p>
                                   <b>Create FPK: </b>
-                                  {`${data?.createDate ?? ''}`}
+                                  {`${data?.createDate ?? '-'}`}
                                 </p>
                                 <p>
                                   <b>Status Mpp: </b>

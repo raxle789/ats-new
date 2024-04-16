@@ -102,6 +102,8 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
 
           const total = res.total ? res.total : 0;
 
+          console.info(total);
+
           return {
             data: data,
             total: total,
