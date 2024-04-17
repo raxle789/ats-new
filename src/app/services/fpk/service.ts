@@ -6,7 +6,7 @@ import prisma from '../connection/db';
 
 // const moment = require('moment');
 
-export async function getAllFpk(offset, perPage) {
+export async function getAllFpk(offset: number, perPage: number) {
   try {
     // const db = await getDb(poolName);
 

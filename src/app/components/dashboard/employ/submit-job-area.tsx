@@ -48,7 +48,35 @@ const { confirm } = Modal;
 // };
 
 const SubmitJobArea = () => {
+  // const formRef = useRef(null);
+
+  const [firstInput, setFirstInput] = useState(false);
+
   const [api, contextHolder] = notification.useNotification();
+
+  // const handleInputJobDescription = () => {
+  //   if (!firstInput) {
+  //     const { jobDescription } = formRef.current.getFieldsValue();
+
+  //     const formattedJobDescription = `<ul><li>${jobDescription}</li></ul>`;
+
+  //     formRef.current.setFieldsValue({
+  //       jobDescription: formattedJobDescription,
+  //     });
+
+  //     setFirstInput(true);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   const jobDescription = formRef.current.getFieldsValue('jobDescription');
+
+  //   const formattedJobDescription = `<ul><li>${jobDescription}</li></ul>`;
+
+  //   formRef.current.setFieldsValue({
+  //     jobDescription: formattedJobDescription,
+  //   });
+  // });
 
   async function handleFpkModal(values) {
     console.info(values);
@@ -202,10 +230,14 @@ const SubmitJobArea = () => {
 
       <Form
         form={form}
+        // ref={formRef}
         className="bg-white card-box border-20"
         layout="vertical"
         variant="filled"
         onFinish={handleJobPost}
+        // initialValues={{
+        //   ['jobDescription']: '<ul><li></li></ul>',
+        // }}
       >
         <h4 className="dash-title-three">Job Position</h4>
         <div className="dash-input-wrapper mb-30">
@@ -617,7 +649,7 @@ const SubmitJobArea = () => {
             <TextArea
               className="select"
               placeholder="Input Job Work Location"
-              size="large"
+              autoSize={{ minRows: 3 }}
             />
           </Form.Item>
         </div>
@@ -652,6 +684,9 @@ const SubmitJobArea = () => {
               className="textArea"
               theme="snow"
               modules={modules}
+              // onChange={handleInputJobDescription}
+              // formats={['list', 'bullet']}
+              // defaultValue={'<ul><li></li></ul>'}
               placeholder="Input Job Description"
             />
           </Form.Item>

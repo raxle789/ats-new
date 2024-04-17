@@ -5,7 +5,7 @@ import {
   getAllPositionLevelData,
   getAllLineIndustryData,
   getAllEducationLevelData,
-} from '@/lib/action/positionLevelRequirement/action';
+} from '@/lib/action/position-level-requirements/action';
 import CryptoJS from 'crypto-js';
 
 const EmployJobParameter = async ({ params }) => {

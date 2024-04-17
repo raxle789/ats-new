@@ -1,5 +1,3 @@
-import 'server-only';
-
 import prisma from '../connection/db';
 
 export async function getAllPositionLevelRequirement(offset, perPage) {
@@ -11,7 +9,11 @@ export async function getAllPositionLevelRequirement(offset, perPage) {
         include: {
           positionLevelRequirements: {
             include: {
-              requirementFields: true,
+              requirementFields: {
+                include: {
+                  requirementFieldParsers: true,
+                },
+              },
             },
           },
         },
@@ -181,7 +183,7 @@ export async function getAllPositionLevel() {
   try {
     const data = await prisma.positionLevels.findMany();
 
-    const aliasedData = data.map((d) => ({
+    const aliasedData = data?.map((d) => ({
       value: d.id,
       label: d.name,
     }));
@@ -198,7 +200,7 @@ export async function getAllLineIndustry() {
   try {
     const data = await prisma.lineIndustries.findMany();
 
-    const aliasedData = data.map((d) => ({
+    const aliasedData = data?.map((d) => ({
       value: d.id,
       label: d.name,
     }));
@@ -215,7 +217,7 @@ export async function getAllEducationLevel() {
   try {
     const data = await prisma.educationLevels.findMany();
 
-    const aliasedData = data.map((d) => ({
+    const aliasedData = data?.map((d) => ({
       value: d.id,
       label: d.name,
     }));
@@ -274,7 +276,7 @@ export async function getEducationLevel(educationLevelId) {
       },
     });
 
-    return data.name;
+    return data?.name;
   } catch (e) {
     console.log(e);
 
@@ -293,7 +295,7 @@ export async function getPositionLevel(positionLevelId) {
       },
     });
 
-    return data.name;
+    return data?.name;
   } catch (e) {
     console.log(e);
 
@@ -312,7 +314,7 @@ export async function getLineIndustry(lineIndustryId) {
       },
     });
 
-    return data.name;
+    return data?.name;
   } catch (e) {
     console.log(e);
 

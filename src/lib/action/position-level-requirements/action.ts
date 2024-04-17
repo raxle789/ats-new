@@ -2,68 +2,70 @@
 
 import {
   getAllPositionLevelRequirement,
-  getLineIndustry,
-  getPositionLevel,
-  getEducationLevel,
   getAllPositionLevel,
   getAllEducationLevel,
   getAllLineIndustry,
   getPositionLevelRequirement,
   setPositionLevelRequirement,
   searchPositionLevelRequirement,
-} from '../../../app/services/positionRequirement/service';
+} from '../../../app/services/position-level-requirements/service';
+// import * as parserFunctions from '../requirement-parsers/action';
 import { validatePositionLevelRequirementSchema } from './validation';
 import { permanentRedirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 
-async function formatData(oldValue, identifier) {
-  const value = await oldValue.split(identifier);
+// async function formatData(oldValue, identifier) {
+//   const value = await oldValue.split(identifier);
 
-  let newValue = '';
+//   let newValue = '';
 
-  if (identifier === '*') {
-    const formatter = new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-    });
+//   if (identifier === '*') {
+//     const formatter = new Intl.NumberFormat('id-ID', {
+//       style: 'currency',
+//       currency: 'IDR',
+//     });
 
-    if (value.length === 2) {
-      for (let i = 0; i < value.length; i++) {
-        if (i === value.length - 2) {
-          newValue = newValue + formatter.format(Number(value[i])) + ' - ';
-        } else if (i === value.length - 1) {
-          newValue = newValue + formatter.format(Number(value[i]));
-        }
-      }
-    }
-  } else if (identifier === '#') {
-    if (value.length === 2) {
-      for (let i = 0; i < value.length; i++) {
-        const lineIndustryValue = await getLineIndustry(Number(value[i]));
+//     if (value.length === 2) {
+//       for (let i = 0; i < value.length; i++) {
+//         if (i === value.length - 2) {
+//           newValue = newValue + formatter.format(Number(value[i])) + ' - ';
+//         } else if (i === value.length - 1) {
+//           newValue = newValue + formatter.format(Number(value[i]));
+//         }
+//       }
+//     }
+//   } else if (identifier === '#') {
+//     if (value[1] === '') {
+//       const lineIndustryValue = await getLineIndustry(Number(value[0]));
 
-        if (i === value.length - 2) {
-          newValue = lineIndustryValue + ' and ';
-        } else if (i === value.length - 1) {
-          newValue = newValue + lineIndustryValue;
-        }
-      }
-    } else if (value.length > 2) {
-      for (let i = 0; i < value.length; i++) {
-        const lineIndustryValue = await getLineIndustry(Number(value[i]));
+//       newValue = `${lineIndustryValue}`;
+//     } else if (value.length <= 2) {
+//       for (let i = 0; i < value.length; i++) {
+//         const lineIndustryValue = await getLineIndustry(Number(value[i]));
 
-        if (i <= value.length - 3) {
-          newValue = newValue + lineIndustryValue + ', ';
-        } else if (i === value.length - 2) {
-          newValue = newValue + lineIndustryValue + ', and ';
-        } else if (i === value.length - 1) {
-          newValue = newValue + lineIndustryValue;
-        }
-      }
-    }
-  }
+//         if (i === value.length - 2) {
+//           newValue = lineIndustryValue + ' and ';
+//         } else if (i === value.length - 1) {
+//           newValue = newValue + lineIndustryValue;
+//         }
+//       }
+//     } else if (value.length > 2) {
+//       for (let i = 0; i < value.length; i++) {
+//         const lineIndustryValue = await getLineIndustry(Number(value[i]));
 
-  return newValue;
-}
+//         if (i <= value.length - 3) {
+//           newValue = newValue + lineIndustryValue + ', ';
+//         } else if (i === value.length - 2) {
+//           newValue = newValue + lineIndustryValue + ', and ';
+//         } else if (i === value.length - 1) {
+//           newValue = newValue + lineIndustryValue;
+//         }
+//       }
+//     }
+//   }
+
+//   return newValue;
+// }
 
 function formatFieldName(fieldName) {
   const newFieldName = fieldName.split('_').map((word) => {
@@ -73,6 +75,48 @@ function formatFieldName(fieldName) {
   return newFieldName.join(' ');
 }
 
+// async function formatPositionLevelRequirementData(data) {
+//   if (data?.data) {
+//     await Promise.all(
+//       data?.data?.map(async (a) => {
+//         if (a?.positionLevelRequirements) {
+//           await Promise.all(
+//             a?.positionLevelRequirements?.map(async (d) => {
+//               if (d?.value) {
+//                 if (
+//                   d?.requirementFields?.name === 'education_level' ||
+//                   d?.requirementFields?.name === 'job_level'
+//                 ) {
+//                   if (d?.requirementFields?.name === 'education_level') {
+//                     d.value = await getEducationLevel(Number(d?.value));
+//                   } else if (d?.requirementFields?.name === 'job_level') {
+//                     d.value = await getPositionLevel(Number(d?.value));
+//                   }
+//                 } else if (
+//                   d?.requirementFields?.name === 'line_industry' ||
+//                   d?.requirementFields?.name === 'salary'
+//                 ) {
+//                   if (d?.value?.includes('#')) {
+//                     d.value = await formatData(d?.value, '#');
+//                   } else if (d?.value?.includes('*')) {
+//                     d.value = await formatData(d?.value, '*');
+//                   }
+//                 }
+//               }
+
+//               d.requirementFields.name = await formatFieldName(
+//                 d?.requirementFields?.name,
+//               );
+//             }),
+//           );
+//         }
+//       }),
+//     );
+//   }
+
+//   return data;
+// }
+
 async function formatPositionLevelRequirementData(data) {
   if (data?.data) {
     await Promise.all(
@@ -80,26 +124,34 @@ async function formatPositionLevelRequirementData(data) {
         if (a?.positionLevelRequirements) {
           await Promise.all(
             a?.positionLevelRequirements?.map(async (d) => {
-              if (d?.value) {
-                if (
-                  d?.requirementFields?.name === 'education_level' ||
-                  d?.requirementFields?.name === 'job_level'
-                ) {
-                  if (d?.requirementFields?.name === 'education_level') {
-                    d.value = await getEducationLevel(Number(d?.value));
-                  } else if (d?.requirementFields?.name === 'job_level') {
-                    d.value = await getPositionLevel(Number(d?.value));
-                  }
-                } else if (
-                  d?.requirementFields?.name === 'line_industry' ||
-                  d?.requirementFields?.name === 'salary'
-                ) {
-                  if (d?.value?.includes('#')) {
-                    d.value = await formatData(d?.value, '#');
-                  } else if (d?.value?.includes('*')) {
-                    d.value = await formatData(d?.value, '*');
-                  }
-                }
+              if (d?.value !== null && d?.value !== undefined && d?.value) {
+                const parserFunctions = require('../requirement-parsers/action');
+
+                const parserFunction =
+                  parserFunctions[
+                    d?.requirementFields?.requirementFieldParsers?.name
+                  ];
+
+                d.value = await parserFunction(d?.value);
+                // if (
+                //   d?.requirementFields?.name === 'education_level' ||
+                //   d?.requirementFields?.name === 'job_level'
+                // ) {
+                //   if (d?.requirementFields?.name === 'education_level') {
+                //     d.value = await getEducationLevel(Number(d?.value));
+                //   } else if (d?.requirementFields?.name === 'job_level') {
+                //     d.value = await getPositionLevel(Number(d?.value));
+                //   }
+                // } else if (
+                //   d?.requirementFields?.name === 'line_industry' ||
+                //   d?.requirementFields?.name === 'salary'
+                // ) {
+                //   if (d?.value?.includes('#')) {
+                //     d.value = await formatData(d?.value, '#');
+                //   } else if (d?.value?.includes('*')) {
+                //     d.value = await formatData(d?.value, '*');
+                //   }
+                // }
               }
 
               d.requirementFields.name = await formatFieldName(
@@ -116,6 +168,12 @@ async function formatPositionLevelRequirementData(data) {
 }
 
 export async function getAllPositionLevelRequirementData(offset, perPage) {
+  // const myFunctions = require('../parse-requirements-value/action');
+
+  // const myFunction = myFunctions['ayam2'];
+
+  // console.info(myFunction('ayam'));
+
   const data = await getAllPositionLevelRequirement(offset, perPage);
 
   const newData = await formatPositionLevelRequirementData(data);
@@ -147,7 +205,10 @@ export async function getPositionLevelRequirementData(positionLevelId) {
             d?.requirementFields?.name === 'salary'
           ) {
             if (d?.value?.includes('#')) {
-              d.value = await d?.value?.split('#').map(Number);
+              d.value = await d?.value
+                ?.split('#')
+                .filter((value) => value !== '')
+                .map(Number);
             } else if (d?.value?.includes('*')) {
               d.value = await d?.value?.split('*').map(Number);
             }
@@ -216,7 +277,13 @@ export async function setPositionLevelRequirementData(values) {
         key !== 'min_year_experience'
       ) {
         if (key === 'line_industry') {
-          newValue = value.join('#');
+          if (value.length === 1) {
+            newValue = `${value[0]}#`;
+
+            console.info(newValue);
+          } else if (value.length > 1) {
+            newValue = value.join('#');
+          }
           // for (let i = 0; i < value.length; i++) {
           //   // const lineIndustryName = await getLineIndustry(value[i]);
           //   if (i < value.length - 1) {
