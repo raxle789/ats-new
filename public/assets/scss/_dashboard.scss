@@ -948,6 +948,15 @@
     .not-approved {
       color: $color-six;
     }
+    .ApprovedColor {
+      color: $color-five;
+    }
+    .InprogressColor {
+      color: #f7f700;
+    }
+    .OpenColor {
+      color: $color-six;
+    }
     .job-posting {
       width: 120px;
     }
