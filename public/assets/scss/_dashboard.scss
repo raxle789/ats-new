@@ -1775,3 +1775,29 @@
 .ql-editor {
   min-height: 90px;
 }
+
+.custom-modal-wrapper {
+  .ant-modal-content {
+    border-radius: 12px;
+  }
+
+  .ant-modal-body {
+    height: 450px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+  }
+
+  .ant-modal-body::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .ant-modal-body::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 12px;
+  }
+
+  .ant-modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 12px;
+  }
+}

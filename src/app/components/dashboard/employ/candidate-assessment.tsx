@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import EmployJobItem from './job-item';
 import EmployShortSelect from './short-select';
@@ -8,10 +8,92 @@ import search from '@/assets/dashboard/images/icon/icon_10.svg';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
 import candidate_data from '@/data/candidate-data';
-import CandidateItem from './candidate-item';
+import CandidateAssessmentItem from './candidate-assessment-item';
 import SearchBar from '@/ui/search-bar';
-import { useAppDispatch } from '@/redux/hook';
+import { Modal } from 'antd';
+import type { MenuProps } from 'antd';
+import { Menu } from 'antd';
+import type { CollapseProps } from 'antd';
+import { Collapse } from 'antd';
+import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { setApplicantStep } from '@/redux/features/applicantStepSlice';
+import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
+
+const text = `
+  A dog is a type of domesticated animal.
+  Known for its loyalty and faithfulness,
+  it can be found as a welcome guest in many households across the world.
+`;
+
+const profileItems: CollapseProps['items'] = [
+  {
+    key: '1',
+    label: 'Main Profile',
+    children: <p>{text}</p>,
+  },
+  {
+    key: '2',
+    label: 'Address Information',
+    children: <p>{text}</p>,
+  },
+  {
+    key: '3',
+    label: 'Education History',
+    children: <p>{text}</p>,
+  },
+  {
+    key: '4',
+    label: 'Language Abilities',
+    children: <p>{text}</p>,
+  },
+  {
+    key: '5',
+    label: 'Work Experience',
+    children: <p>{text}</p>,
+  },
+  {
+    key: '6',
+    label: 'Family Structure',
+    children: <p>{text}</p>,
+  },
+  {
+    key: '7',
+    label: 'Main Family',
+    children: <p>{text}</p>,
+  },
+  {
+    key: '8',
+    label: 'Additional Information',
+    children: <p>{text}</p>,
+  },
+];
+
+const documentItems: CollapseProps['items'] = [
+  {
+    key: '1',
+    label: 'Personal Information',
+    children: <p>{text}</p>,
+  },
+];
+
+const items: MenuProps['items'] = [
+  {
+    label: 'Profile',
+    key: 'profile',
+  },
+  {
+    label: 'Document',
+    key: 'document',
+  },
+  {
+    label: 'Application History',
+    key: 'applicationHistory',
+  },
+  {
+    label: 'Candidate History',
+    key: 'candidateHistory',
+  },
+];
 
 const CandidateAssessment = () => {
   const dispatch = useAppDispatch();
@@ -33,6 +115,15 @@ const CandidateAssessment = () => {
   }, 300);
   const candidate_items = candidate_data.slice(0, 3);
 
+  const isModalOpen = useAppSelector((state) => state.candidateModal.isOpen);
+  const handleCancel = () => {
+    dispatch(setIsOpen(false));
+  };
+
+  const [current, setCurrent] = useState('profile');
+  const onClickHandle: MenuProps['onClick'] = (e) => {
+    setCurrent(e.key);
+  };
   return (
     <>
       <div className="d-sm-flex align-items-start justify-content-between mb-10 lg-mb-30">
@@ -79,17 +170,23 @@ const CandidateAssessment = () => {
           <span>3</span>
           <span>Assessment</span>
         </Link>
-        <Link href="#" className="d-flex flex-column align-items-center me-4">
+        <Link
+          href="/dashboard/ta/preview-page/interview"
+          onClick={() =>
+            dispatch(setApplicantStep({ currentStep: 'interview' }))
+          }
+          className="d-flex flex-column align-items-center me-4"
+        >
           <span>0</span>
           <span>Interview</span>
         </Link>
         <Link href="#" className="d-flex flex-column align-items-center me-4">
           <span>0</span>
-          <span>Offering</span>
+          <span className="text-center">Ref Check</span>
         </Link>
         <Link href="#" className="d-flex flex-column align-items-center me-4">
           <span>0</span>
-          <span className="text-center">Ref Check</span>
+          <span>Offering</span>
         </Link>
         <Link href="#" className="d-flex flex-column align-items-center me-4">
           <span>0</span>
@@ -127,7 +224,7 @@ const CandidateAssessment = () => {
 
       <div className="wrapper">
         {candidate_items.map((item) => (
-          <CandidateItem key={item.id} item={item} />
+          <CandidateAssessmentItem key={item.id} item={item} />
         ))}
       </div>
 
@@ -155,6 +252,33 @@ const CandidateAssessment = () => {
           </li>
         </ul>
       </div> */}
+      {/* start modal */}
+      <Modal
+        title="Candidate Details"
+        centered
+        open={isModalOpen}
+        onCancel={handleCancel}
+        footer={null}
+        wrapClassName="custom-modal-wrapper"
+      >
+        <Menu
+          onClick={onClickHandle}
+          selectedKeys={[current]}
+          mode="horizontal"
+          items={items}
+        />
+        {current === 'profile' && (
+          <div className="mt-3">
+            <Collapse items={profileItems} defaultActiveKey={['1']} />
+          </div>
+        )}
+        {current === 'document' && (
+          <div className="mt-3">
+            <Collapse items={documentItems} defaultActiveKey={['1']} />
+          </div>
+        )}
+      </Modal>
+      {/* end modal */}
     </>
   );
 };

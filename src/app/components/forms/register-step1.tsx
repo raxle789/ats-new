@@ -1,10 +1,51 @@
 'use client';
-
+import React, { useEffect, useRef } from 'react';
 import { createCandidates } from '@/libs/Registration';
 import { userRegister2 } from '@/libs/validations/Register';
 import { setRegisterStep } from '@/redux/features/fatkhur/registerSlice';
 import { useAppDispatch } from '@/redux/hook';
 import { useState } from 'react';
+import { Input, Form, Select, DatePicker, Tabs } from 'antd';
+import type { DatePickerProps, FormProps } from 'antd';
+import { v4 as uuidv4 } from 'uuid';
+
+type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
+
+type FieldType = {
+  placeOfBirth?: string;
+  gender?: string;
+  religion?: string;
+  ethnicity?: string;
+  bloodType?: string;
+  maritalStatus?: string;
+  permanentAddress?: string;
+  country?: string;
+  rt?: string;
+  rw?: string;
+  city?: string;
+  subdistrict?: string;
+  village?: string;
+  zipCode?: string;
+  currentAddress?: string;
+  families?: {
+    [id: string]: {
+      relation?: string;
+      name?: string;
+      gender?: string;
+      dateOfBirth?: string;
+    }[];
+  };
+  formal?: string;
+  educationLevel?: string;
+  educationMajor?: string;
+  schoolName?: string;
+  gpa?: number;
+  cityOfSchool?: string;
+  certificationName?: string;
+  institution?: string;
+  issueDate?: string;
+  language?: string;
+};
 
 const source: string[] = ['Email', 'Erajaya Career Fest', 'Instagram'];
 const jobFunction: string[] = ['Accounting', 'Business', 'Client'];
@@ -37,6 +78,289 @@ type FormData = {
 
 const RegisterFormStep1 = () => {
   const dispatch = useAppDispatch();
+
+  const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
+    console.log('Success:', values);
+  };
+
+  const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
+    errorInfo,
+  ) => {
+    console.log('Failed:', errorInfo);
+  };
+
+  const [country, setCountry] = useState<string>('');
+  const handleChangeCountry = (value: string) => {
+    setCountry(value);
+  };
+
+  const [marriedValue, setMarriedValue] = useState<string>('');
+  const handleChangeMarried = (value: string) => {
+    setMarriedValue(value);
+  };
+
+  const onChangeDate: DatePickerProps['onChange'] = (date, dateString) => {
+    console.log(date, dateString);
+  };
+
+  const [idFamily, setIdFamily] = useState<number>(1);
+  const [index, setIndex] = useState<number>(0);
+  // const handleAdd = () => {
+  //   let id: number = idFamily;
+  //   setIndex(idFamily);
+  //   setIdFamily(idFamily + 1);
+  // };
+
+  const tabContent: JSX.Element[] = [
+    <div key={index} className="row">
+      <div className="col-6">
+        <div className="input-group-meta position-relative mb-15">
+          <label>Relation*</label>
+          <Form.Item<FieldType>
+            name={['families', idFamily.toString(), index, 'relation']}
+            className="mb-0"
+            rules={[
+              {
+                required: true,
+                message: 'Please input your family relation!',
+              },
+            ]}
+          >
+            <Select
+              className="w-100"
+              placeholder="Your Family Relation"
+              options={[
+                { value: 'male', label: 'Male' },
+                { value: 'female', label: 'Female' },
+                ...(marriedValue === 'married'
+                  ? [{ value: 'pasangan', label: 'Pasangan' }]
+                  : []),
+              ]}
+            />
+          </Form.Item>
+        </div>
+      </div>
+      <div className="col-6">
+        <div className="input-group-meta position-relative mb-15">
+          <label>Name*</label>
+          <Form.Item<FieldType>
+            name={['families', idFamily.toString(), index, 'name']}
+            className="mb-0"
+            rules={[
+              {
+                required: true,
+                message: 'Please input your relation name!',
+              },
+            ]}
+          >
+            <Input placeholder="Your Relation Name" />
+          </Form.Item>
+        </div>
+      </div>
+      <div className="col-6">
+        <div className="input-group-meta position-relative mb-15">
+          <label>Gender*</label>
+          <Form.Item<FieldType>
+            name={['families', idFamily.toString(), index, 'gender']}
+            className="mb-0"
+            rules={[
+              {
+                required: true,
+                message: 'Please input your family gender!',
+              },
+            ]}
+          >
+            <Select
+              className="w-100"
+              placeholder="Your Family Gender"
+              options={[
+                { value: 'male', label: 'Male' },
+                { value: 'female', label: 'Female' },
+              ]}
+            />
+          </Form.Item>
+        </div>
+      </div>
+      <div className="col-6">
+        <div className="input-group-meta position-relative mb-15">
+          <label>Date of Birth*</label>
+          <Form.Item<FieldType>
+            name={['families', idFamily.toString(), index, 'dateOfBirth']}
+            rules={[
+              {
+                required: true,
+                message: 'Please input your relation date of birth!',
+              },
+            ]}
+          >
+            <DatePicker
+              className="w-100"
+              placeholder="Select Date"
+              onChange={onChangeDate}
+            />
+          </Form.Item>
+        </div>
+      </div>
+    </div>,
+  ];
+
+  const initialItems = [{ label: 'New Relation', key: '1' }];
+  const [activeKey, setActiveKey] = useState(initialItems[0].key);
+  const [items, setItems] = useState(initialItems);
+  const newTabIndex = useRef(0);
+
+  const onChangeTabs = (newActiveKey: string) => {
+    setActiveKey(newActiveKey);
+  };
+  // const [addValue, setAddValue] = useState<string>('');
+  // let id: number;
+
+  // const [tabContentValue, setTabContentValue] = useState([]);
+
+  // const handleAdd2 = () => {
+  //   // const newTabIndex = useRef(0);
+
+  //   setTabContentValue((prevContent: any): any => {
+  //     const counter = prevContent.length
+  //       ? prevContent[prevContent.length - 1].children.props.key?.split(
+  //           '-',
+  //         )[1] + 1
+  //       : 0;
+  //     const newTab = {
+  //       label: 'New Relation',
+  //       children: (
+  //         <div key={prevContent.length}>
+  //           {/* <div className="col-6">
+  //             <div className="input-group-meta position-relative mb-15">
+  //               <label>Relation*</label>
+  //               <Form.Item<FieldType>
+  //                 name={['families', `${prevContent.length}`, counter, 'relation']}
+  //                 className="mb-0"
+  //                 rules={[
+  //                   {
+  //                     required: true,
+  //                     message: 'Please input your family relation!',
+  //                   },
+  //                 ]}
+  //               >
+  //                 <Select className="w-100" placeholder="Your Family Relation" options={} />
+  //               </Form.Item>
+  //             </div>
+  //           </div> */}
+  //           <div className="col-6">
+  //             <div className="input-group-meta position-relative mb-15">
+  //               <label>Relation*</label>
+  //               <Form.Item<FieldType>
+  //                 name={[
+  //                   'families',
+  //                   `${prevContent.length}`,
+  //                   counter,
+  //                   'relation',
+  //                 ]}
+  //                 className="mb-0"
+  //                 rules={[
+  //                   {
+  //                     required: true,
+  //                     message: 'Please input your family relation!',
+  //                   },
+  //                 ]}
+  //               >
+  //                 <Select
+  //                   className="w-100"
+  //                   placeholder="Your Family Relation"
+  //                   options={[
+  //                     { value: 'male', label: 'Male' },
+  //                     { value: 'female', label: 'Female' },
+  //                     ...(marriedValue === 'married'
+  //                       ? [{ value: 'pasangan', label: 'Pasangan' }]
+  //                       : []),
+  //                   ]}
+  //                 />
+  //               </Form.Item>
+  //             </div>
+  //           </div>
+  //           <div className="col-6">
+  //             <div className="input-group-meta position-relative mb-15">
+  //               <label>Name*</label>
+  //               <Form.Item<FieldType>
+  //                 name={[
+  //                   'families',
+  //                   `${prevContent.length}`,
+  //                   counter,
+  //                   'relation',
+  //                 ]}
+  //                 className="mb-0"
+  //                 rules={[
+  //                   {
+  //                     required: true,
+  //                     message: 'Please input your relation name!',
+  //                   },
+  //                 ]}
+  //               >
+  //                 <Input placeholder="Your Relation Name" />
+  //               </Form.Item>
+  //             </div>
+  //           </div>
+  //           {/* ... other form fields with unique names ... */}
+  //         </div>
+  //       ),
+  //       key: `newTab${prevContent.length}-${newTabIndex.current++}`,
+  //     };
+  //     return [...prevContent, newTab];
+  //   });
+  // };
+
+  const add = () => {
+    const newActiveKey = `newTab${newTabIndex.current++}`;
+    const newPanes = [...items];
+    newPanes.push({
+      label: 'New Relation',
+      // children: tabContent,
+      key: newActiveKey,
+    });
+    setItems(newPanes);
+    setActiveKey(newActiveKey);
+    setIndex(idFamily);
+    setIdFamily(idFamily + 1);
+  };
+
+  const remove = (targetKey: TargetKey) => {
+    let newActiveKey = activeKey;
+    let lastIndex = -1;
+    items.forEach((item, i) => {
+      if (item.key === targetKey) {
+        lastIndex = i - 1;
+      }
+    });
+    const newPanes = items.filter((item) => item.key !== targetKey);
+    if (newPanes.length && newActiveKey === targetKey) {
+      if (lastIndex >= 0) {
+        newActiveKey = newPanes[lastIndex].key;
+      } else {
+        newActiveKey = newPanes[0].key;
+      }
+    }
+    setItems(newPanes);
+    setActiveKey(newActiveKey);
+  };
+
+  const onEdit = (
+    targetKey: React.MouseEvent | React.KeyboardEvent | string,
+    action: 'add' | 'remove',
+  ) => {
+    if (action === 'add') {
+      add();
+    } else {
+      remove(targetKey);
+    }
+  };
+
+  console.log('index: ', index);
+  console.log('idFamily: ', idFamily);
+  useEffect(() => {
+    console.log('useEffect/index: ', index);
+    console.log('useEffect/idFamily: ', idFamily);
+  }, []);
 
   const [hasExperience, setHasExperience] = useState<string>('you-choose');
   const hasExperienceOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,382 +448,547 @@ const RegisterFormStep1 = () => {
 
     dispatch(setRegisterStep('third'));
   };
-
   return (
-    <form onSubmit={formOnSubmit}>
+    <Form
+      name="form1"
+      variant="filled"
+      initialValues={{ remember: true }}
+      onFinish={onFinish}
+      onFinishFailed={onFinishFailed}
+    >
       <div className="row mb-20">
-        <div className="col-12">
+        <label className="fw-bold">Profile</label>
+        <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
-            <label>Phone Number*</label>
-            <input
-              className="login-input"
-              type="number"
-              placeholder="081234567890"
-              name="phone_number"
-              value={formData.phone_number}
-              onChange={inputOnChange}
-              style={{ paddingRight: '11px' }}
-            />
-            <div className="help-block with-errors"></div>
-          </div>
-        </div>
-        <div className="col-12">
-          <div className="input-group-meta position-relative mb-15">
-            <label>Date of Birth*</label>
-            <div className="form-group">
-              <input
-                type="date"
-                className="form-control login-input"
-                id="date-of-birth"
-                name="date_of_birth"
-                value={formData.date_of_birth}
-                onChange={inputOnChange}
-                style={{ paddingRight: '11px' }}
-              />
-            </div>
-            <div className="help-block with-errors"></div>
+            <label>Place of Birth*</label>
+            <Form.Item<FieldType>
+              name="placeOfBirth"
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your place of birth!',
+                },
+              ]}
+            >
+              <Input placeholder="Your Place of Birth" />
+            </Form.Item>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label>Gender*</label>
-            <select
-              className="form-select"
-              aria-label="Default select example"
+            <Form.Item<FieldType>
               name="gender"
-              value={formData.gender}
-              onChange={selectOnChange}
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your gender!',
+                },
+              ]}
             >
-              <option value="default">Please choose</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-            </select>
-            <div className="help-block with-errors"></div>
+              <Select
+                className="w-100"
+                placeholder="Your Gender"
+                options={[
+                  { value: 'male', label: 'Male' },
+                  { value: 'female', label: 'Female' },
+                ]}
+              />
+            </Form.Item>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
-            <label>Source*</label>
-            <select
-              className="form-select"
-              aria-label="Default select example"
-              name="source_referer"
-              value={formData.source_referer}
-              onChange={selectOnChange}
+            <label>Religion*</label>
+            <Form.Item<FieldType>
+              name="religion"
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your religion!',
+                },
+              ]}
             >
-              <option value="default">Please choose</option>
-              {source.map((item, index) => (
-                <option key={index} value={item}>
-                  {item}
-                </option>
-              ))}
-            </select>
-            <div className="help-block with-errors"></div>
+              <Select
+                className="w-100"
+                showSearch
+                placeholder="Your Religion"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                options={[
+                  {
+                    value: '1',
+                    label: 'Not Identified',
+                  },
+                  {
+                    value: '2',
+                    label: 'Closed',
+                  },
+                  {
+                    value: '3',
+                    label: 'Communicated',
+                  },
+                  {
+                    value: '4',
+                    label: 'Identified',
+                  },
+                  {
+                    value: '5',
+                    label: 'Resolved',
+                  },
+                  {
+                    value: '6',
+                    label: 'Cancelled',
+                  },
+                ]}
+              />
+            </Form.Item>
           </div>
         </div>
-        {/* <div className="col-12">
+        <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
-            <label>Expected Salary (Gross / Month)*</label>
-            <input
-              type="number"
-              placeholder="Enter Expected Salary"
-              className="pass_log_id login-input"
-              name="current_salary"
-              value={formData.current_salary}
-              onChange={inputOnChange}
-              style={{ paddingRight: '11px' }}
+            <label>Ethnicity*</label>
+            <Form.Item<FieldType>
+              name="ethnicity"
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your ethnicity!',
+                },
+              ]}
+            >
+              <Select
+                className="w-100"
+                showSearch
+                placeholder="Your Ethnicity"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                options={[
+                  {
+                    value: '1',
+                    label: 'Not Identified',
+                  },
+                  {
+                    value: '2',
+                    label: 'Closed',
+                  },
+                  {
+                    value: '3',
+                    label: 'Communicated',
+                  },
+                  {
+                    value: '4',
+                    label: 'Identified',
+                  },
+                  {
+                    value: '5',
+                    label: 'Resolved',
+                  },
+                  {
+                    value: '6',
+                    label: 'Cancelled',
+                  },
+                ]}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Blood Type*</label>
+            <Select
+              className="w-100"
+              placeholder="Your Blood Type"
+              options={[
+                { value: 'a', label: 'A' },
+                { value: 'b', label: 'B' },
+                { value: 'ab', label: 'AB' },
+                { value: 'o', label: 'O' },
+              ]}
             />
-            <div className="help-block with-errors"></div>
           </div>
-        </div> */}
+        </div>
         <div className="col-6">
-          <div className="position-relative mb-15">
-            <label style={{ fontSize: '14px' }}>
-              Do you have a LinkedIn Account?*
-            </label>
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="radio"
-                name="flexRadioDefault"
-                id="flexRadioDefault1"
-                value={'yes'}
-                checked={hasLinkedIn === 'yes'}
-                onChange={linkedInRadiosChange}
-              />
-              <label
-                className="form-check-label"
-                htmlFor="flexRadioDefault1"
-                style={{ fontSize: '14px' }}
-              >
-                Yes
-              </label>
-            </div>
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="radio"
-                name="flexRadioDefault"
-                id="flexRadioDefault2"
-                value="no"
-                checked={hasLinkedIn === 'no'}
-                onChange={linkedInRadiosChange}
-              />
-              <label
-                className="form-check-label"
-                htmlFor="flexRadioDefault2"
-                style={{ fontSize: '14px' }}
-              >
-                No
-              </label>
-            </div>
+          <div className="input-group-meta position-relative mb-15">
+            <label>Marital Status*</label>
+            <Select
+              className="w-100"
+              showSearch
+              placeholder="Your Marital Status"
+              optionFilterProp="children"
+              onChange={handleChangeMarried}
+              filterOption={(input, option) =>
+                (option?.label ?? '').includes(input)
+              }
+              filterSort={(optionA, optionB) =>
+                (optionA?.label ?? '')
+                  .toLowerCase()
+                  .localeCompare((optionB?.label ?? '').toLowerCase())
+              }
+              options={[
+                {
+                  value: 'married',
+                  label: 'Married',
+                },
+                {
+                  value: '2',
+                  label: 'Closed',
+                },
+                {
+                  value: '3',
+                  label: 'Communicated',
+                },
+              ]}
+            />
           </div>
         </div>
-        {hasLinkedIn === 'yes' && (
-          <div className="col-6">
-            <div className="input-group-meta position-relative mb-15">
-              <label>LinkedIn URL*</label>
-              <input
-                type="text"
-                placeholder="Enter LinkedIn URL"
-                className="pass_log_id login-input"
-                name="linkedin_profile_url"
-                value={formData.linkedin_profile_url}
-                onChange={inputOnChange}
-              />
-              <div className="help-block with-errors"></div>
-            </div>
-          </div>
-        )}
-        {hasLinkedIn === 'no' && <div className="col-6"></div>}
 
+        <label className="fw-bold mt-5">Address</label>
         <div className="col-12">
-          <div className="position-relative mb-25">
-            <label style={{ fontSize: '14px' }}>Work Experience*</label>
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="radio"
-                name="RadioFreshGraduate"
-                id="RadioFreshGraduateValue1"
-                value="no"
-                checked={hasExperience === 'no'}
-                onChange={hasExperienceOnChange}
+          <div className="input-group-meta position-relative mb-15">
+            <label>Permanent Address (as per ID/Passport)*</label>
+            <Form.Item<FieldType>
+              name="permanentAddress"
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your permanent address!',
+                },
+              ]}
+            >
+              <Input placeholder="Your Permanent Address" />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Country*</label>
+            <Form.Item<FieldType>
+              name="country"
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your country!',
+                },
+              ]}
+            >
+              <Select
+                className="w-100"
+                showSearch
+                placeholder="Your Country"
+                optionFilterProp="children"
+                onChange={handleChangeCountry}
+                filterOption={(input, option) =>
+                  (option?.label ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                options={[
+                  {
+                    value: 'indonesia',
+                    label: 'Indonesia',
+                  },
+                  {
+                    value: 'malaysia',
+                    label: 'Malaysia',
+                  },
+                  {
+                    value: 'singapura',
+                    label: 'Singapura',
+                  },
+                ]}
               />
-              <label
-                className="form-check-label"
-                htmlFor="RadioFreshGraduateValue1"
-                style={{ fontSize: '14px' }}
-              >
-                Fresh Graduate
-              </label>
-            </div>
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="radio"
-                name="RadioFreshGraduate"
-                id="RadioFreshGraduateValue2"
-                value="yes"
-                checked={hasExperience === 'yes'}
-                onChange={hasExperienceOnChange}
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>City*</label>
+            <Form.Item<FieldType>
+              name="city"
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your city!',
+                },
+              ]}
+            >
+              <Select
+                className="w-100"
+                showSearch
+                placeholder="Your City"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                options={[
+                  {
+                    value: '1',
+                    label: 'Not Identified',
+                  },
+                  {
+                    value: '2',
+                    label: 'Closed',
+                  },
+                  {
+                    value: '3',
+                    label: 'Communicated',
+                  },
+                  {
+                    value: '4',
+                    label: 'Identified',
+                  },
+                  {
+                    value: '5',
+                    label: 'Resolved',
+                  },
+                  {
+                    value: '6',
+                    label: 'Cancelled',
+                  },
+                ]}
               />
-              <label
-                className="form-check-label"
-                htmlFor="RadioFreshGraduateValue2"
-                style={{ fontSize: '14px' }}
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          {country === 'indonesia' && (
+            <div className="input-group-meta position-relative mb-15">
+              <label>RT*</label>
+              <Form.Item<FieldType>
+                name="rt"
+                className="mb-0"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input your RT!',
+                  },
+                ]}
               >
-                Experience
-              </label>
+                <Input placeholder="Your RT" />
+              </Form.Item>
             </div>
+          )}
+        </div>
+        <div className="col-6">
+          {country === 'indonesia' && (
+            <div className="input-group-meta position-relative mb-15">
+              <label>RW*</label>
+              <Form.Item<FieldType>
+                name="rw"
+                className="mb-0"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input your RW!',
+                  },
+                ]}
+              >
+                <Input placeholder="Your RW" />
+              </Form.Item>
+            </div>
+          )}
+        </div>
+        <div className="col-6">
+          {country === 'indonesia' && (
+            <div className="input-group-meta position-relative mb-15">
+              <label>Subdistrict*</label>
+              <Form.Item<FieldType>
+                name="subdistrict"
+                className="mb-0"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input your subdistrict!',
+                  },
+                ]}
+              >
+                <Input placeholder="Your Subdistrict" />
+              </Form.Item>
+            </div>
+          )}
+        </div>
+        <div className="col-6">
+          {country === 'indonesia' && (
+            <div className="input-group-meta position-relative mb-15">
+              <label>Village*</label>
+              <Form.Item<FieldType>
+                name="village"
+                className="mb-0"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please input your village!',
+                  },
+                ]}
+              >
+                <Input placeholder="Your Village" />
+              </Form.Item>
+            </div>
+          )}
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Zip Code*</label>
+            <Form.Item<FieldType>
+              name="zipCode"
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your zip code!',
+                },
+              ]}
+            >
+              <Input placeholder="Your Zip Code" />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-12">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Current Address (Domicile)*</label>
+            <Form.Item<FieldType>
+              name="currentAddress"
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your current address!',
+                },
+              ]}
+            >
+              <Input placeholder="Your Current Address" />
+            </Form.Item>
           </div>
         </div>
 
-        {hasExperience === 'yes' && (
-          <>
-            <div className="col-12">
-              <div className="input-group-meta position-relative mb-20">
-                <label>Company Name - Last*</label>
-                <input
-                  type="text"
-                  className="login-input"
-                  placeholder="Company Name"
-                  name="company_name"
-                  value={formData.experience.company_name}
-                  onChange={inputOnChange}
-                />
-                <div className="help-block with-errors"></div>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-20">
-                <label>Job Function*</label>
-                <select
-                  className="form-select"
-                  aria-label="Default select example"
-                  name="job_function"
-                  value={formData.experience.job_function}
-                  onChange={selectOnChange}
-                >
-                  <option value="choose-job-function">Please choose</option>
-                  {jobFunction.map((item, index) => (
-                    <option key={index} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-                <div className="help-block with-errors"></div>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-20">
-                <label>Job Title*</label>
-                <select
-                  className="form-select"
-                  aria-label="Default select example"
-                  name="job_title"
-                  value={formData.experience.job_title}
-                  onChange={selectOnChange}
-                >
-                  <option value="choose-job-title">Please choose</option>
-                  {jobTitle.map((item, index) => (
-                    <option key={index} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-                <div className="help-block with-errors"></div>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-20">
-                <label>Line Industry*</label>
-                <select
-                  className="form-select"
-                  aria-label="Default select example"
-                  name="line_industry"
-                  value={formData.experience.line_industry}
-                  onChange={selectOnChange}
-                >
-                  <option value="choose-line-industry">Please choose</option>
-                  {lineIndustry.map((item, index) => (
-                    <option key={index} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-                <div className="help-block with-errors"></div>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-20">
-                <label>Level*</label>
-                <select
-                  className="form-select"
-                  aria-label="Default select example"
-                  name="job_level"
-                  value={formData.experience.job_level}
-                  onChange={selectOnChange}
-                >
-                  <option value="choose-level">Please choose</option>
-                  {level.map((item, index) => (
-                    <option key={index} value={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-                <div className="help-block with-errors"></div>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-20">
-                <label>Period Start*</label>
-                <div className="form-group">
-                  <input
-                    type="date"
-                    className="form-control login-input"
-                    id="period-start"
-                    name="start_at"
-                    value={formData.experience.start_at}
-                    onChange={inputOnChange}
-                    style={{ paddingRight: '11px' }}
-                  />
-                </div>
-                <div className="help-block with-errors"></div>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-20">
-                <label>Period End*</label>
-                <div className="form-group">
-                  <input
-                    type="date"
-                    className="form-control login-input"
-                    id="period-end"
-                    name="end_at"
-                    value={formData.experience.end_at}
-                    onChange={inputOnChange}
-                    style={{ paddingRight: '11px' }}
-                  />
-                </div>
-                <div className="help-block with-errors"></div>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-20">
-                <label>Current Salary (Gross / Month)*</label>
-                <input
-                  type="text"
-                  placeholder="Enter Expected Salary"
-                  className="pass_log_id login-input"
-                  name="salary"
-                  value={formData.experience.salary}
-                  onChange={inputOnChange}
-                  style={{ paddingRight: '11px' }}
-                />
-                <div className="help-block with-errors"></div>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-20">
-                <label>Expected Salary (Gross / Month)*</label>
-                <input
-                  type="number"
-                  placeholder="Enter Expected Salary"
-                  className="pass_log_id login-input"
-                  name="current_salary"
-                  value={formData.current_salary}
-                  onChange={inputOnChange}
-                  style={{ paddingRight: '11px' }}
-                />
-                <div className="help-block with-errors">
-                  {/* <ErrorMsg msg={errors.expectedSalary?.message!} /> */}
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-
-        {hasExperience === 'no' && (
+        <label className="fw-bold mt-5 mb-2">Family Structure</label>
+        <Tabs
+          type="editable-card"
+          onChange={onChangeTabs}
+          activeKey={activeKey}
+          onEdit={onEdit}
+          items={items}
+        />
+        {activeKey && (
           <>
             <div className="col-6">
-              <div className="input-group-meta position-relative mb-20">
-                <label>Expected Salary (Gross / Month)*</label>
-                <input
-                  type="number"
-                  placeholder="Enter Expected Salary"
-                  className="pass_log_id login-input"
-                  name="current_salary"
-                  value={formData.current_salary}
-                  onChange={inputOnChange}
-                  style={{ paddingRight: '11px' }}
-                />
-                <div className="help-block with-errors">
-                  {/* <ErrorMsg msg={errors.expectedSalary?.message!} /> */}
-                </div>
+              <div className="input-group-meta position-relative mb-15">
+                <label>Relation*</label>
+                <Form.Item<FieldType>
+                  name={['families', idFamily.toString(), index, 'relation']}
+                  className="mb-0"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your family relation!',
+                    },
+                  ]}
+                >
+                  <Select
+                    className="w-100"
+                    placeholder="Your Family Relation"
+                    options={[
+                      { value: 'male', label: 'Male' },
+                      { value: 'female', label: 'Female' },
+                      ...(marriedValue === 'married'
+                        ? [{ value: 'pasangan', label: 'Pasangan' }]
+                        : []),
+                    ]}
+                  />
+                </Form.Item>
               </div>
             </div>
-            <div className="col-6"></div>
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-15">
+                <label>Name*</label>
+                <Form.Item<FieldType>
+                  name={['families', idFamily.toString(), index, 'name']}
+                  className="mb-0"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your relation name!',
+                    },
+                  ]}
+                >
+                  <Input placeholder="Your Relation Name" />
+                </Form.Item>
+              </div>
+            </div>
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-15">
+                <label>Gender*</label>
+                <Form.Item<FieldType>
+                  name={['families', idFamily.toString(), index, 'gender']}
+                  className="mb-0"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your family gender!',
+                    },
+                  ]}
+                >
+                  <Select
+                    className="w-100"
+                    placeholder="Your Family Gender"
+                    options={[
+                      { value: 'male', label: 'Male' },
+                      { value: 'female', label: 'Female' },
+                    ]}
+                  />
+                </Form.Item>
+              </div>
+            </div>
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-15">
+                <label>Date of Birth*</label>
+                <Form.Item<FieldType>
+                  name={['families', idFamily.toString(), index, 'dateOfBirth']}
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your relation date of birth!',
+                    },
+                  ]}
+                >
+                  <DatePicker
+                    className="w-100"
+                    placeholder="Select Date"
+                    onChange={onChangeDate}
+                  />
+                </Form.Item>
+              </div>
+            </div>
           </>
         )}
 
@@ -518,13 +1007,12 @@ const RegisterFormStep1 = () => {
           <button
             type="submit"
             className="btn-eleven fw-500 tran3s mt-10 btn-login btn-next"
-            // onClick={() => dispatch(setRegisterStep('third'))}
           >
             Next
           </button>
         </div>
       </div>
-    </form>
+    </Form>
   );
 };
 

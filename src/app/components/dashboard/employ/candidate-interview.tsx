@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import EmployJobItem from './job-item';
 import EmployShortSelect from './short-select';
@@ -8,17 +8,19 @@ import search from '@/assets/dashboard/images/icon/icon_10.svg';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
 import candidate_data from '@/data/candidate-data';
-import CandidateAssessmentItem from './candidate-assessment-item';
+import CandidateInterviewItem from './candidate-interview-item';
+import SearchBar from '@/ui/search-bar';
+import CandidateDetailsModal from '../../common/popup/candidate-details-modal';
 import { useAppDispatch } from '@/redux/hook';
 import { setApplicantStep } from '@/redux/features/applicantStepSlice';
 
-const JobApplicantArea = () => {
+const CandidateInterview = () => {
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
 
-  dispatch(setApplicantStep({ currentStep: 'initial' }));
+  dispatch(setApplicantStep({ currentStep: 'interview' }));
 
   const handleJobFpkSearch = useDebouncedCallback((value) => {
     const params = new URLSearchParams(searchParams);
@@ -30,8 +32,7 @@ const JobApplicantArea = () => {
     }
     router.replace(`${pathname}?${params.toString()}`);
   }, 300);
-  const candidate_items = candidate_data.slice(0, 5);
-
+  const candidate_items = candidate_data.slice(0, 3);
   return (
     <>
       <div className="d-sm-flex align-items-start justify-content-between mb-10 lg-mb-30">
@@ -70,10 +71,10 @@ const JobApplicantArea = () => {
         </Link>
         <Link
           href="/dashboard/ta/preview-page/assessment"
+          className="d-flex flex-column align-items-center me-4"
           onClick={() =>
             dispatch(setApplicantStep({ currentStep: 'assessment' }))
           }
-          className="d-flex flex-column align-items-center me-4"
         >
           <span>3</span>
           <span>Assessment</span>
@@ -109,8 +110,11 @@ const JobApplicantArea = () => {
           <span>Boarding</span>
         </Link>
       </div>
-      <div className="d-flex justify-content-end mb-40">
-        <form
+      <div className="d-flex justify-content-between align-items-center mb-40">
+        <div>
+          <h4 className="sub-main-title">Interview</h4>
+        </div>
+        {/* <form
           onSubmit={(e) => e.preventDefault()}
           className="search-form form-fpk"
         >
@@ -123,41 +127,21 @@ const JobApplicantArea = () => {
           <button type="submit">
             <Image src={search} alt="search" className="lazy-img m-auto" />
           </button>
-        </form>
+        </form> */}
+        <SearchBar />
       </div>
 
       <div className="wrapper">
         {candidate_items.map((item) => (
-          <CandidateAssessmentItem key={item.id} item={item} />
+          <CandidateInterviewItem key={item.id} item={item} />
         ))}
       </div>
 
-      <div className="dash-pagination d-flex justify-content-end mt-30">
-        <ul className="style-none d-flex align-items-center">
-          <li>
-            <a href="#" className="active">
-              1
-            </a>
-          </li>
-          <li>
-            <a href="#">2</a>
-          </li>
-          <li>
-            <a href="#">3</a>
-          </li>
-          <li>..</li>
-          <li>
-            <a href="#">7</a>
-          </li>
-          <li>
-            <a href="#">
-              <i className="bi bi-chevron-right"></i>
-            </a>
-          </li>
-        </ul>
-      </div>
+      {/* start modal */}
+      <CandidateDetailsModal />
+      {/* end modal */}
     </>
   );
 };
 
-export default JobApplicantArea;
+export default CandidateInterview;

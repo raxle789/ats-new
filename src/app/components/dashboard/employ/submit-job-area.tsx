@@ -328,48 +328,10 @@ const SubmitJobArea = () => {
             name="jobTitle"
             rules={[{ required: true, message: 'Please Input Job Title!' }]}
           >
-            {/* <Select
-              showSearch
-              size="large"
-              placeholder="custom dropdown render"
-              filterOption={(input, option) =>
-                (option?.label ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              dropdownRender={(menu) => (
-                <>
-                  {menu}
-                  <Divider style={{ margin: '8px 0' }} />
-                  <Space style={{ padding: '0 8px 4px' }}>
-                    <Input
-                      placeholder="Please enter item"
-                      ref={inputRef}
-                      value={name}
-                      onChange={onNameChange}
-                      onKeyDown={(e) => e.stopPropagation()}
-                    />
-                    <Button
-                      type="text"
-                      icon={<PlusOutlined />}
-                      onClick={addItem}
-                    >
-                      Add item
-                    </Button>
-                  </Space>
-                </>
-              )}
-              options={items.map((item) => ({ label: item, value: item }))}
-            /> */}
             <Select
               className="select"
               showSearch
               size="large"
-              mode="tags"
-              maxCount={1}
               allowClear
               optionFilterProp="children"
               filterOption={(input, option) =>
@@ -382,6 +344,21 @@ const SubmitJobArea = () => {
               }
               placeholder="Select Job Line Industry"
               options={optionValues}
+            />
+          </Form.Item>
+        </div>
+        <div className="dash-input-wrapper mb-30">
+          <Form.Item
+            label="Job Title Aliases"
+            name="jobTitleAliases"
+            rules={[
+              { required: true, message: 'Please Input Job Title Aliases!' },
+            ]}
+          >
+            <Input
+              placeholder="Input Job Title Aliases"
+              size="large"
+              style={{ height: '40px' }}
             />
           </Form.Item>
         </div>
@@ -919,6 +896,7 @@ const SubmitJobArea = () => {
               </Checkbox>
               <Select
                 className="select"
+                mode="multiple"
                 size="large"
                 showSearch
                 allowClear
@@ -974,6 +952,7 @@ const SubmitJobArea = () => {
               </Checkbox>
               <Select
                 className="select"
+                mode="multiple"
                 size="large"
                 showSearch
                 allowClear

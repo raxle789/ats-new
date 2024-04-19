@@ -40,7 +40,7 @@ const Pagination: React.FC<IProps> = ({
 
   return (
     <ReactPaginate
-      className={`pagination-one d-flex align-items-center justify-content-center style-none ${disabled ? 'd-none' : ''}`}
+      className={`pagination-one pagi-candidate-details d-flex align-items-center justify-content-center style-none ${disabled ? 'd-none' : ''}`}
       pageLinkClassName="page-link"
       pageClassName="page-item"
       initialPage={Number(page) - 1}

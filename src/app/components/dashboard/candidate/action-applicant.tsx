@@ -8,23 +8,76 @@ const ActionApplicant = () => {
   return (
     <ul className="dropdown-menu dropdown-menu-end">
       {currentStep === 'assessment' && (
-        <li>
-          <a
-            className="applicant-action"
-            onClick={() => {
-              router.push('/dashboard/ta/preview-page/assessment/review');
-            }}
-          >
-            View Result
-          </a>
-        </li>
+        <>
+          <li>
+            <a
+              className="applicant-action"
+              onClick={() => {
+                router.push('/dashboard/ta/preview-page/assessment/review');
+              }}
+            >
+              View Result
+            </a>
+          </li>
+          <li>
+            <a
+              className="applicant-action"
+              onClick={() => {
+                router.push('');
+              }}
+            >
+              Invite Assessment
+            </a>
+          </li>
+          <li>
+            <a
+              className="applicant-action"
+              onClick={() => {
+                router.push('');
+              }}
+            >
+              Reschedule Assessment
+            </a>
+          </li>
+          <li>
+            <a className="applicant-action">Assign to Interview</a>
+          </li>
+        </>
       )}
-      <li>
-        <a className="applicant-action">Assign to Assessment</a>
-      </li>
-      <li>
-        <a className="applicant-action">Assign to Interview</a>
-      </li>
+      {currentStep === 'interview' && (
+        <>
+          <li>
+            <a
+              className="applicant-action"
+              onClick={() => {
+                router.push('');
+              }}
+            >
+              Create Interview
+            </a>
+          </li>
+          <li>
+            <a
+              className="applicant-action"
+              onClick={() => {
+                router.push('');
+              }}
+            >
+              Mark as Done
+            </a>
+          </li>
+        </>
+      )}
+      {currentStep === 'initial' && (
+        <>
+          <li>
+            <a className="applicant-action">Assign to Assessment</a>
+          </li>
+          <li>
+            <a className="applicant-action">Assign to Interview</a>
+          </li>
+        </>
+      )}
       <li>
         <a className="applicant-action">Assign to Offering</a>
       </li>

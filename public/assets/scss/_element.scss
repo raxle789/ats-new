@@ -373,6 +373,9 @@
   .modal-content {
     margin: 40px auto;
   }
+  .candidate-content {
+    margin: 0 0 0 42%;
+  }
   .login-content {
     margin: 0px auto;
   }
@@ -405,16 +408,16 @@
   .form-wrapper {
     max-width: 380px;
     .input-group-meta {
-      input {
-        width: 100%;
-        height: 48px;
-        font-size: 16px;
-        border: 1px solid rgba($color: #000000, $alpha: 0.06);
-        border-radius: 8px;
-        padding: 0 52px 0 20px;
-        color: #000;
-        background: rgba($color: #31795a, $alpha: 0.09);
-      }
+      // input {
+      //   width: 100%;
+      //   height: 48px;
+      //   font-size: 16px;
+      //   border: 1px solid rgba($color: #000000, $alpha: 0.06);
+      //   border-radius: 8px;
+      //   padding: 0 52px 0 20px;
+      //   color: #000;
+      //   background: rgba($color: #31795a, $alpha: 0.09);
+      // }
       .login-input {
         height: 33px;
         font-size: 14px;
@@ -569,6 +572,9 @@
 .user-apply-form {
   max-width: 520px;
 }
+.candidate-sub-container {
+  width: 750px;
+}
 .user-register-form {
   max-width: 540px;
 }
@@ -593,4 +599,8 @@
 .form-select {
   height: 33px;
   font-size: 14px;
+}
+
+.no-hover-effect::hover {
+  background-color: white !important;
 }

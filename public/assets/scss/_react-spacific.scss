@@ -125,7 +125,7 @@ img:focus {
     padding: 0;
     width: 60px;
     height: 40px;
-    border-radius: 12%;
+    border-radius: 8%;
     line-height: 40px;
     font-size: 16px;
     color: #31795a;
@@ -142,6 +142,46 @@ img:focus {
       & a {
         background: #31795a;
         color: #fff;
+      }
+    }
+    &.previous {
+      &.disabled {
+        display: none;
+      }
+      & a {
+        width: auto;
+        height: auto;
+      }
+    }
+    &.next {
+      margin-left: 12px;
+      &.disabled {
+        display: none;
+      }
+    }
+  }
+}
+
+.pagi-candidate-details {
+  .page-link {
+    width: 35px;
+    height: 35px;
+    line-height: 32px;
+    border-radius: 8%;
+    color: black;
+    background: #f6f6f6;
+    border: 1px solid #f6f6f6;
+    transition: 0.3s;
+    &:hover {
+      background: white;
+      color: black;
+    }
+  }
+  & li {
+    &.active {
+      & a {
+        background: #f6f6f6;
+        color: black;
       }
     }
     &.previous {

@@ -1,11 +1,32 @@
 'use client';
 
-import Image from 'next/image';
-import icon from '@/assets/images/icon/icon_60.svg';
 import { useState } from 'react';
 import { createUser } from '@/libs/Registration';
 import { setRegisterStep } from '@/redux/features/fatkhur/registerSlice';
 import { useAppDispatch } from '@/redux/hook';
+import { Input, Form, DatePicker } from 'antd';
+import type { DatePickerProps, FormProps } from 'antd';
+
+type FieldType = {
+  fullname?: string;
+  email?: string;
+  phoneNumber?: string;
+  dateOfBirth?: string;
+  password?: string;
+  confirmPassword?: string;
+};
+
+const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
+  console.log('Success:', values);
+};
+
+const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
+  console.log('Failed:', errorInfo);
+};
+
+const onChange: DatePickerProps['onChange'] = (date, dateString) => {
+  console.log(date, dateString);
+};
 
 const RegisterForm = () => {
   const dispatch = useAppDispatch();
@@ -15,6 +36,8 @@ const RegisterForm = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone_number: '',
+    date_of_birth: '',
     password: '',
     confirm_password: '',
   });
@@ -50,143 +73,94 @@ const RegisterForm = () => {
     setErrors({});
 
     dispatch(setRegisterStep('second'));
-    // dispatch(setStep({ newStep: 2 }));
   };
   return (
-    <form onSubmit={formOnSubmit}>
+    <Form
+      name="form1"
+      variant="filled"
+      initialValues={{ remember: true }}
+      onFinish={onFinish}
+      onFinishFailed={onFinishFailed}
+    >
       <div className="row">
         <div className="col-12">
           <div className="input-group-meta position-relative mb-15">
-            <label>Full Name*</label>
-            <input
-              className="login-input"
-              type="text"
-              placeholder="James Brower"
-              name="name"
-              value={formData.name}
-              onChange={inputOnChange}
-            />
-            <div className="help-block with-errors">
-              {errors.name && (
-                <span className="text-danger">{errors.name}</span>
-              )}
-            </div>
+            <label>Full Name (as per ID/Passport)*</label>
+            <Form.Item<FieldType>
+              name="fullname"
+              rules={[
+                { required: true, message: 'Please input your fullname!' },
+              ]}
+            >
+              <Input placeholder="Your Full Name" />
+            </Form.Item>
           </div>
         </div>
         <div className="col-12">
           <div className="input-group-meta position-relative mb-15">
             <label>Email*</label>
-            <input
-              className="login-input"
-              type="email"
-              placeholder="james@example.com"
+            <Form.Item<FieldType>
               name="email"
-              value={formData.email}
-              onChange={inputOnChange}
-              autoComplete="off"
-            />
-            <div className="help-block with-errors">
-              {errors.email && (
-                <span className="text-danger">{errors.email}</span>
-              )}
-            </div>
+              rules={[{ required: true, message: 'Please input your email!' }]}
+            >
+              <Input placeholder="Your Email" />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Phone Number*</label>
+            <Form.Item<FieldType>
+              name="phoneNumber"
+              rules={[
+                { required: true, message: 'Please input your phone number!' },
+              ]}
+            >
+              <Input placeholder="Your Phone Number" />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Date of Birth*</label>
+            <Form.Item<FieldType>
+              name="dateOfBirth"
+              rules={[
+                { required: true, message: 'Please input your date of birth!' },
+              ]}
+            >
+              <DatePicker
+                className="w-100"
+                onChange={onChange}
+                placeholder="Select Date"
+              />
+            </Form.Item>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label>Password*</label>
-            {/* <input
-              type={`password`}
-              placeholder="Enter Password"
-              className="pass_log_id"
+            <Form.Item<FieldType>
               name="password"
-              value={formData.password}
-              onChange={inputOnChange}
-              autoComplete="off"
-            /> */}
-            {/* <span
-              className="placeholder_icon"
-              // onClick={}
+              rules={[
+                { required: true, message: 'Please input your password!' },
+              ]}
             >
-              <span className={`passVicon eye-slash`}>
-                <Image src={icon} alt="pass-icon" />
-              </span>
-            </span> */}
-
-            <input
-              type={`${showPass ? 'text' : 'password'}`}
-              placeholder="Enter Password"
-              className="pass_log_id login-input"
-              // {...register('password', { required: `Password is required!` })}
-              name="password"
-              value={formData.password}
-              onChange={inputOnChange}
-              autoComplete="off"
-            />
-            <span
-              className="placeholder_icon"
-              onClick={() => setShowPass(!showPass)}
-            >
-              <span className={`passVicon ${showPass ? 'eye-slash' : ''}`}>
-                <Image src={icon} alt="pass-icon" />
-              </span>
-            </span>
-            <div className="help-block with-errors">
-              {errors.password && (
-                <span className="text-danger">{errors.password}</span>
-              )}
-            </div>
+              <Input.Password placeholder="Password" />
+            </Form.Item>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label>Confirm Password*</label>
-            {/* <input
-              type={`password`}
-              placeholder="Confirm Your Password"
-              className="pass_log_id"
-              name="confirm_password"
-              value={formData.confirm_password}
-              onChange={inputOnChange}
-              autoComplete="off"
-            /> */}
-            {/* <span
-              className="placeholder_icon"
-              // onClick={}
+            <Form.Item<FieldType>
+              name="confirmPassword"
+              rules={[
+                { required: true, message: 'Please confirm your password!' },
+              ]}
             >
-              <span className={`passVicon eye-slash`}>
-                <Image src={icon} alt="pass-icon" />
-              </span>
-            </span> */}
-
-            <input
-              type={`${showConfirmPass ? 'text' : 'password'}`}
-              placeholder="Confirm Your Password"
-              className="pass_log_id login-input"
-              // {...register('confirmPass', {
-              //   required: `Confirm Password is required!`,
-              // })}
-              name="confirm_password"
-              value={formData.confirm_password}
-              onChange={inputOnChange}
-              autoComplete="off"
-              style={{ paddingRight: '40px' }}
-            />
-            <span
-              className="placeholder_icon"
-              onClick={() => setShowConfirmPass(!showConfirmPass)}
-            >
-              <span
-                className={`passVicon ${showConfirmPass ? 'eye-slash' : ''}`}
-              >
-                <Image src={icon} alt="pass-icon" />
-              </span>
-            </span>
-            <div className="help-block with-errors">
-              {errors.confirm_password && (
-                <span className="text-danger">{errors.confirm_password}</span>
-              )}
-            </div>
+              <Input.Password placeholder="Confirm Your Password" />
+            </Form.Item>
           </div>
         </div>
 
@@ -198,13 +172,8 @@ const RegisterForm = () => {
             Next
           </button>
         </div>
-        <div className="help-block text-center mt-2 with-errors">
-          {errors.saveUser && (
-            <span className="text-danger">{errors.saveUser}</span>
-          )}
-        </div>
       </div>
-    </form>
+    </Form>
   );
 };
 

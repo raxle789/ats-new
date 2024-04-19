@@ -2,8 +2,8 @@
 import React from 'react';
 import JobApplicantArea from '@/app/components/dashboard/employ/job-applicant';
 
-const jobApplicantPage = () => {
+const JobApplicantPage = () => {
   return <JobApplicantArea />;
 };
 
-export default jobApplicantPage;
+export default JobApplicantPage;

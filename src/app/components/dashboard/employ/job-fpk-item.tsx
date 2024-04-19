@@ -44,7 +44,7 @@ const EmployJobFpkItem: React.FC<FPKItemProps> = ({
   const setFormDefaultValue = async () => {
     if (fpkData) {
       await Promise.all(
-        fpkData?.map(async (data) => {
+        fpkData?.map(async (data: any) => {
           await formRef.current[data?.requestNo]?.setFieldsValue({
             efpkRequestNo: data?.requestNo,
             taId: data?.taId,

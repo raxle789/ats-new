@@ -2,8 +2,14 @@ import React from 'react';
 import ActionApplicant from '../candidate/action-applicant';
 import { ICandidate } from '@/data/candidate-data';
 import Image from 'next/image';
+import { useAppDispatch } from '@/redux/hook';
+import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
 
-const CandidateItem = ({ item }: { item: ICandidate }) => {
+const CandidateAssessmentItem = ({ item }: { item: ICandidate }) => {
+  const dispatch = useAppDispatch();
+  const showModal = () => {
+    dispatch(setIsOpen(true));
+  };
   return (
     <div className="candidate-profile-card list-layout border-0 mb-25">
       <div className="d-flex">
@@ -22,7 +28,11 @@ const CandidateItem = ({ item }: { item: ICandidate }) => {
             <div className="col-lg-3">
               <div className="position-relative mt-1">
                 <h4 className="candidate-name mb-0">
-                  <a href="#" className="tran3s">
+                  <a
+                    className="tran3s"
+                    style={{ cursor: 'pointer' }}
+                    onClick={showModal}
+                  >
                     {item.name}
                   </a>
                 </h4>
@@ -31,7 +41,7 @@ const CandidateItem = ({ item }: { item: ICandidate }) => {
                   <div>{item.latestPosition}</div>
                 </div>
                 <div className="candidate-info mt-5">
-                  <ul className="cadidate-skills style-none d-flex align-items-center">
+                  <ul className="candidate-skills style-none d-flex align-items-center">
                     {item.skills.slice(0, 4).map((s, i) => (
                       <li key={i}>{s}</li>
                     ))}
@@ -92,4 +102,4 @@ const CandidateItem = ({ item }: { item: ICandidate }) => {
   );
 };
 
-export default CandidateItem;
+export default CandidateAssessmentItem;
