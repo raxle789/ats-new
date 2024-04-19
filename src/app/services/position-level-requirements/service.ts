@@ -165,7 +165,11 @@ export async function getPositionLevelRequirement(positionLevelId) {
       include: {
         positionLevelRequirements: {
           include: {
-            requirementFields: true,
+            requirementFields: {
+              include: {
+                requirementFieldParsers: true,
+              },
+            },
           },
         },
       },

@@ -10,7 +10,10 @@ import {
   searchPositionLevelRequirement,
 } from '../../../app/services/position-level-requirements/service';
 // import * as parserFunctions from '../requirement-parsers/action';
-import { validatePositionLevelRequirementSchema } from './validation';
+import {
+  validateForm,
+  validatePositionLevelRequirementSchema,
+} from './validation';
 import { permanentRedirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 
@@ -118,6 +121,16 @@ function formatFieldName(fieldName) {
 // }
 
 async function formatPositionLevelRequirementData(data) {
+  // const line_industry = ['1', 2, '3', 4];
+
+  // const validateData = validate.safeParse({ line_industry });
+
+  // if (validateData.success) {
+  //   console.info('Success');
+  // } else {
+  //   console.info(validateData.error);
+  // }
+
   if (data?.data) {
     await Promise.all(
       data?.data?.map(async (a) => {
@@ -194,49 +207,93 @@ export async function searchPositionLevelRequirementData(
 }
 
 export async function getPositionLevelRequirementData(positionLevelId) {
+  // const ayam = '[1, 2, 3, 4';
+
+  // const validation = validateArray.safeParse({ ayam });
+
+  // if (validation.success) {
+  //   console.info(validation.data.ayam);
+  // } else {
+  //   console.info(validation.error);
+  // }
+
+  // const ayam = '[1, 2, 3, 4]';
+
+  // const tahu = JSON.parse(ayam);
+
+  // console.info(tahu);
+
   const data = await getPositionLevelRequirement(positionLevelId);
 
   if (data) {
     await Promise.all(
       data?.positionLevelRequirements?.map(async (d) => {
         if (d?.value !== null && d?.value !== undefined && d?.value) {
-          if (
-            d?.requirementFields?.name === 'line_industry' ||
-            d?.requirementFields?.name === 'salary'
-          ) {
-            if (d?.value?.includes('#')) {
-              d.value = await d?.value
-                ?.split('#')
-                .filter((value) => value !== '')
-                .map(Number);
-            } else if (d?.value?.includes('*')) {
-              d.value = await d?.value?.split('*').map(Number);
-            }
-          } else {
-            d.value = Number(d?.value);
-          }
+          const parserFunctions = require('../requirement-parsers/action');
 
-          // if (
-          //   d?.requirementFields?.name === 'education_level' ||
-          //   d?.requirementField?.name === 'job_level'
-          // ) {
-          //   d.value = Number(d?.value);
-          // } else if (
-          //   d?.requirementFields?.name === 'line_industry' ||
-          //   d?.requirementFields?.name === 'salary'
-          // ) {
-          //   if (d?.value?.includes('#')) {
-          //     d.value = await d?.value?.split('#');
-          //   } else if (d.value.includes('*')) {
-          //     d.value = await d?.value?.split('*');
+          const parserFunction =
+            parserFunctions[
+              d?.requirementFields?.requirementFieldParsers?.name
+            ];
+
+          d.value = await parserFunction(d?.value, true);
+          // if (d?.requirementFields?.name === 'line_industry') {
+          //   // if (d?.value?.includes('#')) {
+          //   //   d.value = await d?.value
+          //   //     ?.split('#')
+          //   //     .filter((value) => value !== '')
+          //   //     .map(Number);
+          //   // } else if (d?.requirementFields?.name === 'salary') {
+          //   //   d.value = await JSON.parse(d?.value);
+          //   // }
+          //   const validate = validateArray.safeParse({
+          //     value: d?.value,
+          //   });
+          //   if (validate.success) {
+          //     d.value = validate?.data?.value;
+          //   } else {
+          //     console.log(validate.error);
           //   }
-          // } else if (
-          //   d?.requirementFields?.name === 'education_level' ||
-          //   d?.requirementFields?.name === 'job_level' ||
-          //   d?.requirementFields?.name === 'min_year_experience'
-          // ) {
-          //   d.value = Number(d?.value);
+          // } else if (d.requirementFields.name === 'salary') {
+          //   const validate = validateSalary.safeParse({
+          //     value: d?.value,
+          //   });
+          //   if (validate.success) {
+          //     d.value = validate?.data?.value;
+          //   } else {
+          //     console.log(validate.error);
+          //   }
+          // } else {
+          //   const validate = validateNumber.safeParse({
+          //     value: d?.value,
+          //   });
+          //   if (validate.success) {
+          //     d.value = validate?.data?.value;
+          //   } else {
+          //     console.log(validate.error);
+          //   }
           // }
+          // // if (
+          // //   d?.requirementFields?.name === 'education_level' ||
+          // //   d?.requirementField?.name === 'job_level'
+          // // ) {
+          // //   d.value = Number(d?.value);
+          // // } else if (
+          // //   d?.requirementFields?.name === 'line_industry' ||
+          // //   d?.requirementFields?.name === 'salary'
+          // // ) {
+          // //   if (d?.value?.includes('#')) {
+          // //     d.value = await d?.value?.split('#');
+          // //   } else if (d.value.includes('*')) {
+          // //     d.value = await d?.value?.split('*');
+          // //   }
+          // // } else if (
+          // //   d?.requirementFields?.name === 'education_level' ||
+          // //   d?.requirementFields?.name === 'job_level' ||
+          // //   d?.requirementFields?.name === 'min_year_experience'
+          // // ) {
+          // //   d.value = Number(d?.value);
+          // // }
         }
       }),
     );
@@ -264,64 +321,69 @@ export async function getAllEducationLevelData() {
 }
 
 export async function setPositionLevelRequirementData(values) {
-  const positionLevelId = Number(values?.positionLevelId);
+  const formValidation = validateForm.safeParse(values);
 
-  for (const [key, value] of Object?.entries(values)) {
-    let newValue = '';
+  if (formValidation.success) {
+    const positionLevelId = formValidation?.data?.positionLevelId;
 
-    if (key !== 'positionLevelId') {
-      if (
-        key !== 'education_level' &&
-        key !== 'grade' &&
-        key !== 'job_level' &&
-        key !== 'min_year_experience'
-      ) {
-        if (key === 'line_industry') {
-          if (value.length === 1) {
-            newValue = `${value[0]}#`;
+    for (const [key, value] of Object?.entries(formValidation?.data)) {
+      const newValue = JSON.stringify(value);
 
-            console.info(newValue);
-          } else if (value.length > 1) {
-            newValue = value.join('#');
-          }
-          // for (let i = 0; i < value.length; i++) {
-          //   // const lineIndustryName = await getLineIndustry(value[i]);
-          //   if (i < value.length - 1) {
-          //     newValue = newValue + value[i] + '#';
-          //   } else {
-          //     newValue = newValue + value[i];
-          //   }
-          // }
-        } else if (key === 'salary') {
-          newValue = `${value.start_salary}*${value.end_salary}`;
-        }
+      // if (key !== 'positionLevelId') {
+      //   if (
+      //     key !== 'education_level' &&
+      //     key !== 'grade' &&
+      //     key !== 'job_level' &&
+      //     key !== 'min_year_experience' &&
+      //     key !== 'line_industry'
+      //   ) {
+      //     // if (key === 'line_industry') {
+      //     //   newValue = JSON.stringify(value);
+      //     //   // if (value.length === 1) {
+      //     //   //   newValue = `${value[0]}#`;
+      //     //   // } else if (value.length > 1) {
+      //     //   //   newValue = value.join('#');
+      //     //   // }
+      //     //   // for (let i = 0; i < value.length; i++) {
+      //     //   //   // const lineIndustryName = await getLineIndustry(value[i]);
+      //     //   //   if (i < value.length - 1) {
+      //     //   //     newValue = newValue + value[i] + '#';
+      //     //   //   } else {
+      //     //   //     newValue = newValue + value[i];
+      //     //   //   }
+      //     //   // }
+      //     // }
+      //     if (key === 'salary') {
+      //       const { start_salary, end_salary } = value;
+
+      //       newValue = JSON.stringify([start_salary, end_salary]);
+      //     }
+      //   } else {
+      //     newValue = JSON.stringify(value);
+      //   }
+      // }
+
+      const schemaValidation = validatePositionLevelRequirementSchema.safeParse(
+        {
+          positionLevelId,
+          key,
+          newValue,
+        },
+      );
+
+      if (schemaValidation.success) {
+        await setPositionLevelRequirement(positionLevelId, key, newValue);
       } else {
-        newValue = value.toString();
+        console.log(schemaValidation.error);
       }
     }
 
-    const validate = await validatePositionLevelRequirementSchema.safeParse({
-      positionLevelId,
-      key,
-      newValue,
-    });
+    revalidatePath('/dashboard/ta/parameter');
 
-    if (validate.success) {
-      await setPositionLevelRequirement(
-        positionLevelId,
-        key,
-        newValue.toString(),
-      );
-    } else {
-      console.log(validate.error);
-
-      break;
-    }
+    permanentRedirect('/dashboard/ta/parameter');
+  } else {
+    console.log(formValidation.error);
   }
-
-  revalidatePath('/dashboard/ta/parameter');
-
-  permanentRedirect('/dashboard/ta/parameter');
 }
 
 // export async function getEducationLevelData(educationLevelId) {

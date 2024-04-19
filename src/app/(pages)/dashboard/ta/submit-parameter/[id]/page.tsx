@@ -1,5 +1,5 @@
 import React from 'react';
-import EmployJobParameter from '@/app/components/dashboard/employ/submit-job-paramater';
+import EmployJobParameter from '@/app/components/dashboard/employ/submit-job-paramater-area';
 
 export const revalidate = 0;
 

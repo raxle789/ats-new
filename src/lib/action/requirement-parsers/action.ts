@@ -13,144 +13,233 @@ import {
   validateGrade,
   validateLineIndustry,
   validateSalary,
+  validateArray,
+  validateNumber,
 } from './validation';
 
-async function parseEducationLevel(educationLevelId) {
-  const validate = validateEducationLevel.safeParse({
-    educationLevelId,
-  });
+async function parseEducationLevel(valueToParse, isOriginal = false) {
+  if (isOriginal) {
+    const validate = validateNumber.safeParse({ value: valueToParse });
 
-  if (validate.success) {
-    const parsedValue = await getEducationLevel(
-      validate?.data?.educationLevelId,
-    );
+    if (validate.success) {
+      const parsedValue = validate?.data?.value;
 
-    return parsedValue;
-  } else {
-    console.log(validate.error);
-
-    return '';
-  }
-}
-
-async function parsePositionLevel(positionLevelId) {
-  const validate = validatePositionLevel.safeParse({
-    positionLevelId,
-  });
-
-  if (validate.success) {
-    const parsedValue = await getPositionLevel(validate?.data?.positionLevelId);
-
-    return parsedValue;
-  } else {
-    console.log(validate.error);
-
-    return '';
-  }
-}
-
-async function parseYearOfExperience(yearOfExperience) {
-  const validate = validateYearOfExperience.safeParse({
-    yearOfExperience,
-  });
-
-  if (validate.success) {
-    if (validate?.data?.yearOfExperience === 1) {
-      return '1 year';
+      return parsedValue;
     } else {
-      return `${validate?.data?.yearOfExperience} years`;
+      console.log(validate.error);
+
+      return null;
     }
   } else {
-    console.log(validate.error);
-
-    return '';
-  }
-}
-
-async function parseGrade(grade) {
-  const validate = validateGrade.safeParse({
-    grade,
-  });
-
-  if (validate.success) {
-    return validate?.data?.grade;
-  } else {
-    console.log(validate.error);
-
-    return '';
-  }
-}
-
-async function parseLineIndustry(lineIndustryId) {
-  const validate = validateLineIndustry.safeParse({
-    lineIndustryId,
-  });
-
-  if (validate.success) {
-    const lineIndustries = validate?.data?.lineIndustryId;
-
-    let parsedValue = '';
-
-    if (lineIndustries.length <= 2) {
-      for (let i = 0; i < lineIndustries.length; i++) {
-        const lineIndustryValue = await getLineIndustry(lineIndustries[i]);
-
-        if (i === lineIndustries.length - 2) {
-          parsedValue = lineIndustryValue + ' and ';
-        } else if (i === lineIndustries.length - 1) {
-          parsedValue = parsedValue + lineIndustryValue;
-        }
-      }
-    } else if (lineIndustries.length > 2) {
-      for (let i = 0; i < lineIndustries.length; i++) {
-        const lineIndustryValue = await getLineIndustry(lineIndustries[i]);
-
-        if (i <= lineIndustries.length - 3) {
-          parsedValue = parsedValue + lineIndustryValue + ', ';
-        } else if (i === lineIndustries.length - 2) {
-          parsedValue = parsedValue + lineIndustryValue + ', and ';
-        } else if (i === lineIndustries.length - 1) {
-          parsedValue = parsedValue + lineIndustryValue;
-        }
-      }
-    }
-
-    return parsedValue;
-  } else {
-    console.log(validate.error);
-
-    return '';
-  }
-}
-
-async function parseSalary(salary) {
-  const validate = validateSalary.safeParse({ salary });
-
-  if (validate.success) {
-    const value = validate?.data?.salary;
-
-    let parsedValue = '';
-
-    const formatter = new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
+    const validate = validateEducationLevel.safeParse({
+      valueToParse,
     });
 
-    if (value.length === 2) {
-      for (let i = 0; i < value.length; i++) {
-        if (i === value.length - 2) {
-          parsedValue = parsedValue + formatter.format(value[i]) + ' - ';
-        } else if (i === value.length - 1) {
-          parsedValue = parsedValue + formatter.format(value[i]);
+    if (validate.success) {
+      const parsedValue = await getEducationLevel(validate?.data?.valueToParse);
+
+      return parsedValue;
+    } else {
+      console.log(validate.error);
+
+      return '';
+    }
+  }
+}
+
+async function parsePositionLevel(valueToParse, isOriginal = false) {
+  if (isOriginal) {
+    const validate = validateNumber.safeParse({ value: valueToParse });
+
+    if (validate.success) {
+      const parsedValue = validate?.data?.value;
+
+      return parsedValue;
+    } else {
+      console.log(validate.error);
+
+      return null;
+    }
+  } else {
+    const validate = validatePositionLevel.safeParse({
+      valueToParse,
+    });
+
+    if (validate.success) {
+      const parsedValue = await getPositionLevel(validate?.data?.valueToParse);
+
+      return parsedValue;
+    } else {
+      console.log(validate.error);
+
+      return '';
+    }
+  }
+}
+
+async function parseYearOfExperience(valueToParse, isOriginal = false) {
+  if (isOriginal) {
+    const validate = validateNumber.safeParse({ value: valueToParse });
+
+    if (validate.success) {
+      const parsedValue = validate?.data?.value;
+
+      return parsedValue;
+    } else {
+      console.log(validate.error);
+
+      return null;
+    }
+  } else {
+    const validate = validateYearOfExperience.safeParse({
+      valueToParse,
+    });
+
+    if (validate.success) {
+      if (validate?.data?.valueToParse === 1) {
+        return '1 year';
+      } else {
+        return `${validate?.data?.valueToParse} years`;
+      }
+    } else {
+      console.log(validate.error);
+
+      return '';
+    }
+  }
+}
+
+async function parseGrade(valueToParse, isOriginal = false) {
+  if (isOriginal) {
+    const validate = validateNumber.safeParse({ value: valueToParse });
+
+    if (validate.success) {
+      const parsedValue = validate?.data?.value;
+
+      return parsedValue;
+    } else {
+      console.log(validate.error);
+
+      return null;
+    }
+  } else {
+    const validate = validateGrade.safeParse({
+      valueToParse,
+    });
+
+    if (validate.success) {
+      return validate?.data?.valueToParse;
+    } else {
+      console.log(validate.error);
+
+      return '';
+    }
+  }
+}
+
+async function parseLineIndustry(valueToParse, isOriginal = false) {
+  if (isOriginal) {
+    const validate = validateArray.safeParse({ value: valueToParse });
+
+    if (validate.success) {
+      const parsedValue = validate?.data?.value;
+
+      return parsedValue;
+    } else {
+      console.log(validate.error);
+
+      return null;
+    }
+  } else {
+    const validate = validateLineIndustry.safeParse({
+      valueToParse,
+    });
+
+    if (validate.success) {
+      const lineIndustries = validate?.data?.valueToParse;
+
+      let parsedValue = '';
+
+      if (lineIndustries.length <= 2) {
+        for (let i = 0; i < lineIndustries.length; i++) {
+          const lineIndustryValue = await getLineIndustry(lineIndustries[i]);
+
+          if (i === lineIndustries.length - 2) {
+            parsedValue = lineIndustryValue + ' and ';
+          } else if (i === lineIndustries.length - 1) {
+            parsedValue = parsedValue + lineIndustryValue;
+          }
+        }
+      } else if (lineIndustries.length > 2) {
+        for (let i = 0; i < lineIndustries.length; i++) {
+          const lineIndustryValue = await getLineIndustry(lineIndustries[i]);
+
+          if (i <= lineIndustries.length - 3) {
+            parsedValue = parsedValue + lineIndustryValue + ', ';
+          } else if (i === lineIndustries.length - 2) {
+            parsedValue = parsedValue + lineIndustryValue + ', and ';
+          } else if (i === lineIndustries.length - 1) {
+            parsedValue = parsedValue + lineIndustryValue;
+          }
         }
       }
+
+      return parsedValue;
+    } else {
+      console.log(validate.error);
+
+      return '';
     }
+  }
+}
 
-    return parsedValue;
+async function parseSalary(valueToParse, isOriginal = false) {
+  if (isOriginal) {
+    const validate = validateArray.safeParse({ value: valueToParse });
+
+    if (validate.success) {
+      const parsedValue = validate?.data?.value;
+
+      const newValue = {
+        start_salary: parsedValue[0],
+        end_salary: parsedValue[1],
+      };
+
+      return newValue;
+    } else {
+      console.log(validate.error);
+
+      return null;
+    }
   } else {
-    console.log(validate.error);
+    const validate = validateSalary.safeParse({ valueToParse });
 
-    return '';
+    if (validate.success) {
+      const value = validate?.data?.valueToParse;
+
+      let parsedValue = '';
+
+      const formatter = new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+      });
+
+      if (value.length === 2) {
+        for (let i = 0; i < value.length; i++) {
+          if (i === value.length - 2) {
+            parsedValue = parsedValue + formatter.format(value[i]) + ' - ';
+          } else if (i === value.length - 1) {
+            parsedValue = parsedValue + formatter.format(value[i]);
+          }
+        }
+      }
+
+      return parsedValue;
+    } else {
+      console.log(validate.error);
+
+      return '';
+    }
   }
 }
 

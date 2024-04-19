@@ -73,23 +73,12 @@ const EmployJobParameterItem = ({
     if (positionLevelRequirementData) {
       positionLevelRequirementData?.positionLevelRequirements?.forEach(
         (data) => {
-          if (data?.requirementFields?.name === 'salary') {
-            form.setFieldsValue({
-              [data?.requirementFields?.name]: {
-                start_salary: data?.value ? data.value[0] : null,
-                end_salary: data?.value ? data.value[1] : null,
-              },
-            });
-          } else {
-            form.setFieldsValue({
-              [data?.requirementFields?.name]:
-                data?.value === null ||
-                data?.value === undefined ||
-                !data?.value
-                  ? null
-                  : data.value,
-            });
-          }
+          form.setFieldsValue({
+            [data?.requirementFields?.name]:
+              data?.value === null || data?.value === undefined || !data?.value
+                ? null
+                : data?.value,
+          });
 
           // if (data?.requirementFields?.name !== 'salary') {
           //   try {

@@ -332,11 +332,12 @@ model PositionLevelRequirements {
 }
 
 model PositionLevels {
-  id                        Int                         @id @default(autoincrement())
+  id                        Int                         @id @default(autoincrement()) @db.Int
   name                      String                      @db.NVarChar(510)
-  level                     Int
-  score                     Int
-  slaDays                   Int?                        @map("sla_days")
+  level                     Int                         @db.Int
+  score                     Int                         @db.Int
+  slaDays                   Int?                        @map("sla_days") @db.Int
+  prointId                  Int?                        @map("proint_id") @db.Int
   createdAt                 DateTime?                   @default(now()) @map("created_at") @db.DateTime
   updatedAt                 DateTime?                   @updatedAt @map("updated_at") @db.DateTime
   positionLevelRequirements PositionLevelRequirements[]
@@ -344,13 +345,32 @@ model PositionLevels {
   @@map("position_levels")
 }
 
+model JobTitles {
+  id        Int       @id @default(autoincrement()) @db.Int
+  name      String    @db.NVarChar(510)
+  createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
+
+  @@map("job_titles")
+}
+
 model JobFunctions {
-  id        Int       @id @default(autoincrement())
+  id        Int       @id @default(autoincrement()) @db.Int
   name      String    @db.NVarChar(510)
   createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
   updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
 
   @@map("job_functions")
+}
+
+model EmploymentStatus {
+  id        Int       @id @default(autoincrement()) @db.Int
+  name      String    @db.NVarChar(510)
+  prointId  Int?      @map("proint_id") @db.Int
+  createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
+
+  @@map("employment_status")
 }
 
 model JobVacancies {
@@ -416,7 +436,7 @@ model CandidateQuestions {
 }
 
 model States {
-  id              Int               @id @default(autoincrement())
+  id              Int               @id @default(autoincrement()) @db.Int
   name            String            @db.NVarChar(255)
   createdAt       DateTime?         @default(now()) @map("created_at") @db.DateTime
   updatedAt       DateTime?         @updatedAt @map("updated_at") @db.DateTime
@@ -436,4 +456,31 @@ model CandidateStates {
 
   @@id([candidateId, jobVacancyId, stateId])
   @@map("candidate_states")
+}
+
+model Genders {
+  id        Int       @id @default(autoincrement()) @db.Int
+  name      String    @db.NVarChar(255)
+  createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
+
+  @@map("genders")
+}
+
+model Skills {
+  id        Int       @id @default(autoincrement()) @db.Int
+  name      String    @db.NVarChar(510)
+  createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
+
+  @@map("skills")
+}
+
+model Certificates {
+  id        Int       @id @default(autoincrement()) @db.Int
+  name      String    @db.NVarChar(510)
+  createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
+
+  @@map("certificates")
 }

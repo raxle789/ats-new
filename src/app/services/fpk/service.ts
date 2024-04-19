@@ -355,8 +355,8 @@ export async function getAllTa() {
     });
 
     const aliasedData = data.map((d) => ({
-      value: d.id,
-      label: d.name,
+      value: d?.id,
+      label: d?.name,
     }));
 
     return aliasedData;

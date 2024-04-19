@@ -28,7 +28,14 @@ import {
   Button,
   notification,
   Modal,
+  Divider,
+  Space,
 } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import type { InputRef } from 'antd';
+
+import type { SelectProps } from 'antd';
+import type { CheckboxProps } from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 
 // import {
@@ -41,6 +48,24 @@ import { ExclamationCircleFilled } from '@ant-design/icons';
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
 const { confirm } = Modal;
+let index = 0;
+
+const optionValues: SelectProps['options'] = [
+  { value: 'jack', label: 'jack' },
+  { value: 'lucy', label: 'lucy' },
+  { value: 'harper', label: 'harper' },
+];
+
+// for (let i = 10; i < 36; i++) {
+//   optionValues.push({
+//     value: i.toString(36) + i,
+//     label: i.toString(36) + i,
+//   });
+// }
+
+const onChange: CheckboxProps['onChange'] = (e) => {
+  console.log(`checked = ${e.target.checked}`);
+};
 
 // props type
 // type IProps = {
@@ -48,37 +73,41 @@ const { confirm } = Modal;
 // };
 
 const SubmitJobArea = () => {
-  // const formRef = useRef(null);
-
-  const [firstInput, setFirstInput] = useState(false);
-
   const [api, contextHolder] = notification.useNotification();
+  const [inputState, setInputState] = useState({
+    age: false,
+    gender: false,
+    skill: false,
+    certificate: false,
+  });
 
-  // const handleInputJobDescription = () => {
-  //   if (!firstInput) {
-  //     const { jobDescription } = formRef.current.getFieldsValue();
+  const [items, setItems] = useState(['jack', 'lucy']);
+  const [name, setName] = useState('');
+  const inputRef = useRef<InputRef>(null);
 
-  //     const formattedJobDescription = `<ul><li>${jobDescription}</li></ul>`;
+  const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setName(event.target.value);
+  };
 
-  //     formRef.current.setFieldsValue({
-  //       jobDescription: formattedJobDescription,
-  //     });
+  const addItem = (
+    e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>,
+  ) => {
+    e.preventDefault();
+    setItems([...items, name || `New item ${index++}`]);
+    setName('');
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+  };
 
-  //     setFirstInput(true);
-  //   }
-  // };
+  const handleCheckboxChange = (inputName: string) => (e: any) => {
+    setInputState({
+      ...inputState,
+      [inputName]: e.target.checked,
+    });
+  };
 
-  // useEffect(() => {
-  //   const jobDescription = formRef.current.getFieldsValue('jobDescription');
-
-  //   const formattedJobDescription = `<ul><li>${jobDescription}</li></ul>`;
-
-  //   formRef.current.setFieldsValue({
-  //     jobDescription: formattedJobDescription,
-  //   });
-  // });
-
-  async function handleFpkModal(values) {
+  async function handleFpkModal(values: boolean) {
     console.info(values);
     setModalOpen(false);
   }
@@ -230,28 +259,29 @@ const SubmitJobArea = () => {
 
       <Form
         form={form}
-        // ref={formRef}
         className="bg-white card-box border-20"
         layout="vertical"
         variant="filled"
         onFinish={handleJobPost}
-        // initialValues={{
-        //   ['jobDescription']: '<ul><li></li></ul>',
-        // }}
       >
-        <h4 className="dash-title-three">Job Position</h4>
-        <div className="dash-input-wrapper mb-30">
+        <h4 className="dash-title-three">FPK</h4>
+        <div className="dash-input-wrapper mb-50">
           <Form.Item
-            label="Job Title"
-            name="jobTitle"
-            rules={[{ required: true, message: 'Please Input Job Title!' }]}
+            label="FPK"
+            name="jobFpk"
+            rules={[
+              {
+                required: true,
+                message: 'Please Select Job FPK!',
+              },
+            ]}
           >
             <Select
               className="select"
               size="large"
               showSearch
               allowClear
-              placeholder="Select Job Title"
+              placeholder="Select Job FPK"
               optionFilterProp="children"
               filterOption={(input, option) =>
                 (option?.label ?? '').includes(input)
@@ -287,6 +317,136 @@ const SubmitJobArea = () => {
                   label: 'Cancelled',
                 },
               ]}
+            />
+          </Form.Item>
+        </div>
+
+        <h4 className="dash-title-three">Job Position</h4>
+        <div className="dash-input-wrapper mb-30">
+          <Form.Item
+            label="Job Title"
+            name="jobTitle"
+            rules={[{ required: true, message: 'Please Input Job Title!' }]}
+          >
+            {/* <Select
+              showSearch
+              size="large"
+              placeholder="custom dropdown render"
+              filterOption={(input, option) =>
+                (option?.label ?? '').includes(input)
+              }
+              filterSort={(optionA, optionB) =>
+                (optionA?.label ?? '')
+                  .toLowerCase()
+                  .localeCompare((optionB?.label ?? '').toLowerCase())
+              }
+              dropdownRender={(menu) => (
+                <>
+                  {menu}
+                  <Divider style={{ margin: '8px 0' }} />
+                  <Space style={{ padding: '0 8px 4px' }}>
+                    <Input
+                      placeholder="Please enter item"
+                      ref={inputRef}
+                      value={name}
+                      onChange={onNameChange}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    />
+                    <Button
+                      type="text"
+                      icon={<PlusOutlined />}
+                      onClick={addItem}
+                    >
+                      Add item
+                    </Button>
+                  </Space>
+                </>
+              )}
+              options={items.map((item) => ({ label: item, value: item }))}
+            /> */}
+            <Select
+              className="select"
+              showSearch
+              size="large"
+              mode="tags"
+              maxCount={1}
+              allowClear
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                (option?.label ?? '').includes(input)
+              }
+              filterSort={(optionA, optionB) =>
+                (optionA?.label ?? '')
+                  .toLowerCase()
+                  .localeCompare((optionB?.label ?? '').toLowerCase())
+              }
+              placeholder="Select Job Title"
+              options={optionValues}
+            />
+          </Form.Item>
+        </div>
+        <div className="dash-input-wrapper mb-30">
+          <Form.Item
+            label="Aliases Job Title"
+            name="aliasesJobTitle"
+            rules={[
+              { required: true, message: 'Please Input Aliases Job Title!' },
+            ]}
+          >
+            {/* <Select
+              showSearch
+              size="large"
+              placeholder="custom dropdown render"
+              filterOption={(input, option) =>
+                (option?.label ?? '').includes(input)
+              }
+              filterSort={(optionA, optionB) =>
+                (optionA?.label ?? '')
+                  .toLowerCase()
+                  .localeCompare((optionB?.label ?? '').toLowerCase())
+              }
+              dropdownRender={(menu) => (
+                <>
+                  {menu}
+                  <Divider style={{ margin: '8px 0' }} />
+                  <Space style={{ padding: '0 8px 4px' }}>
+                    <Input
+                      placeholder="Please enter item"
+                      ref={inputRef}
+                      value={name}
+                      onChange={onNameChange}
+                      onKeyDown={(e) => e.stopPropagation()}
+                    />
+                    <Button
+                      type="text"
+                      icon={<PlusOutlined />}
+                      onClick={addItem}
+                    >
+                      Add item
+                    </Button>
+                  </Space>
+                </>
+              )}
+              options={items.map((item) => ({ label: item, value: item }))}
+            /> */}
+            <Select
+              className="select"
+              showSearch
+              size="large"
+              mode="tags"
+              maxCount={1}
+              allowClear
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                (option?.label ?? '').includes(input)
+              }
+              filterSort={(optionA, optionB) =>
+                (optionA?.label ?? '')
+                  .toLowerCase()
+                  .localeCompare((optionB?.label ?? '').toLowerCase())
+              }
+              placeholder="Select Aliases Job Title"
+              options={optionValues}
             />
           </Form.Item>
         </div>
@@ -449,6 +609,56 @@ const SubmitJobArea = () => {
         </div>
         <div className="dash-input-wrapper mb-30">
           <Form.Item
+            label="Vertical"
+            name="jobVertical"
+            rules={[{ required: true, message: 'Please Select Job Vertical!' }]}
+          >
+            <Select
+              className="select"
+              size="large"
+              showSearch
+              allowClear
+              placeholder="Select Job Vertical"
+              optionFilterProp="children"
+              filterOption={(input, option) =>
+                (option?.label ?? '').includes(input)
+              }
+              filterSort={(optionA, optionB) =>
+                (optionA?.label ?? '')
+                  .toLowerCase()
+                  .localeCompare((optionB?.label ?? '').toLowerCase())
+              }
+              options={[
+                {
+                  value: '1',
+                  label: 'Not Identified',
+                },
+                {
+                  value: '2',
+                  label: 'Closed',
+                },
+                {
+                  value: '3',
+                  label: 'Communicated',
+                },
+                {
+                  value: '4',
+                  label: 'Identified',
+                },
+                {
+                  value: '5',
+                  label: 'Resolved',
+                },
+                {
+                  value: '6',
+                  label: 'Cancelled',
+                },
+              ]}
+            />
+          </Form.Item>
+        </div>
+        <div className="dash-input-wrapper mb-30">
+          <Form.Item
             label="Department"
             name="jobDepartment"
             rules={[
@@ -512,8 +722,9 @@ const SubmitJobArea = () => {
           >
             <Select
               className="select"
+              showSearch
               size="large"
-              mode="multiple"
+              mode="tags"
               allowClear
               optionFilterProp="children"
               filterOption={(input, option) =>
@@ -525,11 +736,7 @@ const SubmitJobArea = () => {
                   .localeCompare((optionB?.label ?? '').toLowerCase())
               }
               placeholder="Select Job Line Industry"
-              options={[
-                { value: 'Yiminghe', label: 'yiminghe' },
-                { value: 'jack', label: 'Jack' },
-                { value: 'lucy', label: 'Lucy' },
-              ]}
+              options={optionValues}
             />
           </Form.Item>
         </div>
@@ -585,7 +792,7 @@ const SubmitJobArea = () => {
         </div>
         <div className="dash-input-wrapper mb-30">
           <Form.Item
-            label="Work Location City"
+            label="Work Location"
             name="jobWorkLocationCity"
             rules={[
               {
@@ -640,7 +847,7 @@ const SubmitJobArea = () => {
         </div>
         <div className="dash-input-wrapper mb-30">
           <Form.Item
-            label="Work Location"
+            label="Work Location Address"
             name="jobWorkLocation"
             rules={[
               { required: true, message: 'Please Input Job Work Location!' },
@@ -649,7 +856,7 @@ const SubmitJobArea = () => {
             <TextArea
               className="select"
               placeholder="Input Job Work Location"
-              autoSize={{ minRows: 3 }}
+              autoSize={{ minRows: 1 }}
             />
           </Form.Item>
         </div>
@@ -684,9 +891,6 @@ const SubmitJobArea = () => {
               className="textArea"
               theme="snow"
               modules={modules}
-              // onChange={handleInputJobDescription}
-              // formats={['list', 'bullet']}
-              // defaultValue={'<ul><li></li></ul>'}
               placeholder="Input Job Description"
             />
           </Form.Item>
@@ -711,73 +915,176 @@ const SubmitJobArea = () => {
         <h4 className="dash-title-three pt-50 lg-pt-30">
           Parameter/Filter Set
         </h4>
-        <div className="dash-input-wrapper mb-30">
+        <div>
+          <Form.Item name="jobParameterAge">
+            <div className="d-flex align-items-center">
+              <Checkbox
+                onChange={handleCheckboxChange('age')}
+                style={{ width: '115px' }}
+              >
+                Age
+              </Checkbox>
+              <InputNumber
+                className="select d-flex align-items-center w-100"
+                min={0}
+                step={1}
+                placeholder="Input Age"
+                style={{ height: '40px' }}
+                disabled={!inputState.age}
+              />
+            </div>
+          </Form.Item>
+        </div>
+        <div>
+          <Form.Item name="jobParameterGender">
+            <div className="d-flex align-items-center">
+              <Checkbox
+                onChange={handleCheckboxChange('gender')}
+                style={{ width: '115px' }}
+              >
+                Gender
+              </Checkbox>
+              <Select
+                className="select"
+                size="large"
+                allowClear
+                placeholder="Select Gender"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                disabled={!inputState.gender}
+                options={[
+                  {
+                    value: '1',
+                    label: 'Female',
+                  },
+                  {
+                    value: '2',
+                    label: 'Male',
+                  },
+                ]}
+              />
+            </div>
+          </Form.Item>
+        </div>
+        <div>
+          <Form.Item name="jobParameterSkill">
+            <div className="d-flex align-items-center">
+              <Checkbox
+                onChange={handleCheckboxChange('skill')}
+                style={{ width: '115px' }}
+              >
+                Skill
+              </Checkbox>
+              <Select
+                className="select"
+                size="large"
+                showSearch
+                allowClear
+                placeholder="Select Skill"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                disabled={!inputState.skill}
+                options={[
+                  {
+                    value: '1',
+                    label: 'Not Identified',
+                  },
+                  {
+                    value: '2',
+                    label: 'Closed',
+                  },
+                  {
+                    value: '3',
+                    label: 'Communicated',
+                  },
+                  {
+                    value: '4',
+                    label: 'Identified',
+                  },
+                  {
+                    value: '5',
+                    label: 'Resolved',
+                  },
+                  {
+                    value: '6',
+                    label: 'Cancelled',
+                  },
+                ]}
+              />
+            </div>
+          </Form.Item>
+        </div>
+        <div>
           <Form.Item name="jobParameter">
-            <TextArea
-              className="select"
-              placeholder="Input Job Paramater"
-              disabled
-              size="large"
-            />
+            <div className="d-flex align-items-center">
+              <Checkbox
+                onChange={handleCheckboxChange('certificate')}
+                style={{ width: '115px' }}
+              >
+                Certificate
+              </Checkbox>
+              <Select
+                className="select"
+                size="large"
+                showSearch
+                allowClear
+                placeholder="Select Certificate"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                disabled={!inputState.certificate}
+                options={[
+                  {
+                    value: '1',
+                    label: 'Not Identified',
+                  },
+                  {
+                    value: '2',
+                    label: 'Closed',
+                  },
+                  {
+                    value: '3',
+                    label: 'Communicated',
+                  },
+                  {
+                    value: '4',
+                    label: 'Identified',
+                  },
+                  {
+                    value: '5',
+                    label: 'Resolved',
+                  },
+                  {
+                    value: '6',
+                    label: 'Cancelled',
+                  },
+                ]}
+              />
+            </div>
           </Form.Item>
         </div>
 
         <h4 className="dash-title-three pt-50 lg-pt-30">Other Settings</h4>
-        <div className="dash-input-wrapper mb-30">
-          <Form.Item
-            label="FPK"
-            name="jobFpk"
-            rules={[
-              {
-                required: true,
-                message: 'Please Select Job FPK!',
-              },
-            ]}
-          >
-            <Select
-              className="select"
-              size="large"
-              showSearch
-              allowClear
-              placeholder="Select Job FPK"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                (option?.label ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              options={[
-                {
-                  value: '1',
-                  label: 'Not Identified',
-                },
-                {
-                  value: '2',
-                  label: 'Closed',
-                },
-                {
-                  value: '3',
-                  label: 'Communicated',
-                },
-                {
-                  value: '4',
-                  label: 'Identified',
-                },
-                {
-                  value: '5',
-                  label: 'Resolved',
-                },
-                {
-                  value: '6',
-                  label: 'Cancelled',
-                },
-              ]}
-            />
-          </Form.Item>
-        </div>
         <div className="dash-input-wrapper mb-30">
           <Form.Item
             label="Video Interview"
@@ -818,6 +1125,7 @@ const SubmitJobArea = () => {
             <Radio.Group
               className="radio d-flex align-items-center"
               buttonStyle="solid"
+              defaultValue="enable"
             >
               <Radio.Button className="radio-children" value="enable">
                 Enable
