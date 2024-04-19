@@ -1,7 +1,9 @@
 // import config from './config';
 // import { DataSource } from 'typeorm';
 
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient } from '@prisma/client';
+
+// const { PrismaClient } = require('@prisma/client');
 
 // const pool = require('./connect');
 
@@ -25,7 +27,11 @@ const { PrismaClient } = require('@prisma/client');
 
 // export default db;
 
-let prisma;
+declare global {
+  var prisma: PrismaClient | undefined;
+}
+
+let prisma: PrismaClient;
 
 if (process.env.NODE_ENV === 'production') {
   prisma = new PrismaClient();

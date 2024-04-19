@@ -91,13 +91,29 @@ async function main() {
 
   // await prisma.$executeRaw`INSERT INTO efpk_job_vacancies(status, efpkId) SELECT * FROM ats.dbo.fpks AS fpk LEFT JOIN ats.dbo.job_vacancy_fpks AS jvf ON fpk.id = jvf.fpk_id WHERE jvf.job_vacancy_id IS NOT NULL AND jvf.fpk_id IS NOT NULL;`;
 
-  await prisma.$executeRaw`INSERT INTO line_industries(name, created_at, updated_at) SELECT name, created_at, updated_at FROM ats.dbo.line_industries ORDER BY name;`;
+  await prisma.$executeRaw`INSERT INTO line_industries(name, created_at, updated_at) SELECT name, created_at, updated_at FROM ats.dbo.line_industries ORDER BY id;`;
 
   await prisma.$executeRaw`INSERT INTO education_levels(name, proint_id, created_at, updated_at) SELECT name, prointId, created_at, updated_at FROM ats.dbo.education_levels ORDER BY id;`;
 
   await prisma.$executeRaw`INSERT INTO position_levels(name, level, score, sla_days, created_at, updated_at) SELECT name, level, score, sla_days, created_at, updated_at  FROM ats.dbo.levels ORDER BY id;`;
 
+  await prisma.$executeRaw`INSERT INTO job_functions(name) SELECT name FROM ats.dbo.job_functions ORDER BY id;`;
+
   await prisma.$executeRaw`INSERT INTO requirement_fields(name) SELECT DISTINCT fields FROM ats.dbo.job_vacancy_requirements ORDER BY fields;`;
+
+  await prisma.$executeRaw`INSERT INTO requirement_field_parsers(name) VALUES('parseEducationLevel'), ('parsePositionLevel'), ('parseYearOfExperience'), ('parseGrade'), ('parseLineIndustry'), ('parseSalary');`;
+
+  await prisma.$executeRaw`UPDATE requirement_fields SET requirement_field_parser_id = 1 WHERE name = 'education_level';`;
+
+  await prisma.$executeRaw`UPDATE requirement_fields SET requirement_field_parser_id = 2 WHERE name = 'job_level';`;
+
+  await prisma.$executeRaw`UPDATE requirement_fields SET requirement_field_parser_id = 3 WHERE name = 'min_year_experience';`;
+
+  await prisma.$executeRaw`UPDATE requirement_fields SET requirement_field_parser_id = 4 WHERE name = 'grade';`;
+
+  await prisma.$executeRaw`UPDATE requirement_fields SET requirement_field_parser_id = 5 WHERE name = 'line_industry';`;
+
+  await prisma.$executeRaw`UPDATE requirement_fields SET requirement_field_parser_id = 6 WHERE name = 'salary';`;
 
   await prisma.$executeRaw`INSERT INTO position_level_requirements(position_level_id, requirement_field_id) VALUES(1, 13), (1, 12), (1, 10), (1, 15), (1, 4), (1, 8), (2, 13), (2, 12), (2, 10), (2, 15), (2, 4), (2, 8), (3, 13), (3, 12), (3, 10), (3, 15), (3, 4), (3, 8), (4, 13), (4, 12), (4, 10), (4, 15), (4, 4), (4, 8), (5, 13), (5, 12), (5, 10), (5, 15), (5, 4), (5, 8), (6, 13), (6, 12), (6, 10), (6, 15), (6, 4), (6, 8), (7, 13), (7, 12), (7, 10), (7, 15), (7, 4), (7, 8)`;
 

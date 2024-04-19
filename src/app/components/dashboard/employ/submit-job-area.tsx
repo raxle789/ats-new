@@ -36,6 +36,11 @@ import type { InputRef } from 'antd';
 
 import type { SelectProps } from 'antd';
 import type { CheckboxProps } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import type { InputRef } from 'antd';
+
+import type { SelectProps } from 'antd';
+import type { CheckboxProps } from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 
 // import {
@@ -66,6 +71,24 @@ const optionValues: SelectProps['options'] = [
 const onChange: CheckboxProps['onChange'] = (e) => {
   console.log(`checked = ${e.target.checked}`);
 };
+let index = 0;
+
+const optionValues: SelectProps['options'] = [
+  { value: 'jack', label: 'jack' },
+  { value: 'lucy', label: 'lucy' },
+  { value: 'harper', label: 'harper' },
+];
+
+// for (let i = 10; i < 36; i++) {
+//   optionValues.push({
+//     value: i.toString(36) + i,
+//     label: i.toString(36) + i,
+//   });
+// }
+
+const onChange: CheckboxProps['onChange'] = (e) => {
+  console.log(`checked = ${e.target.checked}`);
+};
 
 // props type
 // type IProps = {
@@ -74,6 +97,40 @@ const onChange: CheckboxProps['onChange'] = (e) => {
 
 const SubmitJobArea = () => {
   const [api, contextHolder] = notification.useNotification();
+  const [inputState, setInputState] = useState({
+    age: false,
+    gender: false,
+    skill: false,
+    certificate: false,
+  });
+
+  const [items, setItems] = useState(['jack', 'lucy']);
+  const [name, setName] = useState('');
+  const inputRef = useRef<InputRef>(null);
+
+  const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setName(event.target.value);
+  };
+
+  const addItem = (
+    e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>,
+  ) => {
+    e.preventDefault();
+    setItems([...items, name || `New item ${index++}`]);
+    setName('');
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+  };
+
+  const handleCheckboxChange = (inputName: string) => (e: any) => {
+    setInputState({
+      ...inputState,
+      [inputName]: e.target.checked,
+    });
+  };
+
+  async function handleFpkModal(values: boolean) {
   const [inputState, setInputState] = useState({
     age: false,
     gender: false,

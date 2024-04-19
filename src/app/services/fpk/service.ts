@@ -6,7 +6,7 @@ import prisma from '../connection/db';
 
 // const moment = require('moment');
 
-export async function getAllFpk(offset, perPage) {
+export async function getAllFpk(offset: number, perPage: number) {
   try {
     // const db = await getDb(poolName);
 
@@ -355,8 +355,8 @@ export async function getAllTa() {
     });
 
     const aliasedData = data.map((d) => ({
-      value: d.id,
-      label: d.name,
+      value: d?.id,
+      label: d?.name,
     }));
 
     return aliasedData;
