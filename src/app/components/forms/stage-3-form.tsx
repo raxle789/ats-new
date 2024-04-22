@@ -83,18 +83,27 @@ type FieldType = {
     };
   };
   formalOption?: string;
+  formalCheckbox?: string;
+  certificationCheckbox?: string;
   education?: {
     educationLevel?: string;
     educationMajor?: string;
     schoolName?: string;
     gpa?: number;
     cityOfSchool?: string;
-    certificationName?: string;
-    institution?: string;
-    issueDate?: string;
-    monthIssue?: string;
-    yearIssue?: string;
+    startEduYear?: string;
+    endEduYear?: string;
   };
+  certification?: {
+    [id: string]: {
+      certificationName?: string;
+      institution?: string;
+      issueDate?: string;
+      monthIssue?: string;
+      yearIssue?: string;
+    };
+  };
+  skills?: string;
   language?: {
     [id: string]: {
       name?: string;
@@ -378,9 +387,124 @@ const Stage3Form = () => {
     }
   };
 
-  const [formalValue, setFormalValue] = useState<string>('you-choose');
-  const onChangeFormal = (e: RadioChangeEvent) => {
-    setFormalValue(e.target.value);
+  const [certificationIdx, setCertificationIdx] = useState<number>(0);
+  const certifTabContent: JSX.Element[] = [
+    <div key={certificationIdx} className="row">
+      <div className="col-12">
+        <div className="input-group-meta position-relative mb-15">
+          <label>Name (Certification/Licence)</label>
+          <Form.Item<FieldType>
+            name={[
+              'certification',
+              certificationIdx.toString(),
+              'certificationName',
+            ]}
+            className="mb-0"
+          >
+            <Input placeholder="Your Certification Name" />
+          </Form.Item>
+        </div>
+      </div>
+      <div className="col-6">
+        <div className="input-group-meta position-relative mb-15">
+          <label>Institution</label>
+          <Form.Item<FieldType>
+            name={['certification', certificationIdx.toString(), 'institution']}
+            className="mb-0"
+          >
+            <Input placeholder="Your Institution" />
+          </Form.Item>
+        </div>
+      </div>
+      <div className="col-6">
+        <div className="input-group-meta position-relative mb-15">
+          <label>Issue Date</label>
+          <Form.Item<FieldType>
+            name={['certification', certificationIdx.toString(), 'issueDate']}
+            className="mb-0"
+          >
+            <div>
+              <DatePicker
+                className="me-2"
+                placeholder="Select Month"
+                picker="month"
+              />
+              <DatePicker placeholder="Select Year" picker="year" />
+            </div>
+          </Form.Item>
+        </div>
+      </div>
+    </div>,
+  ];
+
+  const certifInitItems = [
+    { label: 'Certification 1', children: certifTabContent, key: '1' },
+  ];
+  const [activeCertifKey, setActiveCertifKey] = useState(
+    certifInitItems[0].key,
+  );
+  const [certifItems, setCertifItems] = useState(certifInitItems);
+  const newCertifTabIndex = useRef(0);
+
+  const onChangeCertifTabs = (newActiveKey: string) => {
+    setActiveCertifKey(newActiveKey);
+  };
+
+  const addCertif = () => {
+    const newActiveKey = `newTab${newCertifTabIndex.current++}`;
+    const newPanes = [...certifItems];
+    newPanes.push({
+      label: `Certification ${certifItems.length + 1}`,
+      children: certifTabContent,
+      key: newActiveKey,
+    });
+    setCertifItems(newPanes);
+    setActiveCertifKey(newActiveKey);
+    setCertificationIdx(certificationIdx + 1);
+  };
+
+  const removeCertif = (targetKey: TargetKey) => {
+    let newActiveKey = activeCertifKey;
+    let lastIndex = -1;
+    certifItems.forEach((item, i) => {
+      if (item.key === targetKey) {
+        lastIndex = i - 1;
+      }
+    });
+    const newPanes = certifItems.filter((item) => item.key !== targetKey);
+    if (newPanes.length && newActiveKey === targetKey) {
+      if (lastIndex >= 0) {
+        newActiveKey = newPanes[lastIndex].key;
+      } else {
+        newActiveKey = newPanes[0].key;
+      }
+    }
+    setCertifItems(newPanes);
+    setActiveCertifKey(newActiveKey);
+  };
+
+  const onEditCertif = (
+    targetKey: React.MouseEvent | React.KeyboardEvent | string,
+    action: 'add' | 'remove',
+  ) => {
+    if (action === 'add') {
+      addCertif();
+    } else {
+      removeCertif(targetKey);
+    }
+  };
+
+  // const onChangeFormal = (e: RadioChangeEvent) => {
+  //   setFormalValue(e.target.value);
+  // };
+
+  const [formalCheck, setFormalCheck] = useState<boolean>(true);
+  const handleFormalCheck: CheckboxProps['onChange'] = (e) => {
+    setFormalCheck(e.target.checked);
+  };
+  const [certificationCheck, setCertificationCheck] = useState<boolean>(true);
+  const handleCertificationCheck: CheckboxProps['onChange'] = (e) => {
+    setCertificationCheck(e.target.checked);
   };
 
   const [eduLevel, setEduLevel] = useState<string>('');
@@ -672,7 +796,7 @@ const Stage3Form = () => {
             <DatePicker
               className="w-100"
               placeholder="Select Year"
-              picker="year"
+              picker="month"
               disabled={yearState}
             />
           </Form.Item>
@@ -694,7 +818,7 @@ const Stage3Form = () => {
             <DatePicker
               className="w-100"
               placeholder="Select Year"
-              picker="year"
+              picker="month"
               disabled={yearState}
             />
           </Form.Item>
@@ -876,6 +1000,7 @@ const Stage3Form = () => {
   useEffect(() => {
     setIndex(index + 1);
     setExpIdx(expIdx + 1);
+    setCertificationIdx(certificationIdx + 1);
   }, []);
 
   const [hasExperience, setHasExperience] = useState<string>('you-choose');
@@ -1536,11 +1661,11 @@ const Stage3Form = () => {
           items={items}
         />
 
-        <label className="fw-bold mt-5 mb-2">Education</label>
+        <label className="fw-bold mt-5">Education</label>
         <div className="col-12">
-          <div className="input-group-meta position-relative mb-15">
+          <div className="input-group-meta position-relative mb-0">
             <Form.Item<FieldType>
-              name="formalOption"
+              name="formalCheckbox"
               className="mb-0"
               rules={[
                 {
@@ -1549,20 +1674,17 @@ const Stage3Form = () => {
                 },
               ]}
             >
-              <Radio.Group onChange={onChangeFormal} value={formalValue}>
-                <Radio className="d-flex" value="formal">
+              <div className="d-flex align-items-center">
+                <Checkbox onChange={handleFormalCheck} checked={formalCheck}>
                   Formal
-                </Radio>
-                <Radio className="d-flex" value="informal">
-                  Informal
-                </Radio>
-              </Radio.Group>
+                </Checkbox>
+              </div>
             </Form.Item>
           </div>
         </div>
-        {formalValue === 'formal' && (
+        {formalCheck && (
           <>
-            <div className="col-4">
+            <div className="col-3">
               <div className="input-group-meta position-relative mb-15">
                 <label>Education Level*</label>
                 <Form.Item<FieldType>
@@ -1589,7 +1711,7 @@ const Stage3Form = () => {
                 </Form.Item>
               </div>
             </div>
-            <div className="col-4">
+            <div className="col-3">
               <div className="input-group-meta position-relative mb-15">
                 <label>Education Major*</label>
                 <Form.Item<FieldType>
@@ -1610,7 +1732,7 @@ const Stage3Form = () => {
                     disabled={eduLevel === 'SMA/SMK'}
                     placeholder="Your Education Major"
                     optionFilterProp="children"
-                    onChange={handleChangeMarried}
+                    // onChange={handleChangeMarried}
                     filterOption={(input, option) =>
                       (option?.label ?? '').includes(input)
                     }
@@ -1637,26 +1759,44 @@ const Stage3Form = () => {
                 </Form.Item>
               </div>
             </div>
-            <div className="col-4">
+            <div className="col-3">
               <div className="input-group-meta position-relative mb-15">
-                <label>GPA*</label>
+                <label>Start Year*</label>
                 <Form.Item<FieldType>
-                  name={['education', 'gpa']}
+                  name={['education', 'startEduYear']}
                   className="mb-0"
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your gpa!',
+                      message: 'Please select year!',
                     },
                   ]}
                 >
-                  <InputNumber
+                  <DatePicker
                     className="w-100"
-                    min={1}
-                    max={4}
-                    step={0.01}
-                    disabled={eduLevel === 'SMA/SMK'}
-                    placeholder="Your GPA"
+                    placeholder="Start Year"
+                    picker="year"
+                  />
+                </Form.Item>
+              </div>
+            </div>
+            <div className="col-3">
+              <div className="input-group-meta position-relative mb-15">
+                <label>End Year*</label>
+                <Form.Item<FieldType>
+                  name={['education', 'endEduYear']}
+                  className="mb-0"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please select year!',
+                    },
+                  ]}
+                >
+                  <DatePicker
+                    className="w-100"
+                    placeholder="End Year"
+                    picker="year"
                   />
                 </Form.Item>
               </div>
@@ -1708,7 +1848,7 @@ const Stage3Form = () => {
                 </Form.Item>
               </div>
             </div>
-            <div className="col-6">
+            <div className="col-3">
               <div className="input-group-meta position-relative mb-15">
                 <label>City*</label>
                 <Form.Item<FieldType>
@@ -1734,53 +1874,104 @@ const Stage3Form = () => {
                 </Form.Item>
               </div>
             </div>
+            <div className="col-3">
+              <div className="input-group-meta position-relative mb-15">
+                <label>GPA*</label>
+                <Form.Item<FieldType>
+                  name={['education', 'gpa']}
+                  className="mb-0"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your gpa!',
+                    },
+                  ]}
+                >
+                  <InputNumber
+                    className="w-100"
+                    min={1}
+                    max={4}
+                    step={0.01}
+                    disabled={eduLevel === 'SMA/SMK'}
+                    placeholder="Your GPA"
+                  />
+                </Form.Item>
+              </div>
+            </div>
           </>
         )}
 
-        {formalValue === 'informal' && (
-          <>
-            <div className="col-12">
-              <div className="input-group-meta position-relative mb-15">
-                <label>Name (Certification/Licence)</label>
-                <Form.Item<FieldType>
-                  name={['education', 'certificationName']}
-                  className="mb-0"
+        <div className="col-12">
+          <div className="input-group-meta position-relative mb-0">
+            <Form.Item<FieldType> name="certificationCheckbox" className="mb-0">
+              <div className="d-flex align-items-center">
+                <Checkbox
+                  onChange={handleCertificationCheck}
+                  checked={certificationCheck}
                 >
-                  <Input placeholder="Your Certification Name" />
-                </Form.Item>
+                  Certification/Licence
+                </Checkbox>
               </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-15">
-                <label>Institution</label>
-                <Form.Item<FieldType>
-                  name={['education', 'institution']}
-                  className="mb-0"
-                >
-                  <Input placeholder="Your Institution" />
-                </Form.Item>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-15">
-                <label>Issue Date</label>
-                <Form.Item<FieldType>
-                  name={['education', 'issueDate']}
-                  className="mb-0"
-                >
-                  <div>
-                    <DatePicker
-                      className="me-2"
-                      placeholder="Select Month"
-                      picker="month"
-                    />
-                    <DatePicker placeholder="Select Year" picker="year" />
-                  </div>
-                </Form.Item>
-              </div>
-            </div>
-          </>
+            </Form.Item>
+          </div>
+        </div>
+        {certificationCheck && (
+          <Tabs
+            type="editable-card"
+            onChange={onChangeCertifTabs}
+            activeKey={activeCertifKey}
+            onEdit={onEditCertif}
+            items={certifItems}
+          />
         )}
+
+        <label className="fw-bold mt-5">Skill</label>
+        <div className="col-12">
+          <div className="input-group-meta position-relative mb-15">
+            <label>What skills do you have?*</label>
+            <Form.Item<FieldType>
+              name="skills"
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your skills!',
+                },
+              ]}
+            >
+              <Select
+                className="w-100"
+                showSearch
+                mode="tags"
+                placeholder="Your Skills"
+                optionFilterProp="children"
+                // onChange={handleChangeMarried}
+                filterOption={(input, option) =>
+                  (option?.label ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                options={[
+                  {
+                    value: 'married',
+                    label: 'Married',
+                  },
+                  {
+                    value: '2',
+                    label: 'Closed',
+                  },
+                  {
+                    value: '3',
+                    label: 'Communicated',
+                  },
+                ]}
+              />
+            </Form.Item>
+          </div>
+        </div>
 
         <label className="fw-bold mt-5 mb-2">Language</label>
         <div className="col-12">
@@ -2038,13 +2229,13 @@ const Stage3Form = () => {
                     rules={[
                       {
                         required: true,
-                        message: 'Please input your month!',
+                        message: 'Please input year!',
                       },
                     ]}
                   >
                     <DatePicker
                       className="w-100"
-                      placeholder="Select Month"
+                      placeholder="Start Year"
                       picker="month"
                     />
                   </Form.Item>
@@ -2062,8 +2253,8 @@ const Stage3Form = () => {
                   >
                     <DatePicker
                       className="w-100"
-                      placeholder="Select Year"
-                      picker="year"
+                      placeholder="End Year"
+                      picker="month"
                     />
                   </Form.Item>
                 </div>
