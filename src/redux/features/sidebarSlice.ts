@@ -8,7 +8,7 @@ interface IFilterState {
 
 // Define the initial state using that type
 const initialState: IFilterState = {
-  isOpen: false,
+  isOpen: true,
 };
 
 export const sidebarSlice = createSlice({
@@ -16,15 +16,7 @@ export const sidebarSlice = createSlice({
   initialState,
   reducers: {
     setIsOpen: (state, action: PayloadAction<boolean>) => {
-      //   if (action.payload) {
-      //     state.isOpen = true;
-      //   } else {
-      //     state.isOpen = false;
-      //   }
-
       state.isOpen = action.payload;
-
-      console.info(state, action.payload);
     },
   },
 });

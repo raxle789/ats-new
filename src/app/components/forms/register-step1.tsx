@@ -5,11 +5,28 @@ import { userRegister2 } from '@/libs/validations/Register';
 import { setRegisterStep } from '@/redux/features/fatkhur/registerSlice';
 import { useAppDispatch } from '@/redux/hook';
 import { useState } from 'react';
-import { Input, Form, Select, DatePicker, Tabs } from 'antd';
-import type { DatePickerProps, FormProps } from 'antd';
-import { v4 as uuidv4 } from 'uuid';
+import {
+  Input,
+  Form,
+  Select,
+  DatePicker,
+  Tabs,
+  Radio,
+  InputNumber,
+  Button,
+  Divider,
+  Space,
+} from 'antd';
+import type {
+  DatePickerProps,
+  FormProps,
+  RadioChangeEvent,
+  InputRef,
+} from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
+let languageIndex = 0;
 
 type FieldType = {
   placeOfBirth?: string;
@@ -33,9 +50,9 @@ type FieldType = {
       name?: string;
       gender?: string;
       dateOfBirth?: string;
-    }[];
+    };
   };
-  formal?: string;
+  formalOption?: string;
   educationLevel?: string;
   educationMajor?: string;
   schoolName?: string;
@@ -44,7 +61,14 @@ type FieldType = {
   certificationName?: string;
   institution?: string;
   issueDate?: string;
-  language?: string;
+  monthIssue?: string;
+  yearIssue?: string;
+  language?: {
+    [id: string]: {
+      name?: string;
+      level?: string;
+    };
+  };
 };
 
 const source: string[] = ['Email', 'Erajaya Career Fest', 'Instagram'];
@@ -78,11 +102,9 @@ type FormData = {
 
 const RegisterFormStep1 = () => {
   const dispatch = useAppDispatch();
-
   const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
     console.log('Success:', values);
   };
-
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
     errorInfo,
   ) => {
@@ -103,7 +125,6 @@ const RegisterFormStep1 = () => {
     console.log(date, dateString);
   };
 
-  const [idFamily, setIdFamily] = useState<number>(1);
   const [index, setIndex] = useState<number>(0);
   // const handleAdd = () => {
   //   let id: number = idFamily;
@@ -117,7 +138,7 @@ const RegisterFormStep1 = () => {
         <div className="input-group-meta position-relative mb-15">
           <label>Relation*</label>
           <Form.Item<FieldType>
-            name={['families', idFamily.toString(), index, 'relation']}
+            name={['families', index.toString(), 'relation']}
             className="mb-0"
             rules={[
               {
@@ -144,7 +165,7 @@ const RegisterFormStep1 = () => {
         <div className="input-group-meta position-relative mb-15">
           <label>Name*</label>
           <Form.Item<FieldType>
-            name={['families', idFamily.toString(), index, 'name']}
+            name={['families', index.toString(), 'name']}
             className="mb-0"
             rules={[
               {
@@ -161,7 +182,7 @@ const RegisterFormStep1 = () => {
         <div className="input-group-meta position-relative mb-15">
           <label>Gender*</label>
           <Form.Item<FieldType>
-            name={['families', idFamily.toString(), index, 'gender']}
+            name={['families', index.toString(), 'gender']}
             className="mb-0"
             rules={[
               {
@@ -185,7 +206,7 @@ const RegisterFormStep1 = () => {
         <div className="input-group-meta position-relative mb-15">
           <label>Date of Birth*</label>
           <Form.Item<FieldType>
-            name={['families', idFamily.toString(), index, 'dateOfBirth']}
+            name={['families', index.toString(), 'dateOfBirth']}
             rules={[
               {
                 required: true,
@@ -204,7 +225,7 @@ const RegisterFormStep1 = () => {
     </div>,
   ];
 
-  const initialItems = [{ label: 'New Relation', key: '1' }];
+  const initialItems = [{ label: 'Relation', children: tabContent, key: '1' }];
   const [activeKey, setActiveKey] = useState(initialItems[0].key);
   const [items, setItems] = useState(initialItems);
   const newTabIndex = useRef(0);
@@ -314,14 +335,13 @@ const RegisterFormStep1 = () => {
     const newActiveKey = `newTab${newTabIndex.current++}`;
     const newPanes = [...items];
     newPanes.push({
-      label: 'New Relation',
-      // children: tabContent,
+      label: 'Relation',
+      children: tabContent,
       key: newActiveKey,
     });
     setItems(newPanes);
     setActiveKey(newActiveKey);
-    setIndex(idFamily);
-    setIdFamily(idFamily + 1);
+    setIndex(index + 1);
   };
 
   const remove = (targetKey: TargetKey) => {
@@ -355,11 +375,44 @@ const RegisterFormStep1 = () => {
     }
   };
 
-  console.log('index: ', index);
-  console.log('idFamily: ', idFamily);
+  const [formalValue, setFormalValue] = useState<string>('you-choose');
+  const onChangeFormal = (e: RadioChangeEvent) => {
+    setFormalValue(e.target.value);
+  };
+
+  const [issueValue, setIssueValue] = useState<string>('you-choose');
+  const onChangeIssue = (e: RadioChangeEvent) => {
+    setIssueValue(e.target.value);
+  };
+
+  const [languageItems, setLanguageItems] = useState(['English', 'Mandarin']);
+  const [langTotal, setLangTotal] = useState<number>(1);
+  const [name, setName] = useState('');
+  const inputRef = useRef<InputRef>(null);
+
+  const onLanguageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setName(event.target.value);
+  };
+
+  const addLangSkill = () => {
+    if (langTotal <= 3) {
+      setLangTotal(langTotal + 1);
+    }
+  };
+
+  const addLanguage = (
+    e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>,
+  ) => {
+    e.preventDefault();
+    setLanguageItems([...languageItems, name || `New item ${languageIndex++}`]);
+    setName('');
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+  };
+
   useEffect(() => {
-    console.log('useEffect/index: ', index);
-    console.log('useEffect/idFamily: ', idFamily);
+    setIndex(index + 1);
   }, []);
 
   const [hasExperience, setHasExperience] = useState<string>('you-choose');
@@ -614,50 +667,72 @@ const RegisterFormStep1 = () => {
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label>Blood Type*</label>
-            <Select
-              className="w-100"
-              placeholder="Your Blood Type"
-              options={[
-                { value: 'a', label: 'A' },
-                { value: 'b', label: 'B' },
-                { value: 'ab', label: 'AB' },
-                { value: 'o', label: 'O' },
+            <Form.Item<FieldType>
+              name="bloodType"
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your blood type!',
+                },
               ]}
-            />
+            >
+              <Select
+                className="w-100"
+                placeholder="Your Blood Type"
+                options={[
+                  { value: 'a', label: 'A' },
+                  { value: 'b', label: 'B' },
+                  { value: 'ab', label: 'AB' },
+                  { value: 'o', label: 'O' },
+                ]}
+              />
+            </Form.Item>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label>Marital Status*</label>
-            <Select
-              className="w-100"
-              showSearch
-              placeholder="Your Marital Status"
-              optionFilterProp="children"
-              onChange={handleChangeMarried}
-              filterOption={(input, option) =>
-                (option?.label ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              options={[
+            <Form.Item<FieldType>
+              name="maritalStatus"
+              className="mb-0"
+              rules={[
                 {
-                  value: 'married',
-                  label: 'Married',
-                },
-                {
-                  value: '2',
-                  label: 'Closed',
-                },
-                {
-                  value: '3',
-                  label: 'Communicated',
+                  required: true,
+                  message: 'Please input your marital status!',
                 },
               ]}
-            />
+            >
+              <Select
+                className="w-100"
+                showSearch
+                placeholder="Your Marital Status"
+                optionFilterProp="children"
+                onChange={handleChangeMarried}
+                filterOption={(input, option) =>
+                  (option?.label ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                options={[
+                  {
+                    value: 'married',
+                    label: 'Married',
+                  },
+                  {
+                    value: '2',
+                    label: 'Closed',
+                  },
+                  {
+                    value: '3',
+                    label: 'Communicated',
+                  },
+                ]}
+              />
+            </Form.Item>
           </div>
         </div>
 
@@ -899,30 +974,54 @@ const RegisterFormStep1 = () => {
           onEdit={onEdit}
           items={items}
         />
-        {activeKey && (
+
+        <label className="fw-bold mt-5 mb-2">Education</label>
+        <div className="col-12">
+          <div className="input-group-meta position-relative mb-15">
+            <Form.Item<FieldType>
+              name="formalOption"
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please choose your education!',
+                },
+              ]}
+            >
+              <Radio.Group onChange={onChangeFormal} value={formalValue}>
+                <Radio className="d-flex" value="formal">
+                  Formal
+                </Radio>
+                <Radio className="d-flex" value="informal">
+                  Informal
+                </Radio>
+              </Radio.Group>
+            </Form.Item>
+          </div>
+        </div>
+        {formalValue === 'formal' && (
           <>
             <div className="col-6">
               <div className="input-group-meta position-relative mb-15">
-                <label>Relation*</label>
+                <label>Education Level*</label>
                 <Form.Item<FieldType>
-                  name={['families', idFamily.toString(), index, 'relation']}
+                  name="educationLevel"
                   className="mb-0"
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your family relation!',
+                      message: 'Please input your education level!',
                     },
                   ]}
                 >
                   <Select
                     className="w-100"
-                    placeholder="Your Family Relation"
+                    placeholder="Your Education Level"
                     options={[
-                      { value: 'male', label: 'Male' },
-                      { value: 'female', label: 'Female' },
-                      ...(marriedValue === 'married'
-                        ? [{ value: 'pasangan', label: 'Pasangan' }]
-                        : []),
+                      { value: 'a', label: 'A' },
+                      { value: 'b', label: 'B' },
+                      { value: 'ab', label: 'AB' },
+                      { value: 'o', label: 'O' },
                     ]}
                   />
                 </Form.Item>
@@ -930,40 +1029,93 @@ const RegisterFormStep1 = () => {
             </div>
             <div className="col-6">
               <div className="input-group-meta position-relative mb-15">
-                <label>Name*</label>
+                <label>Education Major*</label>
                 <Form.Item<FieldType>
-                  name={['families', idFamily.toString(), index, 'name']}
+                  name="educationMajor"
                   className="mb-0"
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your relation name!',
-                    },
-                  ]}
-                >
-                  <Input placeholder="Your Relation Name" />
-                </Form.Item>
-              </div>
-            </div>
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-15">
-                <label>Gender*</label>
-                <Form.Item<FieldType>
-                  name={['families', idFamily.toString(), index, 'gender']}
-                  className="mb-0"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please input your family gender!',
+                      message: 'Please input your education major!',
                     },
                   ]}
                 >
                   <Select
                     className="w-100"
-                    placeholder="Your Family Gender"
+                    showSearch
+                    mode="tags"
+                    maxCount={1}
+                    placeholder="Your Education Major"
+                    optionFilterProp="children"
+                    onChange={handleChangeMarried}
+                    filterOption={(input, option) =>
+                      (option?.label ?? '').includes(input)
+                    }
+                    filterSort={(optionA, optionB) =>
+                      (optionA?.label ?? '')
+                        .toLowerCase()
+                        .localeCompare((optionB?.label ?? '').toLowerCase())
+                    }
                     options={[
-                      { value: 'male', label: 'Male' },
-                      { value: 'female', label: 'Female' },
+                      {
+                        value: 'married',
+                        label: 'Married',
+                      },
+                      {
+                        value: '2',
+                        label: 'Closed',
+                      },
+                      {
+                        value: '3',
+                        label: 'Communicated',
+                      },
+                    ]}
+                  />
+                </Form.Item>
+              </div>
+            </div>
+            <div className="col-12">
+              <div className="input-group-meta position-relative mb-15">
+                <label>School/University Name*</label>
+                <Form.Item<FieldType>
+                  name="schoolName"
+                  className="mb-0"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your school name!',
+                    },
+                  ]}
+                >
+                  <Select
+                    className="w-100"
+                    showSearch
+                    mode="tags"
+                    maxCount={1}
+                    placeholder="Your Education Major"
+                    optionFilterProp="children"
+                    onChange={handleChangeMarried}
+                    filterOption={(input, option) =>
+                      (option?.label ?? '').includes(input)
+                    }
+                    filterSort={(optionA, optionB) =>
+                      (optionA?.label ?? '')
+                        .toLowerCase()
+                        .localeCompare((optionB?.label ?? '').toLowerCase())
+                    }
+                    options={[
+                      {
+                        value: 'married',
+                        label: 'Married',
+                      },
+                      {
+                        value: '2',
+                        label: 'Closed',
+                      },
+                      {
+                        value: '3',
+                        label: 'Communicated',
+                      },
                     ]}
                   />
                 </Form.Item>
@@ -971,26 +1123,243 @@ const RegisterFormStep1 = () => {
             </div>
             <div className="col-6">
               <div className="input-group-meta position-relative mb-15">
-                <label>Date of Birth*</label>
+                <label>GPA*</label>
                 <Form.Item<FieldType>
-                  name={['families', idFamily.toString(), index, 'dateOfBirth']}
+                  name="gpa"
+                  className="mb-0"
                   rules={[
                     {
                       required: true,
-                      message: 'Please input your relation date of birth!',
+                      message: 'Please input your gpa!',
                     },
                   ]}
                 >
-                  <DatePicker
+                  <InputNumber
                     className="w-100"
-                    placeholder="Select Date"
-                    onChange={onChangeDate}
+                    min={1}
+                    max={4}
+                    step={0.01}
+                    placeholder="Your GPA"
+                  />
+                </Form.Item>
+              </div>
+            </div>
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-15">
+                <label>City*</label>
+                <Form.Item<FieldType>
+                  name="cityOfSchool"
+                  className="mb-0"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your city of school!',
+                    },
+                  ]}
+                >
+                  <Select
+                    className="w-100"
+                    placeholder="Your City of School"
+                    options={[
+                      { value: 'a', label: 'A' },
+                      { value: 'b', label: 'B' },
+                      { value: 'ab', label: 'AB' },
+                      { value: 'o', label: 'O' },
+                    ]}
                   />
                 </Form.Item>
               </div>
             </div>
           </>
         )}
+
+        {formalValue === 'informal' && (
+          <>
+            <div className="col-12">
+              <div className="input-group-meta position-relative mb-15">
+                <label>Name (Certification/Licence)*</label>
+                <Form.Item<FieldType>
+                  name="certificationName"
+                  className="mb-0"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your certification name!',
+                    },
+                  ]}
+                >
+                  <Input placeholder="Your Certification Name" />
+                </Form.Item>
+              </div>
+            </div>
+            <div className="col-12">
+              <div className="input-group-meta position-relative mb-15">
+                <label>Institution*</label>
+                <Form.Item<FieldType>
+                  name="institution"
+                  className="mb-0"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input your institution!',
+                    },
+                  ]}
+                >
+                  <Input placeholder="Your Institution" />
+                </Form.Item>
+              </div>
+            </div>
+            <div className="col-4">
+              <div className="input-group-meta position-relative mb-15">
+                <label>Issue Date*</label>
+                <Form.Item<FieldType>
+                  name="issueDate"
+                  className="mb-0"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please choose your issue date!',
+                    },
+                  ]}
+                >
+                  <Radio.Group onChange={onChangeIssue} value={issueValue}>
+                    <Radio className="d-flex" value="expired">
+                      Expired
+                    </Radio>
+                    <Radio className="d-flex" value="not-yet">
+                      Not Yet
+                    </Radio>
+                  </Radio.Group>
+                </Form.Item>
+              </div>
+            </div>
+            {issueValue === 'expired' && (
+              <>
+                <div className="col-4">
+                  <div className="input-group-meta position-relative mb-15">
+                    <label>Month*</label>
+                    <Form.Item<FieldType>
+                      name="monthIssue"
+                      className="mb-0"
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Please choose month!',
+                        },
+                      ]}
+                    >
+                      <DatePicker placeholder="Select Month" picker="month" />
+                    </Form.Item>
+                  </div>
+                </div>
+                <div className="col-4">
+                  <div className="input-group-meta position-relative mb-15">
+                    <label>Year*</label>
+                    <Form.Item<FieldType>
+                      name="yearIssue"
+                      className="mb-0"
+                      rules={[
+                        {
+                          required: true,
+                          message: 'Please choose year!',
+                        },
+                      ]}
+                    >
+                      <DatePicker placeholder="Select Year" picker="year" />
+                    </Form.Item>
+                  </div>
+                </div>
+              </>
+            )}
+            {issueValue === 'not-yet' && <div className="col-8"></div>}
+            {issueValue === 'you-choose' && <div className="col-8"></div>}
+          </>
+        )}
+
+        <label className="fw-bold mt-5 mb-2">Language</label>
+        {Array.from({ length: langTotal }, (_, index) => (
+          <div key={index} className="row">
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-15">
+                <Form.Item<FieldType>
+                  name={['language', index.toString(), 'name']}
+                  className="mb-0"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please choose your language!',
+                    },
+                  ]}
+                >
+                  <Select
+                    className="w-100"
+                    placeholder="Select Language"
+                    dropdownRender={(menu) => (
+                      <>
+                        {menu}
+                        <Divider style={{ margin: '8px 0' }} />
+                        <Space style={{ padding: '0 8px 4px' }}>
+                          <Input
+                            placeholder="Please enter item"
+                            ref={inputRef}
+                            value={name}
+                            onChange={onLanguageChange}
+                            onKeyDown={(e) => e.stopPropagation()}
+                          />
+                          <Button
+                            type="text"
+                            icon={
+                              <PlusOutlined
+                              // onPointerEnterCapture=""
+                              // onPointerLeaveCapture=""
+                              />
+                            }
+                            onClick={addLanguage}
+                          >
+                            Add item
+                          </Button>
+                        </Space>
+                      </>
+                    )}
+                    options={languageItems.map((item) => ({
+                      label: item,
+                      value: item,
+                    }))}
+                  />
+                </Form.Item>
+              </div>
+            </div>
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-15">
+                <Form.Item<FieldType>
+                  name={['language', index.toString(), 'level']}
+                  className="mb-0"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please choose your level!',
+                    },
+                  ]}
+                >
+                  <Select
+                    className="w-100"
+                    placeholder="Select Level"
+                    options={[
+                      { value: 'fluent', label: 'Fluent' },
+                      { value: 'intermediate', label: 'Intermediate' },
+                      { value: 'basic', label: 'Basic' },
+                    ]}
+                  />
+                </Form.Item>
+              </div>
+            </div>
+          </div>
+        ))}
+        <div className="col-12">
+          <div className="mb-15">
+            <Button onClick={addLangSkill}>ADD</Button>
+          </div>
+        </div>
 
         <div className="col-5 col-sm-6">
           <button

@@ -55,8 +55,8 @@ const nav_data: {
     id: 3,
     icon: nav_3,
     icon_active: nav_3_active,
-    link: '/dashboard/candidate-dashboard/resume',
-    title: 'Resume',
+    link: '/dashboard/user/stages',
+    title: 'Stages',
   },
   {
     id: 4,
@@ -83,21 +83,22 @@ const nav_data: {
     id: 7,
     icon: nav_7,
     icon_active: nav_7_active,
-    link: '/dashboard/candidate-dashboard/setting',
+    link: '/dashboard/user/ss',
     title: 'Account Settings',
   },
 ];
-// props type
-// type IProps = {
-//   isOpenSidebar: boolean,
-//   setIsOpenSidebar: React.Dispatch<React.SetStateAction<boolean>>
-// }
 
 const CandidateAside = () => {
   const pathname = usePathname();
   const isOpenSidebar = useAppSelector((state) => state.sidebar.isOpen);
   const dispatch = useAppDispatch();
 
+  const handleClick = () => {
+    const screenWidth = window.innerWidth;
+    if (screenWidth < 450) {
+      dispatch(setIsOpen(false));
+    }
+  };
   return (
     <>
       <aside className={`dash-aside-navbar ${isOpenSidebar ? 'show' : ''}`}>
@@ -186,7 +187,7 @@ const CandidateAside = () => {
               {nav_data.map((m) => {
                 const isActive = pathname === m.link;
                 return (
-                  <li key={m.id} onClick={() => dispatch(setIsOpen(false))}>
+                  <li key={m.id} onClick={handleClick}>
                     <Link
                       href={m.link}
                       className={`d-flex w-100 align-items-center ${isActive ? 'active' : ''}`}

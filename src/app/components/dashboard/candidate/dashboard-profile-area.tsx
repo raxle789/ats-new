@@ -3,16 +3,11 @@ import React from 'react';
 import Image from 'next/image';
 import avatar from '@/assets/dashboard/images/avatar_02.jpg';
 import search from '@/assets/dashboard/images/icon/icon_16.svg';
-import DashboardHeader from './dashboard-header';
 import CountrySelect from './country-select';
 import CitySelect from './city-select';
 import StateSelect from './state-select';
 
-// props type
-type IProps = {
-  setIsOpenSidebar: React.Dispatch<React.SetStateAction<boolean>>;
-};
-const DashboardProfileArea = ({ setIsOpenSidebar }: IProps) => {
+const DashboardProfileArea = () => {
   return (
     <>
       <h2 className="main-title">My Profile</h2>

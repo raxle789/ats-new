@@ -704,7 +704,9 @@ const EmployJobParameterItem: React.FC<Props> = ({
                         formatter={(value) =>
                           `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
                         }
-                        parser={(value) => value!.replace(/\Rp\s?|(\.*)/g, '')}
+                        parser={(value: string | undefined): string | number =>
+                          value!.replace(/\Rp\s?|(\.*)/g, '')
+                        }
                         // formatter={handleFormatter}
                         // parser={handleParser}
                         // disabled={!salaryRangeParameterState}
@@ -735,7 +737,9 @@ const EmployJobParameterItem: React.FC<Props> = ({
                         formatter={(value) =>
                           `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
                         }
-                        parser={(value) => value!.replace(/\Rp\s?|(\.*)/g, '')}
+                        parser={(value: string | undefined): string | number =>
+                          value!.replace(/\Rp\s?|(\.*)/g, '')
+                        }
                         // disabled={!salaryRangeParameterState}
                       />
                     </Form.Item>
