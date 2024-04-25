@@ -8,14 +8,23 @@ datasource db {
   shadowDatabaseUrl = env("DATABASE_SHADOW_URL")
 }
 
-model addresses {
-  id             Int          @id(map: "PK_745d8f43d3af10ab8247465e450") @default(autoincrement())
-  street_address String       @db.NVarChar(256)
-  city           String       @db.NVarChar(128)
-  province       String       @db.NVarChar(256)
-  postal_code    Int
-  country        String       @default("Indonesia", map: "DF_35936c20d74117b96ca37c06dbf") @db.NVarChar(255)
-  candidates     candidates[]
+model Addresses {
+  id          Int        @id() @default(autoincrement()) @db.Int
+  street      String     @db.NVarChar(510)
+  country     String     @db.NVarChar(510)
+  city        String     @db.NVarChar(510)
+  zipCode     String     @map("zip_code") @db.NVarChar(510)
+  rt          String     @db.NVarChar(510)
+  rw          String     @db.NVarChar(510)
+  subdistrict String     @db.NVarChar(510)
+  village     String     @db.NVarChar(510)
+  isCurrent   String     @map("is_current") @db.NVarChar(510)
+  candidateId Int        @map("candidate_id") @db.Int
+  createdAt   DateTime?  @default(now()) @map("created_at") @db.DateTime
+  updatedAt   DateTime?  @updatedAt @map("updated_at") @db.DateTime
+  candidates  Candidates @relation(fields: [candidateId], references: [id])
+
+  @@map("addresses")
 }
 
 model banks {
@@ -23,46 +32,84 @@ model banks {
   bank_name           String       @db.NVarChar(64)
   bank_branch         String       @db.NVarChar(64)
   bank_account_number Int          @unique(map: "UQ_d99ff7685a1d8bc7f203451f196")
-  candidates          candidates[]
+  candidates          Candidates[]
 }
 
-model candidates {
-  id                                  Int                   @id(map: "PK_140681296bf033ab1eb95288abb") @default(autoincrement())
-  gender                              String                @db.NVarChar(32)
-  religion                            String?               @db.NVarChar(128)
-  ethnicity                           String?               @db.NVarChar(64)
-  blood_type                          String?               @db.Char(1)
-  phone_number                        String                @unique(map: "UQ_e9aae9c8df7ce4bc2e356b57219") @db.NVarChar(14)
+model Candidates {
+  id                                  Int                  @id(map: "PK_140681296bf033ab1eb95288abb") @default(autoincrement())
+  gender                              String?              @db.NVarChar(32)
+  religion                            String?              @db.NVarChar(128)
+  maritalStatus                       String?              @map("marital_status") @db.NVarChar(256)
+  ethnicity                           String?              @db.NVarChar(64)
+  blood_type                          String?              @db.Char(1)
+  phone_number                        String               @unique(map: "UQ_e9aae9c8df7ce4bc2e356b57219") @db.NVarChar(14)
   current_salary                      Int?
-  source_referer                      String?               @db.NVarChar(128)
-  is_blacklisted                      Boolean?              @default(false, map: "DF_49d807863236b10b9c236d5b5d8")
-  created_at                          DateTime              @default(now(), map: "DF_5638150fbb378cd6859db255f7b") @db.DateTime
-  updated_at                          DateTime?             @default(now(), map: "DF_ed9c7e1157bf98c5b2b80b1fd73") @db.DateTime
+  source_referer                      String?              @db.NVarChar(128)
+  is_blacklisted                      Boolean?             @default(false, map: "DF_49d807863236b10b9c236d5b5d8")
+  created_at                          DateTime             @default(now(), map: "DF_5638150fbb378cd6859db255f7b") @db.DateTime
+  updated_at                          DateTime?            @default(now(), map: "DF_ed9c7e1157bf98c5b2b80b1fd73") @db.DateTime
   userId                              Int?
   bankId                              Int?
   emengencyContactId                  Int?
-  addressId                           Int?
   birthCityId                         Int?
   domicileId                          Int?
-  linkedin_profile_url                String?               @db.NVarChar(512)
+  linkedin_profile_url                String?              @db.NVarChar(512)
   identityInfoId                      Int?
-  date_of_birth                       DateTime?             @db.Date
+  date_of_birth                       DateTime?            @db.Date
   candidate_questions                 CandidateQuestions[]
   CandidateStates                     CandidateStates[]
-  emergency_contacts                  emergency_contacts?   @relation(fields: [emengencyContactId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_02cb34982ecd17fda09c240254e")
-  users                               Users?                @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_10d0384a816526f8c7f6b1e67b3")
-  citys_candidates_birthCityIdTocitys citys?                @relation("candidates_birthCityIdTocitys", fields: [birthCityId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_45d141f5577c4588067ed62ba75")
-  banks                               banks?                @relation(fields: [bankId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_4942769253874bef2bc42d1858d")
-  citys_candidates_domicileIdTocitys  citys?                @relation("candidates_domicileIdTocitys", fields: [domicileId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_8f15bc1632f7f52ca9821727621")
-  addresses                           addresses?            @relation(fields: [addressId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_a53ea01ce0f52efa194dbb49f39")
-  identity_info                       identity_info?        @relation(fields: [identityInfoId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_bbd440878ce26abdc91d67a0af8")
-  certifications                      certifications[]
-  documents                           documents[]
-  educations                          educations[]
-  familys                             familys[]
-  sims                                sims[]
-  working_experiences                 working_experiences[]
+  emergency_contacts                  EmergencyContacts?   @relation(fields: [emengencyContactId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_02cb34982ecd17fda09c240254e")
+  users                               Users?               @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_10d0384a816526f8c7f6b1e67b3")
+  citys_candidates_birthCityIdTocitys citys?               @relation("candidates_birthCityIdTocitys", fields: [birthCityId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_45d141f5577c4588067ed62ba75")
+  banks                               banks?               @relation(fields: [bankId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_4942769253874bef2bc42d1858d")
+  citys_candidates_domicileIdTocitys  citys?               @relation("candidates_domicileIdTocitys", fields: [domicileId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_8f15bc1632f7f52ca9821727621")
+
+  identity_info       identity_info?        @relation(fields: [identityInfoId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_bbd440878ce26abdc91d67a0af8")
+  certifications      Certifications[]
+  documents           documents[]
+  educations          Educations[]
+  families            Families[]
+  sims                sims[]
+  working_experiences working_experiences[]
+  addresses           Addresses[]
+  CandidateSkills     CandidateSkills[]
+  Languages           Languages[]
+
+  @@map("candidates")
 }
+
+model Languages {
+  id          Int        @id @default(autoincrement()) @db.Int
+  name        String     @db.NVarChar(510)
+  candidateId Int        @map("candidate_id") @db.Int
+  level       String     @db.NVarChar(510)
+  createdAt   DateTime?  @default(now()) @map("created_at") @db.DateTime
+  updatedAt   DateTime?  @updatedAt @map("updated_at") @db.DateTime
+  candidates  Candidates @relation(fields: [candidateId], references: [id])
+
+  @@map("languages")
+}
+
+model Proficiencies {
+  id        Int       @id @default(autoincrement())
+  name      String    @db.NVarChar(510)
+  createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
+
+  @@map("proficiencies")
+}
+
+// model CandidateLanguages {
+//   candidateId   Int           @map("candidate_id")
+//   languageId    Int           @map("language_id")
+//   proficiencyId Int           @map("proficiency_id")
+//   candidates    Candidates    @relation(fields: [candidateId], references: [id])
+//   languages     Languages     @relation(fields: [languageId], references: [id])
+//   proficiencies Proficiencies @relation(fields: [proficiencyId], references: [id])
+
+//   @@id([candidateId, languageId])
+//   @@map("candidate_languages")
+// }
 
 model candidates_diseases {
   id             Int      @id(map: "PK_98de0fe4d1c3d848b42d6fc5eab") @default(autoincrement())
@@ -70,21 +117,25 @@ model candidates_diseases {
   diagnosis_date DateTime @db.Date
 }
 
-model certifications {
-  id                 Int        @id(map: "PK_fd763d412e4a1fb1b6dadd6e72b") @default(autoincrement())
-  certification_name String     @db.NVarChar(256)
-  url                String     @db.NVarChar(512)
-  created_at         DateTime   @default(now(), map: "DF_b4df756126a0a63ec5d1dcbb79c") @db.DateTime
-  updated_at         DateTime?  @default(now(), map: "DF_804840a17448cc76bd307be181c") @db.DateTime
-  candidateId        Int
-  candidates         candidates @relation(fields: [candidateId], references: [id], onUpdate: NoAction, map: "FK_309f34896c518983111ebeca641")
+model Certifications {
+  id              Int          @id() @default(autoincrement()) @db.Int
+  institutionName String       @map("institution_name") @db.NVarChar(510)
+  issuedDate      DateTime     @map("issued_date") @db.Date
+  certificateId   Int          @map("certificate_id") @db.Int
+  candidateId     Int          @map("candidate_id") @db.Int
+  created_at      DateTime?    @default(now()) @db.DateTime
+  updated_at      DateTime?    @updatedAt @db.DateTime
+  certificates    Certificates @relation(fields: [certificateId], references: [id])
+  candidates      Candidates   @relation(fields: [candidateId], references: [id])
+
+  @@map("certifications")
 }
 
 model citys {
   id                                       Int          @id(map: "PK_601fc3e41ea83d443260e75334b") @default(autoincrement())
   city_name                                String       @db.NVarChar(256)
-  candidates_candidates_birthCityIdTocitys candidates[] @relation("candidates_birthCityIdTocitys")
-  candidates_candidates_domicileIdTocitys  candidates[] @relation("candidates_domicileIdTocitys")
+  candidates_candidates_birthCityIdTocitys Candidates[] @relation("candidates_birthCityIdTocitys")
+  candidates_candidates_domicileIdTocitys  Candidates[] @relation("candidates_domicileIdTocitys")
 }
 
 model document_types {
@@ -104,28 +155,30 @@ model documents {
   updated_at                                        DateTime        @default(now(), map: "DF_0fa0f20571d78848ea6e36f75b5") @db.DateTime
   documentTypeId                                    Int?
   candidate_id                                      Int?
-  candidate                                         candidates?     @relation(fields: [candidate_id], references: [id])
+  candidate                                         Candidates?     @relation(fields: [candidate_id], references: [id])
   document_types                                    document_types? @relation(fields: [documentTypeId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_6c6b9775baa0c8973bd829a8e46")
   identity_info_identity_info_ktpPhotoIdTodocuments identity_info[] @relation("identity_info_ktpPhotoIdTodocuments")
   identity_info_identity_info_avatarIdTodocuments   identity_info[] @relation("identity_info_avatarIdTodocuments")
   sims                                              sims[]
 }
 
-model educations {
+model Educations {
   id              Int        @id(map: "PK_09d2f29e7f6f31f5c01d79d2dbf") @default(autoincrement())
+  cityOfSchool    String     @map("city_of_school") @db.NVarChar(510)
   start_year      Int        @db.SmallInt
   end_year        Int        @db.SmallInt
   university_name String     @db.NVarChar(256)
   major           String     @db.NVarChar(128)
   gpa             Float
-  language        String     @db.NVarChar(64)
   is_latest       Boolean
   is_graduate     Boolean
   created_at      DateTime   @default(now(), map: "DF_9476acc97bf108991353a9af4b0") @db.DateTime
   updated_at      DateTime?  @default(now(), map: "DF_11046a6c8f5e17e459700cc9a13") @db.DateTime
   candidateId     Int
   level           String     @db.NVarChar(32)
-  candidates      candidates @relation(fields: [candidateId], references: [id], onUpdate: NoAction, map: "FK_da1ce5966e5d5a43a9e0797e0c0")
+  candidates      Candidates @relation(fields: [candidateId], references: [id], onUpdate: NoAction, map: "FK_da1ce5966e5d5a43a9e0797e0c0")
+
+  @@map("educations")
 }
 
 model EfpkTa {
@@ -148,52 +201,55 @@ model EfpkTaTransactions {
 }
 
 model EfpkJobVacancies {
-  jobVacancyId  Int    @map("job_vacancy_id")
-  efpkRequestNo String @map("efpk_request_no") @db.NVarChar(255)
+  jobVacancyId  Int          @map("job_vacancy_id")
+  efpkRequestNo String       @map("efpk_request_no") @db.NVarChar(255)
+  jobVacancies  JobVacancies @relation(fields: [jobVacancyId], references: [id])
 
   @@id([efpkRequestNo, jobVacancyId])
   @@map("efpk_job_vacancies")
 }
 
-model emergency_contacts {
-  id           Int          @id(map: "PK_8be191845b6fca1c4e5ba5bd7d1") @default(autoincrement())
-  contact_name String       @db.NVarChar(126)
-  phone_number String       @db.NVarChar(16)
-  candidates   candidates[]
+model EmergencyContacts {
+  id             Int          @id() @default(autoincrement())
+  name           String       @db.NVarChar(510)
+  relationStatus String       @map("relation_status") @db.NVarChar(510)
+  phoneNumber    String       @map("phone_number") @db.NVarChar(510)
+  candidates     Candidates[]
+
+  @@map("emergency_contacts")
 }
 
-model example_1 {
-  id        Int         @id(map: "PK__example___3213E83F1E42926B") @default(autoincrement())
-  book_name String      @db.NVarChar(64)
-  example_2 example_2[]
-}
+// model example_1 {
+//   id        Int         @id(map: "PK__example___3213E83F1E42926B") @default(autoincrement())
+//   book_name String      @db.NVarChar(64)
+//   example_2 example_2[]
+// }
 
-model example_2 {
-  id          Int        @id(map: "PK__example___3213E83FB5014ECF") @default(autoincrement())
-  author_name String     @db.NVarChar(128)
-  example1Id  Int?
-  example_1   example_1? @relation(fields: [example1Id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_0794609c75f558a527d031b5229")
-}
+// model example_2 {
+//   id          Int        @id(map: "PK__example___3213E83FB5014ECF") @default(autoincrement())
+//   author_name String     @db.NVarChar(128)
+//   example1Id  Int?
+//   example_1   example_1? @relation(fields: [example1Id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_0794609c75f558a527d031b5229")
+// }
 
-model example_3 {
-  id        Int    @id(map: "PK_3bb2908fae9cb6594c29312c3ac") @default(autoincrement())
-  publisher String @db.NVarChar(64)
-}
+// model example_3 {
+//   id        Int    @id(map: "PK_3bb2908fae9cb6594c29312c3ac") @default(autoincrement())
+//   publisher String @db.NVarChar(64)
+// }
 
-model familys {
-  id             Int         @id(map: "PK_347a8e3fa04d0a5013ed082fe97") @default(autoincrement())
-  type           String      @db.NVarChar(64)
-  relationship   String      @db.NVarChar(128)
-  name           String      @db.NVarChar(256)
-  gender         String      @db.NVarChar(64)
-  date_of_birth  DateTime    @db.Date
-  last_education String      @db.NVarChar(256)
-  work_position  String      @db.NVarChar(128)
-  ktp_number     String      @db.NVarChar(16)
-  created_at     DateTime    @default(now(), map: "DF_1a00d630ca8885eacba9221a8ce") @db.DateTime
-  updated_at     DateTime?   @default(now(), map: "DF_f1faf26b99d8655dbe4a1d7b7ac") @db.DateTime
-  candidateId    Int?
-  candidates     candidates? @relation(fields: [candidateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_4122f645771e9e2938abfd8c0c5")
+model Families {
+  id             Int         @id() @default(autoincrement()) @db.Int
+  name           String      @db.NVarChar(510)
+  dateOfBirth    DateTime    @map("date_of_birth") @db.Date
+  relationStatus String      @db.NVarChar(510)
+  candidateId    Int         @map("candidate_id") @db.Int
+  genderId       Int         @map("gender_id") @db.Int
+  createdAt      DateTime?   @default(now()) @map("created_at") @db.DateTime
+  updatedAt      DateTime?   @updatedAt @map("updated_at") @db.DateTime
+  candidates     Candidates? @relation(fields: [candidateId], references: [id])
+  genders        Genders     @relation(fields: [genderId], references: [id])
+
+  @@map("families")
 }
 
 model identity_info {
@@ -204,7 +260,7 @@ model identity_info {
   npwp_number                                   String?      @db.NVarChar(9)
   avatarId                                      Int?
   ktpPhotoId                                    Int?
-  candidates                                    candidates[]
+  candidates                                    Candidates[]
   documents_identity_info_ktpPhotoIdTodocuments documents?   @relation("identity_info_ktpPhotoIdTodocuments", fields: [ktpPhotoId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_3c87e74de6f99d1c06cf4581fbb")
   documents_identity_info_avatarIdTodocuments   documents?   @relation("identity_info_avatarIdTodocuments", fields: [avatarId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_ff510b911992a2917ebdd7fb88a")
 }
@@ -236,7 +292,7 @@ model sims {
   sim_number   String      @db.NVarChar(128)
   simPhotoIdId Int?
   candidateId  Int?
-  candidates   candidates? @relation(fields: [candidateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_c07d287b265501fffa4b4559984")
+  candidates   Candidates? @relation(fields: [candidateId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_c07d287b265501fffa4b4559984")
   documents    documents?  @relation(fields: [simPhotoIdId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_e18f71ccc446f3c09584647d100")
 }
 
@@ -246,17 +302,20 @@ model skill_types {
 }
 
 model Users {
-  id                 Int                  @id(map: "PK_a3ffb1c0c8416b9fc6f907b7433") @default(autoincrement())
-  name               String               @db.NVarChar(256)
-  email              String               @unique(map: "UQ_97672ac88f789774dd47f7c8be3") @db.NVarChar(128)
-  is_email_verified  Boolean?
-  password           String               @db.NVarChar(512)
-  created_at         DateTime?            @default(now(), map: "DF_c9b5b525a96ddc2c5647d7f7fa5") @db.DateTime
-  updated_at         DateTime?            @default(now(), map: "DF_6d596d799f9cb9dac6f7bf7c23c") @db.DateTime
-  candidates         candidates[]
-  efpkTa             EfpkTa[]
-  efpkTaTransactions EfpkTaTransactions[]
-  userRoles          UserRoles[]
+  id                          Int                           @id(map: "PK_a3ffb1c0c8416b9fc6f907b7433") @default(autoincrement())
+  name                        String                        @db.NVarChar(256)
+  email                       String                        @unique(map: "UQ_97672ac88f789774dd47f7c8be3") @db.NVarChar(128)
+  is_email_verified           Boolean?
+  password                    String                        @db.NVarChar(512)
+  created_at                  DateTime?                     @default(now(), map: "DF_c9b5b525a96ddc2c5647d7f7fa5") @db.DateTime
+  updated_at                  DateTime?                     @default(now(), map: "DF_6d596d799f9cb9dac6f7bf7c23c") @db.DateTime
+  candidates                  Candidates[]
+  efpkTa                      EfpkTa[]
+  efpkTaTransactions          EfpkTaTransactions[]
+  userRoles                   UserRoles[]
+  jobVacancyTaCollaborators   JobVacancyTaCollaborators[]
+  jobVacancyUserCollaborators JobVacancyUserCollaborators[]
+  jobVacancies                JobVacancies[]
 
   @@map("users")
 }
@@ -276,14 +335,15 @@ model working_experiences {
   created_at      DateTime   @default(now(), map: "DF_6aad921dfbb2e334f6a9fdd823b") @db.DateTime
   updated_at      DateTime?  @default(now(), map: "DF_54053863149a7090457b86a587c") @db.DateTime
   candidateId     Int
-  candidates      candidates @relation(fields: [candidateId], references: [id], onUpdate: NoAction, map: "FK_fdb1fb1f815620c2f82557fdc39")
+  candidates      Candidates @relation(fields: [candidateId], references: [id], onUpdate: NoAction, map: "FK_fdb1fb1f815620c2f82557fdc39")
 }
 
 model LineIndustries {
-  id        Int       @id @default(autoincrement())
-  name      String    @db.NVarChar(510)
-  createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
+  id                       Int                        @id @default(autoincrement())
+  name                     String                     @db.NVarChar(510)
+  createdAt                DateTime?                  @default(now()) @map("created_at") @db.DateTime
+  updatedAt                DateTime?                  @updatedAt @map("updated_at") @db.DateTime
+  JobVacancyLineIndustries JobVacancyLineIndustries[]
 
   @@map("line_industries")
 }
@@ -306,6 +366,7 @@ model RequirementFields {
   updatedAt                 DateTime?                   @updatedAt @map("updated_at") @db.DateTime
   requirementFieldParsers   RequirementFieldParsers?    @relation(fields: [requirementFieldParserId], references: [id])
   positionLevelRequirements PositionLevelRequirements[]
+  jobVacancyRequirements    JobVacancyRequirements[]
 
   @@map("requirement_fields")
 }
@@ -321,9 +382,9 @@ model RequirementFieldParsers {
 }
 
 model PositionLevelRequirements {
-  value              String?           @db.Text
   positionLevelId    Int               @map("position_level_id")
   requirementFieldId Int               @map("requirement_field_id")
+  value              String?           @db.Text
   positionLevels     PositionLevels    @relation(fields: [positionLevelId], references: [id])
   requirementFields  RequirementFields @relation(fields: [requirementFieldId], references: [id])
 
@@ -334,15 +395,27 @@ model PositionLevelRequirements {
 model PositionLevels {
   id                        Int                         @id @default(autoincrement()) @db.Int
   name                      String                      @db.NVarChar(510)
-  level                     Int                         @db.Int
+  level                     Int                         @unique @db.Int
   score                     Int                         @db.Int
   slaDays                   Int?                        @map("sla_days") @db.Int
   prointId                  Int?                        @map("proint_id") @db.Int
   createdAt                 DateTime?                   @default(now()) @map("created_at") @db.DateTime
   updatedAt                 DateTime?                   @updatedAt @map("updated_at") @db.DateTime
   positionLevelRequirements PositionLevelRequirements[]
+  jobVacancies              JobVacancies[]
 
   @@map("position_levels")
+}
+
+model JobVacancyRequirements {
+  jobVacancyId       Int               @map("job_vacancy_id") @db.Int
+  requirementFieldId Int               @map("requirement_field_id") @db.Int
+  value              String?           @db.Text
+  jobVacancies       JobVacancies      @relation(fields: [jobVacancyId], references: [id])
+  requirementFields  RequirementFields @relation(fields: [requirementFieldId], references: [id])
+
+  @@id([jobVacancyId, requirementFieldId])
+  @@map("job_vacancy_requirements")
 }
 
 model JobTitles {
@@ -355,59 +428,60 @@ model JobTitles {
 }
 
 model JobFunctions {
-  id        Int       @id @default(autoincrement()) @db.Int
-  name      String    @db.NVarChar(510)
-  createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
+  id           Int            @id @default(autoincrement()) @db.Int
+  name         String         @db.NVarChar(510)
+  createdAt    DateTime?      @default(now()) @map("created_at") @db.DateTime
+  updatedAt    DateTime?      @updatedAt @map("updated_at") @db.DateTime
+  jobVacancies JobVacancies[]
 
   @@map("job_functions")
 }
 
 model EmploymentStatus {
-  id        Int       @id @default(autoincrement()) @db.Int
-  name      String    @db.NVarChar(510)
-  prointId  Int?      @map("proint_id") @db.Int
-  createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
+  id           Int            @id @default(autoincrement()) @db.Int
+  name         String         @unique @db.NVarChar(510)
+  prointId     Int?           @map("proint_id") @db.Int
+  createdAt    DateTime?      @default(now()) @map("created_at") @db.DateTime
+  updatedAt    DateTime?      @updatedAt @map("updated_at") @db.DateTime
+  jobVacancies JobVacancies[]
 
   @@map("employment_status")
 }
 
 model JobVacancies {
-  id               Int               @id @default(autoincrement())
-  slug             String?           @db.NVarChar(510)
-  jobtitle         String?           @db.NVarChar(510)
-  workAddress      String?           @map("work_address") @db.NVarChar(Max)
-  publishedAt      DateTime?         @map("published_at") @db.DateTime
-  expiredAt        DateTime          @map("expired_at") @db.DateTime
-  takeDown         Int               @map("take_down") @db.SmallInt
-  jobDescription   String?           @map("job_description") @db.Text
-  jobRequirement   String?           @map("job_requirement") @db.Text
-  isVideoInterview String            @map("is_video_interview") @db.NVarChar(10)
-  isAutoAssessment String            @map("is_auto_assessment") @db.NVarChar(10)
-  isConfidential   String            @map("is_confidential") @db.NVarChar(10)
-  isCareerFest     String            @map("is_career_fest") @db.NVarChar(10)
-  isMcu            String            @map("is_mcu") @db.NVarChar(10)
-  createdBy        Int               @map("created_by")
-  updatedBy        Int               @map("updated_by")
-  createdAt        DateTime?         @default(now()) @map("created_at") @db.DateTime
-  updatedAt        DateTime?         @updatedAt @map("updated_at") @db.DateTime
-  deletedAt        DateTime?         @map("deleted_at") @db.DateTime
-  taId             Int               @map("ta_id")
-  efpkId           Int?              @map("fpk_id")
-  companyId        Int?              @map("company_id")
-  jobTitleId       Int?              @map("job_title_id")
-  jobFunctionId    Int?              @map("job_function_id")
-  employmentTypeId Int?              @map("employment_type_id")
-  positionLevelId  Int?              @map("position_level_id")
-  departmentId     Int?              @map("department_id")
-  lineIndustryId   Int?              @map("line_industry_id")
-  regionId         Int?              @map("region_id")
-  workCityId       Int?              @map("work_city_id")
-  collaboratorId   Int?              @map("collaborator_id")
-  userId           Int?              @map("user_id")
-  pipelineId       Int?              @map("pipeline_id")
-  CandidateStates  CandidateStates[]
+  id                          Int                           @id @default(autoincrement()) @db.Int
+  jobTitleAliases             String?                       @map("job_title_aliases") @db.NVarChar(510)
+  workLocationAddress         String?                       @map("work_location_address") @db.Text
+  publishedDate               DateTime?                     @map("published_date") @db.DateTime
+  expiredDate                 DateTime?                     @map("expired_date") @db.DateTime
+  jobDescription              String?                       @map("job_description") @db.Text
+  jobRequirement              String?                       @map("job_requirement") @db.Text
+  isVideoInterview            String?                       @map("is_video_interview") @db.NVarChar(10)
+  isAutoAssessment            String?                       @map("is_auto_assessment") @db.NVarChar(10)
+  isConfidential              String?                       @map("is_confidential") @db.NVarChar(10)
+  isCareerFest                String?                       @map("is_career_fest") @db.NVarChar(10)
+  taId                        Int?                          @map("ta_id") @db.Int
+  jobTitleCode                String?                       @map("job_title_code") @db.NVarChar(255)
+  jobFunctionId               Int?                          @map("job_function_id") @db.Int
+  employmentStatusName        String?                       @map("employment_status_name") @db.NVarChar(510)
+  positionLevel               Int?                          @map("position_level") @db.Int
+  verticalCode                String?                       @map("vertical_code") @db.NVarChar(255)
+  organizationGroupCode       String?                       @map("organization_group_code") @db.NVarChar(255)
+  locationGroupCode           String?                       @map("location_group_code") @db.NVarChar(255)
+  locationCode                String?                       @map("location_code") @db.NVarChar(255)
+  createdAt                   DateTime?                     @default(now()) @map("created_at") @db.DateTime
+  updatedAt                   DateTime?                     @updatedAt @map("updated_at") @db.DateTime
+  jobFunctions                JobFunctions?                 @relation(fields: [jobFunctionId], references: [id])
+  employmentStatus            EmploymentStatus?             @relation(fields: [employmentStatusName], references: [name])
+  positionLevels              PositionLevels?               @relation(fields: [positionLevel], references: [level])
+  verticals                   Verticals?                    @relation(fields: [verticalCode], references: [code])
+  ta                          Users?                        @relation(fields: [taId], references: [id])
+  efpkJobVacancies            EfpkJobVacancies[]
+  jobVacancyLineIndustries    JobVacancyLineIndustries[]
+  jobVacancyRequirements      JobVacancyRequirements[]
+  jobVacancyTaCollaborators   JobVacancyTaCollaborators[]
+  jobVacancyUserCollaborators JobVacancyUserCollaborators[]
+  candidateStates             CandidateStates[]
 
   @@map("job_vacancies")
 }
@@ -428,7 +502,7 @@ model CandidateQuestions {
   answer      String     @db.Text
   created_at  DateTime?  @default(now()) @db.DateTime
   updated_at  DateTime?  @db.DateTime
-  candidates  candidates @relation(fields: [candidateId], references: [id])
+  candidates  Candidates @relation(fields: [candidateId], references: [id])
   questions   Questions  @relation(fields: [questionId], references: [id])
 
   @@id([candidateId, questionId])
@@ -450,7 +524,7 @@ model CandidateStates {
   jobVacancyId Int          @map("job_vacancy_id")
   stateId      Int          @map("state_id")
   assignedAt   DateTime     @default(now()) @map("assigned_at") @db.DateTime
-  candidates   candidates   @relation(fields: [candidateId], references: [id])
+  candidates   Candidates   @relation(fields: [candidateId], references: [id])
   jobVacancies JobVacancies @relation(fields: [jobVacancyId], references: [id])
   states       States       @relation(fields: [stateId], references: [id])
 
@@ -459,28 +533,82 @@ model CandidateStates {
 }
 
 model Genders {
-  id        Int       @id @default(autoincrement()) @db.Int
-  name      String    @db.NVarChar(255)
-  createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
+  id        Int        @id @default(autoincrement()) @db.Int
+  name      String     @db.NVarChar(255)
+  createdAt DateTime?  @default(now()) @map("created_at") @db.DateTime
+  updatedAt DateTime?  @updatedAt @map("updated_at") @db.DateTime
+  families  Families[]
 
   @@map("genders")
 }
 
 model Skills {
-  id        Int       @id @default(autoincrement()) @db.Int
-  name      String    @db.NVarChar(510)
-  createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
+  id              Int               @id @default(autoincrement()) @db.Int
+  name            String            @db.NVarChar(510)
+  createdAt       DateTime?         @default(now()) @map("created_at") @db.DateTime
+  updatedAt       DateTime?         @updatedAt @map("updated_at") @db.DateTime
+  CandidateSkills CandidateSkills[]
 
   @@map("skills")
 }
 
+model CandidateSkills {
+  candidateId Int        @map("candidate_id")
+  skillId     Int        @map("skill_id")
+  candidates  Candidates @relation(fields: [candidateId], references: [id])
+  skills      Skills     @relation(fields: [skillId], references: [id])
+
+  @@id([candidateId, skillId])
+  @@map("candidate_skills")
+}
+
 model Certificates {
-  id        Int       @id @default(autoincrement()) @db.Int
-  name      String    @db.NVarChar(510)
-  createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
+  id             Int              @id @default(autoincrement()) @db.Int
+  name           String           @db.NVarChar(510)
+  createdAt      DateTime?        @default(now()) @map("created_at") @db.DateTime
+  updatedAt      DateTime?        @updatedAt @map("updated_at") @db.DateTime
+  certifications Certifications[]
 
   @@map("certificates")
+}
+
+model Verticals {
+  id           Int            @id @default(autoincrement()) @db.Int
+  code         String         @unique @db.NVarChar(255)
+  name         String?        @db.NVarChar(510)
+  createdAt    DateTime?      @default(now()) @map("created_at") @db.DateTime
+  updatedAt    DateTime?      @updatedAt @map("updated_at") @db.DateTime
+  jobVacancies JobVacancies[]
+
+  @@map("verticals")
+}
+
+model JobVacancyLineIndustries {
+  jobVacancyId   Int            @map("job_vacancy_id")
+  lineIndustryId Int            @map("line_industry_id")
+  jobVacancies   JobVacancies   @relation(fields: [jobVacancyId], references: [id])
+  lineIndustries LineIndustries @relation(fields: [lineIndustryId], references: [id])
+
+  @@id([jobVacancyId, lineIndustryId])
+  @@map("job_vacancy_line_industries")
+}
+
+model JobVacancyTaCollaborators {
+  jobVacancyId Int          @map("job_vacancy_id")
+  taId         Int          @map("ta_id")
+  jobVacancies JobVacancies @relation(fields: [jobVacancyId], references: [id])
+  ta           Users        @relation(fields: [taId], references: [id], onUpdate: NoAction)
+
+  @@id([jobVacancyId, taId])
+  @@map("job_vacancy_ta")
+}
+
+model JobVacancyUserCollaborators {
+  jobVacancyId Int          @map("job_vacancy_id")
+  userId       Int          @map("user_id")
+  jobVacancies JobVacancies @relation(fields: [jobVacancyId], references: [id])
+  users        Users        @relation(fields: [userId], references: [id], onUpdate: NoAction)
+
+  @@id([jobVacancyId, userId])
+  @@map("job_vacancy_users")
 }

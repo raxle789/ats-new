@@ -6,6 +6,9 @@ export async function getAllPositionLevelRequirement(offset, perPage) {
       prisma.positionLevels.findMany({
         skip: offset,
         take: perPage,
+        orderBy: {
+          level: 'desc',
+        },
         include: {
           positionLevelRequirements: {
             include: {
@@ -55,6 +58,9 @@ export async function searchPositionLevelRequirement(query, offset, perPage) {
       prisma.positionLevels.findMany({
         skip: offset,
         take: perPage,
+        orderBy: {
+          level: 'desc',
+        },
         where: {
           OR: [
             {
@@ -185,11 +191,15 @@ export async function getPositionLevelRequirement(positionLevelId) {
 
 export async function getAllPositionLevel() {
   try {
-    const data = await prisma.positionLevels.findMany();
+    const data = await prisma.positionLevels.findMany({
+      orderBy: {
+        level: 'desc',
+      },
+    });
 
     const aliasedData = data?.map((d) => ({
-      value: d.id,
-      label: d.name,
+      value: d?.id,
+      label: d?.name,
     }));
 
     return aliasedData;
@@ -202,11 +212,15 @@ export async function getAllPositionLevel() {
 
 export async function getAllLineIndustry() {
   try {
-    const data = await prisma.lineIndustries.findMany();
+    const data = await prisma.lineIndustries.findMany({
+      orderBy: {
+        name: 'asc',
+      },
+    });
 
     const aliasedData = data?.map((d) => ({
-      value: d.id,
-      label: d.name,
+      value: d?.id,
+      label: d?.name,
     }));
 
     return aliasedData;
@@ -219,11 +233,15 @@ export async function getAllLineIndustry() {
 
 export async function getAllEducationLevel() {
   try {
-    const data = await prisma.educationLevels.findMany();
+    const data = await prisma.educationLevels.findMany({
+      orderBy: {
+        id: 'asc',
+      },
+    });
 
     const aliasedData = data?.map((d) => ({
-      value: d.id,
-      label: d.name,
+      value: d?.id,
+      label: d?.name,
     }));
 
     return aliasedData;

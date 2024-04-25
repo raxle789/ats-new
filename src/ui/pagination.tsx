@@ -30,11 +30,14 @@ const Pagination: React.FC<IProps> = ({
 
     if (selected) {
       params.set('page', selected + 1);
+
       params.set('perPage', perPage);
     } else {
       params.delete('page');
+
       params.delete('perPage');
     }
+
     router.replace(`${pathname}?${params.toString()}`);
   }
 
