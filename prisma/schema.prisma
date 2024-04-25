@@ -9,20 +9,21 @@ datasource db {
 }
 
 model Addresses {
-  id          Int        @id() @default(autoincrement()) @db.Int
-  street      String     @db.NVarChar(510)
-  country     String     @db.NVarChar(510)
-  city        String     @db.NVarChar(510)
-  zipCode     String     @map("zip_code") @db.NVarChar(510)
-  rt          String     @db.NVarChar(510)
-  rw          String     @db.NVarChar(510)
-  subdistrict String     @db.NVarChar(510)
-  village     String     @db.NVarChar(510)
-  isCurrent   String     @map("is_current") @db.NVarChar(510)
-  candidateId Int        @map("candidate_id") @db.Int
-  createdAt   DateTime?  @default(now()) @map("created_at") @db.DateTime
-  updatedAt   DateTime?  @updatedAt @map("updated_at") @db.DateTime
-  candidates  Candidates @relation(fields: [candidateId], references: [id])
+  id             Int        @id() @default(autoincrement()) @db.Int
+  street         String     @db.NVarChar(510)
+  country        String     @db.NVarChar(510)
+  city           String     @db.NVarChar(510)
+  zipCode        String     @map("zip_code") @db.NVarChar(510)
+  rt             String     @db.NVarChar(510)
+  rw             String     @db.NVarChar(510)
+  subdistrict    String     @db.NVarChar(510)
+  village        String     @db.NVarChar(510)
+  isCurrent      String     @map("is_current") @db.NVarChar(510)
+  currentAddress String?    @map("current_address") @db.Text
+  candidateId    Int        @map("candidate_id") @db.Int
+  createdAt      DateTime?  @default(now()) @map("created_at") @db.DateTime
+  updatedAt      DateTime?  @updatedAt @map("updated_at") @db.DateTime
+  candidates     Candidates @relation(fields: [candidateId], references: [id])
 
   @@map("addresses")
 }

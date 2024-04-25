@@ -607,3 +607,49 @@ export async function createJobVacancy(
     console.log(e);
   }
 }
+
+export async function getJobVacancy(jobVacancyId) {
+  try {
+    const data = await prisma.jobVacancies.findUnique({
+      where: {
+        id: jobVacancyId,
+      },
+      include: {
+        efpkJobVacancies: {
+          select: {
+            efpkRequestNo: true,
+          },
+        },
+        jobVacancyLineIndustries: {
+          select: {
+            lineIndustryId: true,
+          },
+        },
+        jobVacancyRequirements: {
+          select: {
+            requirementFields: {
+              select: {
+                name: true,
+              },
+            },
+            value: true,
+          },
+        },
+        jobVacancyTaCollaborators: {
+          select: {
+            taId: true,
+          },
+        },
+        jobVacancyUserCollaborators: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
+
+    return data;
+  } catch (e) {
+    console.log(e);
+  }
+}

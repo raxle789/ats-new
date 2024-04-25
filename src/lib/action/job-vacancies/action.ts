@@ -19,6 +19,7 @@ import {
   getAllUser,
   getAllDepartmentByVertical,
   createJobVacancy,
+  getJobVacancy,
 } from '../../../app/services/job-vacancies/service';
 import {
   validateTaId,
@@ -189,4 +190,10 @@ export async function insertJobVacancy(taId, values) {
   } else {
     console.log(validate.error);
   }
+}
+
+export async function getJobVacancyData(jobVacancyId) {
+  const data = await getJobVacancy(jobVacancyId);
+
+  return data;
 }

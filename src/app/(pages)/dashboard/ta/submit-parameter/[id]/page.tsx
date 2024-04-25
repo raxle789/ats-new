@@ -7,8 +7,8 @@ type IProps = {
   params: string;
 };
 
-const jobParameterPage: React.FC<IProps> = ({ params }) => {
+const JobParameterPage: React.FC<IProps> = ({ params }) => {
   return <EmployJobParameter params={params} />;
 };
 
-export default jobParameterPage;
+export default JobParameterPage;

@@ -21,9 +21,12 @@ import {
   getAllUserData,
   getAllDepartmentDataByVertical,
   insertJobVacancy,
+  getJobVacancyData,
 } from '@/lib/action/job-vacancies/action';
 
-const SubmitJobArea = async ({ searchParams }) => {
+const SubmitJobArea = async ({ params, searchParams }) => {
+  const jobVacancyId = params?.id ?? 8;
+
   const taId = 73023;
 
   const requestNo = searchParams?.fpk
@@ -33,6 +36,20 @@ const SubmitJobArea = async ({ searchParams }) => {
   const verticalCode = searchParams?.verticalCode
     ? decodeURIComponent(searchParams?.verticalCode)
     : '';
+
+  const jobVacancyData = await (async () => {
+    if (jobVacancyId) {
+      return await getJobVacancyData(jobVacancyId)
+        .then((res) => {
+          const data = res ?? {};
+
+          return data;
+        })
+        .catch((e) => console.log('Error getting job vacancy data: ', e));
+    }
+
+    return {};
+  })();
 
   const efpkDataByTa = await getAllEfpkDataByTa(taId)
     .then((res) => {
@@ -205,29 +222,57 @@ const SubmitJobArea = async ({ searchParams }) => {
           <SubmitJobItem efpkData={efpkDataByTa} />
         </>
       )} */}
-
-      <h2 className="main-title">Post a New Job</h2>
-
-      <SubmitJobItem
-        taId={taId}
-        efpkData={efpkDataByTa}
-        efpkDataByRequestNo={efpkDataByRequestNo}
-        jobTitleData={jobTitleData}
-        jobFunctionData={jobFunctionData}
-        employmentStatusData={employmentStatusData}
-        positionLevelData={positionLevelData}
-        verticalData={verticalData}
-        departmentData={departmentData}
-        lineIndustryData={lineIndustryData}
-        regionData={regionData}
-        workLocationData={workLocationData}
-        genderData={genderData}
-        skillData={skillData}
-        certificateData={certificateData}
-        taData={taData}
-        userData={userData}
-        insertJobVacancy={insertJobVacancy}
-      />
+      {!jobVacancyId ? (
+        <>
+          <h2 className="main-title">Post a New Job</h2>
+          <SubmitJobItem
+            jobVacancyData={jobVacancyData}
+            taId={taId}
+            efpkData={efpkDataByTa}
+            efpkDataByRequestNo={efpkDataByRequestNo}
+            jobTitleData={jobTitleData}
+            jobFunctionData={jobFunctionData}
+            employmentStatusData={employmentStatusData}
+            positionLevelData={positionLevelData}
+            verticalData={verticalData}
+            departmentData={departmentData}
+            lineIndustryData={lineIndustryData}
+            regionData={regionData}
+            workLocationData={workLocationData}
+            genderData={genderData}
+            skillData={skillData}
+            certificateData={certificateData}
+            taData={taData}
+            userData={userData}
+            insertJobVacancy={insertJobVacancy}
+          />
+        </>
+      ) : (
+        <>
+          <h2 className="main-title">Edit Job</h2>
+          <SubmitJobItem
+            jobVacancyData={jobVacancyData}
+            taId={taId}
+            efpkData={efpkDataByTa}
+            efpkDataByRequestNo={efpkDataByRequestNo}
+            jobTitleData={jobTitleData}
+            jobFunctionData={jobFunctionData}
+            employmentStatusData={employmentStatusData}
+            positionLevelData={positionLevelData}
+            verticalData={verticalData}
+            departmentData={departmentData}
+            lineIndustryData={lineIndustryData}
+            regionData={regionData}
+            workLocationData={workLocationData}
+            genderData={genderData}
+            skillData={skillData}
+            certificateData={certificateData}
+            taData={taData}
+            userData={userData}
+            insertJobVacancy={insertJobVacancy}
+          />
+        </>
+      )}
     </>
   );
 };
