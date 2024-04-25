@@ -144,37 +144,9 @@ type FieldType = {
   };
 };
 
-const source: string[] = ['Email', 'Erajaya Career Fest', 'Instagram'];
-const jobFunction: string[] = ['Accounting', 'Business', 'Client'];
-const jobTitle: string[] = [
-  'Internship Announce Radio',
-  'Internship Administration',
-  'Internship Application Developer',
-];
-const lineIndustry: string[] = ['Agribusiness', 'Apparel', 'Automotive'];
-const level: string[] = ['Director', 'VP', 'General Manager'];
-
-type FormData = {
-  gender: string;
-  phone_number: number;
-  date_of_birth: string;
-  source_referer: string;
-  current_salary: number;
-  linkedin_profile_url: string;
-  experience: {
-    company_name: string;
-    job_function: string;
-    job_title: string;
-    job_level: string;
-    line_industry: string;
-    start_at: string;
-    end_at: string;
-    salary: string;
-  };
-};
-
 const Stage3Form = () => {
   const dispatch = useAppDispatch();
+  const [form] = Form.useForm();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
   const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -196,12 +168,17 @@ const Stage3Form = () => {
       file.preview = await getBase64(file.originFileObj as FileType);
     }
 
+    console.log('okeoke');
+    console.log('file: ', file);
     setPreviewImage(file.url || (file.preview as string));
     setPreviewOpen(true);
   };
 
-  const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) =>
+  const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
+    console.log('handleChange');
+    console.log('file: ', fileList);
     setFileList(newFileList);
+  };
 
   const [country, setCountry] = useState<string>('');
   const handleChangeCountry = (value: string) => {
@@ -546,11 +523,9 @@ const Stage3Form = () => {
     }, 0);
   };
 
-  const [yearState, setYearState] = useState<boolean>(false);
-  // const [expTabGroup, setExpTabGroup] = useState<JSX.Element[]>(expTabContent);
-  const handleCheckboxChange: CheckboxProps['onChange'] = (e) => {
-    setYearState(e.target.checked);
-  };
+  // type TYearState = {
+  //   [id: number]: boolean;
+  // };
 
   const [expValue, setExpValue] = useState<string>('you-choose');
   const onChangeExp = (e: RadioChangeEvent) => {
@@ -559,7 +534,21 @@ const Stage3Form = () => {
 
   const [jobDescValue, setJobDescValue] = useState<string>('');
   const [expIdx, setExpIdx] = useState<number>(0);
-
+  const [yearState, setYearState] = useState<{ [key: string]: boolean }>({});
+  // const [expTabGroup, setExpTabGroup] = useState<JSX.Element[]>(expTabContent);
+  const handleCheckboxChange: CheckboxProps['onChange'] = (
+    e: any,
+    expIdx: number,
+  ) => {
+    console.log(e.target.checked);
+    // const state = ;
+    // const id = parseInt(e.target.dataset.id);
+    // console.log('id: ', id);
+    setYearState((prevState) => ({
+      ...prevState,
+      [expIdx]: true,
+    }));
+  };
   const expTabContent: JSX.Element[] = [
     <div key={expIdx} className="row">
       <div className="col-6">
@@ -797,7 +786,8 @@ const Stage3Form = () => {
               className="w-100"
               placeholder="Select Year"
               picker="month"
-              disabled={yearState}
+              disabled={yearState[expIdx]}
+              // disabled={yearState}
             />
           </Form.Item>
         </div>
@@ -819,7 +809,17 @@ const Stage3Form = () => {
               className="w-100"
               placeholder="Select Year"
               picker="month"
-              disabled={yearState}
+              // rules={
+              //   !formalCheck
+              //     ? [
+              //         {
+              //           required: true,
+              //           message: 'Please choose your education!',
+              //         },
+              //       ]
+              //     : []
+              // }
+              disabled={yearState[expIdx]}
             />
           </Form.Item>
         </div>
@@ -830,7 +830,14 @@ const Stage3Form = () => {
             name={['experience', expIdx.toString(), 'currentYear']}
           >
             <div className="d-flex align-items-center pt-25">
-              <Checkbox onChange={handleCheckboxChange}>Current</Checkbox>
+              <Checkbox
+                onChange={(e) => handleCheckboxChange(e, expIdx)}
+                // checked={yearState[expIdx] || false}
+                // onChange={handleCheckboxChange}
+                // data-id={expIdx}
+              >
+                Current
+              </Checkbox>
             </div>
           </Form.Item>
         </div>
@@ -914,6 +921,11 @@ const Stage3Form = () => {
     setExpItems(newPanes);
     setActiveExpKey(newActiveKey);
     setExpIdx(expIdx + 1);
+    // setYearState((prevState) => ({
+    //   ...prevState,
+    //   [expIdx]: false,
+    // }));
+    // setYearState(yearState[expIdx]);
   };
 
   const removeExp = (targetKey: TargetKey) => {
@@ -971,6 +983,7 @@ const Stage3Form = () => {
     setIsModalOpen(false);
     // jalankan fungsi simpan data
     message.success('Your data successfully saved');
+    dispatch(setRegisterStep(4));
   };
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -998,100 +1011,31 @@ const Stage3Form = () => {
   };
 
   useEffect(() => {
+    form.setFieldsValue({
+      profile: {
+        fullname: 'Fatih',
+        email: '',
+        phoneNumber: '',
+        dateOfBirth: '',
+      },
+    });
     setIndex(index + 1);
     setExpIdx(expIdx + 1);
     setCertificationIdx(certificationIdx + 1);
+    // setYearState(yearState[expIdx]);
+    // setYearState((prevState) => ({
+    //   ...prevState,
+    //   [expIdx]: false,
+    // }));
   }, []);
 
-  const [hasExperience, setHasExperience] = useState<string>('you-choose');
-  const hasExperienceOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setHasExperience(e.target.value);
-  };
-
-  const [formData, setFormData] = useState<FormData>({
-    gender: 'default',
-    phone_number: 0,
-    date_of_birth: '',
-    source_referer: 'default',
-    current_salary: 0,
-    linkedin_profile_url: '',
-    experience: {
-      company_name: '',
-      job_function: '',
-      job_title: '',
-      job_level: '',
-      line_industry: '',
-      start_at: '',
-      end_at: '',
-      salary: '',
-    },
-  });
-
-  const [hasLinkedIn, setHasLinkedIn] = useState<string>('you-choose');
-  const linkedInRadiosChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setHasLinkedIn(e.target.value);
-  };
-
-  const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    if (name in formData.experience) {
-      setFormData((prevState) => ({
-        ...prevState,
-        experience: {
-          ...prevState.experience,
-          [name]: value,
-        },
-      }));
-      return;
-    } else {
-      setFormData((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-      return;
-    }
-  };
-
-  const selectOnChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    if (name in formData?.experience) {
-      setFormData((prevState) => ({
-        ...prevState,
-        experience: {
-          ...prevState.experience,
-          [name]: value,
-        },
-      }));
-      return;
-    } else {
-      setFormData((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-      return;
-    }
-  };
-
-  const formOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    console.info('the data', formData);
-    const validate = userRegister2.safeParse(formData);
-    if (!validate.success) {
-      console.log('validate', validate.error.flatten());
-    }
-
-    const candidate = await createCandidates(formData);
-    console.info(candidate);
-    if (candidate.success === false) {
-      return console.info('failed');
-    }
-
-    dispatch(setRegisterStep('third'));
-  };
+  useEffect(() => {
+    console.log('yearState: ', yearState);
+  }, [yearState]);
   return (
     <Form
       name="form1"
+      form={form}
       variant="filled"
       initialValues={{ remember: true }}
       onFinish={handleSubmit}
@@ -1628,7 +1572,7 @@ const Stage3Form = () => {
             </div>
           )}
         </div>
-        <div className="col-10">
+        <div className="col-9">
           <div className="input-group-meta position-relative mb-15">
             <label>Current Address (Domicile)</label>
             <Form.Item<FieldType>
@@ -1642,11 +1586,13 @@ const Stage3Form = () => {
             </Form.Item>
           </div>
         </div>
-        <div className="col-2">
+        <div className="col-3">
           <div className="input-group-meta position-relative mb-15">
             <Form.Item<FieldType> name="addressCheckbox">
-              <div className="d-flex align-items-center pt-25">
-                <Checkbox onChange={handleAddressCheck}>Current</Checkbox>
+              <div className="d-flex align-items-center pt-10">
+                <Checkbox onChange={handleAddressCheck}>
+                  Same with Permanent Address
+                </Checkbox>
               </div>
             </Form.Item>
           </div>
@@ -1667,12 +1613,16 @@ const Stage3Form = () => {
             <Form.Item<FieldType>
               name="formalCheckbox"
               className="mb-0"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please choose your education!',
-                },
-              ]}
+              rules={
+                !formalCheck
+                  ? [
+                      {
+                        required: true,
+                        message: 'Please choose your education!',
+                      },
+                    ]
+                  : []
+              }
             >
               <div className="d-flex align-items-center">
                 <Checkbox onChange={handleFormalCheck} checked={formalCheck}>

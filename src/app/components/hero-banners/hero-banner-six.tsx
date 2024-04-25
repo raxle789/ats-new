@@ -1,7 +1,9 @@
 'use client';
 import React from 'react';
-import banner_1 from '@/assets/images/assets/banner_img_01.jpg';
-import banner_2 from '@/assets/images/assets/banner_img_02.jpg';
+// import banner_1 from '@/assets/images/assets/banner_img_01.jpg';
+// import banner_2 from '@/assets/images/assets/banner_img_02.jpg';
+import banner_1 from '@/assets/images/home/banner1.png';
+import banner_2 from '@/assets/images/home/banner2.png';
 import useSearchFormSubmit from '@/hooks/use-search-form-submit';
 import JobCategorySelect from '../select/job-category';
 import CounterOne from '../counter/counter-one';
@@ -22,7 +24,7 @@ const HeroBannerSix = () => {
                 Erajaya Group of companies
               </h1>
               <p
-                className="text-md text-white mt-25 mb-55 lg-mb-40 wow fadeInUp"
+                className="text-md mt-25 mb-55 lg-mb-40 wow fadeInUp"
                 data-wow-delay="0.4s"
               >
                 Empower your career, exceed your ambitions. Join us on our

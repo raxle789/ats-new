@@ -1,6 +1,9 @@
 'use client';
 import React from 'react';
 import Stage3Form from '../../forms/stage-3-form';
+import VerificationForm from '../../forms/verif-email-form';
+import DocumentForm from '../../forms/doc-form';
+import DoneRegisterPage from '../../forms/done-register';
 import {
   SafetyOutlined,
   SmileOutlined,
@@ -8,8 +11,13 @@ import {
   UserOutlined,
 } from '@ant-design/icons';
 import { Steps } from 'antd';
+import { useAppSelector } from '@/redux/hook';
 
 const ProfileStagesArea = () => {
+  const stepState = useAppSelector((state) => state.userRegisterStep.next);
+  const consolefunc = () => {
+    console.log(';okee');
+  };
   return (
     <>
       <h2 className="main-title">Stages</h2>
@@ -20,28 +28,50 @@ const ProfileStagesArea = () => {
             items={[
               {
                 title: 'Create Account',
-                status: 'finish',
+                status:
+                  stepState < 1
+                    ? 'wait'
+                    : stepState === 1
+                      ? 'process'
+                      : 'finish',
                 icon: <UserOutlined />,
               },
               {
                 title: 'Verification',
-                status: 'finish',
+                status:
+                  stepState < 2
+                    ? 'wait'
+                    : stepState === 2
+                      ? 'process'
+                      : 'finish',
                 icon: <SafetyOutlined />,
               },
               {
                 title: 'Fill Form',
-                status: 'process',
+                status:
+                  stepState < 3
+                    ? 'wait'
+                    : stepState === 3
+                      ? 'process'
+                      : 'finish',
                 icon: <SolutionOutlined />,
               },
               {
                 title: 'Done',
-                status: 'wait',
+                status:
+                  stepState < 4
+                    ? 'wait'
+                    : stepState === 4
+                      ? 'process'
+                      : 'finish',
                 icon: <SmileOutlined />,
               },
             ]}
           />
         </div>
-        <Stage3Form />
+        {stepState === 2 && <VerificationForm />}
+        {stepState === 3 && <Stage3Form />}
+        {stepState === 4 && <DoneRegisterPage />}
       </div>
     </>
   );

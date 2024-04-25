@@ -79,33 +79,6 @@ const LoginModal = () => {
             </div>
             <div className="form-wrapper m-auto mt-5 login-pop-up">
               <LoginForm checkedEmployee={isEmployeeChecked} />
-              {/* <div className="d-flex align-items-center mt-0 mb-10">
-                <div className="line"></div>
-                <span className="pe-3 ps-3">OR</span>
-                <div className="line"></div>
-              </div>
-              <div className="row">
-                <div className="col-md-6">
-                  <a
-                    href="#"
-                    className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10"
-                  >
-                    <Image src={linkedin} alt="linkedin-img" />
-                    <span className="ps-2">Login with LinkedIn</span>
-                  </a>
-                </div>
-              </div> */}
-              {/* <p className="text-center mt-10">
-                Do not have an account?{' '}
-                <a
-                  id="signUpButton2"
-                  className="fw-500 sign-up-link"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                >
-                  Sign up
-                </a>
-              </p> */}
             </div>
           </div>
         </div>

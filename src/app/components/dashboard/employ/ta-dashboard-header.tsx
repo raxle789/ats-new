@@ -44,14 +44,14 @@ const TaDashboardHeader = () => {
 
   // handle click to open
   const handleOpen = () => {
-    dispatch(setIsOpen(true));
+    dispatch(setIsOpen(!isOpenSidebar));
   };
   return (
-    <header className="dashboard-header">
+    <header className={`dashboard-header ${isOpenSidebar ? 'show' : ''}`}>
       <div className="d-flex align-items-center justify-content-end">
         <button
           onClick={handleOpen}
-          className="dash-mobile-nav-toggler d-block d-md-none me-auto"
+          className={`dash-mobile-nav-toggler d-block nav-btn-desktop me-auto ${isOpenSidebar ? 'show' : ''}`}
         >
           <span></span>
         </button>

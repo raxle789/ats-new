@@ -11,6 +11,7 @@
     right: 0;
     left: 0;
     background: transparent;
+    // background-color: rgb(12, 29, 92, 0.5);
   }
   &.fixed {
     position: fixed;
@@ -20,6 +21,14 @@
     padding-bottom: 5px;
     background: #fff;
     box-shadow: 0 13px 35px -12px rgb(35 35 35 / 10%);
+  }
+  // img {
+  //   width: auto;
+  //   height: 75px;
+  // }
+  .logo_era_career {
+    width: 119px;
+    height: auto;
   }
   .category-dropdown {
     .item {
@@ -277,8 +286,8 @@
 }
 .theme-main-menu .login-btn-three {
   padding: 12px 27px;
-  border: 2px solid $color-one;
-  color: $color-one;
+  border: 2px solid white;
+  color: white;
   border-radius: 50px;
   &:hover {
     background: $color-one;
@@ -502,3 +511,9 @@
   }
 }
 /*(max-width: 991px)*/
+
+// Custom Style
+.theme-main-menu .btn-when-scroll {
+  border: 2px solid $color-one;
+  color: $color-one;
+}

@@ -107,9 +107,15 @@ const nav_data: {
 
 const EmployAside = () => {
   const pathname = usePathname();
-
   const isOpenSidebar = useAppSelector((state) => state.sidebar.isOpen);
   const dispatch = useAppDispatch();
+
+  const handleClick = () => {
+    const screenWidth = window.innerWidth;
+    if (screenWidth < 450) {
+      dispatch(setIsOpen(false));
+    }
+  };
 
   return (
     <>
@@ -199,7 +205,7 @@ const EmployAside = () => {
               {nav_data.map((m) => {
                 const isActive = pathname === m.link;
                 return (
-                  <li key={m.id} onClick={() => dispatch(setIsOpen(false))}>
+                  <li key={m.id} onClick={handleClick}>
                     <Link
                       href={m.link}
                       className={`d-flex w-100 align-items-center ${isActive ? 'active' : ''}`}

@@ -211,7 +211,8 @@
 // FeedBack Section Five
 .feedback-section-five {
   z-index: 1;
-  background: url(../images/assets/img_39.jpg) no-repeat center;
+  // import bg_testimoni from '@/assets/images/home/bg_testimoni.jpg';
+  background: url(../images/home/bg_testimoni.jpg) no-repeat center;
   background-size: cover;
   &:before {
     content: '';

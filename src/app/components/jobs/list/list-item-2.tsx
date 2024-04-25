@@ -34,14 +34,15 @@ const ListItemTwo = ({ item }: { item: IJobType }) => {
                 // href={`/main/job/${item.id}`}
                 className="job-duration fw-500 m-0"
               >
-                {item.job_function}
+                Assistant Manager - {item.job_function}
               </p>
             </div>
           </div>
         </div>
         <div className="col-md-3 col-sm-6">
           <div className="job-location">
-            <Link href={`/main/job/${item.id}`}>{item.location}</Link>
+            <p className="place">Jakarta-Erajaya Plaza</p>
+            <p>18-04-2024</p>
           </div>
           {/* <div className="job-salary">
             <span className="fw-500 text-dark">${item.salary}</span> /{' '}

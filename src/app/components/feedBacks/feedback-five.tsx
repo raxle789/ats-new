@@ -6,6 +6,9 @@ import Slider from 'react-slick';
 import user_1 from '@/assets/images/assets/img_14.jpg';
 import user_2 from '@/assets/images/assets/img_15.jpg';
 import user_3 from '@/assets/images/assets/img_14.jpg';
+import jonathan from '@/assets/images/home/jonathan.png';
+import saras from '@/assets/images/home/saras.png';
+import septi from '@/assets/images/home/septi.png';
 
 // slider setting
 const slider_setting = {
@@ -43,7 +46,7 @@ const slider_data: {
     desc: 'I’m so lucky to be blessed with an incredibly supportive support system – line managers that acknowledge my needs,both personal and professional, and Erajaya, a company that gives the same career opportunities to all employees regardless the gender.',
     name: 'Septi Dini',
     position: 'Strategy & Planning Lead',
-    user: user_1,
+    user: septi,
   },
   {
     id: 2,
@@ -52,7 +55,7 @@ const slider_data: {
     desc: "As a millennial who gets bored easily and always jumps around, I'm quite surprised that I can survive. Of course this is because I feel that there is equality and career opportunities for all Erajaya employees.",
     name: 'Saras Ina',
     position: 'Lead Product Management',
-    user: user_2,
+    user: saras,
   },
   {
     id: 3,
@@ -61,7 +64,7 @@ const slider_data: {
     desc: 'Erajaya provides a positive working environment that emphasizes a culture of collaboration and teamwork, creating a sense of belonging and purpose. The working environment encourages open and safe communication, which will keep you motivated at work and push you beyond your comfort zone. #LifeatErajaya',
     name: 'Jonathan Mulia',
     position: 'Talent Acquisition & Employer Branding',
-    user: user_3,
+    user: jonathan,
   },
 ];
 
