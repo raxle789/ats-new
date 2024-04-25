@@ -11,6 +11,8 @@ import LoginModal from '@/app/components/common/popup/login-modal';
 import { useAppSessionContext } from '@/libs/Sessions/AppSession';
 import { setAuthState } from '@/redux/features/authorizingSlice';
 import { useAppSelector, useAppDispatch } from '@/redux/hook';
+import logo_era_putih from '@/assets/images/home/logo_era_putih.png';
+import logo_era_career from '@/assets/images/home/logo_era_career.png';
 /* server components */
 // import { getSession } from '@/lib/Authentication';
 
@@ -62,7 +64,10 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
               <div className="logo order-lg-0">
                 <Link href="/" className="d-flex align-items-center">
                   <Image
-                    src={scrollDistance > 100 ? dark_logo : logo}
+                    src={
+                      scrollDistance > 100 ? logo_era_career : logo_era_putih
+                    }
+                    className={scrollDistance > 100 ? 'logo_era_career' : ''}
                     alt="logo"
                     priority
                   />
@@ -90,7 +95,7 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
                       <li>
                         <a
                           href="#"
-                          className={`fw-500 login-btn-three ${dark_style ? 'dark-style' : ''} tran3s`}
+                          className={`fw-500 login-btn-three ${dark_style ? 'dark-style' : ''} ${scrollDistance > 100 ? 'btn-when-scroll' : ''} tran3s`}
                           data-bs-toggle="modal"
                           data-bs-target="#loginModal"
                         >
@@ -131,7 +136,7 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
                       <div className="logo">
                         <Link href="/" className="d-block">
                           <Image
-                            src={dark_style ? dark_logo : logo}
+                            src={dark_style ? logo_era_career : logo_era_putih}
                             alt="logo"
                             priority
                             width="100"

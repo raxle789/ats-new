@@ -24,6 +24,7 @@ const jobData = [
     jobApplicantsInterview: 0,
     jobApplicantsOffering: 4,
     jobRemainingSLA: '36 days',
+    jobUser: 'Vladimir',
     jobRecruiter: 'Gusti 1',
     jobFpkStatus: 'Not Yet',
   },
@@ -38,6 +39,7 @@ const jobData = [
     jobApplicantsInterview: 4,
     jobApplicantsOffering: 5,
     jobRemainingSLA: '28 days',
+    jobUser: 'Vladimir',
     jobRecruiter: 'Gusti 2',
     jobFpkStatus: 'Done',
   },
@@ -52,6 +54,7 @@ const jobData = [
     jobApplicantsInterview: 0,
     jobApplicantsOffering: 2,
     jobRemainingSLA: '18 days',
+    jobUser: 'Vladimir',
     jobRecruiter: 'Gusti 3',
     jobFpkStatus: 'Not Yet',
   },
@@ -66,6 +69,7 @@ const jobData = [
     jobApplicantsInterview: 5,
     jobApplicantsOffering: 6,
     jobRemainingSLA: '12 days',
+    jobUser: 'Vladimir',
     jobRecruiter: 'Gusti 4',
     jobFpkStatus: 'Done',
   },
@@ -115,28 +119,6 @@ const EmployJobArea = () => {
       <div className="job-fpk-header mb-40 lg-mb-30">
         <div className="d-sm-flex align-items-start justify-content-between mb-40 lg-mb-30">
           <h2 className="main-title m0 flex-grow-1">Job Vacancies</h2>
-        </div>
-        <div className="nav-bar-responsive d-flex align-items-center justify-content-center mb-20 pb-3 overflow-auto">
-          <Link href="#" className="d-flex flex-column align-items-center me-4">
-            <span>0</span>
-            <span>Total</span>
-          </Link>
-          <Link href="#" className="d-flex flex-column align-items-center me-4">
-            <span>0</span>
-            <span>Open</span>
-          </Link>
-          <Link href="#" className="d-flex flex-column align-items-center me-4">
-            <span>0</span>
-            <span className="text-center">Process</span>
-          </Link>
-          <Link href="#" className="d-flex flex-column align-items-center me-4">
-            <span>0</span>
-            <span>Hold</span>
-          </Link>
-          <Link href="#" className="d-flex flex-column align-items-center me-4">
-            <span>0</span>
-            <span>Closed</span>
-          </Link>
         </div>
         <div className="d-flex xs-mt-30 justify-content-end align-items-center">
           <SearchBar />

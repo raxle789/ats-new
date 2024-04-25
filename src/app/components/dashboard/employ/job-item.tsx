@@ -10,16 +10,16 @@ interface JobItemProps {
 
 const EmployJobItem: React.FC<JobItemProps> = ({ jobData }) => {
   const [api, contextHolder] = notification.useNotification();
-  const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
-    {},
-  );
+  // const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
+  //   {},
+  // );
 
-  const toggleRowExpansion = (index: number) => {
-    setExpandedRows((prevExpandedRows) => ({
-      ...prevExpandedRows,
-      [index]: !prevExpandedRows[index],
-    }));
-  };
+  // const toggleRowExpansion = (index: number) => {
+  //   setExpandedRows((prevExpandedRows) => ({
+  //     ...prevExpandedRows,
+  //     [index]: !prevExpandedRows[index],
+  //   }));
+  // };
   return (
     <>
       {contextHolder}
@@ -27,29 +27,36 @@ const EmployJobItem: React.FC<JobItemProps> = ({ jobData }) => {
       <div className="tab-content" id="nav-tabContent">
         <div className="tab-pane fade show active" id="a1" role="tabpanel">
           <div className="table-responsive">
-            <table className="table job-alert-table w-100">
+            <table className="table job-alert-table job-vacancies-table w-100">
               <thead>
                 <tr>
-                  <th scope="col"></th>
                   <th scope="col">Job Title</th>
-                  <th scope="col">Remaining SLA</th>
+                  <th scope="col">Applicants</th>
+                  <th scope="col">Assessment</th>
+                  <th scope="col">Interview</th>
+                  <th scope="col">SLA</th>
+                  <th scope="col">User</th>
                   <th scope="col">Recruiter</th>
                   <th scope="col">EFPK</th>
                   <th scope="col">Action</th>
-                  <th scope="col"></th>
                 </tr>
               </thead>
               <tbody>
                 {jobData?.map((data: any, index: number) => (
                   <React.Fragment key={index}>
                     <tr>
-                      <td></td>
                       <td>
                         <b>{`${data?.jobPosition ?? ''}`}</b>
                         <br />
-                        {`${data?.jobDepartment ?? ''}`}
+                        {`${data?.jobDepartment ?? ''}`} <br />
+                        Status: {`${data?.jobStatus ?? ''}`} <br />
+                        End Posted: {`${data?.jobEndPosted ?? ''}`}
                       </td>
+                      <td>{`${data?.jobApplicants ?? ''}`}</td>
+                      <td>{`${data.jobApplicantsAssessment ?? ''}`}</td>
+                      <td>{`${data?.jobApplicantsInterview ?? ''}`}</td>
                       <td>{`${data?.jobRemainingSLA ?? ''}`}</td>
+                      <td>{`${data?.jobUser ?? ''}`}</td>
                       <td>{`${data?.jobRecruiter ?? ''}`}</td>
                       <td>{`${data?.jobFpkStatus ?? ''}`}</td>
                       <td>
@@ -67,14 +74,14 @@ const EmployJobItem: React.FC<JobItemProps> = ({ jobData }) => {
                           {/* action dropdown end */}
                         </div>
                       </td>
-                      <td>
+                      {/* <td>
                         <ExpendableButton
                           isOpen={expandedRows[index]}
                           toggle={() => toggleRowExpansion(index)}
                         />
-                      </td>
+                      </td> */}
                     </tr>
-                    {expandedRows[index] && (
+                    {/* {expandedRows[index] && (
                       <tr>
                         <td></td>
                         <td colSpan={5}>
@@ -119,7 +126,7 @@ const EmployJobItem: React.FC<JobItemProps> = ({ jobData }) => {
                         </td>
                         <td></td>
                       </tr>
-                    )}
+                    )} */}
                   </React.Fragment>
                 ))}
               </tbody>

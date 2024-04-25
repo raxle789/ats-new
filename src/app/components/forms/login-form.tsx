@@ -9,7 +9,14 @@ import { userAuth } from '@/libs/Login';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/redux/hook';
 import { setAuthState } from '@/redux/features/authorizingSlice';
-import { Input } from 'antd';
+import { Input, Form } from 'antd';
+import type { FormProps } from 'antd';
+
+type FieldType = {
+  email?: string;
+  password?: string;
+  otp?: string;
+};
 
 type formData = {
   email: string;
@@ -23,82 +30,92 @@ interface LoginFormProps {
 }
 
 // resolver
-const resolver: Resolver<IFormData> = async (values) => {
-  const errors: Record<string, any> = {};
+// const resolver: Resolver<IFormData> = async (values) => {
+//   const errors: Record<string, any> = {};
 
-  if (!values.email) {
-    errors.email = {
-      type: 'required',
-      message: 'Email is required.',
-    };
-  }
-  if (!values.password) {
-    errors.password = {
-      type: 'required',
-      message: 'Password is required.',
-    };
-  }
-  if (!values.otp) {
-    errors.otp = {
-      type: 'required',
-      message: 'OTP is required.',
-    };
-  }
+//   if (!values.email) {
+//     errors.email = {
+//       type: 'required',
+//       message: 'Email is required.',
+//     };
+//   }
+//   if (!values.password) {
+//     errors.password = {
+//       type: 'required',
+//       message: 'Password is required.',
+//     };
+//   }
+//   if (!values.otp) {
+//     errors.otp = {
+//       type: 'required',
+//       message: 'OTP is required.',
+//     };
+//   }
 
-  return {
-    values: Object.keys(errors).length > 0 ? {} : values,
-    errors,
-  };
-};
+//   return {
+//     values: Object.keys(errors).length > 0 ? {} : values,
+//     errors,
+//   };
+// };
 
 const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
+    console.log('Success:', values);
+  };
+
+  const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
+    errorInfo,
+  ) => {
+    console.log('Failed:', errorInfo);
+  };
+
   const [showPass, setShowPass] = useState<boolean>(false);
   const clientKey = process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY;
 
-  const [formData, setFormData] = useState<formData>({
-    email: '',
-    password: '',
-    is_rememberOn: 'off',
-  });
+  // const [formData, setFormData] = useState<formData>({
+  //   email: '',
+  //   password: '',
+  //   is_rememberOn: 'off',
+  // });
 
-  const [errors, setErrors] = useState<{ [key: string]: string[] }>({
-    email: [''],
-    password: [''],
-    userNotFound: [''],
-    invalidPassword: [''],
-    login: [''],
-  });
+  // const [errors, setErrors] = useState<{ [key: string]: string[] }>({
+  //   email: [''],
+  //   password: [''],
+  //   userNotFound: [''],
+  //   invalidPassword: [''],
+  //   login: [''],
+  // });
 
-  const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
+  // const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { name, value } = e.target;
+  //   setFormData((prevState) => ({
+  //     ...prevState,
+  //     [name]: value,
+  //   }));
+  // };
 
-  const formOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log(formData);
+  // const formOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   console.log(formData);
 
-    const authorizing = await userAuth(formData);
-    if (!authorizing.success) {
-      setErrors(authorizing.message as { [key: string]: string[] });
-      return;
-    }
+  //   const authorizing = await userAuth(formData);
+  //   if (!authorizing.success) {
+  //     setErrors(authorizing.message as { [key: string]: string[] });
+  //     return;
+  //   }
 
-    console.log('check if user logged in successfully', authorizing);
-    setErrors(authorizing.message as { [key: string]: string[] });
+  //   console.log('check if user logged in successfully', authorizing);
+  //   setErrors(authorizing.message as { [key: string]: string[] });
 
-    setTimeout(() => {
-      router.push('/main/job');
-      if (authorizing) {
-        dispatch(setAuthState({ newAuthState: true }));
-      }
-    }, 3000);
-  };
+  //   setTimeout(() => {
+  //     router.push('/main/job');
+  //     if (authorizing) {
+  //       dispatch(setAuthState({ newAuthState: true }));
+  //     }
+  //   }, 3000);
+  // };
 
   useEffect(() => {
     // if (!checkedEmployee) {
@@ -107,68 +124,48 @@ const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
     // }
   }, [checkedEmployee]);
   return (
-    <form onSubmit={formOnSubmit} className="mt-10" action="" method="POST">
+    <Form
+      name="form1"
+      variant="filled"
+      initialValues={{ remember: true }}
+      onFinish={onFinish}
+      onFinishFailed={onFinishFailed}
+    >
       <div className="row">
         <div className="col-12">
           <div className="input-group-meta position-relative mb-10">
             <label>Email*</label>
-            <input
-              className="login-input"
-              type="email"
-              placeholder="james@example.com"
+            <Form.Item<FieldType>
               name="email"
-              value={formData.email}
-              onChange={inputOnChange}
-            />
-            {/* <Input /> */}
-            <div className="help-block with-errors">
-              {errors.email && (
-                <span className="text-danger">{errors.email}</span>
-              )}
-            </div>
+              rules={[{ required: true, message: 'Please input your email!' }]}
+            >
+              <Input placeholder="Your Email" />
+            </Form.Item>
           </div>
         </div>
         <div className="col-12">
           <div className="input-group-meta position-relative mb-10">
             <label>Password*</label>
-            <input
-              type={`${showPass ? 'text' : 'password'}`}
-              placeholder="Enter Password"
-              className="pass_log_id login-input"
+            <Form.Item<FieldType>
               name="password"
-              value={formData.password}
-              onChange={inputOnChange}
-            />
-            {/* <Input.Password /> */}
-            <span
-              className="placeholder_icon"
-              onClick={() => setShowPass(!showPass)}
+              rules={[
+                { required: true, message: 'Please input your password!' },
+              ]}
             >
-              <span className={`passVicon ${showPass ? 'eye-slash' : ''}`}>
-                <Image src={icon} alt="icon" />
-              </span>
-            </span>
-            <div className="help-block with-errors">
-              {errors.password && (
-                <span className="text-danger">{errors.password}</span>
-              )}
-            </div>
+              <Input.Password placeholder="Password" />
+            </Form.Item>
           </div>
         </div>
         {checkedEmployee && (
           <div className="col-12 mb-15">
             <div className="input-group-meta position-relative">
               <label>OTP*</label>
-              <input
-                type="text"
-                className="login-input"
-                placeholder="OTP Code"
-                // {...register('otp', { required: `OTP is required!` })}
+              <Form.Item<FieldType>
                 name="otp"
-              />
-              <div className="help-block with-errors">
-                {/* <ErrorMsg msg={errors.otp?.message!} /> */}
-              </div>
+                rules={[{ required: true, message: 'Please input otp!' }]}
+              >
+                <Input placeholder="Your OTP" />
+              </Form.Item>
             </div>
           </div>
         )}
@@ -189,7 +186,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
                 type="checkbox"
                 id="remember"
                 name="is_rememberOn"
-                onChange={inputOnChange}
+                // onChange={inputOnChange}
               />
               <label htmlFor="remember">Keep me logged in</label>
             </div>
@@ -206,7 +203,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
             Login
           </button>
         </div>
-        {errors.userNotFound && (
+        {/* {errors.userNotFound && (
           <span className="text-center text-danger">{errors.userNotFound}</span>
         )}
         {errors.invalidPassword && (
@@ -216,9 +213,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
         )}
         {errors.login && (
           <span className="text-center text-success">{errors.login}</span>
-        )}
+        )} */}
       </div>
-    </form>
+    </Form>
   );
 };
 

@@ -185,7 +185,15 @@ const CandidateAside = () => {
           <nav className="dasboard-main-nav">
             <ul className="style-none">
               {nav_data.map((m) => {
-                const isActive = pathname === m.link;
+                // const isActive = pathname === m.link;
+                let isActive = false;
+                if (m.id === 2) {
+                  isActive =
+                    pathname === '/dashboard/user/profile' ||
+                    pathname === '/dashboard/user/profile/document';
+                } else {
+                  isActive = pathname === m.link;
+                }
                 return (
                   <li key={m.id} onClick={handleClick}>
                     <Link

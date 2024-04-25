@@ -975,6 +975,11 @@
     td {
       text-align: center;
     }
+    td {
+      &:first-child {
+        text-align: start;
+      }
+    }
     th {
       border: 0;
       padding: 12px 15px;
@@ -1039,6 +1044,15 @@
     }
     .expired .job-status:before {
       background: #ff5050;
+    }
+  }
+
+  .job-vacancies-table {
+    th {
+      font-size: 13px;
+    }
+    td {
+      font-size: 12px;
     }
   }
 

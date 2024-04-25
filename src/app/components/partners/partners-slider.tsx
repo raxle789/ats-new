@@ -2,13 +2,21 @@
 import React from 'react';
 import Slider from 'react-slick';
 import Image, { StaticImageData } from 'next/image';
-import logo_1 from '@/assets/images/logo/media_03.png';
-import logo_2 from '@/assets/images/logo/media_04.png';
-import logo_3 from '@/assets/images/logo/media_05.png';
-import logo_4 from '@/assets/images/logo/media_06.png';
-import logo_5 from '@/assets/images/logo/media_07.png';
-import logo_6 from '@/assets/images/logo/media_08.png';
-import logo_7 from '@/assets/images/logo/media_05.png';
+import logo_1 from '@/assets/images/home/partner-logo/ASICS.png';
+import logo_2 from '@/assets/images/home/partner-logo/Erafone.png';
+import logo_3 from '@/assets/images/home/partner-logo/Eraspace.png';
+import logo_4 from '@/assets/images/home/partner-logo/Garmin.png';
+import logo_5 from '@/assets/images/home/partner-logo/IT.png';
+import logo_6 from '@/assets/images/home/partner-logo/JD.png';
+import logo_7 from '@/assets/images/home/partner-logo/Nasa_Samsung.png';
+import logo_8 from '@/assets/images/home/partner-logo/TFS.png';
+import logo_9 from '@/assets/images/home/partner-logo/UR.png';
+import logo_10 from '@/assets/images/home/partner-logo/Wellings.png';
+import logo_11 from '@/assets/images/home/partner-logo/dji.png';
+import logo_12 from '@/assets/images/home/partner-logo/erablue-logo.png';
+import logo_13 from '@/assets/images/home/partner-logo/ibox.png';
+import logo_14 from '@/assets/images/home/partner-logo/xiaomi.png';
+import logo_15 from '@/assets/images/home/partner-logo/paris_baguette.png';
 
 // slider setting
 const slider_setting = {
@@ -44,12 +52,20 @@ const slider_setting = {
 // logo data
 const logos: StaticImageData[] = [
   logo_1,
-  logo_1,
-  logo_1,
-  logo_1,
-  logo_1,
-  logo_1,
-  logo_1,
+  logo_2,
+  logo_3,
+  logo_4,
+  logo_5,
+  logo_6,
+  logo_7,
+  logo_8,
+  logo_9,
+  logo_10,
+  logo_11,
+  logo_12,
+  logo_13,
+  logo_14,
+  logo_15,
 ];
 
 const PartnersSlider = () => {
@@ -59,7 +75,11 @@ const PartnersSlider = () => {
         {logos.map((logo, i) => (
           <div key={i} className="item">
             <div className="logo d-flex align-items-center">
-              <Image src={logo} alt="logo" style={{ height: 'auto' }} />
+              <Image
+                src={logo}
+                alt="logo"
+                style={{ width: 'auto', height: '59px' }}
+              />
             </div>
           </div>
         ))}

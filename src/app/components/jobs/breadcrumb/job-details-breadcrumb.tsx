@@ -1,7 +1,7 @@
-import React from "react";
-import Image from "next/image";
-import shape_1 from "@/assets/images/shape/shape_02.svg";
-import shape_2 from "@/assets/images/shape/shape_03.svg";
+import React from 'react';
+import Image from 'next/image';
+import shape_1 from '@/assets/images/shape/shape_02.svg';
+import shape_2 from '@/assets/images/shape/shape_03.svg';
 
 const JobDetailsBreadcrumb = () => {
   return (
@@ -14,7 +14,7 @@ const JobDetailsBreadcrumb = () => {
                 <h2 className="text-white">Job Details</h2>
               </div>
               <p className="text-lg text-white mt-30 lg-mt-20">
-                Here will be your company job details & requirements
+                Here will be your job description & requirements
               </p>
             </div>
           </div>

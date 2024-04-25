@@ -8,7 +8,17 @@ const ActionJobVacancies = () => {
     <ul className="dropdown-menu dropdown-menu-end">
       <li>
         <a className="dropdown-item" href="#">
+          <Image src={edit} alt="icon" className="lazy-img" /> View
+        </a>
+      </li>
+      <li>
+        <a className="dropdown-item" href="#">
           <Image src={edit} alt="icon" className="lazy-img" /> Edit
+        </a>
+      </li>
+      <li>
+        <a className="dropdown-item" href="#">
+          <Image src={edit} alt="icon" className="lazy-img" /> Duplicate
         </a>
       </li>
       <li>

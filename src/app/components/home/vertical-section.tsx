@@ -7,6 +7,10 @@ import logo from '@/assets/images/logo/logo_03.png';
 import logo_2 from '@/assets/images/logo/logo_04.png';
 import logo_w from '@/assets/images/logo/logo_06.png';
 import shape from '@/assets/images/shape/shape_28.svg';
+import ED from '@/assets/images/home/ED.png';
+import EFN from '@/assets/images/home/EFN.png';
+import EBW from '@/assets/images/home/EBW.png';
+import EAL from '@/assets/images/home/EAL.png';
 import vertical_line from '@/assets/images/vertical-line.jpg';
 import PartnersSlider from '../partners/partners-slider';
 
@@ -20,9 +24,10 @@ const VerticalSection = () => {
             {/* widget one */}
             <div className="col-lg-3 col-md-3 col-sm-4 mb-20 wow fadeInUp">
               <Image
-                src={vertical_line}
+                src={ED}
                 alt="Vertical-Line"
                 className="mb-25 rounded-3"
+                style={{ width: '291px', height: '164px' }}
               ></Image>
               <h5 className="footer-title vertical-title">Erajaya Digital</h5>
               <p>
@@ -32,9 +37,10 @@ const VerticalSection = () => {
             </div>
             <div className="col-lg-3 col-md-3 col-sm-4 mb-20 wow fadeInUp">
               <Image
-                src={vertical_line}
+                src={EAL}
                 alt="Vertical-Line"
                 className="mb-25 rounded-3"
+                style={{ width: '291px', height: '164px' }}
               ></Image>
               <h5 className="footer-title vertical-title">
                 Erajaya Active Lifestyle​
@@ -47,9 +53,10 @@ const VerticalSection = () => {
             </div>
             <div className="col-lg-3 col-md-3 col-sm-4 mb-20 wow fadeInUp">
               <Image
-                src={vertical_line}
+                src={EFN}
                 alt="Vertical-Line"
                 className="mb-25 rounded-3"
+                style={{ width: '291px', height: '164px' }}
               ></Image>
               <h5 className="footer-title vertical-title">
                 Erajaya Food & Nourishment
@@ -58,9 +65,10 @@ const VerticalSection = () => {
             </div>
             <div className="col-lg-3 col-md-3 col-sm-4 mb-20 wow fadeInUp">
               <Image
-                src={vertical_line}
+                src={EBW}
                 alt="Vertical-Line"
                 className="mb-25 rounded-3"
+                style={{ width: '291px', height: '164px' }}
               ></Image>
               <h5 className="footer-title vertical-title">
                 Erajaya Beauty & Wellness

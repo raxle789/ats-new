@@ -27,6 +27,7 @@
     "@types/react-paginate": "^7.1.1",
     "@types/react-slick": "^0.23.10",
     "antd": "^5.15.0",
+    "antd-input-otp": "^2.1.0",
     "axios": "^1.6.7",
     "bcrypt": "^5.1.1",
     "bootstrap": "^5.3.3",
