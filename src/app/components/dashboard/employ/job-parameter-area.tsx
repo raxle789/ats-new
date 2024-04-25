@@ -12,48 +12,48 @@ import Pagination from '@/ui/pagination';
 import SearchBar from '@/ui/search-bar';
 import { ExpendableButton } from './expendable-button';
 
-const parameterData = [
-  {
-    parameterId: 1,
-    parameterName: 'Parameter 1',
-    totalYearOfExperienceParameter: 4,
-    educationLevelParameter: 'S1 - S2',
-    gradeParameter: '3.98 - 4.00',
-    salaryRangeParameter: '2.000.000 - 4.000.000',
-    lineIndustryParameter: true,
-    jobLevelParameter: true,
-  },
-  {
-    parameterId: 2,
-    parameterName: 'Parameter 2',
-    totalYearOfExperienceParameter: 4,
-    educationLevelParameter: 'S1 - S3',
-    gradeParameter: '3.98 - 4.00',
-    salaryRangeParameter: '3.000.000 - 4.000.000',
-    lineIndustryParameter: true,
-    jobLevelParameter: '',
-  },
-  {
-    parameterId: 3,
-    parameterName: 'Parameter 3',
-    totalYearOfExperienceParameter: 8,
-    educationLevelParameter: 'S1 - S2',
-    gradeParameter: '3.98 - 4.00',
-    salaryRangeParameter: '12.000.000 - 14.000.000',
-    lineIndustryParameter: '',
-    jobLevelParameter: true,
-  },
-  {
-    parameterId: 4,
-    parameterName: 'Parameter 4',
-    totalYearOfExperienceParameter: 12,
-    educationLevelParameter: 'S1 - S2',
-    gradeParameter: '3.98 - 4.00',
-    salaryRangeParameter: '2.000.000 - 4.000.000',
-    lineIndustryParameter: '',
-    jobLevelParameter: true,
-  },
-];
+// const parameterData = [
+//   {
+//     parameterId: 1,
+//     parameterName: 'Parameter 1',
+//     totalYearOfExperienceParameter: 4,
+//     educationLevelParameter: 'S1 - S2',
+//     gradeParameter: '3.98 - 4.00',
+//     salaryRangeParameter: '2.000.000 - 4.000.000',
+//     lineIndustryParameter: true,
+//     jobLevelParameter: true,
+//   },
+//   {
+//     parameterId: 2,
+//     parameterName: 'Parameter 2',
+//     totalYearOfExperienceParameter: 4,
+//     educationLevelParameter: 'S1 - S3',
+//     gradeParameter: '3.98 - 4.00',
+//     salaryRangeParameter: '3.000.000 - 4.000.000',
+//     lineIndustryParameter: true,
+//     jobLevelParameter: '',
+//   },
+//   {
+//     parameterId: 3,
+//     parameterName: 'Parameter 3',
+//     totalYearOfExperienceParameter: 8,
+//     educationLevelParameter: 'S1 - S2',
+//     gradeParameter: '3.98 - 4.00',
+//     salaryRangeParameter: '12.000.000 - 14.000.000',
+//     lineIndustryParameter: '',
+//     jobLevelParameter: true,
+//   },
+//   {
+//     parameterId: 4,
+//     parameterName: 'Parameter 4',
+//     totalYearOfExperienceParameter: 12,
+//     educationLevelParameter: 'S1 - S2',
+//     gradeParameter: '3.98 - 4.00',
+//     salaryRangeParameter: '2.000.000 - 4.000.000',
+//     lineIndustryParameter: '',
+//     jobLevelParameter: true,
+//   },
+// ];
 
 type Props = {
   searchParams: any;
