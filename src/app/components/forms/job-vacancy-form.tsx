@@ -1,22 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import JobVacancyForm from '../../forms/job-vacancy-form';
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-// import Image from 'next/image';
-// import DashboardHeader from '../candidate/dashboard-header';
 import ReactQuill from 'react-quill';
-// import StateSelect from '../candidate/state-select';
-// import CitySelect from '../candidate/city-select';
-// import CountrySelect from '../candidate/country-select';
-// import EmployExperience from './employ-experience';
-// import icon from '@/assets/dashboard/images/icon/icon_16.svg';
-// import NiceSelect from '@/ui/nice-select';
-// import { SmileOutlined } from '@ant-design/icons';
+// import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useState } from 'react';
 import {
   Cascader,
-  Alert,
-  Spin,
   DatePicker,
   Form,
   Input,
@@ -36,55 +24,40 @@ import {
   Divider,
   Space,
 } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
-import type { InputRef } from 'antd';
-import type { SelectProps } from 'antd';
-import type { CheckboxProps } from 'antd';
-import { ExclamationCircleFilled } from '@ant-design/icons';
-
-// import {
-//   yearOfExperienceMarks,
-//   educationLevelMarks,
-//   gradeMarks,
-//   ageMarks,
-// } from '@/data/job-posting-data';
-// import { fpkData } from './job-fpk';
 const { RangePicker } = DatePicker;
 const { TextArea } = Input;
-const { confirm } = Modal;
-let index = 0;
 
-const optionValues: SelectProps['options'] = [
-  { value: 'jack', label: 'jack' },
-  { value: 'lucy', label: 'lucy' },
-  { value: 'harper', label: 'harper' },
-];
+const modules = {
+  toolbar: [
+    [{ header: [1, 2, 3, 4, 5, 6, false] }],
+    [{ font: [] }],
+    [{ size: [] }],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+    [
+      { list: 'ordered' },
+      { list: 'bullet' },
+      { align: [] },
+      { indent: '-1' },
+      { indent: '+1' },
+    ],
+    ['link', 'image', 'video'],
+  ],
+  // clipboard: {
+  //   matchers: [
+  //     [
+  //       '\n',
+  //       (node, delta) => {
+  //         return delta.compose(
+  //           new Delta().retain(delta.length(), { list: 'bullet' }),
+  //         );
+  //       },
+  //     ],
+  //   ],
+  // },
+};
 
-const moment = require('moment');
-
-const _ = require('lodash');
-
-// for (let i = 10; i < 36; i++) {
-//   optionValues.push({
-//     value: i.toString(36) + i,
-//     label: i.toString(36) + i,
-//   });
-// }
-
-// const onChange: CheckboxProps['onChange'] = (e) => {
-//   console.log(`checked = ${e.target.checked}`);
-// };
-
-// props type
-// type IProps = {
-//   setIsOpenSidebar: React.Dispatch<React.SetStateAction<boolean>>;
-// };
-
-const SubmitJobItem = ({
-  jobVacancyData,
-  taId,
+const JobVacancyForm = ({
   efpkData,
-  efpkDataByRequestNo,
   jobTitleData,
   jobFunctionData,
   employmentStatusData,
@@ -99,276 +72,24 @@ const SubmitJobItem = ({
   certificateData,
   taData,
   userData,
-  insertJobVacancy,
+  form,
+  handleJobVacancy,
+  handleEfpkChange,
+  handlePositionLevelChange,
+  handleVerticalChange,
 }) => {
-  const [loading, setLoading] = useState(false);
+  const [ageParameterState, setAgeParameterState] = useState(false);
 
-  const [department, setDepartment] = useState([]);
+  const [genderParameterState, setGenderParameterState] = useState(false);
 
-  const searchParams = useSearchParams();
+  const [skillParameterState, setSkillParameterState] = useState(false);
 
-  const router = useRouter();
-
-  const pathname = usePathname();
-
-  const [api, contextHolder] = notification.useNotification();
-
-  const [form] = Form.useForm();
-
-  useEffect(() => {
-    setDepartment(departmentData);
-  }, [departmentData]);
-
-  useEffect(() => {
-    if (efpkDataByRequestNo && !_.isEmpty(efpkDataByRequestNo)) {
-      form.setFieldsValue({
-        jobEfpk: efpkDataByRequestNo?.RequestNo ?? null,
-        jobTitle: efpkDataByRequestNo?.JobTitleCode ?? null,
-        jobEmploymentStatus: efpkDataByRequestNo?.EmpType ?? null,
-        jobPositionLevel: efpkDataByRequestNo?.JobLvlCode ?? null,
-        jobVertical: efpkDataByRequestNo?.OrgGroupName ?? null,
-        jobDepartment: efpkDataByRequestNo?.OrgGroupCode ?? null,
-        jobWorkLocation: efpkDataByRequestNo?.LocationCode ?? null,
-        jobPublishedDateAndExpiredDate: efpkDataByRequestNo?.sla_days
-          ? [moment(), moment().add(efpkDataByRequestNo?.sla_days, 'days')]
-          : [],
-      });
-
-      if (efpkDataByRequestNo?.OrgGroupName) {
-        setDepartment(
-          departmentData?.filter(
-            (d) => d?.title === efpkDataByRequestNo?.OrgGroupName,
-          ),
-        );
-      } else {
-        setDepartment(departmentData);
-      }
-    }
-
-    setLoading(false);
-  }, [efpkDataByRequestNo]);
-
-  async function handleFpkModal(values: boolean) {
-    console.info(values);
-    setModalOpen(false);
-  }
-
-  function handleEfpkChange(value) {
-    setLoading(true);
-
-    const params = new URLSearchParams(searchParams);
-
-    if (value) {
-      params.set('fpk', encodeURIComponent(value));
-    } else {
-      params.delete('fpk');
-    }
-
-    router.replace(`${pathname}?${params.toString()}`);
-  }
-
-  function handleVerticalChange(value) {
-    form.setFieldValue('jobDepartment', null);
-
-    setDepartment(departmentData?.filter((d) => d?.title === value));
-  }
-
-  function handlePositionLevelChange(value) {
-    if (value) {
-      const [{ slaDays }] = positionLevelData?.filter(
-        (d) => d?.value === value,
-      );
-
-      form.setFieldValue('jobPublishedDateAndExpiredDate', [
-        moment(),
-        moment().add(slaDays, 'days'),
-      ]);
-    } else {
-      form.setFieldValue('jobPublishedDateAndExpiredDate', []);
-    }
-  }
-
-  const formModalRef = useRef(null);
-
-  function handleSubmitJobVacancy(values) {
-    confirm({
-      title: 'Do you want to create new job posting?',
-      icon: <ExclamationCircleFilled />,
-      centered: true,
-      content:
-        'When clicked the OK button, this dialog will be closed after 1 second',
-      onOk() {
-        return new Promise<void>((resolve, reject) => {
-          setTimeout(() => {
-            api.success({
-              message: 'Notification',
-              description: <p>Successfully Create New Job Posting</p>,
-              placement: 'topRight',
-            });
-            insertJobVacancy(taId, values)
-              .then(() => {
-                form.resetFields();
-              })
-              .catch((e) => console.log('Error create new job vacancy: ', e));
-            resolve();
-          }, 2000);
-        }).catch(() => console.log('Oops errors!'));
-      },
-      onCancel() {},
-    });
-  }
-
-  const [modalOpen, setModalOpen] = useState(false);
-  useEffect(() => {
-    setModalOpen(true);
-  }, []);
+  const [certificateParameterState, setCertificateParameterState] =
+    useState(false);
 
   return (
     <>
-      {contextHolder}
-
-      <div>
-        <Modal
-          title="Choose FPK"
-          centered
-          open={modalOpen}
-          maskClosable={false}
-          closable={false}
-          onOk={() => formModalRef?.current?.submit()}
-          onCancel={() => setModalOpen(false)}
-          okText="Submit Job FPK"
-          cancelText="Don't Have Job FPK"
-        >
-          <Form
-            ref={formModalRef}
-            layout="vertical"
-            variant="filled"
-            onFinish={handleFpkModal}
-          >
-            <Form.Item
-              name="jobFpkModal"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please Select Job FPK!',
-                },
-              ]}
-            >
-              <Select
-                className="select"
-                showSearch
-                allowClear
-                placeholder="Select Job FPK"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? '').includes(input)
-                }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? '')
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? '').toLowerCase())
-                }
-                options={efpkData}
-              />
-            </Form.Item>
-          </Form>
-        </Modal>
-      </div>
-
-      {/* <Form onFinish={(values) => console.info(values)}>
-        <div className="dash-input-wrapper mb-30">
-          <div className="row">
-            <div className="col-xxl-2">
-              <Form.Item name="skillParameterCheckbox" valuePropName="checked">
-                <Checkbox
-                  className="checkbox d-flex align-items-center"
-                  checked={skillParameterState}
-                  onChange={(e) => setSkillParameterState(e.target.checked)}
-                >
-                  Skill
-                </Checkbox>
-              </Form.Item>
-            </div>
-            <div className="col-xxl-10">
-              <Form.Item
-                name="skillParameter"
-                rules={
-                  skillParameterState
-                    ? [
-                        {
-                          required: true,
-                          message: 'Please Select skill!',
-                        },
-                      ]
-                    : []
-                }
-              >
-                <Select
-                  className="select"
-                  mode="tags"
-                  size="large"
-                  showSearch
-                  allowClear
-                  disabled={!skillParameterState}
-                  placeholder="Select skill"
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    (option?.label ?? '').includes(input)
-                  }
-                  filterSort={(optionA, optionB) =>
-                    (optionA?.label ?? '')
-                      .toLowerCase()
-                      .localeCompare((optionB?.label ?? '').toLowerCase())
-                  }
-                  options={skillData}
-                />
-              </Form.Item>
-            </div>
-          </div>
-        </div>
-        <Form.Item className="mb-0">
-          <Button
-            className="dash-btn-two tran3s me-3"
-            htmlType="submit"
-            style={{
-              height: '40px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              paddingBottom: '3px',
-            }}
-          >
-            Submit
-          </Button>
-        </Form.Item>
-      </Form> */}
-
-      <Spin spinning={loading}>
-        <JobVacancyForm
-          efpkData={efpkData}
-          jobTitleData={jobTitleData}
-          jobFunctionData={jobFunctionData}
-          employmentStatusData={employmentStatusData}
-          positionLevelData={positionLevelData}
-          verticalData={verticalData}
-          departmentData={department}
-          lineIndustryData={lineIndustryData}
-          regionData={regionData}
-          workLocationData={workLocationData}
-          genderData={genderData}
-          skillData={skillData}
-          certificateData={certificateData}
-          taData={taData}
-          userData={userData}
-          form={form}
-          handleJobVacancy={handleSubmitJobVacancy}
-          handleEfpkChange={handleEfpkChange}
-          handlePositionLevelChange={handlePositionLevelChange}
-          handleVerticalChange={handleVerticalChange}
-        />
-      </Spin>
-
-      {/* <Form
+      <Form
         form={form}
         className="bg-white card-box border-20"
         layout="vertical"
@@ -584,7 +305,7 @@ const SubmitJobItem = ({
                   .toLowerCase()
                   .localeCompare((optionB?.label ?? '').toLowerCase())
               }
-              options={department}
+              options={departmentData}
             />
           </Form.Item>
         </div>
@@ -1108,149 +829,9 @@ const SubmitJobItem = ({
             Cancel
           </button>
         </div>
-      </Form> */}
+      </Form>
     </>
   );
 };
 
-export default SubmitJobItem;
-
-{
-  /* <div className="dash-input-wrapper mb-30">
-          <div className="col-xxl-8">
-            <Form.Item
-              label="Age"
-              name="ageParameter"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please Input Age',
-                },
-              ]}
-            >
-              <InputNumber
-                className="select d-flex align-items-center w-100"
-                min={17}
-                placeholder="Input Maximum Age!"
-                style={{ height: '40px' }}
-              />
-            </Form.Item>
-          </div>
-        </div> */
-}
-{
-  /* </div> */
-}
-{
-  /* <div>
-          <Form.Item name="jobParameterAge">
-            <div className="d-flex align-items-center">
-              <Checkbox
-                onChange={handleCheckboxChange('age')}
-                style={{ width: '115px' }}
-              >
-                Age
-              </Checkbox>
-              <InputNumber
-                className="select d-flex align-items-center w-100"
-                min={0}
-                step={1}
-                placeholder="Input Age"
-                style={{ height: '40px' }}
-                disabled={!inputState.age}
-              />
-            </div>
-          </Form.Item>
-        </div>
-        <div>
-          <Form.Item name="jobParameterGender">
-            <div className="d-flex align-items-center">
-              <Checkbox
-                onChange={handleCheckboxChange('gender')}
-                style={{ width: '115px' }}
-              >
-                Gender
-              </Checkbox>
-              <Select
-                className="select"
-                size="large"
-                allowClear
-                placeholder="Select Gender"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? '').includes(input)
-                }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? '')
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? '').toLowerCase())
-                }
-                disabled={!inputState.gender}
-                options={genderData}
-              />
-            </div>
-          </Form.Item>
-        </div>
-        <div>
-          <Form.Item name="jobParameterSkill">
-            <div className="d-flex align-items-center">
-              <Checkbox
-                onChange={handleCheckboxChange('skill')}
-                style={{ width: '115px' }}
-              >
-                Skill
-              </Checkbox>
-              <Select
-                className="select"
-                mode="tags"
-                size="large"
-                showSearch
-                allowClear
-                placeholder="Select Skill"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? '').includes(input)
-                }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? '')
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? '').toLowerCase())
-                }
-                disabled={!inputState.skill}
-                options={skillData}
-              />
-            </div>
-          </Form.Item>
-        </div>
-        <div>
-          <Form.Item name="jobParameterCertificate">
-            <div className="d-flex align-items-center">
-              <Checkbox
-                onChange={handleCheckboxChange('certificate')}
-                style={{ width: '115px' }}
-              >
-                Certificate
-              </Checkbox>
-              <Select
-                className="select"
-                mode="tags"
-                size="large"
-                showSearch
-                allowClear
-                placeholder="Select Certificate"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? '').includes(input)
-                }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? '')
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? '').toLowerCase())
-                }
-                disabled={!inputState.certificate}
-                options={certificateData}
-              />
-            </div>
-          </Form.Item>
-        </div> */
-}
+export default JobVacancyForm;

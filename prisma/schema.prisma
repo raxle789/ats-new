@@ -9,20 +9,21 @@ datasource db {
 }
 
 model Addresses {
-  id          Int        @id() @default(autoincrement()) @db.Int
-  street      String     @db.NVarChar(510)
-  country     String     @db.NVarChar(510)
-  city        String     @db.NVarChar(510)
-  zipCode     String     @map("zip_code") @db.NVarChar(510)
-  rt          String     @db.NVarChar(510)
-  rw          String     @db.NVarChar(510)
-  subdistrict String     @db.NVarChar(510)
-  village     String     @db.NVarChar(510)
-  isCurrent   String     @map("is_current") @db.NVarChar(510)
-  candidateId Int        @map("candidate_id") @db.Int
-  createdAt   DateTime?  @default(now()) @map("created_at") @db.DateTime
-  updatedAt   DateTime?  @updatedAt @map("updated_at") @db.DateTime
-  candidates  Candidates @relation(fields: [candidateId], references: [id])
+  id             Int        @id() @default(autoincrement()) @db.Int
+  street         String     @db.NVarChar(510)
+  country        String     @db.NVarChar(510)
+  city           String     @db.NVarChar(510)
+  zipCode        String     @map("zip_code") @db.NVarChar(510)
+  rt             String     @db.NVarChar(510)
+  rw             String     @db.NVarChar(510)
+  subdistrict    String     @db.NVarChar(510)
+  village        String     @db.NVarChar(510)
+  isCurrent      String     @map("is_current") @db.NVarChar(510)
+  currentAddress String?    @map("current_address") @db.Text
+  candidateId    Int        @map("candidate_id") @db.Int
+  createdAt      DateTime?  @default(now()) @map("created_at") @db.DateTime
+  updatedAt      DateTime?  @updatedAt @map("updated_at") @db.DateTime
+  candidates     Candidates @relation(fields: [candidateId], references: [id])
 
   @@map("addresses")
 }
@@ -36,44 +37,41 @@ model banks {
 }
 
 model Candidates {
-  id                                  Int                  @id(map: "PK_140681296bf033ab1eb95288abb") @default(autoincrement())
-  gender                              String?              @db.NVarChar(32)
-  religion                            String?              @db.NVarChar(128)
-  maritalStatus                       String?              @map("marital_status") @db.NVarChar(256)
-  ethnicity                           String?              @db.NVarChar(64)
-  blood_type                          String?              @db.Char(1)
-  phone_number                        String               @unique(map: "UQ_e9aae9c8df7ce4bc2e356b57219") @db.NVarChar(14)
-  current_salary                      Int?
-  source_referer                      String?              @db.NVarChar(128)
-  is_blacklisted                      Boolean?             @default(false, map: "DF_49d807863236b10b9c236d5b5d8")
-  created_at                          DateTime             @default(now(), map: "DF_5638150fbb378cd6859db255f7b") @db.DateTime
-  updated_at                          DateTime?            @default(now(), map: "DF_ed9c7e1157bf98c5b2b80b1fd73") @db.DateTime
-  userId                              Int?
-  bankId                              Int?
-  emengencyContactId                  Int?
-  birthCityId                         Int?
-  domicileId                          Int?
-  linkedin_profile_url                String?              @db.NVarChar(512)
-  identityInfoId                      Int?
-  date_of_birth                       DateTime?            @db.Date
-  candidate_questions                 CandidateQuestions[]
-  CandidateStates                     CandidateStates[]
-  emergency_contacts                  EmergencyContacts?   @relation(fields: [emengencyContactId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_02cb34982ecd17fda09c240254e")
-  users                               Users?               @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_10d0384a816526f8c7f6b1e67b3")
-  citys_candidates_birthCityIdTocitys citys?               @relation("candidates_birthCityIdTocitys", fields: [birthCityId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_45d141f5577c4588067ed62ba75")
-  banks                               banks?               @relation(fields: [bankId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_4942769253874bef2bc42d1858d")
-  citys_candidates_domicileIdTocitys  citys?               @relation("candidates_domicileIdTocitys", fields: [domicileId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_8f15bc1632f7f52ca9821727621")
-
-  identity_info       identity_info?        @relation(fields: [identityInfoId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_bbd440878ce26abdc91d67a0af8")
-  certifications      Certifications[]
-  documents           documents[]
-  educations          Educations[]
-  families            Families[]
-  sims                sims[]
-  working_experiences working_experiences[]
-  addresses           Addresses[]
-  CandidateSkills     CandidateSkills[]
-  Languages           Languages[]
+  id                   Int                   @id(map: "PK_140681296bf033ab1eb95288abb") @default(autoincrement())
+  gender               String?               @db.NVarChar(32)
+  religion             String?               @db.NVarChar(128)
+  maritalStatus        String?               @map("marital_status") @db.NVarChar(256)
+  ethnicity            String?               @db.NVarChar(64)
+  blood_type           String?               @db.Char(1)
+  phone_number         String                @unique(map: "UQ_e9aae9c8df7ce4bc2e356b57219") @db.NVarChar(14)
+  current_salary       Int?
+  source_referer       String?               @db.NVarChar(128)
+  is_blacklisted       Boolean?              @default(false, map: "DF_49d807863236b10b9c236d5b5d8")
+  created_at           DateTime              @default(now(), map: "DF_5638150fbb378cd6859db255f7b") @db.DateTime
+  updated_at           DateTime?             @default(now(), map: "DF_ed9c7e1157bf98c5b2b80b1fd73") @db.DateTime
+  userId               Int?
+  bankId               Int?
+  emengencyContactId   Int?
+  birthCity            String?               @db.NVarChar(510)
+  domicile             String?               @db.NVarChar(510)
+  linkedin_profile_url String?               @db.NVarChar(512)
+  identityInfoId       Int?
+  date_of_birth        DateTime?             @db.Date
+  candidate_questions  CandidateQuestions[]
+  CandidateStates      CandidateStates[]
+  emergency_contacts   EmergencyContacts?    @relation(fields: [emengencyContactId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_02cb34982ecd17fda09c240254e")
+  users                Users?                @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_10d0384a816526f8c7f6b1e67b3")
+  banks                banks?                @relation(fields: [bankId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_4942769253874bef2bc42d1858d")
+  identity_info        identity_info?        @relation(fields: [identityInfoId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_bbd440878ce26abdc91d67a0af8")
+  certifications       Certifications[]
+  documents            documents[]
+  educations           Educations[]
+  families             Families[]
+  sims                 sims[]
+  working_experiences  working_experiences[]
+  addresses            Addresses[]
+  CandidateSkills      CandidateSkills[]
+  Languages            Languages[]
 
   @@map("candidates")
 }
@@ -131,12 +129,12 @@ model Certifications {
   @@map("certifications")
 }
 
-model citys {
-  id                                       Int          @id(map: "PK_601fc3e41ea83d443260e75334b") @default(autoincrement())
-  city_name                                String       @db.NVarChar(256)
-  candidates_candidates_birthCityIdTocitys Candidates[] @relation("candidates_birthCityIdTocitys")
-  candidates_candidates_domicileIdTocitys  Candidates[] @relation("candidates_domicileIdTocitys")
-}
+// model citys {
+//   id                                       Int          @id(map: "PK_601fc3e41ea83d443260e75334b") @default(autoincrement())
+//   city_name                                String       @db.NVarChar(256)
+//   candidates_candidates_birthCityIdTocitys Candidates[] @relation("candidates_birthCityIdTocitys")
+//   candidates_candidates_domicileIdTocitys  Candidates[] @relation("candidates_domicileIdTocitys")
+// }
 
 model document_types {
   id            Int         @id(map: "PK_d467d7eeb7c8ce216e90e8494aa") @default(autoincrement())
@@ -243,11 +241,10 @@ model Families {
   dateOfBirth    DateTime    @map("date_of_birth") @db.Date
   relationStatus String      @db.NVarChar(510)
   candidateId    Int         @map("candidate_id") @db.Int
-  genderId       Int         @map("gender_id") @db.Int
+  gender         String      @map("gender") @db.NVarChar(255)
   createdAt      DateTime?   @default(now()) @map("created_at") @db.DateTime
   updatedAt      DateTime?   @updatedAt @map("updated_at") @db.DateTime
   candidates     Candidates? @relation(fields: [candidateId], references: [id])
-  genders        Genders     @relation(fields: [genderId], references: [id])
 
   @@map("families")
 }
@@ -533,11 +530,10 @@ model CandidateStates {
 }
 
 model Genders {
-  id        Int        @id @default(autoincrement()) @db.Int
-  name      String     @db.NVarChar(255)
-  createdAt DateTime?  @default(now()) @map("created_at") @db.DateTime
-  updatedAt DateTime?  @updatedAt @map("updated_at") @db.DateTime
-  families  Families[]
+  id        Int       @id @default(autoincrement()) @db.Int
+  name      String    @db.NVarChar(255)
+  createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
+  updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
 
   @@map("genders")
 }

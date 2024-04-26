@@ -1,3 +1,5 @@
+'use server';
+
 import EmployShortSelect from './short-select';
 import React from 'react';
 import EmployJobFpkItem from './job-fpk-item';
@@ -79,46 +81,66 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
   const searchQuery = searchParams?.query ?? '';
   const offset = (Number(page) - 1) * Number(perPage);
 
-  const getData = () => {
+  const fpkData = (async () => {
     if (searchQuery) {
-      return searchFpkData(searchQuery, offset, Number(perPage))
+      return await searchFpkData(searchQuery, offset, Number(perPage))
         .then((res) => {
           const data = res?.data ?? [];
 
-          const total = res?.total ? res?.total : 0;
+          const total = res?.total ?? 0;
 
           return {
             data: data,
             total: total,
           };
         })
-        .catch((e) => console.log('Error search efpk data: ', e));
+        .catch((e) => {
+          console.log('Error search efpk data: ', e);
+
+          return {
+            data: [],
+            total: 0,
+          };
+        });
     } else {
       // setOffset((Number(page) - 1) * Number(perPage));
 
-      return getFpkData(offset, Number(perPage))
+      return await getFpkData(offset, Number(perPage))
         .then((res) => {
-          const data = res.data ?? [];
+          const data = res?.data ?? [];
 
-          const total = res.total ? res.total : 0;
-
-          console.info(total);
+          const total = res?.total ?? 0;
 
           return {
             data: data,
             total: total,
           };
         })
-        .catch((e) => console.log('Error get efpk data: ', e));
+        .catch((e) => {
+          console.log('Error get efpk data: ', e);
+          return {
+            data: [],
+            total: 0,
+          };
+        });
 
       // getFpkTotal('fpkTotal').then((res) => {
       //   setFpkTotal(res[0].total);
       // });
     }
-  };
+  })();
 
-  const fpkData: any = await getData();
-  const taData = await getTaData().then((res) => res);
+  const taData = await getTaData()
+    .then((res) => {
+      const data = res ?? [];
+
+      return data;
+    })
+    .catch((e) => {
+      console.log('Error getting ta data: ', e);
+
+      return [];
+    });
 
   return (
     <>
@@ -139,7 +161,7 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
         <EmployJobFpkItem
           fpkData={fpkData.data}
           offset={offset}
-          taData={taData}
+          taData={taData.data}
           assignTa={assignTa}
         />
       </div>

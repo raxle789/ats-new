@@ -332,17 +332,26 @@ export async function getAllCertificate() {
   }
 }
 
-export async function getAllTa() {
+export async function getAllTa(taId) {
   try {
     const data = await prisma.users.findMany({
       where: {
-        userRoles: {
-          some: {
-            roles: {
-              name: 'ta_non_admin',
+        AND: [
+          {
+            id: {
+              not: taId,
             },
           },
-        },
+          {
+            userRoles: {
+              some: {
+                roles: {
+                  name: 'ta_non_admin',
+                },
+              },
+            },
+          },
+        ],
       },
       orderBy: {
         name: 'asc',
@@ -366,17 +375,26 @@ export async function getAllTa() {
   }
 }
 
-export async function getAllUser() {
+export async function getAllUser(userId) {
   try {
     const data = await prisma.users.findMany({
       where: {
-        userRoles: {
-          some: {
-            roles: {
-              name: 'user',
+        AND: [
+          {
+            id: {
+              not: userId,
             },
           },
-        },
+          {
+            userRoles: {
+              some: {
+                roles: {
+                  name: 'user',
+                },
+              },
+            },
+          },
+        ],
       },
       orderBy: {
         name: 'asc',
@@ -605,5 +623,327 @@ export async function createJobVacancy(
     });
   } catch (e) {
     console.log(e);
+  }
+}
+
+export async function getJobVacancy(jobVacancyId) {
+  try {
+    const data = await prisma.jobVacancies.findUnique({
+      where: {
+        id: jobVacancyId,
+      },
+      include: {
+        ta: {
+          select: {
+            name: true,
+          },
+        },
+        efpkJobVacancies: {
+          select: {
+            efpkRequestNo: true,
+          },
+        },
+        jobFunctions: {
+          select: {
+            name: true,
+          },
+        },
+        positionLevels: {
+          select: {
+            name: true,
+          },
+        },
+        jobVacancyLineIndustries: {
+          select: {
+            lineIndustryId: true,
+          },
+        },
+        jobVacancyRequirements: {
+          select: {
+            requirementFields: {
+              select: {
+                name: true,
+              },
+            },
+            value: true,
+          },
+        },
+        jobVacancyTaCollaborators: {
+          select: {
+            taId: true,
+          },
+        },
+        jobVacancyUserCollaborators: {
+          select: {
+            userId: true,
+          },
+        },
+      },
+    });
+
+    return data;
+  } catch (e) {
+    console.log(e);
+
+    return {};
+  }
+}
+
+export async function getAllJobVacancy(offset, perPage) {
+  try {
+    // const prisma2 = new PrismaClient().$extends({
+    //   result: {
+    //     jobVacancies: {
+    //       jobTitleName: {
+    //         needs: { jobTitleCode: true },
+    //         compute(jobVacancies) {
+    //           return async () => {
+    //             'use server';
+    //             return await getJobTitleByCode(jobVacancies.jobTitleCode);
+    //           };
+    //         },
+    //       },
+    //       departmentName: {
+    //         needs: { organizationGroupCode: true },
+    //         compute(jobVacancies) {
+    //           return async () => {
+    //             'use server';
+    //             return await getDepartmentByOrganizationGroupCode(
+    //               jobVacancies.organizationGroupCode,
+    //             );
+    //           };
+    //         },
+    //       },
+    //       status: {
+    //         needs: { expiredDate: true },
+    //         compute(jobVacancies) {
+    //           return moment(jobVacancies.expiredDate).isSameOrBefore(moment());
+    //         },
+    //       },
+    //       sla: {
+    //         needs: {
+    //           efpkJobVacancies: { efpkRequestNo: true },
+    //           positionLevels: { slaDays: true },
+    //         },
+    //         compute(jobVacancies) {
+    //           return async () => {
+    //             'use server';
+
+    //             const lastApprovalDate = await getLastEfpkApprovalByRequestNo(
+    //               jobVacancies.efpkJobVacancies.efpkRequestNo,
+    //             );
+
+    //             const sla = moment(lastApprovalDate).add(
+    //               jobVacancies.positionLevels.slaDays,
+    //               'days',
+    //             );
+
+    //             const different = sla.diff(lastApprovalDate, 'days');
+
+    //             return different < 0 ? 0 : different;
+    //           };
+    //         },
+    //       },
+    //       initiatorName: {
+    //         needs: { efpkJobVacancies: { efpkRequestNo: true } },
+    //         compute(jobVacancies) {
+    //           return async () => {
+    //             'use server';
+
+    //             const efpkData = await getEfpkByRequestNo(
+    //               jobVacancies.efpkJobVacancies.efpkRequestNo,
+    //             );
+
+    //             const initiatorName = efpkData.InitiatorName;
+
+    //             return initiatorName;
+    //           };
+    //         },
+    //       },
+    //       taName: {
+    //         needs: { ta: true },
+    //         compute(jobVacancies) {
+    //           return jobVacancies.ta.name;
+    //         },
+    //       },
+    //       isEfpk: {
+    //         needs: { efpkJobVacancies: true },
+    //         compute(jobVacancies) {
+    //           return jobVacancies.efpkJobVacancies.length > 0;
+    //         },
+    //       },
+    //     },
+    //   },
+    // });
+
+    // const data = await prisma2.jobVacancies.findMany();
+
+    const [data, total] = await prisma.$transaction([
+      prisma.jobVacancies.findMany({
+        skip: offset,
+        take: perPage,
+        select: {
+          jobTitleCode: true,
+          jobTitleAliases: true,
+          organizationGroupCode: true,
+          locationCode: true,
+          publishedDate: true,
+          expiredDate: true,
+          candidateStates: true,
+          efpkJobVacancies: {
+            select: {
+              efpkRequestNo: true,
+            },
+          },
+          ta: {
+            select: {
+              name: true,
+            },
+          },
+          positionLevels: {
+            select: {
+              name: true,
+              slaDays: true,
+            },
+          },
+          jobFunctions: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      }),
+      prisma.jobVacancies.count(),
+    ]);
+
+    // await prisma.jobVacancies.findMany({
+    //   include: {
+    //     ta: {
+    //       select: {
+    //         name: true,
+    //       },
+    //     },
+    //     efpkJobVacancies: {
+    //       select: {
+    //         efpkRequestNo: true,
+    //       },
+    //     },
+    //     jobFunctions: {
+    //       select: {
+    //         name: true,
+    //       },
+    //     },
+    //     positionLevels: {
+    //       select: {
+    //         name: true,
+    //       },
+    //     },
+    //     jobVacancyLineIndustries: {
+    //       select: {
+    //         lineIndustryId: true,
+    //       },
+    //     },
+    //     jobVacancyRequirements: {
+    //       select: {
+    //         requirementFields: {
+    //           select: {
+    //             name: true,
+    //           },
+    //         },
+    //         value: true,
+    //       },
+    //     },
+    //     jobVacancyTaCollaborators: {
+    //       select: {
+    //         taId: true,
+    //       },
+    //     },
+    //     jobVacancyUserCollaborators: {
+    //       select: {
+    //         userId: true,
+    //       },
+    //     },
+    //     candidateStates: true,
+    //   },
+    // });
+
+    return {
+      data: data,
+      total: total,
+    };
+  } catch (e) {
+    console.log(e);
+
+    return {
+      data: [],
+      total: 0,
+    };
+  }
+}
+
+export async function getJobTitleByCode(jobTitleCode) {
+  try {
+    const [data] =
+      await prisma.$queryRaw`SELECT JObTtlName FROM MASTER_ERA.dbo.ERA_MasterJobTitle WHERE JobTtlCode = ${jobTitleCode}`;
+
+    return data?.JObTtlName;
+  } catch (e) {
+    console.log(e);
+
+    return '';
+  }
+}
+
+export async function getDepartmentByOrganizationGroupCode(
+  organizationGroupCode,
+) {
+  try {
+    const [data] =
+      await prisma.$queryRaw`SELECT OrgGroupCode, OrgGroupName FROM MASTER_ERA.dbo.ERA_MasterOrganization WHERE OrgGroupCode = ${organizationGroupCode} GROUP BY OrgGroupCode, OrgGroupName`;
+
+    return data?.OrgGroupName;
+  } catch (e) {
+    console.log(e);
+
+    return '';
+  }
+}
+
+export async function getWorkLocationByLocationCode(locationCode) {
+  try {
+    const [data] =
+      await prisma.$queryRaw`SELECT LocationName FROM MASTER_ERA.dbo.ERA_MasterLocation WHERE LocationCode = ${locationCode}`;
+
+    return data?.LocationName;
+  } catch (e) {
+    console.log(e);
+
+    return '';
+  }
+}
+
+export async function getLastEfpkApprovalByRequestNo(requestNo) {
+  try {
+    const [data] =
+      await prisma.$queryRaw`SELECT COALESCE(efpk.ApprDate9, efpk.ApprDate8, efpk.ApprDate7, efpk.ApprDate6, efpk.ApprDate5, efpk.ApprDate4, efpk.ApprDate3, efpk.ApprDate2, efpk.ApprDate1) AS approvalDate FROM MASTER_ERA.dbo.PROINT_trx_efpk AS efpk WHERE efpk.RequestNo = ${requestNo}`;
+
+    return data?.approvalDate;
+  } catch (e) {
+    console.log(e);
+
+    return '';
+  }
+}
+
+export async function getEfpkInitiatorNameByRequestNo(requestNo) {
+  try {
+    const [data] =
+      await prisma.$queryRaw`SELECT InitiatorName FROM MASTER_ERA.dbo.PROINT_trx_efpk WHERE RequestNo = ${requestNo}`;
+
+    return data?.InitiatorName;
+  } catch (e) {
+    console.log(e);
+
+    return '';
   }
 }
