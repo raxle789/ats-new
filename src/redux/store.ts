@@ -7,6 +7,7 @@ import sidebarSlice from './features/sidebarSlice';
 import applicantStepSlice from './features/applicantStepSlice';
 import authSlice from './features/authorizingSlice';
 import candidateDetailsSlice from './features/candidateDetailsSlice';
+import createInterviewSlice from './features/createInterviewSlice';
 
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
   applicantStep: applicantStepSlice,
   auth: authSlice,
   candidateModal: candidateDetailsSlice,
+  createInterviewModal: createInterviewSlice,
   // fatkhur
   userRegisterStep: userRegisterStepSlice,
 });

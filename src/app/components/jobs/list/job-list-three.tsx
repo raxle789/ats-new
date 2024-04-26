@@ -167,19 +167,6 @@ const JobListThree = ({
                   ))}
               </div>
 
-              <div
-                className={`accordion-box grid-style ${jobType === 'grid' ? 'show' : ''}`}
-              >
-                <div className="row">
-                  {currentItems &&
-                    currentItems.map((job) => (
-                      <div key={job.id} className="col-sm-6 mb-30">
-                        <JobGridItem item={job} />
-                      </div>
-                    ))}
-                </div>
-              </div>
-
               {currentItems && (
                 <div className="pt-30 lg-pt-20 d-sm-flex align-items-center justify-content-between">
                   <p className="m0 order-sm-last text-center text-sm-start xs-pb-20">
