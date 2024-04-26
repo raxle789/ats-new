@@ -1,14 +1,15 @@
+'use client';
+
 import React, { useState } from 'react';
 import ActionJobVacancies from '../candidate/action-job-vacancies';
 import { ExpendableButton } from './expendable-button';
 import { notification } from 'antd';
 
 // interface JobItem { jobId?: number, jobPosition?: string, jobDepartment?: string, jobStatus?: string, jobEndPosted?: string, jobApplicants?: number, jobApplicantsAssessment?: number, jobApplicantsInterview?: number, jobApplicantsOffering?: number, jobRemainingSLA?: string, jobRecruiter?: string, jobFpkStatus?: string, }
-interface JobItemProps {
-  jobData: any;
-}
 
-const EmployJobItem: React.FC<JobItemProps> = ({ jobData }) => {
+const moment = require('moment');
+
+const EmployJobItem: React.FC<JobItemProps> = ({ jobVacancyData }) => {
   const [api, contextHolder] = notification.useNotification();
   // const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
   //   {},
@@ -42,23 +43,26 @@ const EmployJobItem: React.FC<JobItemProps> = ({ jobData }) => {
                 </tr>
               </thead>
               <tbody>
-                {jobData?.map((data: any, index: number) => (
+                {jobVacancyData?.map((data: any, index: number) => (
                   <React.Fragment key={index}>
                     <tr>
                       <td>
-                        <b>{`${data?.jobPosition ?? ''}`}</b>
+                        <b>{`${data?.jobTitleName ?? '-'}`}</b>
                         <br />
-                        {`${data?.jobDepartment ?? ''}`} <br />
-                        Status: {`${data?.jobStatus ?? ''}`} <br />
-                        End Posted: {`${data?.jobEndPosted ?? ''}`}
+                        {`${data?.departmentName ?? '-'}`} <br />
+                        Status:
+                        {` ${data?.status ?? '-'}`}
+                        <br />
+                        End Posted:
+                        {` ${data?.endPosted ?? '-'}`}
                       </td>
-                      <td>{`${data?.jobApplicants ?? ''}`}</td>
-                      <td>{`${data.jobApplicantsAssessment ?? ''}`}</td>
-                      <td>{`${data?.jobApplicantsInterview ?? ''}`}</td>
-                      <td>{`${data?.jobRemainingSLA ?? ''}`}</td>
-                      <td>{`${data?.jobUser ?? ''}`}</td>
-                      <td>{`${data?.jobRecruiter ?? ''}`}</td>
-                      <td>{`${data?.jobFpkStatus ?? ''}`}</td>
+                      <td>{`${data?.applicants ?? 0}`}</td>
+                      <td>{`${data?.assessment ?? 0}`}</td>
+                      <td>{`${data?.interview ?? 0}`}</td>
+                      <td>{`${data?.sla ?? '-'}`}</td>
+                      <td>{`${data?.user ?? '-'}`}</td>
+                      <td>{`${data?.recruiter ?? '-'}`}</td>
+                      <td>{`${data?.efpkStatus ?? '-'}`}</td>
                       <td>
                         <div className="action-dots float-end">
                           <button

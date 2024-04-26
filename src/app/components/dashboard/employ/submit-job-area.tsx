@@ -45,7 +45,11 @@ const SubmitJobArea = async ({ params, searchParams }) => {
 
           return data;
         })
-        .catch((e) => console.log('Error getting job vacancy data: ', e));
+        .catch((e) => {
+          console.log('Error getting job vacancy data: ', e);
+
+          return {};
+        });
     }
 
     return {};
@@ -57,7 +61,11 @@ const SubmitJobArea = async ({ params, searchParams }) => {
 
       return data;
     })
-    .catch((e) => console.log('Error getting efpk data by ta: ', e));
+    .catch((e) => {
+      console.log('Error getting efpk data by ta: ', e);
+
+      return [];
+    });
 
   const efpkDataByRequestNo = await (async () => {
     if (requestNo) {
@@ -67,9 +75,11 @@ const SubmitJobArea = async ({ params, searchParams }) => {
 
           return data;
         })
-        .catch((e) =>
-          console.log('Error getting efpk data by request no: ', e),
-        );
+        .catch((e) => {
+          console.log('Error getting efpk data by request no: ', e);
+
+          return {};
+        });
     }
 
     return {};
@@ -81,7 +91,11 @@ const SubmitJobArea = async ({ params, searchParams }) => {
 
       return data;
     })
-    .catch((e) => console.log('Error getting job title data: ', e));
+    .catch((e) => {
+      console.log('Error getting job title data: ', e);
+
+      return [];
+    });
 
   const jobFunctionData = await getAllJobFunctionData()
     .then((res) => {
@@ -89,7 +103,11 @@ const SubmitJobArea = async ({ params, searchParams }) => {
 
       return data;
     })
-    .catch((e) => console.log('Error getting job function data: ', e));
+    .catch((e) => {
+      console.log('Error getting job function data: ', e);
+
+      return [];
+    });
 
   const employmentStatusData = await getAllEmploymentStatusData()
     .then((res) => {
@@ -97,7 +115,11 @@ const SubmitJobArea = async ({ params, searchParams }) => {
 
       return data;
     })
-    .catch((e) => console.log('Error getting employment status data: ', e));
+    .catch((e) => {
+      console.log('Error getting employment status data: ', e);
+
+      return [];
+    });
 
   const positionLevelData = await getAllPositionLevelData()
     .then((res) => {
@@ -105,7 +127,11 @@ const SubmitJobArea = async ({ params, searchParams }) => {
 
       return data;
     })
-    .catch((e) => console.log('Error getting position level data: ', e));
+    .catch((e) => {
+      console.log('Error getting position level data: ', e);
+
+      return [];
+    });
 
   const verticalData = await getAllVerticalData()
     .then((res) => {
@@ -113,7 +139,11 @@ const SubmitJobArea = async ({ params, searchParams }) => {
 
       return data;
     })
-    .catch((e) => console.log('Error getting vertical data: ', e));
+    .catch((e) => {
+      console.log('Error getting vertical data: ', e);
+
+      return [];
+    });
 
   const departmentData = await getAllDepartmentData()
     .then((res) => {
@@ -121,7 +151,11 @@ const SubmitJobArea = async ({ params, searchParams }) => {
 
       return data;
     })
-    .catch((e) => console.log('Error getting department data: ', e));
+    .catch((e) => {
+      console.log('Error getting department data: ', e);
+
+      return [];
+    });
 
   // const departmentData = await (async () => {
   //   if (!verticalCode) {
@@ -151,7 +185,11 @@ const SubmitJobArea = async ({ params, searchParams }) => {
 
       return data;
     })
-    .catch((e) => console.log('Error getting line industry data: ', e));
+    .catch((e) => {
+      console.log('Error getting line industry data: ', e);
+
+      return [];
+    });
 
   const regionData = await getAllRegionData()
     .then((res) => {
@@ -159,7 +197,11 @@ const SubmitJobArea = async ({ params, searchParams }) => {
 
       return data;
     })
-    .catch((e) => console.log('Error getting region data: ', e));
+    .catch((e) => {
+      console.log('Error getting region data: ', e);
+
+      return [];
+    });
 
   const workLocationData = await getAllWorkLocationData()
     .then((res) => {
@@ -167,7 +209,11 @@ const SubmitJobArea = async ({ params, searchParams }) => {
 
       return data;
     })
-    .catch((e) => console.log('Error getting work location data: ', e));
+    .catch((e) => {
+      console.log('Error getting work location data: ', e);
+
+      return [];
+    });
 
   const genderData = await getAllGenderData()
     .then((res) => {
@@ -175,7 +221,11 @@ const SubmitJobArea = async ({ params, searchParams }) => {
 
       return data;
     })
-    .catch((e) => console.log('Error getting gender data: ', e));
+    .catch((e) => {
+      console.log('Error getting gender data: ', e);
+
+      return [];
+    });
 
   const skillData = await getAllSkillData()
     .then((res) => {
@@ -183,7 +233,11 @@ const SubmitJobArea = async ({ params, searchParams }) => {
 
       return data;
     })
-    .catch((e) => console.log('Error getting skill data: ', e));
+    .catch((e) => {
+      console.log('Error getting skill data: ', e);
+
+      return [];
+    });
 
   const certificateData = await getAllCertificateData()
     .then((res) => {
@@ -191,23 +245,35 @@ const SubmitJobArea = async ({ params, searchParams }) => {
 
       return data;
     })
-    .catch((e) => console.log('Error getting certificate data: ', e));
+    .catch((e) => {
+      console.log('Error getting certificate data: ', e);
 
-  const taData = await getAllTaData()
+      return [];
+    });
+
+  const taData = await getAllTaData(taId)
     .then((res) => {
       const data = res ?? [];
 
       return data;
     })
-    .catch((e) => console.log('Error getting ta data: ', e));
+    .catch((e) => {
+      console.log('Error getting ta data: ', e);
 
-  const userData = await getAllUserData()
+      return [];
+    });
+
+  const userData = await getAllUserData(taId)
     .then((res) => {
       const data = res ?? [];
 
       return data;
     })
-    .catch((e) => console.log('Error getting user data: ', e));
+    .catch((e) => {
+      console.log('Error getting user data: ', e);
+
+      return [];
+    });
 
   return (
     <>
