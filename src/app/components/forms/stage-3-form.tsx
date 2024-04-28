@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   createCandidate,
   storeCandidateQuestions,
@@ -18,7 +18,6 @@ import {
 import { userRegister2 } from '@/libs/validations/Register';
 import { setRegisterStep } from '@/redux/features/fatkhur/registerSlice';
 import { useAppDispatch } from '@/redux/hook';
-import { useState } from 'react';
 import {
   Input,
   Form,
@@ -104,8 +103,8 @@ type FieldType = {
     };
   };
   formalOption?: string;
-  formalCheckbox?: string;
-  certificationCheckbox?: string;
+  formalCheckbox?: boolean;
+  certificationCheckbox?: boolean;
   education?: {
     educationLevel?: string;
     educationMajor?: string;
@@ -664,19 +663,17 @@ const Stage3Form = () => {
       <div className="col-6">
         <div className="input-group-meta position-relative mb-15">
           <label>Issue Date</label>
-          <div className="d-inline">
+          <div className="d-flex align-items-center">
             <Form.Item<FieldType>
               name={[
                 'certification',
                 certificationIdx.toString(),
                 'monthIssue',
               ]}
-              className="mb-0"
+              className="mb-0 me-2"
             >
               <DatePicker placeholder="Select Month" picker="month" />
             </Form.Item>
-          </div>
-          <div>
             <Form.Item<FieldType>
               name={['certification', certificationIdx.toString(), 'yearIssue']}
               className="mb-0"
@@ -694,7 +691,7 @@ const Stage3Form = () => {
   const [certifItems, setCertifItems] = useState(certifInitItems);
   const newCertifTabIndex = useRef(0);
 
-  const onChangeCertifTabs = (newActiveKey: string) => {
+  const onChangeCertifTabs = (newActiveKey: any) => {
     setActiveCertifKey(newActiveKey);
   };
 
@@ -771,7 +768,9 @@ const Stage3Form = () => {
     }
   };
   const removeLangSkill = () => {
-    setLangTotal(langTotal - 1);
+    if (langTotal > 1) {
+      setLangTotal(langTotal - 1);
+    }
   };
 
   const addLanguage = (
@@ -785,11 +784,6 @@ const Stage3Form = () => {
     }, 0);
   };
 
-  const [yearState, setYearState] = useState<boolean>(false);
-  const handleCheckboxChange: CheckboxProps['onChange'] = (e) => {
-    setYearState(e.target.checked);
-  };
-
   const [expValue, setExpValue] = useState<string>('you-choose');
   const onChangeExp = (e: RadioChangeEvent) => {
     setExpValue(e.target.value);
@@ -798,6 +792,7 @@ const Stage3Form = () => {
   const [jobDescValue, setJobDescValue] = useState<string>('');
   const [expIdx, setExpIdx] = useState<number>(0);
   const [yearState, setYearState] = useState<{ [key: string]: boolean }>({});
+  const currentYear = useRef([]);
   // const [expTabGroup, setExpTabGroup] = useState<JSX.Element[]>(expTabContent);
   const handleCheckboxChange: CheckboxProps['onChange'] = (
     e: any,
@@ -811,6 +806,32 @@ const Stage3Form = () => {
       ...prevState,
       [expIdx]: true,
     }));
+  };
+
+  const handleCheckboxRef: CheckboxProps['onChange'] = (
+    e: any,
+    expIdx: number,
+  ) => {
+    console.log(e.target.checked);
+    console.log('expIdx: ', expIdx);
+    // currentYear.current[expIdx].disabled = e.target.checked;
+    // currentYear.current[expIdx + 1].disabled = e.target.checked;
+    // Memastikan bahwa currentYear.current telah diinisialisasi
+    if (currentYear.current) {
+      console.log('sudah cek currentYear ref');
+      // Memastikan bahwa currentYear.current[expIdx] dan currentYear.current[expIdx + 1] ada
+      if (currentYear.current[expIdx] && currentYear.current[expIdx + 1]) {
+        // Mengubah status disabled
+        currentYear.current[expIdx].disabled = e.target.checked;
+        currentYear.current[expIdx + 1].disabled = e.target.checked;
+      } else {
+        console.error(
+          'Index out of bounds or currentYear.current is not initialized properly.',
+        );
+      }
+    } else {
+      console.error('currentYear.current is not initialized.');
+    }
   };
   const expTabContent: JSX.Element[] = [
     <div key={expIdx} className="row">
@@ -974,10 +995,13 @@ const Stage3Form = () => {
             ]}
           >
             <DatePicker
+              ref={(ref) =>
+                console.log('refstart: ', (currentYear.current[expIdx] = ref))
+              }
               className="w-100"
               placeholder="Select Year"
               picker="month"
-              disabled={yearState[expIdx]}
+              // disabled={yearState[expIdx]}
               // disabled={yearState}
             />
           </Form.Item>
@@ -997,6 +1021,7 @@ const Stage3Form = () => {
             ]}
           >
             <DatePicker
+              ref={(ref) => (currentYear.current[expIdx + 1] = ref)}
               className="w-100"
               placeholder="Select Year"
               picker="month"
@@ -1010,7 +1035,7 @@ const Stage3Form = () => {
               //       ]
               //     : []
               // }
-              disabled={yearState[expIdx]}
+              // disabled={yearState[expIdx]}
             />
           </Form.Item>
         </div>
@@ -1019,17 +1044,16 @@ const Stage3Form = () => {
         <div className="input-group-meta position-relative mb-15">
           <Form.Item<FieldType>
             name={['experience', expIdx.toString(), 'currentYear']}
+            className="pt-15"
           >
-            <div className="d-flex align-items-center pt-25">
-              <Checkbox
-                onChange={(e) => handleCheckboxChange(e, expIdx)}
-                // checked={yearState[expIdx] || false}
-                // onChange={handleCheckboxChange}
-                // data-id={expIdx}
-              >
-                Current
-              </Checkbox>
-            </div>
+            <Checkbox
+              // onChange={(e) => handleCheckboxChange(e, expIdx)}
+              // checked={yearState[expIdx] || false}
+              onChange={(e) => handleCheckboxRef(e, expIdx)}
+              // data-id={expIdx}
+            >
+              Current
+            </Checkbox>
           </Form.Item>
         </div>
       </div>
@@ -1170,6 +1194,8 @@ const Stage3Form = () => {
 
   const handleOk = () => {
     setIsModalOpen(false);
+    const formValue = form.getFieldsValue();
+    console.log('ok value form: ', formValue);
     // jalankan fungsi simpan data
     message.success('Your data successfully saved');
     dispatch(setRegisterStep(4));
@@ -1179,202 +1205,202 @@ const Stage3Form = () => {
   };
 
   const handleSubmit: FormProps<FieldType>['onFinish'] = async (values) => {
-    console.log('Submitted data...', values);
+    // console.log('Submitted data...', values);
     /* Create stored file-object */
-    console.log('Manipulating profile-photo file...');
-    const photoBase64 = await fileToBase64(profilePhoto[0].originFileObj);
-    const photoFile = {
-      original_name: profilePhoto[0].originFileObj.name,
-      byte_size: profilePhoto[0].originFileObj.size,
-      file_base: photoBase64,
-    };
-    console.log('Manipulated profile-photo file result...', photoFile);
-    // /* Storing profile-photo file... */
-    console.info('Storing profile-photo file...s');
-    const saveProfilePhoto = await storeProfilePhoto(photoFile);
-    if (saveProfilePhoto.success !== true) {
-      console.info('Failed to store profile photo...');
-      return setErrors(saveProfilePhoto.message as string);
-    }
-    console.info('Storing profile-phhoto successfully...', saveProfilePhoto);
-    /* Updating candidate data */
-    console.info('Begin updating candidate-data...');
-    const candidateUpdateData = {
-      bloodType: values.profile.bloodType,
-      ethnicity: values.profile.ethnicity,
-      gender: values.profile.gender,
-      maritalStatus: values.profile.maritalStatus,
-      placeOfBirth: values.profile.placeOfBirth,
-      religion: values.profile.religion,
-    };
-    const updateCandidateData = await updateCandidate(candidateUpdateData);
-    if (updateCandidateData.success !== true) {
-      console.info(updateCandidateData.message as string);
-      return setErrors(updateCandidateData.message as string);
-    }
-    console.log('Updating candidate-data successfully...', updateCandidateData);
-    /* Add address */
-    console.info('Begin to store address data...');
-    const manipulatedAddressData = {
-      permanentAddress: values.address.permanentAddress,
-      country: values.address.country,
-      city: values.address.city,
-      zipCode: values.address.zipCode,
-      rt: values.address.rt,
-      rw: values.address.rw,
-      subdistrict: values.address.subdistrict,
-      village: values.address.village,
-      currentAddress: values.address.currentAddress,
-    };
-    const storeAddress = await storingAddress(
-      manipulatedAddressData,
-      values.addressCheckbox,
-    );
-    if (storeAddress.success !== true) {
-      console.info(storeAddress.message as string);
-      return setErrors(storeAddress.message as string);
-    }
-    console.info('Storing address data successfully...', storeAddress);
-    /* Add Relations */
-    const plainFamiliesObject = convertToPlainObject(values.families as object);
-    /* PLAIN OBJECT */
-    const storeRelations = await storeFamilys(plainFamiliesObject);
-    if (storeRelations.success !== true) {
-      console.info(storeRelations.message as string);
-      return setErrors(storeRelations.message as string);
-    }
-    console.info('Storing relations successfully...', storeRelations);
-    /* Add Education */
-    console.info('Begin to store education data...');
+    // console.log('Manipulating profile-photo file...');
+    // const photoBase64 = await fileToBase64(profilePhoto[0].originFileObj);
+    // const photoFile = {
+    //   original_name: profilePhoto[0].originFileObj.name,
+    //   byte_size: profilePhoto[0].originFileObj.size,
+    //   file_base: photoBase64,
+    // };
+    // console.log('Manipulated profile-photo file result...', photoFile);
+    // // /* Storing profile-photo file... */
+    // console.info('Storing profile-photo file...s');
+    // const saveProfilePhoto = await storeProfilePhoto(photoFile);
+    // if (saveProfilePhoto.success !== true) {
+    //   console.info('Failed to store profile photo...');
+    //   return setErrors(saveProfilePhoto.message as string);
+    // }
+    // console.info('Storing profile-phhoto successfully...', saveProfilePhoto);
+    // /* Updating candidate data */
+    // console.info('Begin updating candidate-data...');
+    // const candidateUpdateData = {
+    //   bloodType: values.profile.bloodType,
+    //   ethnicity: values.profile.ethnicity,
+    //   gender: values.profile.gender,
+    //   maritalStatus: values.profile.maritalStatus,
+    //   placeOfBirth: values.profile.placeOfBirth,
+    //   religion: values.profile.religion,
+    // };
+    // const updateCandidateData = await updateCandidate(candidateUpdateData);
+    // if (updateCandidateData.success !== true) {
+    //   console.info(updateCandidateData.message as string);
+    //   return setErrors(updateCandidateData.message as string);
+    // }
+    // console.log('Updating candidate-data successfully...', updateCandidateData);
+    // /* Add address */
+    // console.info('Begin to store address data...');
+    // const manipulatedAddressData = {
+    //   permanentAddress: values.address.permanentAddress,
+    //   country: values.address.country,
+    //   city: values.address.city,
+    //   zipCode: values.address.zipCode,
+    //   rt: values.address.rt,
+    //   rw: values.address.rw,
+    //   subdistrict: values.address.subdistrict,
+    //   village: values.address.village,
+    //   currentAddress: values.address.currentAddress,
+    // };
+    // const storeAddress = await storingAddress(
+    //   manipulatedAddressData,
+    //   values.addressCheckbox,
+    // );
+    // if (storeAddress.success !== true) {
+    //   console.info(storeAddress.message as string);
+    //   return setErrors(storeAddress.message as string);
+    // }
+    // console.info('Storing address data successfully...', storeAddress);
+    // /* Add Relations */
+    // const plainFamiliesObject = convertToPlainObject(values.families as object);
+    // /* PLAIN OBJECT */
+    // const storeRelations = await storeFamilys(plainFamiliesObject);
+    // if (storeRelations.success !== true) {
+    //   console.info(storeRelations.message as string);
+    //   return setErrors(storeRelations.message as string);
+    // }
+    // console.info('Storing relations successfully...', storeRelations);
+    // /* Add Education */
+    // console.info('Begin to store education data...');
 
-    const plainEducationData = convertToPlainObject(values.education);
+    // const plainEducationData = convertToPlainObject(values.education);
 
-    const storeEducationData = await storeEducation(
-      plainEducationData,
-      values.education?.startEduYear.$y as number,
-      values.education?.endEduYear.$y as number,
-      values.formalCheckbox,
-    );
-    if (storeEducationData.success !== true) {
-      console.info(storeEducationData.message as string);
-      return setErrors(storeEducationData.message as string);
-    }
-    console.info('Store education data successfully...', storeEducationData);
-    /* Add Certificates */
-    console.info('Begin to store certificates...');
+    // const storeEducationData = await storeEducation(
+    //   plainEducationData,
+    //   values.education?.startEduYear.$y as number,
+    //   values.education?.endEduYear.$y as number,
+    //   values.formalCheckbox,
+    // );
+    // if (storeEducationData.success !== true) {
+    //   console.info(storeEducationData.message as string);
+    //   return setErrors(storeEducationData.message as string);
+    // }
+    // console.info('Store education data successfully...', storeEducationData);
+    // /* Add Certificates */
+    // console.info('Begin to store certificates...');
 
-    const plainCertificatesData = convertToPlainObject(values.certification);
+    // const plainCertificatesData = convertToPlainObject(values.certification);
 
-    const storeCertificatesData = await storeCertification(
-      plainCertificatesData,
-      values.certification['1']['monthIssue']['$M'],
-      values.certification['1']['monthIssue']['$y'],
-      values.certificationCheckbox,
-    );
-    if (storeCertificatesData.success !== true) {
-      console.info(storeCertificatesData.message as string);
-      return setErrors(storeCertificatesData.message as string);
-    }
-    console.info('Store certificates successfully...', storeCertificatesData);
-    /* Store Skills */
-    console.info('Begin to store skills...');
-    const storeSkillsData = await storeSkills(values.skills);
-    if (storeSkillsData.success !== true) {
-      console.info(storeSkillsData.message as string);
-      return setErrors(storeSkillsData.message as string);
-    }
-    console.info('Store skills successfully...', storeSkillsData);
-    /* Storing Language */
-    console.info('Begin to store language...');
+    // const storeCertificatesData = await storeCertification(
+    //   plainCertificatesData,
+    //   values.certification['1']['monthIssue']['$M'],
+    //   values.certification['1']['monthIssue']['$y'],
+    //   values.certificationCheckbox,
+    // );
+    // if (storeCertificatesData.success !== true) {
+    //   console.info(storeCertificatesData.message as string);
+    //   return setErrors(storeCertificatesData.message as string);
+    // }
+    // console.info('Store certificates successfully...', storeCertificatesData);
+    // /* Store Skills */
+    // console.info('Begin to store skills...');
+    // const storeSkillsData = await storeSkills(values.skills);
+    // if (storeSkillsData.success !== true) {
+    //   console.info(storeSkillsData.message as string);
+    //   return setErrors(storeSkillsData.message as string);
+    // }
+    // console.info('Store skills successfully...', storeSkillsData);
+    // /* Storing Language */
+    // console.info('Begin to store language...');
 
-    const plainLanguagesData = convertToPlainObject(values.language);
+    // const plainLanguagesData = convertToPlainObject(values.language);
 
-    const storeLanguageData = await storeLanguage(plainLanguagesData);
-    if (storeLanguageData.success !== true) {
-      console.info(storeLanguageData.message as string);
-      return setErrors(storeLanguageData.message as string);
-    }
-    console.info('Storing language data successfully...', storeLanguageData);
-    /* Storing experience -> Fresh Graduate or Experiences */
-    console.info('Begin storing experiences data...');
+    // const storeLanguageData = await storeLanguage(plainLanguagesData);
+    // if (storeLanguageData.success !== true) {
+    //   console.info(storeLanguageData.message as string);
+    //   return setErrors(storeLanguageData.message as string);
+    // }
+    // console.info('Storing language data successfully...', storeLanguageData);
+    // /* Storing experience -> Fresh Graduate or Experiences */
+    // console.info('Begin storing experiences data...');
 
-    const plainExperiencesData = convertToPlainObject(values.experience);
+    // const plainExperiencesData = convertToPlainObject(values.experience);
 
-    const storeExperienceData = await storeExperiences(
-      plainExperiencesData,
-      values.expOption as string,
-    );
-    if (storeExperienceData?.success !== true) {
-      console.info(storeExperienceData.message as string);
-      return setErrors(storeExperienceData.message as string);
-    }
-    console.info(
-      'Storing experience data successfully...',
-      storeExperienceData,
-    );
-    /* Store Emergency Contact */
-    console.info('Storing emergency contact data...');
+    // const storeExperienceData = await storeExperiences(
+    //   plainExperiencesData,
+    //   values.expOption as string,
+    // );
+    // if (storeExperienceData?.success !== true) {
+    //   console.info(storeExperienceData.message as string);
+    //   return setErrors(storeExperienceData.message as string);
+    // }
+    // console.info(
+    //   'Storing experience data successfully...',
+    //   storeExperienceData,
+    // );
+    // /* Store Emergency Contact */
+    // console.info('Storing emergency contact data...');
 
-    const plainOthersData = convertToPlainObject(values.others);
-    console.log(plainOthersData);
+    // const plainOthersData = convertToPlainObject(values.others);
+    // console.log(plainOthersData);
 
-    const emergencyContactDataConverted = {
-      emergencyContactPhoneNumber: plainOthersData.emergencyContactPhoneNumber,
-      emergencyContactName: plainOthersData.emergencyContactName,
-      emergencyContactRelation: plainOthersData.emergencyContactRelation,
-    };
-    const storeEmergencyContactData = await storeEmergencyContact(
-      emergencyContactDataConverted,
-    );
-    if (storeEmergencyContactData.success !== true) {
-      console.info(storeEmergencyContactData.message as string);
-      return setErrors(storeEmergencyContactData.message as string);
-    }
-    console.info(
-      'Storing emergency contact data successfully...',
-      storeEmergencyContactData,
-    );
-    /* Store Candidate Questions */
-    console.info('Storing candidate questions data...');
+    // const emergencyContactDataConverted = {
+    //   emergencyContactPhoneNumber: plainOthersData.emergencyContactPhoneNumber,
+    //   emergencyContactName: plainOthersData.emergencyContactName,
+    //   emergencyContactRelation: plainOthersData.emergencyContactRelation,
+    // };
+    // const storeEmergencyContactData = await storeEmergencyContact(
+    //   emergencyContactDataConverted,
+    // );
+    // if (storeEmergencyContactData.success !== true) {
+    //   console.info(storeEmergencyContactData.message as string);
+    //   return setErrors(storeEmergencyContactData.message as string);
+    // }
+    // console.info(
+    //   'Storing emergency contact data successfully...',
+    //   storeEmergencyContactData,
+    // );
+    // /* Store Candidate Questions */
+    // console.info('Storing candidate questions data...');
 
-    const candidateQuestionsData = {
-      noticePeriod: plainOthersData.noticePeriod,
-      everWorkedMonth: plainOthersData.everWorkedMonth,
-      everWorkedYear: plainOthersData.everWorkedYear,
-      diseaseName: plainOthersData.diseaseName,
-      diseaseYear: plainOthersData.diseaseYear,
-      relationName: plainOthersData.relationName,
-      relationPosition: plainOthersData.relationPosition,
-    };
+    // const candidateQuestionsData = {
+    //   noticePeriod: plainOthersData.noticePeriod,
+    //   everWorkedMonth: plainOthersData.everWorkedMonth,
+    //   everWorkedYear: plainOthersData.everWorkedYear,
+    //   diseaseName: plainOthersData.diseaseName,
+    //   diseaseYear: plainOthersData.diseaseYear,
+    //   relationName: plainOthersData.relationName,
+    //   relationPosition: plainOthersData.relationPosition,
+    // };
 
-    const storeCandidateQuestionsData = await storeCandidateQuestions(
-      candidateQuestionsData,
-    );
-    if (storeCandidateQuestionsData.success !== true) {
-      console.info(storeCandidateQuestionsData.message as string);
-      return setErrors(storeCandidateQuestionsData.message as string);
-    }
-    console.info(
-      'Storing candidate questions data successfully...',
-      storeCandidateQuestions,
-    );
-    /* Store Curriculum-Vitae */
-    console.info('Begin to store curriculum-vitae document...');
-    const curriculumVitaeDocument = await fileToBase64(
-      values.others?.uploadCV.file.originFileObj,
-    );
-    const manipulatedCurriculumVitae = {
-      original_name: values.others?.uploadCV.file.originFileObj.name,
-      byte_size: values.others?.uploadCV.file.originFileObj.size,
-      file_base: curriculumVitaeDocument,
-    };
-    const storeCV = await storeCurriculumVitae(manipulatedCurriculumVitae);
-    if (storeCV.success !== true) {
-      console.info(storeCV.message as string);
-      return setErrors(storeCV.errors as string);
-    }
-    console.info('Store cv document successfully', storeCV);
-    debugger;
+    // const storeCandidateQuestionsData = await storeCandidateQuestions(
+    //   candidateQuestionsData,
+    // );
+    // if (storeCandidateQuestionsData.success !== true) {
+    //   console.info(storeCandidateQuestionsData.message as string);
+    //   return setErrors(storeCandidateQuestionsData.message as string);
+    // }
+    // console.info(
+    //   'Storing candidate questions data successfully...',
+    //   storeCandidateQuestions,
+    // );
+    // /* Store Curriculum-Vitae */
+    // console.info('Begin to store curriculum-vitae document...');
+    // const curriculumVitaeDocument = await fileToBase64(
+    //   values.others?.uploadCV.file.originFileObj,
+    // );
+    // const manipulatedCurriculumVitae = {
+    //   original_name: values.others?.uploadCV.file.originFileObj.name,
+    //   byte_size: values.others?.uploadCV.file.originFileObj.size,
+    //   file_base: curriculumVitaeDocument,
+    // };
+    // const storeCV = await storeCurriculumVitae(manipulatedCurriculumVitae);
+    // if (storeCV.success !== true) {
+    //   console.info(storeCV.message as string);
+    //   return setErrors(storeCV.errors as string);
+    // }
+    // console.info('Store cv document successfully', storeCV);
+    // debugger;
     // jalankan modal sebelum simpan data
     showModal();
   };
@@ -1398,9 +1424,11 @@ const Stage3Form = () => {
         phoneNumber: '',
         dateOfBirth: '',
       },
+      formalCheckbox: true,
+      certificationCheckbox: true,
     });
     setIndex(index + 1);
-    // setExpIdx(expIdx + 1);
+    setExpIdx(expIdx + 1);
     setCertificationIdx(certificationIdx + 1);
     /* Fetch Master Data */
     fetchCitys();
@@ -1436,12 +1464,12 @@ const Stage3Form = () => {
             <Form.Item<FieldType>
               name={['profile', 'uploadPhoto']}
               className="mb-0"
-              // rules={[
-              //   {
-              //     required: true,
-              //     message: 'Please upload your photo!',
-              //   },
-              // ]}
+              rules={[
+                {
+                  required: true,
+                  message: 'Please upload your photo!',
+                },
+              ]}
             >
               <div>
                 <Upload
@@ -1451,6 +1479,7 @@ const Stage3Form = () => {
                   beforeUpload={handleBeforeUpload}
                   onPreview={handlePreview}
                   onChange={handleChange}
+                  accept="image/*"
                 >
                   {!fileList[0] && (
                     <button
@@ -1486,14 +1515,14 @@ const Stage3Form = () => {
             <label>Full Name (as per ID/Passport)*</label>
             <Form.Item<FieldType>
               name={['profile', 'fullname']}
-              // rules={[
-              //   { required: true, message: 'Please input your fullname!' },
-              // ]}
+              rules={[
+                { required: true, message: 'Please input your fullname!' },
+              ]}
             >
               <Input
                 placeholder="Your Full Name"
-                defaultValue={regSessionDecoded.user.name}
-                value={regSessionDecoded.user.name}
+                defaultValue={regSessionDecoded.user?.name ?? ''}
+                value={regSessionDecoded.user?.name ?? ''}
               />
             </Form.Item>
           </div>
@@ -1506,7 +1535,7 @@ const Stage3Form = () => {
               <Input
                 disabled
                 placeholder="Your Email"
-                defaultValue={regSessionDecoded.user.email}
+                defaultValue={regSessionDecoded.user?.email ?? ''}
               />
             </Form.Item>
           </div>
@@ -1516,13 +1545,13 @@ const Stage3Form = () => {
             <label>Phone Number*</label>
             <Form.Item<FieldType>
               name={['profile', 'phoneNumber']}
-              // rules={[
-              //   { required: true, message: 'Please input your phone number!' },
-              // ]}
+              rules={[
+                { required: true, message: 'Please input your phone number!' },
+              ]}
             >
               <Input
                 placeholder="Your Phone Number"
-                defaultValue={regSessionDecoded.candidate.phone_number}
+                defaultValue={regSessionDecoded.candidate?.phone_number ?? ''}
               />
             </Form.Item>
           </div>
@@ -1530,15 +1559,14 @@ const Stage3Form = () => {
             <label>Date of Birth*</label>
             <Form.Item<FieldType>
               name={['profile', 'dateOfBirth']}
-              // rules={[
-              //   { required: true, message: 'Please input your date of birth!' },
-              // ]}
+              rules={[
+                { required: true, message: 'Please input your date of birth!' },
+              ]}
             >
               <DatePicker
                 className="w-100"
-                // onChange={onChange}
                 defaultValue={dayjs(
-                  `${regSessionDecoded.candidate.date_of_birth}`,
+                  `${regSessionDecoded.candidate?.date_of_birth ?? '-'}`,
                 )}
                 placeholder="Select Date"
               />
@@ -1558,7 +1586,6 @@ const Stage3Form = () => {
               //   },
               // ]}
             >
-              {/* <Input placeholder="Your Place of Birth" /> */}
               <Select
                 className="w-100"
                 showSearch
@@ -1936,7 +1963,18 @@ const Stage3Form = () => {
             </div>
           )}
         </div>
-        <div className="col-9">
+        <div className="col-12">
+          <div className="input-group-meta position-relative mb-0">
+            <Form.Item<FieldType> name="addressCheckbox" className="mb-2">
+              <div className="d-flex align-items-center pt-10">
+                <Checkbox onChange={handleAddressCheck}>
+                  Same as Permanent Address
+                </Checkbox>
+              </div>
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-12">
           <div className="input-group-meta position-relative mb-15">
             <label>Current Address (Domicile)</label>
             <Form.Item<FieldType>
@@ -1947,17 +1985,6 @@ const Stage3Form = () => {
                 disabled={addressCheck}
                 placeholder="Your Current Address"
               />
-            </Form.Item>
-          </div>
-        </div>
-        <div className="col-3">
-          <div className="input-group-meta position-relative mb-15">
-            <Form.Item<FieldType> name="addressCheckbox">
-              <div className="d-flex align-items-center pt-10">
-                <Checkbox onChange={handleAddressCheck}>
-                  Same with Permanent Address
-                </Checkbox>
-              </div>
             </Form.Item>
           </div>
         </div>
@@ -2677,7 +2704,7 @@ const Stage3Form = () => {
               //   },
               // ]}
             >
-              <Upload action="" listType="text" maxCount={1}>
+              <Upload action="" listType="text" maxCount={1} accept=".pdf">
                 <Button
                   icon={
                     <UploadOutlined
@@ -2697,9 +2724,6 @@ const Stage3Form = () => {
           <button type="submit" className="dash-btn-two tran3s me-3">
             Submit
           </button>
-          {/* <a href="#" className="dash-cancel-btn tran3s">
-            Cancel
-          </a> */}
         </div>
       </div>
 

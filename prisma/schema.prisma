@@ -364,7 +364,6 @@ model RequirementFields {
   job_vacancy_requirements  job_vacancy_requirements[]
   positionLevelRequirements PositionLevelRequirements[]
   requirementFieldParsers   RequirementFieldParsers?    @relation(fields: [requirementFieldParserId], references: [id])
-  positionLevelRequirements PositionLevelRequirements[]
   jobVacancyRequirements    JobVacancyRequirements[]
 
   @@map("requirement_fields")
@@ -400,7 +399,7 @@ model PositionLevels {
   prointId                  Int?                        @map("proint_id") @db.Int
   createdAt                 DateTime?                   @default(now()) @map("created_at") @db.DateTime
   updatedAt                 DateTime?                   @updatedAt @map("updated_at") @db.DateTime
-  prointId                  Int?                        @map("proint_id")
+  // prointId                  Int?                        @map("proint_id")
   job_vacancies             JobVacancies[]
   positionLevelRequirements PositionLevelRequirements[]
   jobVacancies              JobVacancies[]
