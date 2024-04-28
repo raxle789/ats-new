@@ -41,28 +41,14 @@ const JobListItem = ({ jobVacancyData }) => {
                 name="Price Short"
               />
             </div>
-            {/* <button
-              onClick={() => setJobType('list')}
-              className={`style-changer-btn text-center rounded-circle tran3s ms-2 list-btn 
-                    ${jobType === 'grid' ? 'active' : ''}`}
-              title="Active List"
-            >
-              <i className="bi bi-list"></i>
-            </button> */}
-            {/* <button
-              onClick={() => setJobType('grid')}
-              className={`style-changer-btn text-center rounded-circle tran3s ms-2 grid-btn 
-                    ${jobType === 'list' ? 'active' : ''}`}
-              title="Active Grid"
-            >
-              <i className="bi bi-grid"></i>
-            </button> */}
           </div>
         </div>
-        <div className={`accordion-box list-style`}>
+        <div className="accordion-box list-style show">
           {jobVacancyData &&
             jobVacancyData?.map((data, index) => (
-              <ListItemTwo key={index} item={data} />
+              <div key={index}>
+                <ListItemTwo item={data} />
+              </div>
             ))}
         </div>
 
@@ -76,25 +62,6 @@ const JobListItem = ({ jobVacancyData }) => {
               ))}
           </div> */}
         </div>
-
-        {/* {currentItems && (
-          <div className="pt-30 lg-pt-20 d-sm-flex align-items-center justify-content-between">
-            <p className="m0 order-sm-last text-center text-sm-start xs-pb-20">
-              Showing <span className="text-dark fw-500">{itemOffset + 1}</span>{' '}
-              to{' '}
-              <span className="text-dark fw-500">
-                {Math.min(itemOffset + itemsPerPage, currentItems.length)}
-              </span>{' '}
-              of <span className="text-dark fw-500">{filterItems.length}</span>
-            </p>
-            {filterItems.length > itemsPerPage && (
-              <Pagination
-                pageCount={pageCount}
-                handlePageClick={handlePageClick}
-              />
-            )}
-          </div>
-        )} */}
       </div>
     </div>
   );

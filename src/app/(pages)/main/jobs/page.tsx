@@ -14,7 +14,7 @@ const JobVacancies = ({ searchParams }) => {
       <div className="main-page-wrapper">
         <JobBreadcrumb />
 
-        <JobList />
+        <JobList searchParams={searchParams} />
       </div>
     </Wrapper>
   );
