@@ -5,9 +5,9 @@ import jwt from 'jsonwebtoken';
  * @param payload Payload has any type for now, next will be "type safe"
  * @returns encrypted payload as an token value
  */
-export async function EncryptSession(payload: any) {
+export function EncryptSession(payload: any) {
   try {
-    const encrypted = await jwt.sign(payload, 'sidokaredev24', {
+    const encrypted = jwt.sign(payload, 'sidokaredev24', {
       algorithm: 'HS256',
       issuer: 'ats-developers'
     });
@@ -24,9 +24,9 @@ export async function EncryptSession(payload: any) {
  * @param value cookies value from server-side
  * @returns decrypted payload as an object of user-information
  */
-export async function DecryptSession(value: string) {
+export function DecryptSession(value: string): any {
   try {
-    const decrypted = await jwt.verify(value, 'sidokaredev24', { algorithms: ['HS256'] });
+    const decrypted = jwt.verify(value, 'sidokaredev24', { algorithms: ['HS256'] });
 
     return decrypted;
   } catch (error) {
