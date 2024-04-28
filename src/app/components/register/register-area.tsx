@@ -60,6 +60,7 @@ const RegisterArea = () => {
               {/* step check */}
               {registerStep === '' ? (
                 <div className={`tab-pane fade show active`} role="tabpanel">
+                  {/* First Form */}
                   <RegisterForm />
                   <div className="d-flex align-items-center mt-10 mb-5">
                     <div className="line"></div>

@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useRef } from 'react';
-import { createCandidates } from '@/libs/Registration';
+import { createCandidate } from '@/libs/Registration';
 import { userRegister2 } from '@/libs/validations/Register';
 import { setRegisterStep } from '@/redux/features/fatkhur/registerSlice';
 import { useAppDispatch } from '@/redux/hook';
@@ -413,6 +413,7 @@ const RegisterFormStep1 = () => {
 
   useEffect(() => {
     setIndex(index + 1);
+    
   }, []);
 
   const [hasExperience, setHasExperience] = useState<string>('you-choose');
@@ -493,7 +494,7 @@ const RegisterFormStep1 = () => {
       console.log('validate', validate.error.flatten());
     }
 
-    const candidate = await createCandidates(formData);
+    const candidate = await createCandidate(formData);
     console.info(candidate);
     if (candidate.success === false) {
       return console.info('failed');
@@ -1310,8 +1311,8 @@ const RegisterFormStep1 = () => {
                             type="text"
                             icon={
                               <PlusOutlined
-                              // onPointerEnterCapture=""
-                              // onPointerLeaveCapture=""
+                              onPointerEnterCapture=""
+                              onPointerLeaveCapture=""
                               />
                             }
                             onClick={addLanguage}
