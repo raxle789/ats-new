@@ -43,7 +43,6 @@ export async function createUser(formData: any) {
   console.info('create user successfully', user);
   /* create register-payload */
   const registerPayloadSession = {
-    isCompleted: false,
     user: {
       id: user.id,
       name: user.name,
@@ -53,6 +52,9 @@ export async function createUser(formData: any) {
 
   /* set-register session */
   await setUserSession('reg', registerPayloadSession, undefined);
+
+  /* Close connection */
+  await prisma.$disconnect();
 
   return {
     success: true,
@@ -94,7 +96,6 @@ export async function createCandidate(formData: any) {
   console.info('create candidate successfully', candidate);
   /* create register-payload */
   const registerPayloadSession = {
-    isCompleted: regSession.isCompleted,
     user: regSession.user,
     candidate: {
       id: candidate.id,
@@ -105,6 +106,9 @@ export async function createCandidate(formData: any) {
 
   /* set register-session */
   await setUserSession('reg', registerPayloadSession, undefined);
+
+  /* Close connection */
+  await prisma.$disconnect();
 
   return {
     success: true,
@@ -125,7 +129,7 @@ export async function storeProfilePhoto(manipulatedPhotoFile: any) {
       file_base: Buffer.from(manipulatedPhotoFile.file_base),
       created_at: new Date(Date.now()),
       updated_at: new Date(Date.now()),
-      documentTypeId: 1,
+      documentTypeId: 1, // THE ID OF THE DOCUMENT TYPE
       candidate_id: regSession.candidate.id
     }
   });
@@ -137,6 +141,10 @@ export async function storeProfilePhoto(manipulatedPhotoFile: any) {
     };
   };
   console.info('Store profile photo successfully', document);
+
+  /* Close connection */
+  await prisma.$disconnect();
+
   return {
     success: true,
     data: 'Success to store photo profile'
@@ -175,6 +183,10 @@ export async function updateCandidate(formData: any) {
     };
   };
   console.info('Update candidate data successfully', candidate);
+
+  /* Close connection */
+  await prisma.$disconnect();
+
   return {
     success: true,
     data: candidate
@@ -225,6 +237,10 @@ export async function storingAddress(formData: any, isCurrent: string | undefine
       };
     };
     console.info('Storing address data successfully', currentAddress);
+
+    /* Close connection */
+    await prisma.$disconnect();
+
     return {
       success: true,
       data: currentAddress
@@ -274,6 +290,10 @@ export async function storingAddress(formData: any, isCurrent: string | undefine
     }
   }
   console.info('Storing address data successfully...', address);
+
+  /* Close connection */
+  await prisma.$disconnect();
+
   return {
     success: true,
     data: address
@@ -333,6 +353,10 @@ export async function storeFamilys(formData: any) {
     };
   };
   console.info('Storing familys data successfully...', familys);
+
+  /* Close connection */
+  await prisma.$disconnect();
+
   return {
     success: true,
     data: familys
@@ -344,11 +368,11 @@ export async function storeFamilys(formData: any) {
  * @param formData State of candidate input-data Education
  * @summary Done Fixed
  */
-export async function storeEducation(formData: any, startyear: number, endYear: number, isFormal: string | undefined) {
+export async function storeEducation(formData: any, startyear: number, endYear: number, isFormal: boolean | undefined) {
   const regSession = await getUserSession('reg');
   console.info('reg-session-data');
   /* Storing Education */
-  if(isFormal === "on") {
+  if(isFormal === true) {
     console.info('Begin storing education data...');
     const education = await prisma.educations.create({
       data: {
@@ -374,11 +398,16 @@ export async function storeEducation(formData: any, startyear: number, endYear: 
       };
     };
     console.info('Storing education data successfully...', education);
+
+    /* Close connection */
+    await prisma.$disconnect();
+
     return {
         success: true,
         data: education
     };
   };
+
   return {
     success: true,
     data: 'Formal checkbox unchecked, no-store education'
@@ -391,12 +420,12 @@ export async function storeEducation(formData: any, startyear: number, endYear: 
  * @returns 
  * @summary Done Fixed
  */
-export async function storeCertification(formData: any, month: number, year: number, isCertificates: string | undefined) {
+export async function storeCertification(formData: any, month: number, year: number, isCertificates: boolean | undefined) {
   const regSession = await getUserSession('reg');
   console.info('reg-session-data', regSession);
   /* Storing  certification */
   console.info('Begin to maipulating certification data...');
-  if(isCertificates === "on") {
+  if(isCertificates === true) {
     /**
      * New Certificates Schema
      * id, name, institution, issuedData, candidate-ID
@@ -429,6 +458,10 @@ export async function storeCertification(formData: any, month: number, year: num
       };
     };
     console.info('Storing certifications successfully...', certifications);
+
+    /* Close connection */
+    await prisma.$disconnect();
+
     return {
       success: true,
       data: certifications
@@ -476,6 +509,10 @@ export async function storeSkills(formData: any) {
     };
   }
   console.info('Result after storing skills data...', skills);
+
+  /* Close connection */
+  await prisma.$disconnect();
+
   return {
     success: true,
     data: skills
@@ -523,6 +560,10 @@ export async function storeLanguage(formData: any) {
     };
   };
   console.info('Storing language data successfully...', language);
+
+  /* Close connection */
+  await prisma.$disconnect();
+
   return {
     success: true,
     data: language
@@ -592,6 +633,10 @@ export async function storeExperiences(formData: any, isExperienced: string) {
       };
     };
     console.info('Updating expected-salary data successfully...', candidate);
+
+    /* Close connection */
+    await prisma.$disconnect();
+
     return {
       success: true,
       data: experience
@@ -614,6 +659,10 @@ export async function storeExperiences(formData: any, isExperienced: string) {
       };
     };
     console.info('Updating expected-salary data successfully...', candidate);
+
+    /* Close connection */
+    await prisma.$disconnect();
+
     return {
       success: true,
       data: candidate
@@ -645,7 +694,28 @@ export async function storeEmergencyContact(formData: any) {
     };
   };
   console.info('Storing emergency contact successfully', emergencyContact);
+  /* Update emergencyContactID for candidate */
+  console.info('Begin to updating candidate emergency conatact ID...');
+  const updateCandidate = await prisma.candidates.update({
+    where: {
+      id: regSession.candidate.id
+    },
+    data: {
+      emengencyContactId: emergencyContact.id
+    }
+  });
+  console.info('Result after updating candidate emergency contact ID...', updateCandidate);
+  if(!updateCandidate) {
+    return {
+      success: false,
+      message: 'Failed to updating candidate emergency contact ID...'
+    };
+  };
   /* Updating emergency contact-ID */
+
+  /* Close connection */
+  await prisma.$disconnect();
+
   return {
     success: true,
     data: emergencyContact
@@ -698,6 +768,10 @@ export async function storeCandidateQuestions(formData: any) {
     };
   };
   console.info('Storing candidate-question data...', candidateQuestions);
+
+  /* Close connection */
+  await prisma.$disconnect();
+
   return {
     success: true,
     data: candidateQuestions
@@ -731,110 +805,43 @@ export async function storeCurriculumVitae(manipulatedCurriculumVitae: any) {
     };
   };
   console.info('Store curriculum-vitae document successfully...', document);
+
+  /* Close connection */
+  await prisma.$disconnect();
+
   return {
     success: true,
     data: 'Success store CV'
   };
 };
 
+export async function updateVerifiedUserEmail(email: string) {
+  console.info('Begin updating user email verification status...');
+  const updateUser = await prisma.users.update({
+    where: {
+      email: email
+    },
+    data: {
+      is_email_verified: true
+    }
+  });
+  console.info('Result after updating user email verification status...', updateUser);
+  /* Guard check */
+  if(!updateUser) {
+    return {
+      success: false,
+      message: 'Failed to update user email verification status!'
+    };
+  };
+  console.info('Update user email verification status successfully...', updateUser);
+
+  /* Close connection */
+  await prisma.$disconnect();
+
+  return {
+    success: true,
+    data: updateUser
+  };
+};
+
 /* NOT USED */
-
-// export async function createEducation_Experience(
-//   formData: any,
-//   document: any,
-//   agreement: boolean,
-// ) {
-//   /* get reg-session */
-//   const regSession = await getUserSession('reg');
-//   console.log(regSession);
-
-//   const education = await prisma.educations.create({
-//     data: {
-//       candidateId: regSession.candidate_id,
-//       level: formData.education.level,
-//       major: formData.education.major,
-//       university_name: formData.education.university_name,
-//       start_year: Number(formData.education.start_year),
-//       end_year: Number(formData.education.end_year),
-//       gpa: parseFloat(formData.education.gpa),
-//       // language: 'Indonesian',
-//       is_latest: false,
-//       is_graduate: false,
-//     },
-//   });
-
-//   console.log(education);
-//   if (!education) {
-//     return {
-//       success: false,
-//       message: {
-//         saveEducation: ['failed to create education'],
-//       },
-//     };
-//   }
-
-//   const experience = await prisma.working_experiences.create({
-//     data: {
-//       candidateId: regSession.candidate_id,
-//       company_name: formData.experience.company_name,
-//       job_function: formData.experience.job_function,
-//       job_title: formData.experience.job_title,
-//       job_level: formData.experience.job_level,
-//       job_description: '',
-//       line_industry: formData.experience.line_industry,
-//       start_at: new Date(formData.experience.start_at), // looks must be converted to Date
-//       end_at: new Date(formData.experience.end_at), // looks must be converted to Date
-//       salary: Number(formData.experience.salary),
-//       is_currently: false,
-//     },
-//   });
-
-//   console.log(experience);
-//   if (!experience) {
-//     return {
-//       success: false,
-//       message: {
-//         saveExperience: ['failed to create experience!'],
-//       },
-//     };
-//   }
-
-//   const documenUUID: string = uuidV4();
-//   const binaryData = Buffer.from(document.file_base, 'base64');
-//   const userDocument = await prisma.documents.create({
-//     data: {
-//       saved_name: documenUUID,
-//       original_name: document.name,
-//       byte_size: document.size,
-//       path: 'no-path',
-//       file_base: binaryData,
-//       candidate_id: regSession.candidate_id,
-//     },
-//   });
-
-//   console.log(userDocument);
-//   if (!userDocument) {
-//     return {
-//       success: false,
-//       message: {
-//         saveDocument: ['failed to create document!'],
-//       },
-//     };
-//   }
-
-//   /* delete reg-session */
-//   cookies().delete(Utils.regSession);
-//   /* set auth-session */
-//   await setUserSession(
-//     'auth',
-//     { user_id: regSession.id, candidate_id: regSession.candidate_id },
-//     undefined,
-//   );
-
-//   return {
-//     success: true,
-//     message: {
-//       createAccount: ['Create account successfully!'],
-//     },
-//   };
-// }

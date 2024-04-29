@@ -8,7 +8,7 @@ import { cookies } from 'next/headers';
  * @param sessionName name of the session, auth or reg
  * @returns payload as object user-information. if fails, 'false' returned out.
  */
-export async function getUserSession(sessionName: 'auth' | 'reg'): Promise<any> {
+export async function getUserSession(sessionName: 'auth' | 'reg' | 'otp'): Promise<any> {
   switch(sessionName) {
     case 'auth':
       /* Getting both client and server */
@@ -24,6 +24,12 @@ export async function getUserSession(sessionName: 'auth' | 'reg'): Promise<any> 
       const decryptedRegSession = Jwt.DecryptSession(regSession as string);
       return decryptedRegSession;
 
+    case 'otp':
+      const otpSession = cookies().get(Utils.otpSession)?.value;
+      if(!otpSession) return false;
+      const decryptedOtpSession = Jwt.DecryptSession(otpSession as string);
+      return decryptedOtpSession;
+
     default:
       return {
         message: 'Invalid session name!'
@@ -38,14 +44,14 @@ export async function getUserSession(sessionName: 'auth' | 'reg'): Promise<any> 
  * @param isRememberOn optional argument if user doesn't wants to re-logged in
  * @returns 'void' -> session is set
  */
-export async function setUserSession(sessionName: 'auth' | 'reg', payload: any, isRememberOn?: 'on' | undefined) {
+export async function setUserSession(sessionName: 'auth' | 'reg' | 'otp', payload: any, isRememberOn?: 'on' | undefined) {
   switch(sessionName) {
     case 'auth':
       const authSessionName = Utils.authSession;
-      const authExpires = isRememberOn ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) : new Date(Date.now() * 5 * 60 * 1000);
+      const authExpires = isRememberOn === "on" ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) : new Date(Date.now() * 5 * 60 * 1000);
       const encryptedAuthSession = Jwt.EncryptSession(payload);
       /* set-session -> server */
-      cookies().set(authSessionName, encryptedAuthSession as string, { expires: authExpires, httpOnly: true });
+      // cookies().set(authSessionName, encryptedAuthSession as string, { expires: authExpires, httpOnly: true });
       /* set-session -> client */
       cookies().set(authSessionName, encryptedAuthSession as string, { expires: authExpires, httpOnly: false});
       break;
@@ -56,6 +62,12 @@ export async function setUserSession(sessionName: 'auth' | 'reg', payload: any, 
       /* set-session */
       cookies().set(regSessionName, encryptedRegSession as string, { expires: regExpires, httpOnly: false});
       break;
+    case 'otp':
+      const otpSessionName = Utils.otpSession;
+      const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+      const encryptedOTPsession = Jwt.EncryptSession(payload);
+      /* set otp-session */
+      cookies().set(otpSessionName, encryptedOTPsession as string, { expires: otpExpires, httpOnly: true });
 
     default:
       console.info("Invalid session name or payload!")
@@ -63,18 +75,18 @@ export async function setUserSession(sessionName: 'auth' | 'reg', payload: any, 
   };
 };
 
-type TypedPayloadOTP = {
-  id: number;
-  email: string;
-  exp: Date;
-}
-
-export async function generateOTP(payload: { id: number, email: string }) {
-
+export async function deleteSession(sessionName: 'auth' | 'reg' | 'otp') {
+  switch(sessionName) {
+    case 'auth':
+      console.info('Deleting auth-session...');
+      cookies().delete(Utils.authSession);
+    case 'reg':
+      console.info('Deleting reg-session...');
+      cookies().delete(Utils.regSession);
+    case 'otp':
+      console.info('Deleting otp-session...');
+      cookies().delete(Utils.otpSession);
+  };
 };
-
-export async function deleteSession(sessionName: 'auth' | 'reg') {
-
-}
 
 export { Utils };
