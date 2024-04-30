@@ -14,7 +14,6 @@ export default function AppSession({ children } : { children: React.ReactNode })
    * Code here
    */
   const cookies = getCookies(); // getting all cookies.
-  
 
   return (
     <SessionContext.Provider value={cookies}>

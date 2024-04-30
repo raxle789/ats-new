@@ -5,6 +5,7 @@ import { createCandidate, createUser } from '@/libs/Registration';
 import { Input, Form, DatePicker } from 'antd';
 import type { DatePickerProps, FormProps } from 'antd';
 import { useState } from 'react';
+import { sendOTP } from '@/libs/Registration/verifications';
 
 type FieldType = {
   fullname?: string;
@@ -46,6 +47,16 @@ const RegisterForm = () => {
       setErrors(candidateStore.message);
     };
     console.info('create candidate successfully', candidateStore);
+    /* Send OTP */
+    const sendMailOTP = await sendOTP({ email: userData.email as string });
+    console.info('Result sending OTP number...', sendOTP);
+    if(sendMailOTP.success !== true) {
+      return {
+        success: false,
+        message: 'Failed to send OTP to email!'
+      };
+    };
+    console.info('Send OTP successfully', sendMailOTP);
     /* Navigating to user-stages */
     router.replace('/dashboard/user/stages');
   };

@@ -1192,11 +1192,204 @@ const Stage3Form = () => {
     setIsModalOpen(true);
   };
 
-  const handleOk = () => {
+  const handleOk = async () => {
     setIsModalOpen(false);
-    const formValue = form.getFieldsValue();
-    console.log('ok value form: ', formValue);
+    const values = form.getFieldsValue();
+    console.log('ok value form: ', values);
     // jalankan fungsi simpan data
+    console.log('Manipulating profile-photo file...');
+    const photoBase64 = await fileToBase64(profilePhoto[0].originFileObj);
+    const photoFile = {
+      original_name: profilePhoto[0].originFileObj.name,
+      byte_size: profilePhoto[0].originFileObj.size,
+      file_base: photoBase64,
+    };
+    console.log('Manipulated profile-photo file result...', photoFile);
+    console.info('Storing profile-photo file...s');
+    const saveProfilePhoto = await storeProfilePhoto(photoFile);
+    if (saveProfilePhoto.success !== true) {
+      console.info('Failed to store profile photo...');
+      return setErrors(saveProfilePhoto.message as string);
+    }
+    console.info('Storing profile-phhoto successfully...', saveProfilePhoto);
+
+    console.info('Begin updating candidate-data...');
+    const candidateUpdateData = {
+      bloodType: values.profile.bloodType,
+      ethnicity: values.profile.ethnicity,
+      gender: values.profile.gender,
+      maritalStatus: values.profile.maritalStatus,
+      placeOfBirth: values.profile.placeOfBirth,
+      religion: values.profile.religion,
+    };
+    const updateCandidateData = await updateCandidate(candidateUpdateData);
+    if (updateCandidateData.success !== true) {
+      console.info(updateCandidateData.message as string);
+      return setErrors(updateCandidateData.message as string);
+    }
+    console.log('Updating candidate-data successfully...', updateCandidateData);
+
+    console.info('Begin to store address data...');
+    const manipulatedAddressData = {
+      permanentAddress: values.address.permanentAddress,
+      country: values.address.country,
+      city: values.address.city,
+      zipCode: values.address.zipCode,
+      rt: values.address.rt,
+      rw: values.address.rw,
+      subdistrict: values.address.subdistrict,
+      village: values.address.village,
+      currentAddress: values.address.currentAddress,
+    };
+    const storeAddress = await storingAddress(
+      manipulatedAddressData,
+      values.addressCheckbox,
+    );
+    if (storeAddress.success !== true) {
+      console.info(storeAddress.message as string);
+      return setErrors(storeAddress.message as string);
+    }
+    console.info('Storing address data successfully...', storeAddress);
+
+    const plainFamiliesObject = convertToPlainObject(values.families as object);
+    /* PLAIN OBJECT */
+    const storeRelations = await storeFamilys(plainFamiliesObject);
+    if (storeRelations.success !== true) {
+      console.info(storeRelations.message as string);
+      return setErrors(storeRelations.message as string);
+    }
+    console.info('Storing relations successfully...', storeRelations);
+
+    console.info('Begin to store education data...');
+
+    const plainEducationData = convertToPlainObject(values.education);
+
+    const storeEducationData = await storeEducation(
+      plainEducationData,
+      values.education?.startEduYear.$y as number,
+      values.education?.endEduYear.$y as number,
+      values.formalCheckbox,
+    );
+    if (storeEducationData.success !== true) {
+      console.info(storeEducationData.message as string);
+      return setErrors(storeEducationData.message as string);
+    }
+    console.info('Store education data successfully...', storeEducationData);
+
+    console.info('Begin to store certificates...');
+
+    const plainCertificatesData = convertToPlainObject(values.certification);
+
+    const storeCertificatesData = await storeCertification(
+      plainCertificatesData,
+      values.certification['1']['monthIssue']['$M'],
+      values.certification['1']['monthIssue']['$y'],
+      values.certificationCheckbox,
+    );
+    if (storeCertificatesData.success !== true) {
+      console.info(storeCertificatesData.message as string);
+      return setErrors(storeCertificatesData.message as string);
+    }
+    console.info('Store certificates successfully...', storeCertificatesData);
+
+    console.info('Begin to store skills...');
+    const storeSkillsData = await storeSkills(values.skills);
+    if (storeSkillsData.success !== true) {
+      console.info(storeSkillsData.message as string);
+      return setErrors(storeSkillsData.message as string);
+    }
+    console.info('Store skills successfully...', storeSkillsData);
+
+    console.info('Begin to store language...');
+
+    const plainLanguagesData = convertToPlainObject(values.language);
+
+    const storeLanguageData = await storeLanguage(plainLanguagesData);
+    if (storeLanguageData.success !== true) {
+      console.info(storeLanguageData.message as string);
+      return setErrors(storeLanguageData.message as string);
+    }
+    console.info('Storing language data successfully...', storeLanguageData);
+
+    console.info('Begin storing experiences data...');
+
+    const plainExperiencesData = convertToPlainObject(values.experience);
+
+    const storeExperienceData = await storeExperiences(
+      plainExperiencesData,
+      values.expOption as string,
+    );
+    if (storeExperienceData?.success !== true) {
+      console.info(storeExperienceData.message as string);
+      return setErrors(storeExperienceData.message as string);
+    }
+    console.info(
+      'Storing experience data successfully...',
+      storeExperienceData,
+    );
+
+    console.info('Storing emergency contact data...');
+
+    const plainOthersData = convertToPlainObject(values.others);
+    console.log(plainOthersData);
+
+    const emergencyContactDataConverted = {
+      emergencyContactPhoneNumber: plainOthersData.emergencyContactPhoneNumber,
+      emergencyContactName: plainOthersData.emergencyContactName,
+      emergencyContactRelation: plainOthersData.emergencyContactRelation,
+    };
+    const storeEmergencyContactData = await storeEmergencyContact(
+      emergencyContactDataConverted,
+    );
+    if (storeEmergencyContactData.success !== true) {
+      console.info(storeEmergencyContactData.message as string);
+      return setErrors(storeEmergencyContactData.message as string);
+    }
+    console.info(
+      'Storing emergency contact data successfully...',
+      storeEmergencyContactData,
+    );
+
+    console.info('Storing candidate questions data...');
+
+    const candidateQuestionsData = {
+      noticePeriod: plainOthersData.noticePeriod,
+      everWorkedMonth: plainOthersData.everWorkedMonth,
+      everWorkedYear: plainOthersData.everWorkedYear,
+      diseaseName: plainOthersData.diseaseName,
+      diseaseYear: plainOthersData.diseaseYear,
+      relationName: plainOthersData.relationName,
+      relationPosition: plainOthersData.relationPosition,
+    };
+
+    const storeCandidateQuestionsData = await storeCandidateQuestions(
+      candidateQuestionsData,
+    );
+    if (storeCandidateQuestionsData.success !== true) {
+      console.info(storeCandidateQuestionsData.message as string);
+      return setErrors(storeCandidateQuestionsData.message as string);
+    }
+    console.info(
+      'Storing candidate questions data successfully...',
+      storeCandidateQuestions,
+    );
+
+    console.info('Begin to store curriculum-vitae document...');
+    const curriculumVitaeDocument = await fileToBase64(
+      values.others?.uploadCV.file.originFileObj,
+    );
+    const manipulatedCurriculumVitae = {
+      original_name: values.others?.uploadCV.file.originFileObj.name,
+      byte_size: values.others?.uploadCV.file.originFileObj.size,
+      file_base: curriculumVitaeDocument,
+    };
+    const storeCV = await storeCurriculumVitae(manipulatedCurriculumVitae);
+    if (storeCV.success !== true) {
+      console.info(storeCV.message as string);
+      return setErrors(storeCV.errors as string);
+    }
+    console.info('Store cv document successfully', storeCV);
+
     message.success('Your data successfully saved');
     dispatch(setRegisterStep(4));
   };
@@ -1417,6 +1610,7 @@ const Stage3Form = () => {
   };
 
   useEffect(() => {
+  
     form.setFieldsValue({
       profile: {
         fullname: 'Fatih',
@@ -1464,12 +1658,12 @@ const Stage3Form = () => {
             <Form.Item<FieldType>
               name={['profile', 'uploadPhoto']}
               className="mb-0"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please upload your photo!',
-                },
-              ]}
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Please upload your photo!',
+              //   },
+              // ]}
             >
               <div>
                 <Upload
@@ -1515,9 +1709,9 @@ const Stage3Form = () => {
             <label>Full Name (as per ID/Passport)*</label>
             <Form.Item<FieldType>
               name={['profile', 'fullname']}
-              rules={[
-                { required: true, message: 'Please input your fullname!' },
-              ]}
+              // rules={[
+              //   { required: true, message: 'Please input your fullname!' },
+              // ]}
             >
               <Input
                 placeholder="Your Full Name"
@@ -1545,9 +1739,9 @@ const Stage3Form = () => {
             <label>Phone Number*</label>
             <Form.Item<FieldType>
               name={['profile', 'phoneNumber']}
-              rules={[
-                { required: true, message: 'Please input your phone number!' },
-              ]}
+              // rules={[
+              //   { required: true, message: 'Please input your phone number!' },
+              // ]}
             >
               <Input
                 placeholder="Your Phone Number"
@@ -1559,9 +1753,9 @@ const Stage3Form = () => {
             <label>Date of Birth*</label>
             <Form.Item<FieldType>
               name={['profile', 'dateOfBirth']}
-              rules={[
-                { required: true, message: 'Please input your date of birth!' },
-              ]}
+              // rules={[
+              //   { required: true, message: 'Please input your date of birth!' },
+              // ]}
             >
               <DatePicker
                 className="w-100"
