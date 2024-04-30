@@ -17,7 +17,6 @@ const ListItemTwo = ({ item }) => {
     dispatch(add_to_wishlist(item));
   };
 
-  console.info(item);
   return (
     <div className="job-list-one style-two position-relative border-style mb-20">
       <div className="row justify-content-between align-items-center">
@@ -71,7 +70,6 @@ const ListItemTwo = ({ item }) => {
           </div>
         </div>
       </div>
-
       {/* Apply Modal Start */}
       <ApplyModal />
       {/* Apply Modal End */}

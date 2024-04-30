@@ -21,7 +21,7 @@ const EmployJobParameter: React.FC<Props> = ({
   const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
     {},
   );
-  const key: any = process.env.NEXT_PUBLIC_SECRET_KEY;
+  // const key: any = process.env.NEXT_PUBLIC_SECRET_KEY;
   const [spinning, setSpinning] = React.useState(false);
 
   // console.info(positionLevelRequirementData);
@@ -170,8 +170,8 @@ const EmployJobParameter: React.FC<Props> = ({
                               href={{
                                 pathname: `/dashboard/ta/submit-parameter/${encodeURIComponent(
                                   CryptoJS.Rabbit.encrypt(
-                                    String(data.id),
-                                    key,
+                                    String(data?.id),
+                                    process.env.NEXT_PUBLIC_SECRET_KEY,
                                   ).toString(),
                                 )}`,
                                 // query: {

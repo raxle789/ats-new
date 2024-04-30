@@ -1,4 +1,5 @@
 'use client';
+
 import React from 'react';
 import { Button, Spin, Form, Select, Input, Modal, notification } from 'antd';
 import { useRouter } from 'next/navigation';
@@ -20,6 +21,8 @@ const EmployJobFpkItem: React.FC<FPKItemProps> = ({
   taData,
   assignTa,
 }) => {
+  console.info(fpkData);
+
   const formRef = useRef({});
 
   // const [loading, setLoading] = useState(false);

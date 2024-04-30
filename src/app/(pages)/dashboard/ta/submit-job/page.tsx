@@ -1,9 +1,9 @@
 import SubmitJobArea from '@/app/components/dashboard/employ/submit-job-area';
 
-const EmployDashboardCreateJobPage = ({ searchParams }) => {
+const EmployDashboardCreateJobPage = ({ params, searchParams }) => {
   return (
     <>
-      <SubmitJobArea searchParams={searchParams} />
+      <SubmitJobArea params={params} searchParams={searchParams} />
     </>
   );
 };

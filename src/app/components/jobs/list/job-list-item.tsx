@@ -59,7 +59,7 @@ const JobListItem = ({ jobVacancyData }) => {
             </button> */}
           </div>
         </div>
-        <div className={`accordion-box list-style`}>
+        <div className="accordion-box list-style">
           {jobVacancyData &&
             jobVacancyData?.map((data, index) => (
               <ListItemTwo key={index} item={data} />

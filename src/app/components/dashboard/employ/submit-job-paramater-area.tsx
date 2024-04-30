@@ -14,32 +14,63 @@ type Props = {
 
 const EmployJobParameter: React.FC<Props> = async ({ params }) => {
   // const encryptedValue = Object?.keys(query)?.map((key) => query[key]);
-  const key: any = process.env.NEXT_PUBLIC_SECRET_KEY;
-  const decryptValue = async () => {
+  // const key: any = process.env.NEXT_PUBLIC_SECRET_KEY;
+
+  // const decryptValue = async () => {
+  //   try {
+  //     const query = decodeURIComponent(params?.id) ?? '';
+
+  //     const decryptedValue = CryptoJS.Rabbit.decrypt(
+  //       String(query),
+  //       process.env.NEXT_PUBLIC_SECRET_KEY,
+  //     );
+
+  //     const convertString = decryptedValue.toString(CryptoJS.enc.Utf8);
+
+  //     return convertString;
+  //   } catch (e) {
+  //     return '';
+  //   }
+  // };
+
+  const positionLevelId = await (async () => {
     try {
-      const query = (await decodeURIComponent(params.id)) ?? '';
+      const query = decodeURIComponent(params?.id) ?? '';
 
-      const decryptedValue = await CryptoJS.Rabbit.decrypt(String(query), key);
+      const decryptedValue = CryptoJS.Rabbit.decrypt(
+        String(query),
+        process.env.NEXT_PUBLIC_SECRET_KEY,
+      );
 
-      const convertString = await decryptedValue.toString(CryptoJS.enc.Utf8);
+      const convertString = decryptedValue.toString(CryptoJS.enc.Utf8);
 
-      return convertString;
+      const originalValue = Number(convertString);
+
+      return originalValue;
     } catch (e) {
-      return '';
+      console.log(e);
+
+      return 0;
     }
-  };
+  })();
 
-  const originalValue = await decryptValue();
+  const positionLevelRequirementData = await (async () => {
+    if (positionLevelId && positionLevelId != 0) {
+      return await getPositionLevelRequirementData(positionLevelId)
+        .then((res) => {
+          const data = res ?? {};
 
-  const positionLevelRequirementData = await getPositionLevelRequirementData(
-    Number(originalValue),
-  )
-    .then((res) => {
-      const data = res ?? {};
+          return data;
+        })
+        .catch((e) => {
+          console.log('Error getting position level requirement data: ', e);
 
-      return data;
-    })
-    .catch((e) => console.log('Error getting position level data: ', e));
+          return {};
+        });
+    }
+
+    return {};
+  })();
 
   const positionLevelData = await getAllPositionLevelData()
     .then((res) => {
@@ -47,7 +78,11 @@ const EmployJobParameter: React.FC<Props> = async ({ params }) => {
 
       return data;
     })
-    .catch((e) => console.log('Error getting position level data: ', e));
+    .catch((e) => {
+      console.log('Error getting position level data: ', e);
+
+      return [];
+    });
 
   const lineIndustryData = await getAllLineIndustryData()
     .then((res) => {
@@ -55,7 +90,11 @@ const EmployJobParameter: React.FC<Props> = async ({ params }) => {
 
       return data;
     })
-    .catch((e) => console.log('Error getting line industry data: ', e));
+    .catch((e) => {
+      console.log('Error getting line industry data: ', e);
+
+      return [];
+    });
 
   const educationLevelData = await getAllEducationLevelData()
     .then((res) => {
@@ -63,7 +102,11 @@ const EmployJobParameter: React.FC<Props> = async ({ params }) => {
 
       return data;
     })
-    .catch((e) => console.log('Error getting education level data: ', e));
+    .catch((e) => {
+      console.log('Error getting education level data: ', e);
+
+      return [];
+    });
 
   return (
     <>

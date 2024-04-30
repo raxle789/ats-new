@@ -1,5 +1,3 @@
-'use server';
-
 import EmployShortSelect from './short-select';
 import React from 'react';
 import EmployJobFpkItem from './job-fpk-item';
@@ -12,64 +10,64 @@ import {
 } from '@/lib/action/fpk/action';
 import Pagination from '@/ui/pagination';
 
-export const fpkData = [
-  {
-    fpkNo: '2024/DCM/160032-01',
-    jobTitle: 'Jr.Associate Principal Management',
-    jobLevel: '3C',
-    companyCode: 'DCM',
-    fpkInisiator: 1,
-    location: 'Jakarta - Erajaya Plaza',
-    statusMpp: 'Replacement',
-    createFpk: '9-Mar-24',
-    fpkFullyApproved: '15-Mar-24',
-    fpkStatus: 'Fully Approved',
-    jobPosting: 'Yes',
-    picTa: -1,
-  },
-  {
-    fpkNo: '2024/DCM/160032-02',
-    jobTitle: 'Jr.Associate Principal Management',
-    jobLevel: '3C',
-    companyCode: 'DCM',
-    fpkInisiator: 2,
-    location: 'Jakarta - Erajaya Plaza',
-    statusMpp: 'Replacement',
-    createFpk: '9-Mar-24',
-    fpkFullyApproved: '15-Mar-24',
-    fpkStatus: 'Fully Approved',
-    jobPosting: 'No',
-    picTa: 2,
-  },
-  {
-    fpkNo: '2024/DCM/160032-03',
-    jobTitle: 'Jr.Associate Principal Management',
-    jobLevel: '3C',
-    companyCode: 'DCM',
-    fpkInisiator: 3,
-    location: 'Jakarta - Erajaya Plaza',
-    statusMpp: 'Replacement',
-    createFpk: '9-Mar-24',
-    fpkFullyApproved: '15-Mar-24',
-    fpkStatus: 'Fully Approved',
-    jobPosting: 'No',
-    picTa: -1,
-  },
-  {
-    fpkNo: '2024/DCM/160032-04',
-    jobTitle: 'Jr.Associate Principal Management',
-    jobLevel: '3C',
-    companyCode: 'DCM',
-    fpkInisiator: 4,
-    location: 'Jakarta - Erajaya Plaza',
-    statusMpp: 'Replacement',
-    createFpk: '9-Mar-24',
-    fpkFullyApproved: '15-Mar-24',
-    fpkStatus: 'Fully Approved',
-    jobPosting: 'Yes',
-    picTa: 4,
-  },
-];
+// export const fpkData = [
+//   {
+//     fpkNo: '2024/DCM/160032-01',
+//     jobTitle: 'Jr.Associate Principal Management',
+//     jobLevel: '3C',
+//     companyCode: 'DCM',
+//     fpkInisiator: 1,
+//     location: 'Jakarta - Erajaya Plaza',
+//     statusMpp: 'Replacement',
+//     createFpk: '9-Mar-24',
+//     fpkFullyApproved: '15-Mar-24',
+//     fpkStatus: 'Fully Approved',
+//     jobPosting: 'Yes',
+//     picTa: -1,
+//   },
+//   {
+//     fpkNo: '2024/DCM/160032-02',
+//     jobTitle: 'Jr.Associate Principal Management',
+//     jobLevel: '3C',
+//     companyCode: 'DCM',
+//     fpkInisiator: 2,
+//     location: 'Jakarta - Erajaya Plaza',
+//     statusMpp: 'Replacement',
+//     createFpk: '9-Mar-24',
+//     fpkFullyApproved: '15-Mar-24',
+//     fpkStatus: 'Fully Approved',
+//     jobPosting: 'No',
+//     picTa: 2,
+//   },
+//   {
+//     fpkNo: '2024/DCM/160032-03',
+//     jobTitle: 'Jr.Associate Principal Management',
+//     jobLevel: '3C',
+//     companyCode: 'DCM',
+//     fpkInisiator: 3,
+//     location: 'Jakarta - Erajaya Plaza',
+//     statusMpp: 'Replacement',
+//     createFpk: '9-Mar-24',
+//     fpkFullyApproved: '15-Mar-24',
+//     fpkStatus: 'Fully Approved',
+//     jobPosting: 'No',
+//     picTa: -1,
+//   },
+//   {
+//     fpkNo: '2024/DCM/160032-04',
+//     jobTitle: 'Jr.Associate Principal Management',
+//     jobLevel: '3C',
+//     companyCode: 'DCM',
+//     fpkInisiator: 4,
+//     location: 'Jakarta - Erajaya Plaza',
+//     statusMpp: 'Replacement',
+//     createFpk: '9-Mar-24',
+//     fpkFullyApproved: '15-Mar-24',
+//     fpkStatus: 'Fully Approved',
+//     jobPosting: 'Yes',
+//     picTa: 4,
+//   },
+// ];
 
 interface EmployJobFpkProps {
   searchParams: any;
@@ -81,7 +79,7 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
   const searchQuery = searchParams?.query ?? '';
   const offset = (Number(page) - 1) * Number(perPage);
 
-  const fpkData = (async () => {
+  const fpkData = await (async () => {
     if (searchQuery) {
       return await searchFpkData(searchQuery, offset, Number(perPage))
         .then((res) => {
@@ -118,6 +116,7 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
         })
         .catch((e) => {
           console.log('Error get efpk data: ', e);
+
           return {
             data: [],
             total: 0,
@@ -159,9 +158,9 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
 
       <div className="bg-white card-box border-20">
         <EmployJobFpkItem
-          fpkData={fpkData.data}
+          fpkData={fpkData?.data}
           offset={offset}
-          taData={taData.data}
+          taData={taData}
           assignTa={assignTa}
         />
       </div>

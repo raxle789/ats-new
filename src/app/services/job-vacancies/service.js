@@ -450,13 +450,13 @@ export async function createJobVacancy(
     jobDescription,
     jobRequirement,
     ageParameterCheckbox,
-    ageParameter,
+    age,
     genderParameterCheckbox,
-    genderParameter,
-    skillParameterCheckbox,
-    skillParameter,
-    certificateParameterCheckbox,
-    certificateParameter,
+    gender,
+    special_skillParameterCheckbox,
+    special_skill,
+    certificationParameterCheckbox,
+    certification,
     jobVideoInterview,
     jobAutoAssessment,
     jobConfidential,
@@ -507,8 +507,22 @@ export async function createJobVacancy(
         }),
       });
 
+      // const ageRequirementFieldData = await tx.requirementFields.findFirst({
+      //   where: {
+      //     name: 'age',
+      //   },
+      // });
+
+      // await tx.jobVacancyRequirements.create({
+      //   data: {
+      //     jobVacancyId: id,
+      //     requirementFieldId: ageRequirementFieldData.id,
+      //     value: age === '1' ? null : age,
+      //   },
+      // });
+
       if (ageParameterCheckbox) {
-        const requirementFieldData = await tx.requirementFields.findFirst({
+        const ageRequirementFieldData = await tx.requirementFields.findFirst({
           where: {
             name: 'age',
           },
@@ -517,31 +531,109 @@ export async function createJobVacancy(
         await tx.jobVacancyRequirements.create({
           data: {
             jobVacancyId: id,
-            requirementFieldId: requirementFieldData?.id,
-            value: ageParameter === '1' ? null : ageParameter,
+            requirementFieldId: ageRequirementFieldData.id,
+            value: age === '1' ? null : age,
           },
         });
-      }
-
-      if (genderParameterCheckbox) {
-        const requirementFieldData = await tx.requirementFields.findFirst({
+      } else if (!ageParameterCheckbox) {
+        const ageRequirementFieldData = await tx.requirementFields.findFirst({
           where: {
-            name: 'gender',
+            name: 'age',
           },
         });
 
         await tx.jobVacancyRequirements.create({
           data: {
             jobVacancyId: id,
-            requirementFieldId: requirementFieldData.id,
-            value: genderParameter === '0' ? null : genderParameter,
+            requirementFieldId: ageRequirementFieldData.id,
+            value: null,
           },
         });
       }
 
-      if (skillParameterCheckbox) {
+      // const genderRequirementFieldData = await tx.requirementFields.findFirst({
+      //   where: {
+      //     name: 'gender',
+      //   },
+      // });
+
+      // await tx.jobVacancyRequirements.create({
+      //   data: {
+      //     jobVacancyId: id,
+      //     requirementFieldId: genderRequirementFieldData.id,
+      //     value: gender === '0' ? null : gender,
+      //   },
+      // });
+
+      if (genderParameterCheckbox) {
+        const genderRequirementFieldData = await tx.requirementFields.findFirst(
+          {
+            where: {
+              name: 'gender',
+            },
+          },
+        );
+
+        await tx.jobVacancyRequirements.create({
+          data: {
+            jobVacancyId: id,
+            requirementFieldId: genderRequirementFieldData.id,
+            value: gender === '0' ? null : gender,
+          },
+        });
+      } else if (!genderParameterCheckbox) {
+        const genderRequirementFieldData = await tx.requirementFields.findFirst(
+          {
+            where: {
+              name: 'gender',
+            },
+          },
+        );
+
+        await tx.jobVacancyRequirements.create({
+          data: {
+            jobVacancyId: id,
+            requirementFieldId: genderRequirementFieldData.id,
+            value: null,
+          },
+        });
+      }
+
+      // const newSkillParameter = await Promise.all(
+      //   special_skill?.map(async (skillId) => {
+      //     if (typeof skillId === 'string') {
+      //       const data = await tx.skills.create({
+      //         data: {
+      //           name: skillId,
+      //         },
+      //       });
+
+      //       return data.id;
+      //     } else {
+      //       return skillId;
+      //     }
+      //   }),
+      // );
+
+      // const skillRequirementFieldData = await tx.requirementFields.findFirst({
+      //   where: {
+      //     name: 'special_skill',
+      //   },
+      // });
+
+      // await tx.jobVacancyRequirements.create({
+      //   data: {
+      //     jobVacancyId: id,
+      //     requirementFieldId: skillRequirementFieldData.id,
+      //     value: newSkillParameter?.length
+      //       ? JSON.stringify(newSkillParameter)
+      //       : null,
+      //   },
+      // });
+
+      if (special_skillParameterCheckbox) {
         const newSkillParameter = await Promise.all(
-          skillParameter.map(async (skillId) => {
+          special_skill.map(async (skillId) => {
             if (typeof skillId === 'string') {
               const data = await tx.skills.create({
                 data: {
@@ -556,7 +648,7 @@ export async function createJobVacancy(
           }),
         );
 
-        const requirementFieldData = await tx.requirementFields.findFirst({
+        const skillRequirementFieldData = await tx.requirementFields.findFirst({
           where: {
             name: 'special_skill',
           },
@@ -565,15 +657,64 @@ export async function createJobVacancy(
         await tx.jobVacancyRequirements.create({
           data: {
             jobVacancyId: id,
-            requirementFieldId: requirementFieldData.id,
-            value: JSON.stringify(newSkillParameter),
+            requirementFieldId: skillRequirementFieldData.id,
+            value: newSkillParameter.length
+              ? JSON.stringify(newSkillParameter)
+              : null,
+          },
+        });
+      } else if (!special_skillParameterCheckbox) {
+        const skillRequirementFieldData = await tx.requirementFields.findFirst({
+          where: {
+            name: 'special_skill',
+          },
+        });
+
+        await tx.jobVacancyRequirements.create({
+          data: {
+            jobVacancyId: id,
+            requirementFieldId: skillRequirementFieldData.id,
+            value: null,
           },
         });
       }
 
-      if (certificateParameterCheckbox) {
+      // const newCertificateParameter = await Promise.all(
+      //   certification?.map(async (certificateId) => {
+      //     if (typeof certificateId === 'string') {
+      //       const data = await tx.certificates.create({
+      //         data: {
+      //           name: certificateId,
+      //         },
+      //       });
+
+      //       return data.id;
+      //     } else {
+      //       return certificateId;
+      //     }
+      //   }),
+      // );
+
+      // const certificateRequirementFieldData =
+      //   await tx.requirementFields.findFirst({
+      //     where: {
+      //       name: 'certification',
+      //     },
+      //   });
+
+      // await tx.jobVacancyRequirements.create({
+      //   data: {
+      //     jobVacancyId: id,
+      //     requirementFieldId: certificateRequirementFieldData.id,
+      //     value: newCertificateParameter?.length
+      //       ? JSON.stringify(newCertificateParameter)
+      //       : null,
+      //   },
+      // });
+
+      if (certificationParameterCheckbox) {
         const newCertificateParameter = await Promise.all(
-          certificateParameter.map(async (certificateId) => {
+          certification.map(async (certificateId) => {
             if (typeof certificateId === 'string') {
               const data = await tx.certificates.create({
                 data: {
@@ -588,17 +729,35 @@ export async function createJobVacancy(
           }),
         );
 
-        const requirementFieldData = await tx.requirementFields.findFirst({
-          where: {
-            name: 'certification',
-          },
-        });
+        const certificateRequirementFieldData =
+          await tx.requirementFields.findFirst({
+            where: {
+              name: 'certification',
+            },
+          });
 
         await tx.jobVacancyRequirements.create({
           data: {
             jobVacancyId: id,
-            requirementFieldId: requirementFieldData.id,
-            value: JSON.stringify(newCertificateParameter),
+            requirementFieldId: certificateRequirementFieldData.id,
+            value: newCertificateParameter.length
+              ? JSON.stringify(newCertificateParameter)
+              : null,
+          },
+        });
+      } else if (!certificationParameterCheckbox) {
+        const certificateRequirementFieldData =
+          await tx.requirementFields.findFirst({
+            where: {
+              name: 'certification',
+            },
+          });
+
+        await tx.jobVacancyRequirements.create({
+          data: {
+            jobVacancyId: id,
+            requirementFieldId: certificateRequirementFieldData.id,
+            value: null,
           },
         });
       }
@@ -633,11 +792,6 @@ export async function getJobVacancy(jobVacancyId) {
         id: jobVacancyId,
       },
       include: {
-        ta: {
-          select: {
-            name: true,
-          },
-        },
         efpkJobVacancies: {
           select: {
             efpkRequestNo: true,
@@ -645,12 +799,22 @@ export async function getJobVacancy(jobVacancyId) {
         },
         jobFunctions: {
           select: {
+            id: true,
+          },
+        },
+        employmentStatus: {
+          select: {
             name: true,
           },
         },
         positionLevels: {
           select: {
-            name: true,
+            level: true,
+          },
+        },
+        verticals: {
+          select: {
+            code: true,
           },
         },
         jobVacancyLineIndustries: {
@@ -663,6 +827,11 @@ export async function getJobVacancy(jobVacancyId) {
             requirementFields: {
               select: {
                 name: true,
+                requirementFieldParsers: {
+                  select: {
+                    name: true,
+                  },
+                },
               },
             },
             value: true,
@@ -680,6 +849,8 @@ export async function getJobVacancy(jobVacancyId) {
         },
       },
     });
+
+    // console.info(data);
 
     return data;
   } catch (e) {
@@ -783,6 +954,7 @@ export async function getAllJobVacancy(offset, perPage) {
         skip: offset,
         take: perPage,
         select: {
+          id: true,
           jobTitleCode: true,
           jobTitleAliases: true,
           organizationGroupCode: true,
@@ -945,5 +1117,538 @@ export async function getEfpkInitiatorNameByRequestNo(requestNo) {
     console.log(e);
 
     return '';
+  }
+}
+
+export async function editJobVacancy(
+  taId,
+  jobVacancyId,
+  {
+    jobEfpk,
+    jobTitle,
+    jobTitleAliases,
+    jobFunction,
+    jobEmploymentStatus,
+    jobPositionLevel,
+    jobVertical,
+    jobDepartment,
+    jobLineIndustry,
+    jobRegion,
+    jobWorkLocation,
+    jobWorkLocationAddress,
+    jobPublishedDateAndExpiredDate,
+    jobDescription,
+    jobRequirement,
+    ageParameterCheckbox,
+    age,
+    genderParameterCheckbox,
+    gender,
+    special_skillParameterCheckbox,
+    special_skill,
+    certificationParameterCheckbox,
+    certification,
+    jobVideoInterview,
+    jobAutoAssessment,
+    jobConfidential,
+    jobCareerFest,
+    jobTaCollaborator,
+    jobUserCollaborator,
+  },
+) {
+  try {
+    prisma.$transaction(async (tx) => {
+      const { id } = await tx.jobVacancies.update({
+        where: {
+          id: jobVacancyId,
+        },
+        data: {
+          jobTitleAliases: jobTitleAliases,
+          workLocationAddress: jobWorkLocationAddress,
+          publishedDate: jobPublishedDateAndExpiredDate[0],
+          expiredDate: jobPublishedDateAndExpiredDate[1],
+          jobDescription: jobDescription,
+          jobRequirement: jobRequirement,
+          isVideoInterview: jobVideoInterview,
+          isAutoAssessment: jobAutoAssessment,
+          isConfidential: jobConfidential,
+          isCareerFest: jobCareerFest,
+          taId: taId,
+          jobTitleCode: jobTitle,
+          jobFunctionId: jobFunction,
+          employmentStatusName: jobEmploymentStatus,
+          positionLevel: jobPositionLevel,
+          verticalCode: jobVertical,
+          organizationGroupCode: jobDepartment,
+          locationGroupCode: jobRegion,
+          locationCode: jobWorkLocation,
+        },
+      });
+
+      await tx.efpkJobVacancies.deleteMany({
+        where: {
+          jobVacancyId: id,
+        },
+      });
+
+      await tx.efpkJobVacancies.create({
+        data: {
+          jobVacancyId: id,
+          efpkRequestNo: jobEfpk,
+        },
+      });
+
+      await tx.jobVacancyLineIndustries.deleteMany({
+        where: {
+          jobVacancyId: id,
+        },
+      });
+
+      await tx.jobVacancyLineIndustries.createMany({
+        data: jobLineIndustry.map((lineIndustryId) => {
+          return {
+            jobVacancyId: id,
+            lineIndustryId: lineIndustryId,
+          };
+        }),
+      });
+
+      if (ageParameterCheckbox) {
+        const ageRequirementFieldData = await tx.requirementFields.findFirst({
+          where: {
+            name: 'age',
+          },
+        });
+
+        await tx.jobVacancyRequirements.update({
+          where: {
+            jobVacancyId_requirementFieldId: {
+              jobVacancyId: id,
+              requirementFieldId: ageRequirementFieldData.id,
+            },
+          },
+          data: {
+            value: age === '1' ? null : age,
+          },
+        });
+      } else if (!ageParameterCheckbox) {
+        const ageRequirementFieldData = await tx.requirementFields.findFirst({
+          where: {
+            name: 'age',
+          },
+        });
+
+        await tx.jobVacancyRequirements.update({
+          where: {
+            jobVacancyId_requirementFieldId: {
+              jobVacancyId: id,
+              requirementFieldId: ageRequirementFieldData.id,
+            },
+          },
+          data: {
+            value: null,
+          },
+        });
+      }
+
+      // const ageRequirementFieldData = await tx.requirementFields.findFirst({
+      //   where: {
+      //     name: 'age',
+      //   },
+      // });
+
+      // await tx.jobVacancyRequirements.update({
+      //   where: {
+      //     jobVacancyId_requirementFieldId: {
+      //       jobVacancyId: id,
+      //       requirementFieldId: ageRequirementFieldData.id,
+      //     },
+      //   },
+      //   data: {
+      //     value: age === '1' ? null : age,
+      //   },
+      // });
+
+      // if (ageParameterCheckbox) {
+      //   const ageRequirementFieldData = await tx.requirementFields.findFirst({
+      //     where: {
+      //       name: 'age',
+      //     },
+      //   });
+
+      //   await tx.jobVacancyRequirements.create({
+      //     data: {
+      //       jobVacancyId: id,
+      //       requirementFieldId: ageRequirementFieldData.id,
+      //       value: age === '1' ? null : age,
+      //     },
+      //   });
+      // }
+
+      if (genderParameterCheckbox) {
+        const genderRequirementFieldData = await tx.requirementFields.findFirst(
+          {
+            where: {
+              name: 'gender',
+            },
+          },
+        );
+
+        await tx.jobVacancyRequirements.update({
+          where: {
+            jobVacancyId_requirementFieldId: {
+              jobVacancyId: id,
+              requirementFieldId: genderRequirementFieldData.id,
+            },
+          },
+          data: {
+            value: gender === '0' ? null : gender,
+          },
+        });
+      } else if (!genderParameterCheckbox) {
+        const genderRequirementFieldData = await tx.requirementFields.findFirst(
+          {
+            where: {
+              name: 'gender',
+            },
+          },
+        );
+
+        await tx.jobVacancyRequirements.update({
+          where: {
+            jobVacancyId_requirementFieldId: {
+              jobVacancyId: id,
+              requirementFieldId: genderRequirementFieldData.id,
+            },
+          },
+          data: {
+            value: null,
+          },
+        });
+      }
+
+      // const genderRequirementFieldData = await tx.requirementFields.findFirst({
+      //   where: {
+      //     name: 'gender',
+      //   },
+      // });
+
+      // await tx.jobVacancyRequirements.update({
+      //   where: {
+      //     jobVacancyId_requirementFieldId: {
+      //       jobVacancyId: id,
+      //       requirementFieldId: genderRequirementFieldData.id,
+      //     },
+      //   },
+      //   data: {
+      //     value: gender === '0' ? null : gender,
+      //   },
+      // });
+
+      // if (genderParameterCheckbox) {
+      //   const genderRequirementFieldData = await tx.requirementFields.findFirst(
+      //     {
+      //       where: {
+      //         name: 'gender',
+      //       },
+      //     },
+      //   );
+
+      //   await tx.jobVacancyRequirements.create({
+      //     data: {
+      //       jobVacancyId: id,
+      //       requirementFieldId: genderRequirementFieldData.id,
+      //       value: gender === '0' ? null : gender,
+      //     },
+      //   });
+      // }
+
+      if (special_skillParameterCheckbox) {
+        const newSkillParameter = await Promise.all(
+          special_skill.map(async (skillId) => {
+            if (typeof skillId === 'string') {
+              const data = await tx.skills.create({
+                data: {
+                  name: skillId,
+                },
+              });
+
+              return data.id;
+            } else {
+              return skillId;
+            }
+          }),
+        );
+
+        const skillRequirementFieldData = await tx.requirementFields.findFirst({
+          where: {
+            name: 'special_skill',
+          },
+        });
+
+        await tx.jobVacancyRequirements.update({
+          where: {
+            jobVacancyId_requirementFieldId: {
+              jobVacancyId: id,
+              requirementFieldId: skillRequirementFieldData.id,
+            },
+          },
+          data: {
+            value: newSkillParameter?.length
+              ? JSON.stringify(newSkillParameter)
+              : null,
+          },
+        });
+      } else if (!special_skillParameterCheckbox) {
+        const skillRequirementFieldData = await tx.requirementFields.findFirst({
+          where: {
+            name: 'special_skill',
+          },
+        });
+
+        await tx.jobVacancyRequirements.update({
+          where: {
+            jobVacancyId_requirementFieldId: {
+              jobVacancyId: id,
+              requirementFieldId: skillRequirementFieldData.id,
+            },
+          },
+          data: {
+            value: null,
+          },
+        });
+      }
+
+      // const newSkillParameter = await Promise.all(
+      //   special_skill?.map(async (skillId) => {
+      //     if (typeof skillId === 'string') {
+      //       const data = await tx.skills.create({
+      //         data: {
+      //           name: skillId,
+      //         },
+      //       });
+
+      //       return data?.id;
+      //     } else {
+      //       return skillId;
+      //     }
+      //   }),
+      // );
+
+      // const skillRequirementFieldData = await tx.requirementFields.findFirst({
+      //   where: {
+      //     name: 'special_skill',
+      //   },
+      // });
+
+      // await tx.jobVacancyRequirements.update({
+      //   where: {
+      //     jobVacancyId_requirementFieldId: {
+      //       jobVacancyId: id,
+      //       requirementFieldId: skillRequirementFieldData.id,
+      //     },
+      //   },
+      //   data: {
+      //     value: newSkillParameter?.length
+      //       ? JSON.stringify(newSkillParameter)
+      //       : null,
+      //   },
+      // });
+
+      // if (special_skillParameterCheckbox) {
+      //   const newSkillParameter = await Promise.all(
+      //     special_skill.map(async (skillId) => {
+      //       if (typeof skillId === 'string') {
+      //         const data = await tx.skills.create({
+      //           data: {
+      //             name: skillId,
+      //           },
+      //         });
+
+      //         return data.id;
+      //       } else {
+      //         return skillId;
+      //       }
+      //     }),
+      //   );
+
+      //   const skillRequirementFieldData = await tx.requirementFields.findFirst({
+      //     where: {
+      //       name: 'special_skill',
+      //     },
+      //   });
+
+      //   await tx.jobVacancyRequirements.create({
+      //     data: {
+      //       jobVacancyId: id,
+      //       requirementFieldId: skillRequirementFieldData.id,
+      //       value: newSkillParameter.length()
+      //         ? JSON.stringify(newSkillParameter)
+      //         : null,
+      //     },
+      //   });
+      // }
+
+      if (certificationParameterCheckbox) {
+        const newCertificateParameter = await Promise.all(
+          certification.map(async (certificateId) => {
+            if (typeof certificateId === 'string') {
+              const data = await tx.certificates.create({
+                data: {
+                  name: certificateId,
+                },
+              });
+
+              return data.id;
+            } else {
+              return certificateId;
+            }
+          }),
+        );
+
+        const certificateRequirementFieldData =
+          await tx.requirementFields.findFirst({
+            where: {
+              name: 'certification',
+            },
+          });
+
+        await tx.jobVacancyRequirements.update({
+          where: {
+            jobVacancyId_requirementFieldId: {
+              jobVacancyId: id,
+              requirementFieldId: certificateRequirementFieldData.id,
+            },
+          },
+          data: {
+            value: newCertificateParameter?.length
+              ? JSON.stringify(newCertificateParameter)
+              : null,
+          },
+        });
+      } else if (!certificationParameterCheckbox) {
+        const certificateRequirementFieldData =
+          await tx.requirementFields.findFirst({
+            where: {
+              name: 'certification',
+            },
+          });
+
+        await tx.jobVacancyRequirements.update({
+          where: {
+            jobVacancyId_requirementFieldId: {
+              jobVacancyId: id,
+              requirementFieldId: certificateRequirementFieldData.id,
+            },
+          },
+          data: {
+            value: null,
+          },
+        });
+      }
+
+      // const newCertificateParameter = await Promise.all(
+      //   certification?.map(async (certificateId) => {
+      //     if (typeof certificateId === 'string') {
+      //       const data = await tx.certificates.create({
+      //         data: {
+      //           name: certificateId,
+      //         },
+      //       });
+
+      //       return data.id;
+      //     } else {
+      //       return certificateId;
+      //     }
+      //   }),
+      // );
+
+      // const certificateRequirementFieldData =
+      //   await tx.requirementFields.findFirst({
+      //     where: {
+      //       name: 'certification',
+      //     },
+      //   });
+
+      // await tx.jobVacancyRequirements.update({
+      //   where: {
+      //     jobVacancyId_requirementFieldId: {
+      //       jobVacancyId: id,
+      //       requirementFieldId: certificateRequirementFieldData.id,
+      //     },
+      //   },
+      //   data: {
+      //     value: newCertificateParameter?.length
+      //       ? JSON.stringify(newCertificateParameter)
+      //       : null,
+      //   },
+      // });
+
+      // if (certificationParameterCheckbox) {
+      //   const newCertificateParameter = await Promise.all(
+      //     certification.map(async (certificateId) => {
+      //       if (typeof certificateId === 'string') {
+      //         const data = await tx.certificates.create({
+      //           data: {
+      //             name: certificateId,
+      //           },
+      //         });
+
+      //         return data.id;
+      //       } else {
+      //         return certificateId;
+      //       }
+      //     }),
+      //   );
+
+      //   const certificateRequirementFieldData =
+      //     await tx.requirementFields.findFirst({
+      //       where: {
+      //         name: 'certification',
+      //       },
+      //     });
+
+      //   await tx.jobVacancyRequirements.create({
+      //     data: {
+      //       jobVacancyId: id,
+      //       requirementFieldId: certificateRequirementFieldData.id,
+      //       value: newCertificateParameter.length()
+      //         ? JSON.stringify(newCertificateParameter)
+      //         : null,
+      //     },
+      //   });
+      // }
+
+      await tx.jobVacancyTaCollaborators.deleteMany({
+        where: {
+          jobVacancyId: id,
+        },
+      });
+
+      await tx.jobVacancyTaCollaborators.createMany({
+        data: jobTaCollaborator.map((taId) => {
+          return {
+            jobVacancyId: id,
+            taId: taId,
+          };
+        }),
+      });
+
+      await tx.jobVacancyUserCollaborators.deleteMany({
+        where: {
+          jobVacancyId: id,
+        },
+      });
+
+      await tx.jobVacancyUserCollaborators.createMany({
+        data: jobUserCollaborator.map((userId) => {
+          return {
+            jobVacancyId: id,
+            userId: userId,
+          };
+        }),
+      });
+    });
+  } catch (e) {
+    console.log(e);
   }
 }
