@@ -58,3 +58,60 @@ export async function getLineIndustry(lineIndustryId) {
     return '';
   }
 }
+
+export async function getGender(genderId) {
+  try {
+    const data = await prisma.genders.findUnique({
+      where: {
+        id: genderId,
+      },
+      select: {
+        name: true,
+      },
+    });
+
+    return data?.name;
+  } catch (e) {
+    console.log(e);
+
+    return '';
+  }
+}
+
+export async function getSkill(skillId) {
+  try {
+    const data = await prisma.skills.findUnique({
+      where: {
+        id: skillId,
+      },
+      select: {
+        name: true,
+      },
+    });
+
+    return data?.name;
+  } catch (e) {
+    console.log(e);
+
+    return '';
+  }
+}
+
+export async function getCertificate(certificateId) {
+  try {
+    const data = await prisma.certificates.findUnique({
+      where: {
+        id: certificateId,
+      },
+      select: {
+        name: true,
+      },
+    });
+
+    return data?.name;
+  } catch (e) {
+    console.log(e);
+
+    return '';
+  }
+}

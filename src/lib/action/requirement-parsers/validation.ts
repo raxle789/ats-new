@@ -88,7 +88,7 @@ export const validateLineIndustry = z.object({
   valueToParse: z.coerce
     .string({
       required_error: 'Line industry required!',
-      invalid_type_error: 'Line industry must be a string!',
+      invalid_type_error: 'Line industry id must be a string!',
     })
     .trim()
     .transform((val, ctx) => {
@@ -241,5 +241,93 @@ export const validateNumber = z.object({
       }
 
       return Number(val);
+    }),
+});
+
+export const validateAge = z.object({
+  valueToParse: z.coerce
+    .string({
+      required_error: 'Age required!',
+      invalid_type_error: 'Age must be a string!',
+    })
+    .trim()
+    .transform((val, ctx) => {
+      if (isNaN(Number(val))) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Age cannot be parsed to number!',
+        });
+
+        return z.NEVER;
+      }
+
+      return val.toString();
+    }),
+});
+
+export const validateGender = z.object({
+  valueToParse: z.coerce
+    .string({
+      required_error: 'Gender required!',
+      invalid_type_error: 'Gender id must be a string!',
+    })
+    .trim()
+    .transform((val, ctx) => {
+      if (isNaN(Number(val))) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Gender cannot be parsed to number!',
+        });
+
+        return z.NEVER;
+      }
+
+      return val.toString();
+    }),
+});
+
+export const validateSkill = z.object({
+  valueToParse: z.coerce
+    .string({
+      required_error: 'Skill required!',
+      invalid_type_error: 'Skill id must be a string!',
+    })
+    .trim()
+    .transform((val, ctx) => {
+      try {
+        const parsedValue = JSON.parse(val);
+
+        return parsedValue;
+      } catch (e) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Invalid skill format!',
+        });
+
+        return z.NEVER;
+      }
+    }),
+});
+
+export const validateCertificate = z.object({
+  valueToParse: z.coerce
+    .string({
+      required_error: 'Certificate required!',
+      invalid_type_error: 'Certificate id must be a string!',
+    })
+    .trim()
+    .transform((val, ctx) => {
+      try {
+        const parsedValue = JSON.parse(val);
+
+        return parsedValue;
+      } catch (e) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Invalid certificate format!',
+        });
+
+        return z.NEVER;
+      }
     }),
 });

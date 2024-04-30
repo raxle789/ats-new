@@ -1,6 +1,7 @@
 'use server';
 
 import SubmitJobItem from './submit-job-item';
+import CryptoJS from 'crypto-js';
 import ErrorSubmitJob from '../../error/error-submit-job';
 import {
   getAllEfpkDataByTa,
@@ -22,10 +23,32 @@ import {
   getAllDepartmentDataByVertical,
   insertJobVacancy,
   getJobVacancyData,
+  updateJobVacancy,
 } from '@/lib/action/job-vacancies/action';
 
 const SubmitJobArea = async ({ params, searchParams }) => {
-  const jobVacancyId = params?.id ?? 8;
+  const jobVacancyId = (() => {
+    if (params?.id) {
+      try {
+        const query = decodeURIComponent(params?.id);
+
+        const decryptedValue = CryptoJS.Rabbit.decrypt(
+          String(query),
+          process.env.NEXT_PUBLIC_SECRET_KEY,
+        );
+
+        const convertString = decryptedValue.toString(CryptoJS.enc.Utf8);
+
+        const originalValue = Number(convertString);
+
+        return originalValue;
+      } catch (e) {
+        console.log(e);
+
+        return 0;
+      }
+    }
+  })();
 
   const taId = 73023;
 
@@ -38,10 +61,12 @@ const SubmitJobArea = async ({ params, searchParams }) => {
     : '';
 
   const jobVacancyData = await (async () => {
-    if (jobVacancyId) {
+    if (jobVacancyId && jobVacancyId !== 0) {
       return await getJobVacancyData(jobVacancyId)
         .then((res) => {
           const data = res ?? {};
+
+          // console.info(data);
 
           return data;
         })
@@ -310,7 +335,7 @@ const SubmitJobArea = async ({ params, searchParams }) => {
             certificateData={certificateData}
             taData={taData}
             userData={userData}
-            insertJobVacancy={insertJobVacancy}
+            submitJobVacancy={insertJobVacancy}
           />
         </>
       ) : (
@@ -335,7 +360,7 @@ const SubmitJobArea = async ({ params, searchParams }) => {
             certificateData={certificateData}
             taData={taData}
             userData={userData}
-            insertJobVacancy={insertJobVacancy}
+            submitJobVacancy={updateJobVacancy}
           />
         </>
       )}

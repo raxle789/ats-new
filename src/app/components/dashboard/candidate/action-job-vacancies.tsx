@@ -1,9 +1,10 @@
 import React from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
 import edit from '@/assets/dashboard/images/icon/icon_20.svg';
 import delete_icon from '@/assets/dashboard/images/icon/icon_21.svg';
 
-const ActionJobVacancies = () => {
+const ActionJobVacancies = ({ jobId, setLoading }) => {
   return (
     <ul className="dropdown-menu dropdown-menu-end">
       <li>
@@ -12,9 +13,15 @@ const ActionJobVacancies = () => {
         </a>
       </li>
       <li>
-        <a className="dropdown-item" href="#">
+        <Link
+          className="dropdown-item"
+          href={{
+            pathname: `/dashboard/ta/submit-job/${encodeURIComponent(jobId)}}`,
+          }}
+          onClick={() => setLoading(true)}
+        >
           <Image src={edit} alt="icon" className="lazy-img" /> Edit
-        </a>
+        </Link>
       </li>
       <li>
         <a className="dropdown-item" href="#">

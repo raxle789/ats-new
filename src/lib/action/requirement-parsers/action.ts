@@ -4,6 +4,9 @@ import {
   getEducationLevel,
   getPositionLevel,
   getLineIndustry,
+  getGender,
+  getSkill,
+  getCertificate,
 } from '../../../app/services/requirement-parsers/service';
 
 import {
@@ -15,6 +18,10 @@ import {
   validateSalary,
   validateArray,
   validateNumber,
+  validateAge,
+  validateGender,
+  validateSkill,
+  validateCertificate,
 } from './validation';
 
 async function parseEducationLevel(valueToParse, isOriginal = false) {
@@ -243,6 +250,176 @@ async function parseSalary(valueToParse, isOriginal = false) {
   }
 }
 
+async function parseAge(valueToParse, isOriginal = false) {
+  if (isOriginal) {
+    const validate = validateNumber.safeParse({ value: valueToParse });
+
+    if (validate.success) {
+      const parsedValue = validate?.data?.value;
+
+      return parsedValue;
+    } else {
+      console.log(validate.error);
+
+      return null;
+    }
+  } else {
+    const validate = validateAge.safeParse({
+      valueToParse,
+    });
+
+    if (validate.success) {
+      return validate?.data?.valueToParse;
+    } else {
+      console.log(validate.error);
+
+      return '';
+    }
+  }
+}
+
+async function parseGender(valueToParse, isOriginal = false) {
+  if (isOriginal) {
+    const validate = validateNumber.safeParse({ value: valueToParse });
+
+    if (validate.success) {
+      const parsedValue = validate?.data?.value;
+
+      return parsedValue;
+    } else {
+      console.log(validate.error);
+
+      return null;
+    }
+  } else {
+    const validate = validateGender.safeParse({
+      valueToParse,
+    });
+
+    if (validate.success) {
+      const parsedValue = await getGender(validate?.data?.valueToParse);
+
+      return parsedValue;
+    } else {
+      console.log(validate.error);
+
+      return '';
+    }
+  }
+}
+
+async function parseSkill(valueToParse, isOriginal = false) {
+  if (isOriginal) {
+    const validate = validateArray.safeParse({ value: valueToParse });
+
+    if (validate.success) {
+      const parsedValue = validate?.data?.value;
+
+      return parsedValue;
+    } else {
+      console.log(validate.error);
+
+      return null;
+    }
+  } else {
+    const validate = validateSkill.safeParse({
+      valueToParse,
+    });
+
+    if (validate.success) {
+      const skills = validate?.data?.valueToParse;
+
+      let parsedValue = '';
+
+      if (skills.length <= 2) {
+        for (let i = 0; i < skills.length; i++) {
+          const skillValue = await getSkill(skills[i]);
+
+          if (i === skills.length - 2) {
+            parsedValue = skillValue + ' and ';
+          } else if (i === skills.length - 1) {
+            parsedValue = parsedValue + skillValue;
+          }
+        }
+      } else if (skills.length > 2) {
+        for (let i = 0; i < skills.length; i++) {
+          const skillValue = await getSkill(skills[i]);
+
+          if (i <= skills.length - 3) {
+            parsedValue = parsedValue + skillValue + ', ';
+          } else if (i === skills.length - 2) {
+            parsedValue = parsedValue + skillValue + ', and ';
+          } else if (i === skills.length - 1) {
+            parsedValue = parsedValue + skillValue;
+          }
+        }
+      }
+
+      return parsedValue;
+    } else {
+      console.log(validate.error);
+
+      return '';
+    }
+  }
+}
+
+async function parseCertificate(valueToParse, isOriginal = false) {
+  if (isOriginal) {
+    const validate = validateArray.safeParse({ value: valueToParse });
+
+    if (validate.success) {
+      const parsedValue = validate?.data?.value;
+
+      return parsedValue;
+    } else {
+      console.log(validate.error);
+
+      return null;
+    }
+  } else {
+    const validate = validateCertificate.safeParse({
+      valueToParse,
+    });
+
+    if (validate.success) {
+      const certificates = validate?.data?.valueToParse;
+
+      let parsedValue = '';
+
+      if (certificates.length <= 2) {
+        for (let i = 0; i < certificates.length; i++) {
+          const certificateValue = await getCertificate(certificates[i]);
+
+          if (i === certificates.length - 2) {
+            parsedValue = certificateValue + ' and ';
+          } else if (i === certificates.length - 1) {
+            parsedValue = parsedValue + certificateValue;
+          }
+        }
+      } else if (certificates.length > 2) {
+        for (let i = 0; i < certificates.length; i++) {
+          const certificateValue = await getCertificate(certificates[i]);
+
+          if (i <= certificates.length - 3) {
+            parsedValue = parsedValue + certificateValue + ', ';
+          } else if (i === certificates.length - 2) {
+            parsedValue = parsedValue + certificateValue + ', and ';
+          } else if (i === certificates.length - 1) {
+            parsedValue = parsedValue + certificateValue;
+          }
+        }
+      }
+
+      return parsedValue;
+    } else {
+      console.log(validate.error);
+
+      return '';
+    }
+  }
+}
+
 module.exports = {
   parseEducationLevel,
   parsePositionLevel,
@@ -250,6 +427,10 @@ module.exports = {
   parseGrade,
   parseLineIndustry,
   parseSalary,
+  parseAge,
+  parseGender,
+  parseSkill,
+  parseCertificate,
 };
 
 // const hello = (name) => {

@@ -227,14 +227,15 @@ export const validateJobVacancySchema = z.object({
       invalid_type_error: 'Age parameter checkbox must be a boolean!',
     })
     .default(false),
-  ageParameter: z.coerce
+  age: z.coerce
     .number({
       required_error: 'Age parameter required!',
       invalid_type_error: 'Age parameter must be a number!',
     })
     .int()
-    .gte(1)
     .transform((val) => JSON.stringify(val))
+    .nullable()
+    .transform((val) => (val === null ? 1 : val))
     .default(1),
   genderParameterCheckbox: z.coerce
     .boolean({
@@ -242,28 +243,38 @@ export const validateJobVacancySchema = z.object({
       invalid_type_error: 'Gender parameter checkbox must be a boolean!',
     })
     .default(false),
-  genderParameter: z.coerce
+  gender: z.coerce
     .number({
       required_error: 'Gender parameter required!',
       invalid_type_error: 'Gender parameter id must be a number!',
     })
     .int()
     .transform((val) => JSON.stringify(val))
+    .nullable()
+    .transform((val) => (val === null ? 0 : val))
     .default(0),
-  skillParameterCheckbox: z.coerce
+  special_skillParameterCheckbox: z.coerce
     .boolean({
       required_error: 'Skill parameter checkbox required!',
       invalid_type_error: 'Skill parameter checkbox must be a boolean!',
     })
     .default(false),
-  skillParameter: z.array(z.union([z.number(), z.string()])).default([]),
-  certificateParameterCheckbox: z.coerce
+  special_skill: z
+    .array(z.union([z.number(), z.string()]))
+    .nullable()
+    .transform((val) => (val === null ? [] : val))
+    .default([]),
+  certificationParameterCheckbox: z.coerce
     .boolean({
       required_error: 'Certificate parameter checkbox required!',
       invalid_type_error: 'Certificate parameter checkbox must be a boolean!',
     })
     .default(false),
-  certificateParameter: z.array(z.union([z.number(), z.string()])).default([]),
+  certification: z
+    .array(z.union([z.number(), z.string()]))
+    .nullable()
+    .transform((val) => (val === null ? [] : val))
+    .default([]),
   jobVideoInterview: z.coerce
     .string({
       required_error: 'Job video interview required!',
@@ -306,6 +317,8 @@ export const validateJobVacancySchema = z.object({
       invalid_type_error: 'Ta collaborator must be a number!',
     })
     .array()
+    .nullable()
+    .transform((val) => (val === null ? [] : val))
     .default([]),
   jobUserCollaborator: z.coerce
     .number({
@@ -313,6 +326,8 @@ export const validateJobVacancySchema = z.object({
       invalid_type_error: 'User collaborator must be a number!',
     })
     .array()
+    .nullable()
+    .transform((val) => (val === null ? [] : val))
     .default([]),
 });
 

@@ -59,7 +59,6 @@ const ListItemTwo = ({ item }) => {
           </div>
         </div>
       </div>
-
       {/* Apply Modal Start */}
       <ApplyModal />
       {/* Apply Modal End */}

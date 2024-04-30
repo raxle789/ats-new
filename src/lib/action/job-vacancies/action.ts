@@ -26,7 +26,10 @@ import {
   getWorkLocationByLocationCode,
   getLastEfpkApprovalByRequestNo,
   getEfpkInitiatorNameByRequestNo,
+  editJobVacancy,
 } from '../../../app/services/job-vacancies/service';
+import { permanentRedirect } from 'next/navigation';
+import CryptoJS from 'crypto-js';
 import { revalidatePath } from 'next/cache';
 import {
   validateTaId,
@@ -34,9 +37,12 @@ import {
   validateEfpk,
   validateVerticalCode,
   validateJobVacancySchema,
+  validateJobVacancyId,
 } from './validation';
 
 const moment = require('moment');
+
+const _ = require('lodash');
 
 export async function getAllEfpkDataByTa(taId) {
   const validate = validateTaId.safeParse({ taId });
@@ -200,6 +206,8 @@ export async function insertJobVacancy(taId, values) {
     revalidatePath('/dashboard/ta/submit-job');
 
     revalidatePath('/main/jobs');
+
+    permanentRedirect('/dashboard/ta/jobs');
   } else {
     console.log(validate.error);
   }
@@ -208,15 +216,119 @@ export async function insertJobVacancy(taId, values) {
 export async function getJobVacancyData(jobVacancyId) {
   const data = await getJobVacancy(jobVacancyId);
 
-  return data;
+  if (data && !_.isEmpty(data)) {
+    let newData = {
+      jobId: data?.id,
+      jobEfpk:
+        data?.efpkJobVacancies?.length > 0
+          ? data?.efpkJobVacancies[0]?.efpkRequestNo
+          : '',
+      jobTitle: data?.jobTitleCode,
+      jobTitleAliases: data.jobTitleAliases,
+      jobFunction: data?.jobFunctions?.id,
+      jobEmploymentStatus: data?.employmentStatus?.name,
+      jobPositionLevel: data?.positionLevel,
+      jobVertical: data?.verticalCode,
+      jobDepartment: data?.organizationGroupCode,
+      jobLineIndustry: data?.jobVacancyLineIndustries?.map(
+        (d) => d?.lineIndustryId,
+      ),
+      jobRegion: data?.locationGroupCode,
+      jobWorkLocation: data?.locationCode,
+      jobWorkLocationAddress: data?.workLocationAddress,
+      jobPublishedDateAndExpiredDate: [data?.publishedDate, data?.expiredDate],
+      jobDescription: data?.jobDescription,
+      jobRequirement: data?.jobRequirement,
+      jobVacancyRequirements: data?.jobVacancyRequirements,
+      // ageParameterCheckbox:
+      //   data?.jobVacancyRequirements.length > 0 &&
+      //   data?.jobVacancyRequirements?.some(
+      //     (d) => d?.requirementFields?.name === 'age',
+      //   )
+      //     ? true
+      //     : false,
+      // ageParameter:
+      //   data?.jobVacancyRequirements?.length > 0 &&
+      //   data?.jobVacancyRequirements?.some(
+      //     (d) => d?.requirementFields?.name === 'age',
+      //   )
+      //     ? Number(
+      //         data.jobVacancyRequirements.find(
+      //           (d) => d?.requirementFields?.name === 'age',
+      //         )?.value,
+      //       )
+      //     : 0,
+      // genderParameterCheckbox:
+      //   data?.jobVacancyRequirements.length > 0 &&
+      //   data?.jobVacancyRequirements?.some(
+      //     (d) => d?.requirementFields?.name === 'gender',
+      //   )
+      //     ? true
+      //     : false,
+      // genderParameter:
+      //   data?.jobVacancyRequirements?.length > 0 &&
+      //   data?.jobVacancyRequirements?.some(
+      //     (d) => d?.requirementFields?.name === 'gender',
+      //   )
+      //     ? Number(
+      //         data.jobVacancyRequirements.find(
+      //           (d) => d?.requirementFields?.name === 'gender',
+      //         )?.value,
+      //       )
+      //     : 0,
+      jobVideoInterview: data?.isVideoInterview,
+      jobAutoAssessment: data?.isAutoAssessment,
+      jobConfidential: data?.isConfidential,
+      jobCareerFest: data?.isCareerFest,
+      jobTaCollaborator: data?.jobVacancyTaCollaborators?.map((d) => d?.taId),
+      jobUserCollaborator: data?.jobVacancyUserCollaborators?.map(
+        (d) => d?.userId,
+      ),
+    };
+
+    for await (const d of data?.jobVacancyRequirements) {
+      let newValue = null;
+
+      if (d?.value) {
+        newData = {
+          ...newData,
+          [`${d?.requirementFields?.name}ParameterCheckbox`]: true,
+        };
+
+        const parserFunctions = require('../requirement-parsers/action');
+
+        const parserFunction =
+          parserFunctions[d?.requirementFields?.requirementFieldParsers?.name];
+
+        newValue = await parserFunction(d?.value, true);
+      } else {
+        newData = {
+          ...newData,
+          [`${d?.requirementFields?.name}ParameterCheckbox`]: false,
+        };
+
+        newValue = null;
+      }
+
+      newData = { ...newData, [d?.requirementFields?.name]: newValue };
+    }
+
+    return newData;
+  }
+
+  return {};
 }
 
 export async function getAllJobVacancyData(offset, perPage) {
   const data = await getAllJobVacancy(offset, perPage);
 
   const newData = await Promise.all(
-    data.data.map(async (d) => {
+    data?.data?.map(async (d) => {
       return {
+        jobId: CryptoJS.Rabbit.encrypt(
+          String(d?.id),
+          process.env.NEXT_PUBLIC_SECRET_KEY,
+        ).toString(),
         jobTitleName: await getJobTitleByCode(d?.jobTitleCode),
         jobTitleAlias: d?.jobTitleAliases,
         positionLevelName: d?.positionLevels?.name,
@@ -287,4 +399,26 @@ export async function getAllJobVacancyData(offset, perPage) {
     data: newData,
     total: data.total,
   };
+}
+
+export async function updateJobVacancy(taId, jobVacancyId, values) {
+  const validateId = validateJobVacancyId.safeParse({ jobVacancyId });
+
+  if (validateId.success) {
+    const validate = validateJobVacancySchema.safeParse(values);
+
+    if (validate.success) {
+      await editJobVacancy(taId, jobVacancyId, validate?.data);
+
+      revalidatePath('/dashboard/ta/submit-job');
+
+      revalidatePath('/main/jobs');
+
+      permanentRedirect('/dashboard/ta/jobs');
+    } else {
+      console.log(validate.error);
+    }
+  } else {
+    console.log(validateId.error);
+  }
 }
