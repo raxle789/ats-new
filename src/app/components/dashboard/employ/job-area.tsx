@@ -82,8 +82,11 @@ type IProps = {
 };
 const EmployJobArea = async ({ searchParams }) => {
   const page = searchParams?.page ?? '1';
+
   const perPage = searchParams?.perPage ?? '10';
+
   const searchQuery = searchParams?.query ?? '';
+
   const offset = (Number(page) - 1) * Number(perPage);
 
   const jobVacancyData = await getAllJobVacancyData(offset, Number(perPage))
@@ -109,11 +112,7 @@ const EmployJobArea = async ({ searchParams }) => {
 
   return (
     <>
-      {/* header start */}
-      {/* <DashboardHeader /> */}
-      {/* header end */}
-
-      <div className="job-fpk-header mb-40 lg-mb-30">
+      {/* <div className="job-fpk-header mb-40 lg-mb-30">
         <div className="d-sm-flex align-items-start justify-content-between mb-40 lg-mb-30">
           <h2 className="main-title m0 flex-grow-1">Job Vacancies</h2>
         </div>
@@ -124,13 +123,13 @@ const EmployJobArea = async ({ searchParams }) => {
             <EmployShortSelect />
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* <div className="bg-white card-box border-20"> */}
-      <EmployJobItem jobVacancyData={jobVacancyData?.data} />
+      <EmployJobItem jobVacancyData={jobVacancyData} perPage={perPage} />
       {/* </div> */}
 
-      <div className="d-flex justify-content-center mt-30">
+      {/* <div className="d-flex justify-content-center mt-30">
         <Pagination
           pageRangeDisplayed={3}
           totalData={jobVacancyData?.total}
@@ -140,7 +139,7 @@ const EmployJobArea = async ({ searchParams }) => {
               : false
           }
         />
-      </div>
+      </div> */}
     </>
   );
 };

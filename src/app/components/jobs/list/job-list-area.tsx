@@ -16,8 +16,11 @@ interface IProps {
 
 const JobList: React.FC<IProps> = async ({ searchParams }) => {
   const page = searchParams?.page ?? '1';
+
   const perPage = searchParams?.perPage ?? '10';
+
   const searchQuery = searchParams?.query ?? '';
+
   const offset = (Number(page) - 1) * Number(perPage);
 
   const jobVacancyData = await getAllJobVacancyData(offset, Number(perPage))
@@ -26,7 +29,7 @@ const JobList: React.FC<IProps> = async ({ searchParams }) => {
 
       const total = res?.total ?? 0;
 
-      console.info(data);
+      // console.info(data);
 
       return {
         data: data,

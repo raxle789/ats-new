@@ -110,8 +110,6 @@ const EmployJobParameter: React.FC<Props> = async ({ params }) => {
 
   return (
     <>
-      <h2 className="main-title">Edit Position Level Requirement</h2>
-
       <EmployJobParameterItem
         positionLevelRequirementData={positionLevelRequirementData}
         positionLevelData={positionLevelData}

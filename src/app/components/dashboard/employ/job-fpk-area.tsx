@@ -75,8 +75,11 @@ interface EmployJobFpkProps {
 
 const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
   const page = searchParams?.page ?? '1';
+
   const perPage = searchParams?.perPage ?? '10';
+
   const searchQuery = searchParams?.query ?? '';
+
   const offset = (Number(page) - 1) * Number(perPage);
 
   const fpkData = await (async () => {
@@ -145,7 +148,7 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
     <>
       {/* {contextHolder} */}
 
-      <div className="job-fpk-header d-sm-flex flex-wrap align-items-center justify-content-between mb-40 lg-mb-30">
+      {/* <div className="job-fpk-header d-sm-flex flex-wrap align-items-center justify-content-between mb-40 lg-mb-30">
         <h2 className="main-title m0 flex-grow-1">FPK</h2>
         <div className="d-flex ms-auto xs-mt-30 justify-content-between align-items-center">
           <SearchBar />
@@ -154,18 +157,19 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
             <EmployShortSelect />
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="bg-white card-box border-20">
         <EmployJobFpkItem
-          fpkData={fpkData?.data}
+          fpkData={fpkData}
           offset={offset}
           taData={taData}
           assignTa={assignTa}
+          perPage={perPage}
         />
       </div>
 
-      <div className="d-flex justify-content-center mt-30">
+      {/* <div className="d-flex justify-content-center mt-30">
         <Pagination
           pageRangeDisplayed={3}
           totalData={fpkData?.total}
@@ -173,7 +177,7 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
             !fpkData || fpkData?.total <= Number(perPage) ? true : false
           }
         />
-      </div>
+      </div> */}
     </>
   );
 };

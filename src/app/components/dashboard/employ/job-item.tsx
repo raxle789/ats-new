@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import Pagination from '@/ui/pagination';
+import SearchBar from '@/ui/search-bar';
+import EmployShortSelect from './short-select';
 import { Spin } from 'antd';
 import ActionJobVacancies from '../candidate/action-job-vacancies';
 import { ExpendableButton } from './expendable-button';
@@ -12,11 +15,11 @@ import type { CheckboxProps } from 'antd';
 
 const moment = require('moment');
 
-const EmployJobItem: React.FC<JobItemProps> = ({ jobVacancyData }) => {
+const EmployJobItem: React.FC<JobItemProps> = ({ jobVacancyData, perPage }) => {
   const [loading, setLoading] = useState(false);
 
   const [api, contextHolder] = notification.useNotification();
-  const initialCheckboxState = jobVacancyData?.reduce(
+  const initialCheckboxState = jobVacancyData?.data?.reduce(
     (acc: { [key: string]: boolean }, _: any, index: string) => {
       return {
         ...acc,
@@ -55,6 +58,18 @@ const EmployJobItem: React.FC<JobItemProps> = ({ jobVacancyData }) => {
       {contextHolder}
 
       <Spin spinning={loading}>
+        <div className="job-fpk-header mb-40 lg-mb-30">
+          <div className="d-sm-flex align-items-start justify-content-between mb-40 lg-mb-30">
+            <h2 className="main-title m0 flex-grow-1">Job Vacancies</h2>
+          </div>
+          <div className="d-flex xs-mt-30 justify-content-end align-items-center">
+            <SearchBar />
+            <div className="short-filter d-flex align-items-center ms-3">
+              <div className="text-dark fw-500 me-2">Filter by:</div>
+              <EmployShortSelect />
+            </div>
+          </div>
+        </div>
         <div className="tab-content" id="nav-tabContent">
           <div className="tab-pane fade show active" id="a1" role="tabpanel">
             <div className="table-responsive">
@@ -73,7 +88,7 @@ const EmployJobItem: React.FC<JobItemProps> = ({ jobVacancyData }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {jobVacancyData?.map((data: any, index: number) => (
+                  {jobVacancyData?.data?.map((data: any, index: number) => (
                     <React.Fragment key={index}>
                       <tr>
                         <td>
@@ -170,6 +185,17 @@ const EmployJobItem: React.FC<JobItemProps> = ({ jobVacancyData }) => {
               </table>
             </div>
           </div>
+        </div>
+        <div className="d-flex justify-content-center mt-30">
+          <Pagination
+            pageRangeDisplayed={3}
+            totalData={jobVacancyData?.total}
+            disabled={
+              !jobVacancyData.data || jobVacancyData?.total <= Number(perPage)
+                ? true
+                : false
+            }
+          />
         </div>
       </Spin>
     </>

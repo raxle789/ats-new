@@ -800,6 +800,7 @@ export async function getJobVacancy(jobVacancyId) {
         jobFunctions: {
           select: {
             id: true,
+            name: true,
           },
         },
         employmentStatus: {
@@ -810,11 +811,13 @@ export async function getJobVacancy(jobVacancyId) {
         positionLevels: {
           select: {
             level: true,
+            name: true,
           },
         },
         verticals: {
           select: {
             code: true,
+            name: true,
           },
         },
         jobVacancyLineIndustries: {

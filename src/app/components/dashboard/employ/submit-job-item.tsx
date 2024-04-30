@@ -247,7 +247,7 @@ const SubmitJobItem = ({
   const formModalRef = useRef(null);
 
   function handleSubmitJobVacancy(values) {
-    setParameterState({});
+    setLoading(true);
 
     confirm({
       title: 'Do you want to submit job posting?',
@@ -266,13 +266,21 @@ const SubmitJobItem = ({
             if (jobVacancyData && !_.isEmpty(jobVacancyData)) {
               submitJobVacancy(taId, jobVacancyData?.jobId, values)
                 .then(() => {
+                  setParameterState({});
+
                   form.resetFields();
+
+                  router.refresh();
                 })
                 .catch((e) => console.log('Error edit job vacancy: ', e));
             } else {
               submitJobVacancy(taId, values)
                 .then(() => {
+                  setParameterState({});
+
                   form.resetFields();
+
+                  router.refresh();
                 })
                 .catch((e) => console.log('Error create new job vacancy: ', e));
             }
@@ -280,7 +288,11 @@ const SubmitJobItem = ({
           }, 2000);
         }).catch(() => console.log('Oops errors!'));
       },
-      onCancel() {},
+      onCancel() {
+        setLoading(false);
+
+        router.refresh();
+      },
     });
   }
 
@@ -410,6 +422,11 @@ const SubmitJobItem = ({
       </Form> */}
 
       <Spin spinning={loading}>
+        <h2 className="main-title">
+          {jobVacancyData && !_.isEmpty(jobVacancyData)
+            ? 'Edit Job'
+            : 'Post a New Job'}
+        </h2>
         <JobVacancyForm
           efpkData={efpkData}
           jobTitleData={jobTitleData}

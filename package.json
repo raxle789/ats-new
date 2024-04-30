@@ -31,6 +31,7 @@
     "axios": "^1.6.7",
     "bcrypt": "^5.1.1",
     "bootstrap": "^5.3.3",
+    "cheerio": "^1.0.0-rc.12",
     "cookies-next": "^4.1.1",
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.10",

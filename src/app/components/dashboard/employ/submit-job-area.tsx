@@ -52,6 +52,11 @@ const SubmitJobArea = async ({ params, searchParams }) => {
 
   const taId = 73023;
 
+  const encryptedTaId = CryptoJS.Rabbit.encrypt(
+    String(73023),
+    process.env.NEXT_PUBLIC_SECRET_KEY,
+  ).toString();
+
   const requestNo = searchParams?.fpk
     ? decodeURIComponent(searchParams?.fpk)
     : '';
@@ -315,10 +320,9 @@ const SubmitJobArea = async ({ params, searchParams }) => {
       )} */}
       {!jobVacancyId ? (
         <>
-          <h2 className="main-title">Post a New Job</h2>
           <SubmitJobItem
             jobVacancyData={jobVacancyData}
-            taId={taId}
+            taId={encryptedTaId}
             efpkData={efpkDataByTa}
             efpkDataByRequestNo={efpkDataByRequestNo}
             jobTitleData={jobTitleData}
@@ -340,10 +344,9 @@ const SubmitJobArea = async ({ params, searchParams }) => {
         </>
       ) : (
         <>
-          <h2 className="main-title">Edit Job</h2>
           <SubmitJobItem
             jobVacancyData={jobVacancyData}
-            taId={taId}
+            taId={encryptedTaId}
             efpkData={efpkDataByTa}
             efpkDataByRequestNo={efpkDataByRequestNo}
             jobTitleData={jobTitleData}

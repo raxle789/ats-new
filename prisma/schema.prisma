@@ -361,7 +361,6 @@ model RequirementFields {
   createdAt                 DateTime?                   @default(now()) @map("created_at") @db.DateTime
   updatedAt                 DateTime?                   @updatedAt @map("updated_at") @db.DateTime
   requirementFieldParserId  Int?                        @map("requirement_field_parser_id")
-  job_vacancy_requirements  job_vacancy_requirements[]
   positionLevelRequirements PositionLevelRequirements[]
   requirementFieldParsers   RequirementFieldParsers?    @relation(fields: [requirementFieldParserId], references: [id])
   jobVacancyRequirements    JobVacancyRequirements[]
@@ -400,7 +399,6 @@ model PositionLevels {
   createdAt                 DateTime?                   @default(now()) @map("created_at") @db.DateTime
   updatedAt                 DateTime?                   @updatedAt @map("updated_at") @db.DateTime
   // prointId                  Int?                        @map("proint_id")
-  job_vacancies             JobVacancies[]
   positionLevelRequirements PositionLevelRequirements[]
   jobVacancies              JobVacancies[]
 
@@ -440,6 +438,7 @@ model JobFunctions {
 model EmploymentStatus {
   id           Int            @id @default(autoincrement()) @db.Int
   name         String         @unique @db.NVarChar(510)
+  alias        String?        @db.NVarChar(510)
   prointId     Int?           @map("proint_id") @db.Int
   createdAt    DateTime?      @default(now()) @map("created_at") @db.DateTime
   updatedAt    DateTime?      @updatedAt @map("updated_at") @db.DateTime

@@ -22,7 +22,10 @@ const ListItemTwo = ({ item }) => {
         <div className="col-md-6">
           <div className="job-title d-flex align-items-center">
             <div className="split-box1">
-              <Link href={`/main/job`} className="title fw-500 tran3s">
+              <Link
+                href={`/main/jobs/${item?.jobId}`}
+                className="title fw-500 tran3s"
+              >
                 {item?.jobTitleAlias ? item?.jobTitleAlias?.slice(0, 30) : '-'}{' '}
                 {item?.jobTitleAlias?.length > 30 ? '..' : ''}
               </Link>
