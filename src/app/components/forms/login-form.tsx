@@ -9,13 +9,15 @@ import { userAuth } from '@/libs/Login';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/redux/hook';
 import { setAuthState } from '@/redux/features/authorizingSlice';
-import { Input, Form } from 'antd';
-import type { FormProps } from 'antd';
+import { Input, Form, Checkbox } from 'antd';
+import type { FormProps, CheckboxProps } from 'antd';
+import { setRegisterStep } from '@/redux/features/fatkhur/registerSlice';
 
 type FieldType = {
   email?: string;
   password?: string;
   otp?: string;
+  is_rememberOn: boolean;
 };
 
 type formData = {
@@ -61,8 +63,30 @@ interface LoginFormProps {
 const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-    console.log('Success:', values);
+  const [checkedState, setCheckedState] = useState(false);
+  const [form] = Form.useForm();
+  const onChangeCheckbox: CheckboxProps['onChange'] = (e) => {
+  setCheckedState(e.target.checked)
+};
+  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+    console.log('Suubmitted data:', values);
+    console.info('authorizing user...');
+    const authorizing = await userAuth(values);
+    /* check and directing user stage */
+    if(authorizing.success && "data" in authorizing) {
+      console.info('directing user to otp form or fill form...');
+      router.push('/dashboard/user/stages');
+      return dispatch(setRegisterStep(authorizing.data?.stage as number));
+    };
+
+    if(authorizing.success === false) {
+      return alert('Failed to authorize user');
+    };
+
+    console.info('user required data is completed...');
+
+    /* Directing to job list */
+    router.push('/dashboard/user');
   };
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
@@ -122,7 +146,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
     //   console.log('merefresh');
     //   router.refresh();
     // }
-  }, [checkedEmployee]);
+    form.setFieldsValue({is_rememberOn: false})
+  }, []);
+  // }, [checkedEmployee]);
   return (
     <Form
       name="form1"
@@ -180,17 +206,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ checkedEmployee }) => {
         )}
 
         <div className="col-12">
-          <div className="agreement-checkbox d-flex justify-content-between align-items-center">
-            <div>
-              <input
-                type="checkbox"
-                id="remember"
+          {/* <div className="agreement-checkbox d-flex justify-content-between align-items-center"> */}
+          <div className="">
+            <Form.Item<FieldType>
                 name="is_rememberOn"
-                // onChange={inputOnChange}
-              />
-              <label htmlFor="remember">Keep me logged in</label>
-            </div>
-            <a href="#">Forget Password?</a>
+              >
+                <Checkbox onChange={onChangeCheckbox} checked={checkedState}>Keep me logged in</Checkbox>
+            </Form.Item>
           </div>
         </div>
         <div className="col-12 mb-3">

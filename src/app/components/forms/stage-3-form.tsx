@@ -49,9 +49,10 @@ import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 /* SESSION MANAGEMENT */
 import { useAppSessionContext } from '@/libs/Sessions/AppSession';
-import { regSession } from '@/libs/Sessions/utils';
+import { authSession, regSession } from '@/libs/Sessions/utils';
 import { DecryptSession } from '@/libs/Sessions/jwt';
 import { convertToPlainObject, fileToBase64 } from '@/libs/Registration/utils';
+import { setUserSession } from '@/libs/Sessions';
 // import { type } from '../../../libs/Authentication/permissions';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
@@ -1390,6 +1391,9 @@ const Stage3Form = () => {
     }
     console.info('Store cv document successfully', storeCV);
 
+    /* set auth-session */
+    // await setUserSession('auth', { user: { id: regSessionDecoded.user.id }, candidate: { id: regSessionDecoded.candidate.id } });
+
     message.success('Your data successfully saved');
     dispatch(setRegisterStep(4));
   };
@@ -1610,13 +1614,12 @@ const Stage3Form = () => {
   };
 
   useEffect(() => {
-  
     form.setFieldsValue({
       profile: {
-        fullname: 'Fatih',
-        email: '',
-        phoneNumber: '',
-        dateOfBirth: '',
+        fullname: regSessionDecoded.user?.name ?? '',
+        email: regSessionDecoded.user?.email ?? '',
+        phoneNumber: regSessionDecoded.candidate?.phone_number ?? '',
+        dateOfBirth: dayjs(regSessionDecoded.candidate?.date_of_birth) ?? '',
       },
       formalCheckbox: true,
       certificationCheckbox: true,
@@ -1638,9 +1641,6 @@ const Stage3Form = () => {
     lineIndutries();
   }, []);
 
-  useEffect(() => {
-    console.log('yearState: ', yearState);
-  }, [yearState]);
   return (
     <Form
       name="candidate-register-form"
