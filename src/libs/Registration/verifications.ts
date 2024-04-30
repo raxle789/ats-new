@@ -1,7 +1,7 @@
 'use server';
 
 import nodemailer from 'nodemailer';
-import { deleteSession, getUserSession, setUserSession, Utils } from '../Sessions';
+import { deleteSession, getUserSession, setUserSession } from '../Sessions';
 import { updateVerifiedUserEmail } from '.';
 
 let transporter = nodemailer.createTransport({
@@ -29,7 +29,7 @@ export async function sendOTP(payload: { email: string }) {
     const randomNumber = Math.floor(Math.random() * 9);
     generatedNumber.push(randomNumber);
   };
-  const OTP = parseInt(generatedNumber.join(''));
+  const OTP = Number(generatedNumber.join(''));
 
   /**
    * Set server-side cookies
@@ -80,7 +80,16 @@ export async function compareOTP(clientOTP: number, email: string) {
     if(updateEmailVerificationStatus.success !== true) return { success: false, message: 'Failed to update email verification status' };
     /* Delete otp-session */
     await deleteSession('otp');
-    return { success: true, message: 'Your OTP verfication is valid' }
+    /* Update reg-session */
+    const regSession = await getUserSession('reg');
+    await setUserSession('reg', {
+      user: regSession.user,
+      candidate: {
+        ...regSession.candidate,
+        is_email_verified: true
+      }
+    }, undefined);
+    return { success: true, message: 'Your OTP verfication is valid', data: updateEmailVerificationStatus }
   };
 
   console.info('Client OTP does not match server OTP...');

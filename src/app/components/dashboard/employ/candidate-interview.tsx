@@ -12,6 +12,8 @@ import CandidateInterviewItem from './candidate-interview-item';
 import SearchBar from '@/ui/search-bar';
 import { useAppDispatch } from '@/redux/hook';
 import { setApplicantStep } from '@/redux/features/applicantStepSlice';
+import { Popover, Checkbox } from 'antd';
+import ActionCheckboxJob from '../../common/popup/action-checkbox-jobs';
 
 const CandidateInterview = () => {
   const dispatch = useAppDispatch();
@@ -32,6 +34,41 @@ const CandidateInterview = () => {
     router.replace(`${pathname}?${params.toString()}`);
   }, 300);
   const candidate_items = candidate_data.slice(0, 3);
+
+  const initialCheckboxState = candidate_data?.reduce(
+    (acc: { [key: string]: boolean }, _: any, index: string) => {
+      return {
+        ...acc,
+        [index]: false,
+      };
+    },
+    {},
+  );
+  const [checkboxAllValue, setCheckboxAllValue] = useState(false);
+  const [checkbox, setCheckbox] = useState<{ [key: string]: boolean }>(
+    initialCheckboxState,
+  );
+  const onChangeCheckboxAll: CheckboxProps['onChange'] = (e) => {
+    const checked = e.target.checked;
+    const updatedCheckbox: { [key: string]: boolean } = {};
+
+    Object.keys(checkbox).forEach((key: string) => {
+      updatedCheckbox[key] = checked;
+    });
+
+    setCheckbox(updatedCheckbox);
+    setCheckboxAllValue(checked);
+  };
+  const onChangeCheckbox = (index: number) => {
+    setCheckbox((prevState: any) => ({
+      ...prevState,
+      [index]: !prevState[index],
+    }));
+
+    if (checkboxAllValue || !checkbox[index]) {
+      setCheckboxAllValue(false);
+    }
+  };
   return (
     <>
       <div className="d-sm-flex align-items-start justify-content-between mb-10 lg-mb-30">
@@ -130,6 +167,21 @@ const CandidateInterview = () => {
         <SearchBar />
       </div>
 
+      <div
+        className="position-relative p-5"
+        style={{ width: '50px', height: '50px', background: 'white' }}
+      >
+        <Popover
+          content={<ActionCheckboxJob />}
+          trigger="click"
+          open={checkboxAllValue}
+        >
+          <Checkbox
+            onChange={onChangeCheckboxAll}
+            checked={checkboxAllValue}
+          ></Checkbox>
+        </Popover>
+      </div>
       <div className="wrapper">
         {candidate_items.map((item) => (
           <CandidateInterviewItem key={item.id} item={item} />

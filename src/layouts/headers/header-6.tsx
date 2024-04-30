@@ -13,38 +13,23 @@ import { setAuthState } from '@/redux/features/authorizingSlice';
 import { useAppSelector, useAppDispatch } from '@/redux/hook';
 import logo_era_putih from '@/assets/images/home/logo_era_putih.png';
 import logo_era_career from '@/assets/images/home/logo_era_career.png';
+import { authSession } from '@/libs/Sessions/utils';
+import { userLoggedOut } from '@/libs/Login';
+import { message } from 'antd';
 /* server components */
 // import { getSession } from '@/lib/Authentication';
 
 const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
-  /* session wrapper by fatkhur */
-  // const [session, setSession] = useState<any>({
-  //   session: {
-  //     auth: null
-  //   }
-  // }); // session state
   const dispatch = useAppDispatch();
   const { sticky } = useSticky();
+/**
+ * Session Context
+ */
+  const session = useAppSessionContext();
+  const authSessionValue = session[`${authSession}`];
   const [scrollDistance, setScrollDistance] = useState<number>(0);
-  const isLogin = useAppSelector((state) => state.auth.authState);
-
-  // console.log('isLoginHeader: ', isLogin);
-
-  /* get user-session from server-side */
-  // const getSession = async () => {
-  //   const response = await fetch('api/sessions', {
-  //     method: 'GET'
-  //   });
-
-  //   const body = await response.json();
-  //   console.log('body server-side', body);
-
-  //   setSession(body);
-  // };
 
   useEffect(() => {
-    /* call funct */
-    // getSession();
 
     const handleScroll = () => {
       setScrollDistance(window.scrollY);
@@ -75,47 +60,38 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
               </div>
               <div className="right-widget ms-auto ms-lg-0 order-lg-2">
                 <ul className="d-flex align-items-center style-none">
-                  {isLogin && (
-                    <>
+                  {authSessionValue !== undefined ?
+                    (
                       <li>
                         <Link
-                          href="/register"
+                          href="/"
                           className="btn-five w-100"
-                          onClick={() =>
-                            dispatch(setAuthState({ newAuthState: false }))
-                          }
+                          onClick={async () => await userLoggedOut() }
                         >
                           Logout
                         </Link>
                       </li>
-                    </>
-                  )}
-                  {!isLogin && (
-                    <>
-                      <li>
-                        <a
-                          href="#"
-                          className={`fw-500 login-btn-three ${dark_style ? 'dark-style' : ''} ${scrollDistance > 100 ? 'btn-when-scroll' : ''} tran3s`}
-                          data-bs-toggle="modal"
-                          data-bs-target="#loginModal"
-                        >
-                          Login
-                        </a>
-                      </li>
-                      <li className="d-none d-md-block ms-3">
-                        <Link href="/register" className="btn-five">
-                          Register
-                        </Link>
-                      </li>
-                    </>
-                  )}
+                    ) : (
+                      <>
+                        <li>
+                          <a
+                            href="#"
+                            className={`fw-500 login-btn-three ${dark_style ? 'dark-style' : ''} ${scrollDistance > 100 ? 'btn-when-scroll' : ''} tran3s`}
+                            data-bs-toggle="modal"
+                            data-bs-target="#loginModal"
+                          >
+                            Login
+                          </a>
+                        </li>
+                        <li className="d-none d-md-block ms-3">
+                          <Link href="/register" className="btn-five">
+                            Register
+                          </Link>
+                        </li>
+                      </>
+                    )
+                  }
                 </ul>
-                {/* check session here */}
-                {/* {getSession() ? (
-                  'fuck'
-                ) : (
-                  'njing'
-                )} */}
               </div>
 
               <nav className="navbar navbar-expand-lg p0 ms-3 ms-lg-5 order-lg-1">
@@ -147,26 +123,22 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
                     {/* menus start */}
                     <Menus />
                     {/* menus end */}
-                    {isLogin && (
                       <li className="d-md-none mt-5">
                         <Link
                           href="#"
                           className="btn-five w-100"
-                          onClick={() =>
-                            dispatch(setAuthState({ newAuthState: false }))
-                          }
+                          // onClick={() =>
+                          //   dispatch(setAuthState({ newAuthState: false }))
+                          // }
                         >
                           Logout
                         </Link>
                       </li>
-                    )}
-                    {!isLogin && (
                       <li className="d-md-none mt-5">
                         <Link href="/register" className="btn-five w-100">
                           Register
                         </Link>
                       </li>
-                    )}
                   </ul>
                 </div>
               </nav>

@@ -48,18 +48,14 @@ const DashboardArea = () => {
       {/* <DashboardHeader setIsOpenSidebar={setIsOpenSidebar} /> */}
       {/* header end */}
 
-      <h2 className="main-title">Dashboard</h2>
-      <div className="row">
-        <CardItem img={icon_1} title="Total Visitor" value="1.7k+" />
-        <CardItem img={icon_2} title="Shortlisted" value="03" />
-        <CardItem img={icon_3} title="Views" value="2.1k" />
-        <CardItem img={icon_4} title="Applied Job" value="07" />
-      </div>
+      <h2 className="main-title" style={{ marginBottom: '15px' }}>
+        Dashboard
+      </h2>
 
-      <div className="row d-flex pt-50 lg-pt-10">
+      <div className="row d-flex lg-pt-10">
         <div className="col-lg-6 d-flex flex-column">
           <div className="recent-job-tab bg-white border-20 mt-30 h-100">
-            <h4 className="dash-title-two">Recommended Jobs</h4>
+            <h4 className="dash-title-two">Recommended Jobs 20</h4>
             <div className="wrapper">
               {job_items.map((j) => (
                 <div
@@ -117,7 +113,7 @@ const DashboardArea = () => {
         </div>
         <div className="col-lg-6 d-flex">
           <div className="recent-job-tab bg-white border-20 mt-30 w-100">
-            <h4 className="dash-title-two">Recent Applied Job</h4>
+            <h4 className="dash-title-two">Recent Applied Job 20</h4>
             <div className="wrapper">
               {job_items.map((j) => (
                 <div

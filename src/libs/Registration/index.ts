@@ -1,6 +1,6 @@
 'use server';
 
-import { getUserSession, setUserSession } from '../Sessions';
+import { deleteSession, getUserSession, setUserSession } from '../Sessions';
 import { userRegister1 } from '../validations/Register';
 import bcrypt from 'bcrypt';
 import { fileToBase64, toDatetime, transformToArrayOfObject } from './utils';
@@ -780,7 +780,7 @@ export async function storeCandidateQuestions(formData: any) {
 
 export async function storeCurriculumVitae(manipulatedCurriculumVitae: any) {
   const regSession = await getUserSession('reg');
-  console.info('reg-session-data');
+  console.info('reg-session-data', regSession);
   /* Create additional document-property */
   console.info('Begin to store curriculum vitae documen...');
   const document = await prisma.documents.create({
@@ -808,6 +808,12 @@ export async function storeCurriculumVitae(manipulatedCurriculumVitae: any) {
 
   /* Close connection */
   await prisma.$disconnect();
+
+  /* set auth-session */
+  await setUserSession('auth', { user: { id: regSession.user.id }, candidate: { id: regSession.candidate.id } });
+
+  /* delete reg-session */
+  await deleteSession('reg');
 
   return {
     success: true,
@@ -844,4 +850,21 @@ export async function updateVerifiedUserEmail(email: string) {
   };
 };
 
+export async function checkEmailVerifiedStatus(): Promise<boolean> {
+  console.info('Getting user reg-session data...');
+  const regSession = await getUserSession('reg');
+  console.info('reg-session -> ', regSession);
+  const userEmailVerifiedStatus = await prisma.users.findUnique({
+    where: {
+      email: regSession.user.email
+    }
+  });
+  console.info('user-data -> ', userEmailVerifiedStatus);
+  if(!userEmailVerifiedStatus?.is_email_verified) {
+    console.info('Email is not verified...');
+    return false;
+  }
+  console.info('Email is verified...');
+  return true;
+};
 /* NOT USED */
