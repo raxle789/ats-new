@@ -99,7 +99,7 @@ const SubmitJobItem = ({
   certificateData,
   taData,
   userData,
-  insertJobVacancy,
+  submitJobVacancy,
 }) => {
   const [loading, setLoading] = useState(false);
 
@@ -114,6 +114,62 @@ const SubmitJobItem = ({
   const [api, contextHolder] = notification.useNotification();
 
   const [form] = Form.useForm();
+
+  const [parameterState, setParameterState] = useState({});
+
+  // const [ageParameterState, setAgeParameterState] = useState(false);
+
+  // const [genderParameterState, setGenderParameterState] = useState(false);
+
+  // const [skillParameterState, setSkillParameterState] = useState(false);
+
+  // const [certificateParameterState, setCertificateParameterState] =
+  //   useState(false);
+
+  useEffect(() => {
+    if (jobVacancyData && !_.isEmpty(jobVacancyData)) {
+      form.setFieldsValue({
+        jobEfpk: jobVacancyData?.jobEfpk ?? null,
+        jobTitle: jobVacancyData?.jobTitle ?? null,
+        jobTitleAliases: jobVacancyData?.jobTitleAliases ?? null,
+        jobFunction: jobVacancyData?.jobFunction ?? null,
+        jobEmploymentStatus: jobVacancyData?.jobEmploymentStatus ?? null,
+        jobPositionLevel: jobVacancyData?.jobPositionLevel ?? null,
+        jobVertical: jobVacancyData?.jobVertical ?? null,
+        jobDepartment: jobVacancyData?.jobDepartment ?? null,
+        jobLineIndustry: jobVacancyData?.jobLineIndustry ?? null,
+        jobRegion: jobVacancyData?.jobRegion ?? null,
+        jobWorkLocation: jobVacancyData?.jobWorkLocation ?? null,
+        jobWorkLocationAddress: jobVacancyData?.jobWorkLocationAddress ?? null,
+        jobPublishedDateAndExpiredDate: [
+          moment(jobVacancyData?.jobPublishedDateAndExpiredDate[0] ?? null),
+          moment(jobVacancyData?.jobPublishedDateAndExpiredDate[1] ?? null),
+        ],
+        jobDescription: jobVacancyData?.jobDescription ?? null,
+        jobRequirement: jobVacancyData?.jobRequirement ?? null,
+        jobVideoInterview: jobVacancyData?.jobVideoInterview,
+        jobAutoAssessment: jobVacancyData?.jobAutoAssessment,
+        jobConfidential: jobVacancyData?.jobConfidential,
+        jobCareerFest: jobVacancyData?.jobCareerFest,
+        jobTaCollaborator: jobVacancyData?.jobTaCollaborator ?? null,
+        jobUserCollaborator: jobVacancyData?.jobUserCollaborator ?? null,
+      });
+
+      for (const d of jobVacancyData?.jobVacancyRequirements) {
+        form.setFieldsValue({
+          [`${d?.requirementFields?.name}ParameterCheckbox`]:
+            jobVacancyData[`${d?.requirementFields?.name}ParameterCheckbox`],
+          [d?.requirementFields?.name]:
+            jobVacancyData[d?.requirementFields?.name],
+        });
+
+        setParameterState((prevState) => ({
+          ...prevState,
+          [`${d.requirementFields?.name}ParameterState`]: d?.value ?? false,
+        }));
+      }
+    }
+  }, []);
 
   useEffect(() => {
     setDepartment(departmentData);
@@ -191,8 +247,10 @@ const SubmitJobItem = ({
   const formModalRef = useRef(null);
 
   function handleSubmitJobVacancy(values) {
+    setParameterState({});
+
     confirm({
-      title: 'Do you want to create new job posting?',
+      title: 'Do you want to submit job posting?',
       icon: <ExclamationCircleFilled />,
       centered: true,
       content:
@@ -205,11 +263,19 @@ const SubmitJobItem = ({
               description: <p>Successfully Create New Job Posting</p>,
               placement: 'topRight',
             });
-            insertJobVacancy(taId, values)
-              .then(() => {
-                form.resetFields();
-              })
-              .catch((e) => console.log('Error create new job vacancy: ', e));
+            if (jobVacancyData && !_.isEmpty(jobVacancyData)) {
+              submitJobVacancy(taId, jobVacancyData?.jobId, values)
+                .then(() => {
+                  form.resetFields();
+                })
+                .catch((e) => console.log('Error edit job vacancy: ', e));
+            } else {
+              submitJobVacancy(taId, values)
+                .then(() => {
+                  form.resetFields();
+                })
+                .catch((e) => console.log('Error create new job vacancy: ', e));
+            }
             resolve();
           }, 2000);
         }).catch(() => console.log('Oops errors!'));
@@ -365,6 +431,16 @@ const SubmitJobItem = ({
           handleEfpkChange={handleEfpkChange}
           handlePositionLevelChange={handlePositionLevelChange}
           handleVerticalChange={handleVerticalChange}
+          parameterState={parameterState}
+          setParameterState={setParameterState}
+          // ageParameterState={ageParameterState}
+          // setAgeParameterState={setAgeParameterState}
+          // genderParameterState={genderParameterState}
+          // setGenderParameterState={setGenderParameterState}
+          // skillParameterState={skillParameterState}
+          // setSkillParameterState={setSkillParameterState}
+          // certificateParameterState={certificateParameterState}
+          // setCertificateParameterState={setCertificateParameterState}
         />
       </Spin>
 

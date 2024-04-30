@@ -77,16 +77,17 @@ const JobVacancyForm = ({
   handleEfpkChange,
   handlePositionLevelChange,
   handleVerticalChange,
+  parameterState,
+  setParameterState,
+  // ageParameterState,
+  // setAgeParameterState,
+  // genderParameterState,
+  // setGenderParameterState,
+  // skillParameterState,
+  // setSkillParameterState,
+  // certificateParameterState,
+  // setCertificateParameterState,
 }) => {
-  const [ageParameterState, setAgeParameterState] = useState(false);
-
-  const [genderParameterState, setGenderParameterState] = useState(false);
-
-  const [skillParameterState, setSkillParameterState] = useState(false);
-
-  const [certificateParameterState, setCertificateParameterState] =
-    useState(false);
-
   return (
     <>
       <Form
@@ -478,8 +479,13 @@ const JobVacancyForm = ({
               >
                 <Checkbox
                   className="checkbox d-flex align-items-center"
-                  checked={ageParameterState}
-                  onChange={(e) => setAgeParameterState(e.target.checked)}
+                  checked={parameterState['ageParameterState']}
+                  onChange={(e) =>
+                    setParameterState((prevState) => ({
+                      ...prevState,
+                      ageParameterState: e.target.checked,
+                    }))
+                  }
                 >
                   Age
                 </Checkbox>
@@ -487,9 +493,9 @@ const JobVacancyForm = ({
             </div>
             <div className="col-xxl-10">
               <Form.Item
-                name="ageParameter"
+                name="age"
                 rules={
-                  ageParameterState
+                  parameterState['ageParameterState']
                     ? [
                         {
                           required: true,
@@ -501,7 +507,7 @@ const JobVacancyForm = ({
               >
                 <InputNumber
                   className="select d-flex align-items-center w-100"
-                  disabled={!ageParameterState}
+                  disabled={!parameterState['ageParameterState']}
                   min={17}
                   placeholder="Input Age!"
                   style={{ height: '40px' }}
@@ -516,8 +522,13 @@ const JobVacancyForm = ({
               <Form.Item name="genderParameterCheckbox" valuePropName="checked">
                 <Checkbox
                   className="checkbox d-flex align-items-center"
-                  checked={genderParameterState}
-                  onChange={(e) => setGenderParameterState(e.target.checked)}
+                  checked={parameterState['genderParameterState']}
+                  onChange={(e) =>
+                    setParameterState((prevState) => ({
+                      ...prevState,
+                      genderParameterState: e.target.checked,
+                    }))
+                  }
                 >
                   Gender
                 </Checkbox>
@@ -525,9 +536,9 @@ const JobVacancyForm = ({
             </div>
             <div className="col-xxl-10">
               <Form.Item
-                name="genderParameter"
+                name="gender"
                 rules={
-                  genderParameterState
+                  parameterState['genderParameterState']
                     ? [
                         {
                           required: true,
@@ -542,7 +553,7 @@ const JobVacancyForm = ({
                   size="large"
                   showSearch
                   allowClear
-                  disabled={!genderParameterState}
+                  disabled={!parameterState['genderParameterState']}
                   placeholder="Select Gender"
                   optionFilterProp="children"
                   filterOption={(input, option) =>
@@ -562,11 +573,19 @@ const JobVacancyForm = ({
         <div className="dash-input-wrapper mb-30">
           <div className="row">
             <div className="col-xxl-2">
-              <Form.Item name="skillParameterCheckbox" valuePropName="checked">
+              <Form.Item
+                name="special_skillParameterCheckbox"
+                valuePropName="checked"
+              >
                 <Checkbox
                   className="checkbox d-flex align-items-center"
-                  checked={skillParameterState}
-                  onChange={(e) => setSkillParameterState(e.target.checked)}
+                  checked={parameterState['special_skillParameterState']}
+                  onChange={(e) =>
+                    setParameterState((prevState) => ({
+                      ...prevState,
+                      special_skillParameterState: e.target.checked,
+                    }))
+                  }
                 >
                   Skill
                 </Checkbox>
@@ -574,9 +593,9 @@ const JobVacancyForm = ({
             </div>
             <div className="col-xxl-10">
               <Form.Item
-                name="skillParameter"
+                name="special_skill"
                 rules={
-                  skillParameterState
+                  parameterState['special_skillParameterState']
                     ? [
                         {
                           required: true,
@@ -592,7 +611,7 @@ const JobVacancyForm = ({
                   size="large"
                   showSearch
                   allowClear
-                  disabled={!skillParameterState}
+                  disabled={!parameterState['special_skillParameterState']}
                   placeholder="Select skill"
                   optionFilterProp="children"
                   filterOption={(input, option) =>
@@ -613,14 +632,17 @@ const JobVacancyForm = ({
           <div className="row">
             <div className="col-xxl-2">
               <Form.Item
-                name="certificateParameterCheckbox"
+                name="certificationParameterCheckbox"
                 valuePropName="checked"
               >
                 <Checkbox
                   className="checkbox d-flex align-items-center"
-                  checked={certificateParameterState}
+                  checked={parameterState['certificationParameterState']}
                   onChange={(e) =>
-                    setCertificateParameterState(e.target.checked)
+                    setParameterState((prevState) => ({
+                      ...prevState,
+                      certificationParameterState: e.target.checked,
+                    }))
                   }
                 >
                   Certificate
@@ -629,9 +651,9 @@ const JobVacancyForm = ({
             </div>
             <div className="col-xxl-10">
               <Form.Item
-                name="certificateParameter"
+                name="certification"
                 rules={
-                  certificateParameterState
+                  parameterState['certificationParameterState']
                     ? [
                         {
                           required: true,
@@ -647,7 +669,7 @@ const JobVacancyForm = ({
                   size="large"
                   showSearch
                   allowClear
-                  disabled={!certificateParameterState}
+                  disabled={!parameterState['certificationParameterState']}
                   placeholder="Select Certificate"
                   optionFilterProp="children"
                   filterOption={(input, option) =>
