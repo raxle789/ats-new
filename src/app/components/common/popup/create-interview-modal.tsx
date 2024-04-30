@@ -11,8 +11,6 @@ import {
 } from 'antd';
 import type { RadioChangeEvent } from 'antd';
 import ReactQuill from 'react-quill';
-import { useAppDispatch, useAppSelector } from '@/redux/hook';
-import { setIsOpen } from '@/redux/features/createInterviewSlice';
 
 type FieldType = {
   interviewTitle?: string;
@@ -43,18 +41,14 @@ const modules = {
   ],
 };
 
-// type TProps = {
-//   isOpen?: boolean;
-//   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-// };
+type TProps = {
+  isOpen: boolean;
+  setIsOpenModal: React.Dispatch<boolean>;
+};
 
-const CreateInterviewModal = () => {
-  const dispatch = useAppDispatch();
-  const isModalOpen = useAppSelector(
-    (state) => state.createInterviewModal.isOpen,
-  );
+const CreateInterviewModal: React.FC<TProps> = ({ isOpen, setIsOpenModal }) => {
   const handleCancel = () => {
-    dispatch(setIsOpen(!isModalOpen));
+    setIsOpenModal(false);
   };
 
   const handleSubmit = () => {
@@ -78,7 +72,7 @@ const CreateInterviewModal = () => {
       <Modal
         title="Create Interview"
         centered
-        open={isModalOpen}
+        open={isOpen}
         onCancel={handleCancel}
         footer={null}
         width={700}

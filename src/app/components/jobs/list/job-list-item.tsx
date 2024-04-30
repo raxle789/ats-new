@@ -4,7 +4,7 @@ import { useState } from 'react';
 import NiceSelect from '@/ui/nice-select';
 import ListItemTwo from './list-item-2';
 
-const JobListItem = ({ jobVacancyData }) => {
+const JobListItem = ({ jobVacancyData }: any) => {
   const [filterItems, setFilterItems] = useState([]);
 
   const [shortValue, setShortValue] = useState('');
@@ -45,7 +45,7 @@ const JobListItem = ({ jobVacancyData }) => {
         </div>
         <div className="accordion-box list-style show">
           {jobVacancyData &&
-            jobVacancyData?.map((data, index) => (
+            jobVacancyData?.map((data: [], index: number) => (
               <div key={index}>
                 <ListItemTwo item={data} />
               </div>

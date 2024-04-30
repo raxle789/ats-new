@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import ActionApplicant from '../candidate/action-applicant';
 import { ICandidate } from '@/data/candidate-data';
 import Image from 'next/image';
-import { useAppDispatch } from '@/redux/hook';
-import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
 import { Select } from 'antd';
 import { Tag } from 'antd';
+import CandidateDetailsModal from '../../common/popup/candidate-details-modal';
 
 type TSub = {
   name: string;
@@ -42,9 +41,9 @@ const interview: TInterviewer = {
 };
 
 const CandidateInterviewItem = ({ item }: { item: ICandidate }) => {
-  const dispatch = useAppDispatch();
+  const [isOpenModal, setModalOpen] = useState(false);
   const showModal = () => {
-    dispatch(setIsOpen(true));
+    setModalOpen(true);
   };
 
   const [value, setValue] = useState<string>('interview1');
@@ -172,6 +171,13 @@ const CandidateInterviewItem = ({ item }: { item: ICandidate }) => {
           </div>
         </div>
       </div>
+
+      {/* start modal */}
+      <CandidateDetailsModal
+        isOpen={isOpenModal}
+        setIsOpenModal={setModalOpen}
+      />
+      {/* end modal */}
     </div>
   );
 };

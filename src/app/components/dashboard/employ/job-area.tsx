@@ -126,9 +126,9 @@ const EmployJobArea = async ({ searchParams }) => {
         </div>
       </div>
 
-      <div className="bg-white card-box border-20">
-        <EmployJobItem jobVacancyData={jobVacancyData?.data} />
-      </div>
+      {/* <div className="bg-white card-box border-20"> */}
+      <EmployJobItem jobVacancyData={jobVacancyData?.data} />
+      {/* </div> */}
 
       <div className="d-flex justify-content-center mt-30">
         <Pagination

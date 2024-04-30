@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { DownOutlined } from '@ant-design/icons';
-import { Tree, Modal, Menu, Collapse, Space, Table, Tag } from 'antd';
+import { Tree, Modal, Menu, Collapse } from 'antd';
 import type { TreeDataNode, TreeProps } from 'antd';
 import type { MenuProps } from 'antd';
 import type { CollapseProps } from 'antd';
 import type { TableProps } from 'antd';
 import Pagination from '@/ui/pagination';
-import { useAppDispatch, useAppSelector } from '@/redux/hook';
-import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
 import { MentionProps } from 'antd';
 
 const treeData: TreeDataNode[] = [
@@ -217,11 +215,17 @@ const items: MenuProps['items'] = [
   },
 ];
 
-const CandidateDetailsModal = () => {
-  const dispatch = useAppDispatch();
-  const isModalOpen = useAppSelector((state) => state.candidateModal.isOpen);
+interface IProps {
+  isOpen: boolean;
+  setIsOpenModal: React.Dispatch<boolean>;
+}
+
+const CandidateDetailsModal: React.FC<IProps> = ({
+  isOpen,
+  setIsOpenModal,
+}) => {
   const handleCancel = () => {
-    dispatch(setIsOpen(false));
+    setIsOpenModal(false);
   };
 
   const [current, setCurrent] = useState('profile');
@@ -267,7 +271,7 @@ const CandidateDetailsModal = () => {
       <Modal
         title="Candidate Details"
         centered
-        open={isModalOpen}
+        open={isOpen}
         onCancel={handleCancel}
         footer={null}
         width={700}

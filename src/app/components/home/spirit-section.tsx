@@ -42,7 +42,10 @@ const SpiritSection = () => {
         className="carousel slide col-lg-8"
         data-bs-ride="carousel"
       >
-        <div className="carousel-inner">
+        <div
+          className="carousel-inner"
+          style={{ borderTopLeftRadius: '12%', borderBottomRightRadius: '12%' }}
+        >
           <div className="carousel-item active">
             <Image
               src={carousel1}

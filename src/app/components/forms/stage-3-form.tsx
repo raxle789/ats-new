@@ -687,11 +687,11 @@ const Stage3Form = () => {
   ];
 
   const certifInitItems: any[] = [];
-  const [activeCertifKey, setActiveCertifKey] = useState();
+  const [activeCertifKey, setActiveCertifKey] = useState('');
   const [certifItems, setCertifItems] = useState(certifInitItems);
   const newCertifTabIndex = useRef(0);
 
-  const onChangeCertifTabs = (newActiveKey: any) => {
+  const onChangeCertifTabs = (newActiveKey: string) => {
     setActiveCertifKey(newActiveKey);
   };
 
@@ -995,9 +995,9 @@ const Stage3Form = () => {
             ]}
           >
             <DatePicker
-              ref={(ref) =>
-                console.log('refstart: ', (currentYear.current[expIdx] = ref))
-              }
+              // ref={(ref) =>
+              //   console.log('refstart: ', (currentYear.current[expIdx] = ref))
+              // }
               className="w-100"
               placeholder="Select Year"
               picker="month"
@@ -1021,7 +1021,7 @@ const Stage3Form = () => {
             ]}
           >
             <DatePicker
-              ref={(ref) => (currentYear.current[expIdx + 1] = ref)}
+              // ref={(ref) => (currentYear.current[expIdx + 1] = ref)}
               className="w-100"
               placeholder="Select Year"
               picker="month"
@@ -1035,7 +1035,7 @@ const Stage3Form = () => {
               //       ]
               //     : []
               // }
-              // disabled={yearState[expIdx]}
+              disabled={true}
             />
           </Form.Item>
         </div>
@@ -1047,9 +1047,9 @@ const Stage3Form = () => {
             className="pt-15"
           >
             <Checkbox
-              // onChange={(e) => handleCheckboxChange(e, expIdx)}
+              onChange={(e) => handleCheckboxChange(e, expIdx)}
               // checked={yearState[expIdx] || false}
-              onChange={(e) => handleCheckboxRef(e, expIdx)}
+              // onChange={(e) => handleCheckboxRef(e, expIdx)}
               // data-id={expIdx}
             >
               Current
@@ -1115,7 +1115,7 @@ const Stage3Form = () => {
   ];
 
   const initExpItems: any[] = [];
-  const [activeExpKey, setActiveExpKey] = useState();
+  const [activeExpKey, setActiveExpKey] = useState('');
   const [expItems, setExpItems] = useState(initExpItems);
   const newExpTabIdx = useRef(0);
 
@@ -1449,7 +1449,7 @@ const Stage3Form = () => {
   }, [yearState]);
   return (
     <Form
-      name="form1"
+      name="candidate-register-form"
       form={form}
       variant="filled"
       initialValues={{ remember: true }}

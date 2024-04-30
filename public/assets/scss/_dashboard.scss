@@ -172,6 +172,31 @@
   .card-box {
     padding: 45px 60px 50px;
   }
+  .checkbox-area {
+    width: 100%;
+    height: 60px;
+    background-color: #dbdfdd;
+    position: relative;
+    top: 17px;
+    z-index: 0;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+  }
+  .edit-btn-form {
+    width: 50px;
+    height: 50px;
+    background: $color-one;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-left: 95%;
+  }
+  .edit-form-icon {
+    font-size: 30px;
+    color: white;
+  }
+  .edit-btn-form:hover {
+    background: rgb(12, 29, 92, 0.87);
+  }
   .main-title {
     font-family: var(--gorditas-font);
     font-size: 36px;

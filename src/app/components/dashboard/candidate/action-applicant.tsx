@@ -1,18 +1,14 @@
 import React, { useState } from 'react';
-import { useAppDispatch, useAppSelector } from '@/redux/hook';
+import { useAppSelector } from '@/redux/hook';
 import { useRouter } from 'next/navigation';
 import CreateInterviewModal from '../../common/popup/create-interview-modal';
-import { setIsOpen } from '@/redux/features/createInterviewSlice';
 
 const ActionApplicant = () => {
-  const dispatch = useAppDispatch();
   const currentStep = useAppSelector((state) => state.applicantStep.step);
-  const isModalOpen = useAppSelector(
-    (state) => state.createInterviewModal.isOpen,
-  );
   const router = useRouter();
+  const [isModalOpen, setModalOpen] = useState(false);
   const showModal = () => {
-    dispatch(setIsOpen(!isModalOpen));
+    setModalOpen(true);
   };
   return (
     <>
@@ -93,7 +89,10 @@ const ActionApplicant = () => {
         </li>
       </ul>
 
-      <CreateInterviewModal />
+      <CreateInterviewModal
+        isOpen={isModalOpen}
+        setIsOpenModal={setModalOpen}
+      />
     </>
   );
 };

@@ -57,19 +57,65 @@ const DashboardArea = () => {
       </div>
 
       <div className="row d-flex pt-50 lg-pt-10">
-        <div className="col-xl-7 col-lg-6 d-flex flex-column">
-          <div className="user-activity-chart bg-white border-20 mt-30 h-100">
-            {/* <h4 className="dash-title-two">Profile Views</h4>
-            <div className="ps-5 pe-5 mt-50">
-              <Image
-                src={main_graph}
-                alt="main-graph"
-                className="lazy-img m-auto"
-              />
-            </div> */}
+        <div className="col-lg-6 d-flex flex-column">
+          <div className="recent-job-tab bg-white border-20 mt-30 h-100">
+            <h4 className="dash-title-two">Recommended Jobs</h4>
+            <div className="wrapper">
+              {job_items.map((j) => (
+                <div
+                  key={j.id}
+                  className="job-item-list d-flex align-items-center"
+                >
+                  <div>
+                    <Image
+                      src={j.logo}
+                      alt="logo"
+                      width={40}
+                      height={40}
+                      className="lazy-img logo"
+                    />
+                  </div>
+                  <div className="job-title">
+                    <h6 className="mb-5">
+                      <a href="#">Job Title</a>
+                    </h6>
+                    <div className="meta row">
+                      <span className="col-lg-5">Assistant Manager</span>
+                      <span className="col-lg-7">Fulltime</span>
+                    </div>
+                  </div>
+                  <div className="job-action">
+                    <button
+                      className="action-btn dropdown-toggle"
+                      type="button"
+                      data-bs-toggle="dropdown"
+                      aria-expanded="false"
+                    >
+                      <span></span>
+                    </button>
+                    <ul className="dropdown-menu">
+                      <li>
+                        <a
+                          className="dropdown-item"
+                          href="#"
+                          style={{ color: 'rgba(0, 0, 0, 0.7)' }}
+                        >
+                          View Job
+                        </a>
+                      </li>
+                      <li>
+                        <a className="dropdown-item" href="#">
+                          Delete
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-        <div className="col-xl-5 col-lg-6 d-flex">
+        <div className="col-lg-6 d-flex">
           <div className="recent-job-tab bg-white border-20 mt-30 w-100">
             <h4 className="dash-title-two">Recent Applied Job</h4>
             <div className="wrapper">
@@ -89,10 +135,11 @@ const DashboardArea = () => {
                   </div>
                   <div className="job-title">
                     <h6 className="mb-5">
-                      <a href="#">{j.duration}</a>
+                      <a href="#">Job Title</a>
                     </h6>
-                    <div className="meta">
-                      <span>Fulltime</span> . <span>{j.location}</span>
+                    <div className="meta row">
+                      <span className="col-lg-5">Assistant Manager</span>
+                      <span className="col-lg-7">Fulltime</span>
                     </div>
                   </div>
                   <div className="job-action">
@@ -106,13 +153,12 @@ const DashboardArea = () => {
                     </button>
                     <ul className="dropdown-menu">
                       <li>
-                        <a className="dropdown-item" href="#">
+                        <a
+                          className="dropdown-item"
+                          href="#"
+                          style={{ color: 'rgba(0, 0, 0, 0.7)' }}
+                        >
                           View Job
-                        </a>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="#">
-                          Archive
                         </a>
                       </li>
                       <li>
