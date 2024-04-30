@@ -1,79 +1,81 @@
 'use client';
 
-import { useState } from 'react';
-import { createUser } from '@/libs/Registration';
-import { setRegisterStep } from '@/redux/features/fatkhur/registerSlice';
-import { useAppDispatch } from '@/redux/hook';
+import { useRouter } from 'next/navigation';
+import { createCandidate, createUser } from '@/libs/Registration';
 import { Input, Form, DatePicker } from 'antd';
 import type { DatePickerProps, FormProps } from 'antd';
+import { useState } from 'react';
+import { sendOTP } from '@/libs/Registration/verifications';
 
 type FieldType = {
   fullname?: string;
   email?: string;
   phoneNumber?: string;
-  dateOfBirth?: string;
+  dateOfBirth?: any;
   password?: string;
   confirmPassword?: string;
 };
 
-const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-  console.log('Success:', values);
-};
-
-const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
-  console.log('Failed:', errorInfo);
-};
-
-const onChange: DatePickerProps['onChange'] = (date, dateString) => {
-  console.log(date, dateString);
-};
 
 const RegisterForm = () => {
-  const dispatch = useAppDispatch();
-  const [showPass, setShowPass] = useState<boolean>(false);
-  const [showConfirmPass, setShowConfirmPass] = useState<boolean>(false);
-
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone_number: '',
-    date_of_birth: '',
-    password: '',
-    confirm_password: '',
-  });
-
-  const [errors, setErrors] = useState<{ [key: string]: string[] }>({
-    name: [''],
-    email: [''],
-    password: [''],
-    confirm_password: [''],
-    saveUser: [''],
-  });
-
-  const inputOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+  const router = useRouter();
+  /* This should displayed when fail to storing data */
+  const [errors, setErrors] = useState<{ [key: string]: string[] } | undefined>({ ['']: [''] });
+  /**
+   * 
+   * @param values Form-Data from client.
+   * @returns { object, void } Successful operation returned object that contains "success" property "true". Failed operation returns "void" that setErrors state.
+   */
+  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+    console.info('begin create user...');
+    const userData = {
+      fullname: values.fullname,
+      email: values.email,
+      password: values.password,
+    };
+    const userStore = await createUser(userData);
+    if(userStore.success !== true) {
+      setErrors(userStore.message);
+    };
+    console.info('create user success, next...', userStore);
+    const candidateData = {
+      phoneNumber: values.phoneNumber,
+      dateOfBirth: values.dateOfBirth
+    };
+    const candidateStore = await createCandidate(candidateData);
+    if(candidateStore.success !== true) {
+      setErrors(candidateStore.message);
+    };
+    console.info('create candidate successfully', candidateStore);
+    /* Send OTP */
+    const sendMailOTP = await sendOTP({ email: userData.email as string });
+    console.info('Result sending OTP number...', sendOTP);
+    if(sendMailOTP.success !== true) {
+      return {
+        success: false,
+        message: 'Failed to send OTP to email!'
+      };
+    };
+    console.info('Send OTP successfully', sendMailOTP);
+    /* Navigating to user-stages */
+    router.replace('/dashboard/user/stages');
+  };
+  /**
+   * 
+   * @param errorInfo Biar fatih yang kasih deskripsi - Anjay fatih tersangkut redux.
+   */
+  const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  };
+  /**
+   * 
+   * @param date Biar fatih yang kasih deskripsi - Anjay fatih tersangkut redux.
+   * @param dateString Biar fatih yang kasih deskripsi - Anjay fatih tersangkut redux.
+   */
+  const onChange: DatePickerProps['onChange'] = (date, dateString) => {
+    console.log(date, dateString);
   };
 
-  const formOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    console.log('form-data', formData);
-    /* server-side creating user */
-    const store = await createUser(formData);
-    console.log(store);
-    if (!store.success) {
-      setErrors(store.message as { [key: string]: string[] });
-      return;
-    }
-
-    setErrors({});
-
-    dispatch(setRegisterStep('second'));
-  };
   return (
     <Form
       name="form1"

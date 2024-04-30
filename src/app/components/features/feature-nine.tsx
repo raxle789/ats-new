@@ -4,6 +4,7 @@ import Image from 'next/image';
 // import logo_era from '@/assets/images/logo/logo_erajaya2.jpg';
 import img_1 from '@/assets/images/assets/img_37.jpg';
 // import img_2 from '@/assets/images/assets/img_38.jpg';
+import grey_bg from '@/assets/images/assets/grey-bg.jpg';
 import img_3 from '@/assets/images/assets/img_04.jpg';
 import logo_era from '@/assets/images/home/logo_era.png';
 // import img_4 from '@/assets/images/assets/img_42.png';
@@ -71,20 +72,11 @@ const FeatureNine = () => {
                 />
               </div>
               <div className="row ms-5 mt-30">
-                <div className="col-md-6 col-7">
+                <div className="col-md-6 col-lg-12">
                   <Image
-                    src={img_3}
+                    src={grey_bg}
                     alt="image"
-                    className="lazy-img img01 mt-35 wow fadeInUp"
-                    style={imgStyle}
-                  />
-                </div>
-                <div className="col-md-6 col-7 mt-100">
-                  <Image
-                    src={img_3}
-                    alt="image"
-                    className="lazy-img img01 mt-35 wow fadeInUp"
-                    style={imgStyle}
+                    className="about-image-2 mt-35 wow fadeInUp"
                   />
                 </div>
               </div>

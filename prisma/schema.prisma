@@ -358,11 +358,12 @@ model EducationLevels {
 model RequirementFields {
   id                        Int                         @id @default(autoincrement())
   name                      String                      @unique @db.NVarChar(510)
-  requirementFieldParserId  Int?                        @map("requirement_field_parser_id")
   createdAt                 DateTime?                   @default(now()) @map("created_at") @db.DateTime
   updatedAt                 DateTime?                   @updatedAt @map("updated_at") @db.DateTime
-  requirementFieldParsers   RequirementFieldParsers?    @relation(fields: [requirementFieldParserId], references: [id])
+  requirementFieldParserId  Int?                        @map("requirement_field_parser_id")
+  job_vacancy_requirements  job_vacancy_requirements[]
   positionLevelRequirements PositionLevelRequirements[]
+  requirementFieldParsers   RequirementFieldParsers?    @relation(fields: [requirementFieldParserId], references: [id])
   jobVacancyRequirements    JobVacancyRequirements[]
 
   @@map("requirement_fields")
@@ -390,7 +391,7 @@ model PositionLevelRequirements {
 }
 
 model PositionLevels {
-  id                        Int                         @id @default(autoincrement()) @db.Int
+  id                        Int                         @id @default(autoincrement())
   name                      String                      @db.NVarChar(510)
   level                     Int                         @unique @db.Int
   score                     Int                         @db.Int
@@ -398,6 +399,8 @@ model PositionLevels {
   prointId                  Int?                        @map("proint_id") @db.Int
   createdAt                 DateTime?                   @default(now()) @map("created_at") @db.DateTime
   updatedAt                 DateTime?                   @updatedAt @map("updated_at") @db.DateTime
+  // prointId                  Int?                        @map("proint_id")
+  job_vacancies             JobVacancies[]
   positionLevelRequirements PositionLevelRequirements[]
   jobVacancies              JobVacancies[]
 
@@ -416,7 +419,7 @@ model JobVacancyRequirements {
 }
 
 model JobTitles {
-  id        Int       @id @default(autoincrement()) @db.Int
+  id        Int       @id @default(autoincrement())
   name      String    @db.NVarChar(510)
   createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
   updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
@@ -507,7 +510,7 @@ model CandidateQuestions {
 }
 
 model States {
-  id              Int               @id @default(autoincrement()) @db.Int
+  id              Int               @id @default(autoincrement())
   name            String            @db.NVarChar(255)
   createdAt       DateTime?         @default(now()) @map("created_at") @db.DateTime
   updatedAt       DateTime?         @updatedAt @map("updated_at") @db.DateTime
@@ -530,7 +533,7 @@ model CandidateStates {
 }
 
 model Genders {
-  id        Int       @id @default(autoincrement()) @db.Int
+  id        Int       @id @default(autoincrement())
   name      String    @db.NVarChar(255)
   createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
   updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime

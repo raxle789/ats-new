@@ -13,7 +13,7 @@ const EngageSection = () => {
         <div className="bg-wrapper pt-85 lg-pt-50 pb-80 lg-pb-50 position-relative">
           <div className="container">
             <div className="row">
-              <div className="col-lg-6">
+              <div className="col-lg-7">
                 <div className="title-one">
                   <h2 className="text-white main-font">
                     Let's Engage with Us!
@@ -45,7 +45,7 @@ const EngageSection = () => {
                   </div>
                 </div>
               </div>
-              <div className="col-lg-6 mt-15">
+              <div className="col-lg-5 mt-15">
                 <p className="text-md text-white mb-35 lg-mb-20 md-mt-20 text-center text-md-start">
                   Be the first to get the latest information about Erajaya
                   vacancy and stay informed for interesting updates.{' '}
@@ -62,45 +62,9 @@ const EngageSection = () => {
                   </form>
                 </ul>
               </div>
-              {/* <div className="col-lg-6">
-                <div className="text-wrapper p0 mb-50 md-mb-20">
-                  <div className="title-one mt-5 mb-25 lg-mb-20">
-                    <p className="text-white text-md">
-                      Visit our social media and career page for more
-                      information about Erajaya Group
-                    </p>
-                    <Link
-                      href="/auth/login"
-                      className="btn-five w-50 d-flex align-items-center mb-2"
-                    >
-                      <i className="bi bi-instagram me-2"></i>
-                      <span>@erajaya_career</span>
-                    </Link>
-                    <Link
-                      href="/auth/login"
-                      className="btn-five w-50 d-flex align-items-center mb-2"
-                    >
-                      <i className="bi bi-linkedin me-2"></i>
-                      <span>Erajaya Swasembada</span>
-                    </Link>
-                    <Link
-                      href="/auth/login"
-                      className="btn-five w-50 d-flex align-items-center mb-2"
-                    >
-                      <i className="bi bi-globe me-2"></i>
-                      <span>www.erajaya.com</span>
-                    </Link>
-                  </div>
-                </div>
-              </div> */}
             </div>
             <div className="row align-items-center"></div>
           </div>
-          {/* <div className="container">
-        <div className="position-relative">
-          
-        </div>
-      </div> */}
         </div>
       </section>
     </>

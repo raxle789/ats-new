@@ -1,6 +1,9 @@
 'use client';
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import { IoDocumentTextOutline } from 'react-icons/io5';
+import { AiOutlineUser } from 'react-icons/ai';
+import { PiPath } from 'react-icons/pi';
 
 const DashboardProfileArea = () => {
   const router = useRouter();
@@ -9,17 +12,14 @@ const DashboardProfileArea = () => {
       <h2 className="main-title">My Profile</h2>
 
       <div className="bg-white card-box border-20">
-        {/* <div className="dash-input-wrapper">
-          <label htmlFor="">Bio*</label>
-          <textarea
-            className="size-lg"
-            placeholder="Write something interesting about you...."
-          ></textarea>
-          <div className="alert-text">
-            Brief description for your profile. URLs are hyperlinked.
-          </div>
-        </div> */}
-        <div>
+        <div className="d-flex align-items-center">
+          <AiOutlineUser
+            style={{
+              fontSize: '23px',
+              marginBottom: '2px',
+              marginRight: '5px',
+            }}
+          />
           <a
             style={{
               fontSize: '17px',
@@ -28,13 +28,20 @@ const DashboardProfileArea = () => {
               fontWeight: '500',
             }}
             onClick={() => {
-              router.push('/dashboard/user/profile/document');
+              router.push('/dashboard/user/profile/personal-data');
             }}
           >
             Personal Data
           </a>
         </div>
-        <div className="mt-2">
+        <div className="mt-2 d-flex align-items-center">
+          <PiPath
+            style={{
+              fontSize: '23px',
+              marginBottom: '2px',
+              marginRight: '5px',
+            }}
+          />
           <a
             style={{
               fontSize: '17px',
@@ -49,7 +56,14 @@ const DashboardProfileArea = () => {
             Background Experience
           </a>
         </div>
-        <div className="mt-2">
+        <div className="mt-2 d-flex align-items-center">
+          <IoDocumentTextOutline
+            style={{
+              fontSize: '23px',
+              marginBottom: '2px',
+              marginRight: '5px',
+            }}
+          />
           <a
             style={{
               fontSize: '17px',
@@ -65,15 +79,6 @@ const DashboardProfileArea = () => {
           </a>
         </div>
       </div>
-
-      {/* <div className="button-group d-inline-flex align-items-center mt-30">
-        <a href="#" className="dash-btn-two tran3s me-3">
-          Save
-        </a>
-        <a href="#" className="dash-cancel-btn tran3s">
-          Cancel
-        </a>
-      </div> */}
     </>
   );
 };

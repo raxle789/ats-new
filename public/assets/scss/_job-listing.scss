@@ -856,8 +856,10 @@
 // Job Details
 .job-company-info {
   border-radius: 20px;
-  padding: 50px 20px 30px;
+  padding: 30px 20px 30px;
   background: $light-bg;
+  position: sticky;
+  top: 90px;
   .logo {
     height: 60px;
   }
@@ -976,7 +978,7 @@
     background: $color-five;
   }
   p {
-    font-size: 17px;
+    font-size: 14px;
     margin-top: 20px;
     a {
       font-weight: 500;
@@ -990,7 +992,7 @@
   }
   .list-type-one li {
     position: relative;
-    font-size: 17px;
+    font-size: 14px;
     margin-top: 20px;
     padding-left: 30px;
     line-height: 1.882em;

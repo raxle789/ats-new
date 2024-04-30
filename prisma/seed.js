@@ -153,6 +153,10 @@ async function main() {
 
   await prisma.$executeRaw`INSERT INTO certificates(name) SELECT name FROM ats.dbo.certifications ORDER BY id`;
 
+  await prisma.$executeRaw`INSERT INTO document_types(document_name) VALUES('profile-photo'), ('curriculum-vitae')`;
+
+  await prisma.$executeRaw`INSERT INTO questions(question) VALUES('How long your notice period?'), ('Have you ever worked in Erajaya group of companies?'), ('Do you have any prior medical conditions, illnesses, or congenital diseases?'), ('Do you have any friends, colleague, relative or family who is working at Erajaya Group Companies?')`;
+
   // await prisma.$executeRaw`INSERT INTO phones(user_id, type, number, status, [current], created_at, updated_at) SELECT user_id, type, number, status, [current], created_at, updated_at FROM ats.dbo.phones ORDER BY id;`;
 
   // await prisma.$executeRaw`INSERT INTO efpk_initiator_informations(nik, name, email, position, efpk_id, user_id) SELECT efpk.initiator_nik, efpk.initiator_name, efpk.initiator_email, u.position, efpk.id, u.id FROM efpk LEFT JOIN ats.dbo.users AS u ON efpk.initiator_email COLLATE SQL_Latin1_General_CP1_CI_AS = u.email COLLATE SQL_Latin1_General_CP1_CI_AS ORDER BY efpk.id;`;

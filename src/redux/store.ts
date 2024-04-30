@@ -1,12 +1,13 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import wishlistSlice from './features/wishlist';
 import filterSlice from './features/filterSlice';
-import stepSlice from './features/stepSlice';
-import registerSlice from './features/registerSlice';
+// import stepSlice from './features/stepSlice';
+// import registerSlice from './features/registerSlice';
 import sidebarSlice from './features/sidebarSlice';
 import applicantStepSlice from './features/applicantStepSlice';
 import authSlice from './features/authorizingSlice';
-import candidateDetailsSlice from './features/candidateDetailsSlice';
+// import candidateDetailsSlice from './features/candidateDetailsSlice';
+// import createInterviewSlice from './features/createInterviewSlice';
 
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
@@ -16,11 +17,12 @@ const rootReducer = combineReducers({
   filter: filterSlice,
   sidebar: sidebarSlice,
   wishlist: wishlistSlice,
-  step: stepSlice,
-  register: registerSlice,
+  // step: stepSlice,
+  // register: registerSlice,
   applicantStep: applicantStepSlice,
   auth: authSlice,
-  candidateModal: candidateDetailsSlice,
+  // candidateModal: candidateDetailsSlice,
+  // createInterviewModal: createInterviewSlice,
   // fatkhur
   userRegisterStep: userRegisterStepSlice,
 });

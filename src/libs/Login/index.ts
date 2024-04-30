@@ -17,6 +17,7 @@ export async function userAuth(formData: any) {
     };
   };
 
+  console.info('checking if the user exist...');
   /* check user */
   const user = await prisma.users.findUnique({
     where: {
@@ -24,7 +25,7 @@ export async function userAuth(formData: any) {
     }
   });
 
-  console.info(user);
+  console.info('user exist here', user);
   if(!user) {
     return {
       success: false,
@@ -34,10 +35,11 @@ export async function userAuth(formData: any) {
     }
   };
 
+  console.info('comparing password...');
   /* password-check */
   const match = await bcrypt.compare(formData.password, user.password);
 
-  console.info(match);
+  console.info('comparing result...', match);
   if(!match) {
     return {
       success: false,
@@ -47,6 +49,7 @@ export async function userAuth(formData: any) {
     };
   };
 
+  console.info('checking long-time period cookies...');
   /* set auth-session */
   if(formData.is_rememberOn === 'on') {
     await setUserSession('auth', { user_id: user.id }, 'on');

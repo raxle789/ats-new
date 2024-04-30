@@ -1,20 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { UploadProps, FormProps } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { Upload, Button, message, Input, Form } from 'antd';
+import { MdOutlineModeEdit } from 'react-icons/md';
 
 type FieldType = {
   idFile?: string;
   idNumber?: string;
   npwp?: string;
   npwpNumber?: string;
+  kkNumber?: string;
   kk?: string;
   latestEducation?: string;
   bankAccount?: string;
   bankAccountNumber?: string;
   healthCertificate?: string;
-  bpjsKetenagakerjaan?: string;
-  bpjsKesehatan?: string;
+  // bpjsKetenagakerjaan?: string;
+  // bpjsKesehatan?: string;
   vaccineCertificate?: string;
 };
 
@@ -39,9 +41,14 @@ const props: UploadProps = {
 };
 
 const DocumentForm = () => {
+  const [editState, setEditState] = useState(false);
+  const editOnChange = () => {
+    setEditState(!editState);
+  };
   const handleSubmit: FormProps<FieldType>['onFinish'] = (values) => {
-    // jalankan modal sebelum simpan data
-    // showModal();
+    if (editState) {
+      // jalankan simpan data
+    }
   };
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
@@ -59,6 +66,14 @@ const DocumentForm = () => {
       <h2 className="main-title">Document</h2>
 
       <div className="bg-white card-box border-20">
+        <div className="mb-25">
+          <button
+            className="d-flex align-items-center justify-content-center edit-btn-form"
+            onClick={editOnChange}
+          >
+            <MdOutlineModeEdit className="edit-form-icon" />
+          </button>
+        </div>
         <Form
           name="doc-form"
           variant="filled"
@@ -79,7 +94,7 @@ const DocumentForm = () => {
                   //   },
                   // ]}
                 >
-                  <Upload {...props}>
+                  <Upload {...props} disabled={!editState}>
                     <Button icon={<UploadOutlined />}>Upload File</Button>
                   </Upload>
                 </Form.Item>
@@ -98,7 +113,10 @@ const DocumentForm = () => {
                   //   },
                   // ]}
                 >
-                  <Input placeholder="Your ID/Pasport Number" />
+                  <Input
+                    placeholder="Your ID/Pasport Number"
+                    disabled={!editState}
+                  />
                 </Form.Item>
               </div>
             </div>
@@ -115,7 +133,7 @@ const DocumentForm = () => {
                   //   },
                   // ]}
                 >
-                  <Upload {...props}>
+                  <Upload {...props} disabled={!editState}>
                     <Button icon={<UploadOutlined />}>Upload File</Button>
                   </Upload>
                 </Form.Item>
@@ -134,13 +152,13 @@ const DocumentForm = () => {
                   //   },
                   // ]}
                 >
-                  <Input placeholder="Your NPWP Number" />
+                  <Input placeholder="Your NPWP Number" disabled={!editState} />
                 </Form.Item>
               </div>
             </div>
             <div className="col-6">
               <div className="input-group-meta position-relative mb-15">
-                <label>Family Record</label>
+                <label>Family Register</label>
                 <Form.Item<FieldType>
                   name="kk"
                   className="mb-0"
@@ -151,7 +169,7 @@ const DocumentForm = () => {
                   //   },
                   // ]}
                 >
-                  <Upload {...props}>
+                  <Upload {...props} disabled={!editState}>
                     <Button icon={<UploadOutlined />}>Upload File</Button>
                   </Upload>
                 </Form.Item>
@@ -159,9 +177,9 @@ const DocumentForm = () => {
             </div>
             <div className="col-6">
               <div className="input-group-meta position-relative mb-15">
-                <label>Latest Education Certificate</label>
+                <label>NO Family Register</label>
                 <Form.Item<FieldType>
-                  name="latestEducation"
+                  name="kkNumber"
                   className="mb-0"
                   // rules={[
                   //   {
@@ -170,9 +188,10 @@ const DocumentForm = () => {
                   //   },
                   // ]}
                 >
-                  <Upload {...props}>
-                    <Button icon={<UploadOutlined />}>Upload File</Button>
-                  </Upload>
+                  <Input
+                    placeholder="Your Family Register Number"
+                    disabled={!editState}
+                  />
                 </Form.Item>
               </div>
             </div>
@@ -189,7 +208,7 @@ const DocumentForm = () => {
                   //   },
                   // ]}
                 >
-                  <Upload {...props}>
+                  <Upload {...props} disabled={!editState}>
                     <Button icon={<UploadOutlined />}>Upload File</Button>
                   </Upload>
                 </Form.Item>
@@ -208,7 +227,29 @@ const DocumentForm = () => {
                   //   },
                   // ]}
                 >
-                  <Input placeholder="Your Bank Account Number" />
+                  <Input
+                    placeholder="Your Bank Account Number"
+                    disabled={!editState}
+                  />
+                </Form.Item>
+              </div>
+            </div>
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-15">
+                <label>Latest Education Certificate</label>
+                <Form.Item<FieldType>
+                  name="latestEducation"
+                  className="mb-0"
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //     message: 'Please upload id/pasport file!',
+                  //   },
+                  // ]}
+                >
+                  <Upload {...props} disabled={!editState}>
+                    <Button icon={<UploadOutlined />}>Upload File</Button>
+                  </Upload>
                 </Form.Item>
               </div>
             </div>
@@ -225,50 +266,50 @@ const DocumentForm = () => {
                   //   },
                   // ]}
                 >
-                  <Upload {...props}>
+                  <Upload {...props} disabled={!editState}>
                     <Button icon={<UploadOutlined />}>Upload File</Button>
                   </Upload>
                 </Form.Item>
               </div>
             </div>
-            <div className="col-6">
+            {/* <div className="col-6">
               <div className="input-group-meta position-relative mb-15">
                 <label>BPJS Ketenagakerjaan</label>
                 <Form.Item<FieldType>
                   name="bpjsKetenagakerjaan"
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please upload id/pasport file!',
-                  //   },
-                  // ]}
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please upload id/pasport file!',
+                    },
+                  ]}
                 >
                   <Upload {...props}>
                     <Button icon={<UploadOutlined />}>Upload File</Button>
                   </Upload>
                 </Form.Item>
               </div>
-            </div>
-            <div className="col-6">
+            </div> */}
+            {/* <div className="col-6">
               <div className="input-group-meta position-relative mb-15">
                 <label>BPJS Kesehatan</label>
                 <Form.Item<FieldType>
                   name="bpjsKesehatan"
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please upload id/pasport file!',
-                  //   },
-                  // ]}
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please upload id/pasport file!',
+                    },
+                  ]}
                 >
                   <Upload {...props}>
                     <Button icon={<UploadOutlined />}>Upload File</Button>
                   </Upload>
                 </Form.Item>
               </div>
-            </div>
+            </div> */}
             <div className="col-6">
               <div className="input-group-meta position-relative mb-15">
                 <label>Vaccine Certificate</label>
@@ -282,7 +323,7 @@ const DocumentForm = () => {
                   //   },
                   // ]}
                 >
-                  <Upload {...props}>
+                  <Upload {...props} disabled={!editState}>
                     <Button icon={<UploadOutlined />}>Upload File</Button>
                   </Upload>
                 </Form.Item>

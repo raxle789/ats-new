@@ -12,7 +12,7 @@ const JobDetailsDynamicPage = ({ params }: { params: { id: string } }) => {
   const job = job_data.find((j) => Number(j.id) === Number(params.id));
   return (
     <Wrapper>
-      <div className="main-page-wrapper">
+      <div>
         {/* header start */}
         {/* <Header /> */}
         {/* header end */}

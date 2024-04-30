@@ -13,7 +13,8 @@ export default function MainLayout({
 }) {
   return (
     <Wrapper>
-      <div className="main-page-wrapper">
+      {/* <div className="main-page-wrapper"> */}
+      <div>
         <HeaderSix />
         {children}
         {/* footer start */}

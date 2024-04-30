@@ -189,8 +189,11 @@ const CandidateAside = () => {
                 let isActive = false;
                 if (m.id === 2) {
                   isActive =
-                    pathname === '/dashboard/user/profile' ||
-                    pathname === '/dashboard/user/profile/document';
+                    pathname === m.link ||
+                    pathname === '/dashboard/user/profile/document' ||
+                    pathname === '/dashboard/user/profile/personal-data' ||
+                    pathname ===
+                      '/dashboard/user/profile/background-experience';
                 } else {
                   isActive = pathname === m.link;
                 }

@@ -5,6 +5,8 @@ import { Spin } from 'antd';
 import ActionJobVacancies from '../candidate/action-job-vacancies';
 import { ExpendableButton } from './expendable-button';
 import { notification } from 'antd';
+import { Checkbox } from 'antd';
+import type { CheckboxProps } from 'antd';
 
 // interface JobItem { jobId?: number, jobPosition?: string, jobDepartment?: string, jobStatus?: string, jobEndPosted?: string, jobApplicants?: number, jobApplicantsAssessment?: number, jobApplicantsInterview?: number, jobApplicantsOffering?: number, jobRemainingSLA?: string, jobRecruiter?: string, jobFpkStatus?: string, }
 
@@ -14,16 +16,40 @@ const EmployJobItem: React.FC<JobItemProps> = ({ jobVacancyData }) => {
   const [loading, setLoading] = useState(false);
 
   const [api, contextHolder] = notification.useNotification();
-  // const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
-  //   {},
-  // );
+  const initialCheckboxState = jobVacancyData?.reduce(
+    (acc: { [key: string]: boolean }, _: any, index: string) => {
+      return {
+        ...acc,
+        [index]: false,
+      };
+    },
+    {},
+  );
+  const [checkboxAllValue, setCheckboxAllValue] = useState(false);
+  const [checkbox, setCheckbox] = useState<{ [key: string]: boolean }>(
+    initialCheckboxState,
+  );
+  const onChangeCheckboxAll: CheckboxProps['onChange'] = (e) => {
+    const checked = e.target.checked;
+    const updatedCheckbox: { [key: string]: boolean } = {};
 
-  // const toggleRowExpansion = (index: number) => {
-  //   setExpandedRows((prevExpandedRows) => ({
-  //     ...prevExpandedRows,
-  //     [index]: !prevExpandedRows[index],
-  //   }));
-  // };
+    Object.keys(checkbox).forEach((key: string) => {
+      updatedCheckbox[key] = checked;
+    });
+
+    setCheckbox(updatedCheckbox);
+    setCheckboxAllValue(checked);
+  };
+  const onChangeCheckbox = (index: number) => {
+    setCheckbox((prevState: any) => ({
+      ...prevState,
+      [index]: !prevState[index],
+    }));
+
+    if (checkboxAllValue || !checkbox[index]) {
+      setCheckboxAllValue(false);
+    }
+  };
   return (
     <>
       {contextHolder}

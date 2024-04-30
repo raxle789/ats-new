@@ -10,7 +10,6 @@ import { useDebouncedCallback } from 'use-debounce';
 import candidate_data from '@/data/candidate-data';
 import CandidateInterviewItem from './candidate-interview-item';
 import SearchBar from '@/ui/search-bar';
-import CandidateDetailsModal from '../../common/popup/candidate-details-modal';
 import { useAppDispatch } from '@/redux/hook';
 import { setApplicantStep } from '@/redux/features/applicantStepSlice';
 
@@ -136,10 +135,6 @@ const CandidateInterview = () => {
           <CandidateInterviewItem key={item.id} item={item} />
         ))}
       </div>
-
-      {/* start modal */}
-      <CandidateDetailsModal />
-      {/* end modal */}
     </>
   );
 };

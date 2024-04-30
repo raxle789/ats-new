@@ -73,7 +73,7 @@ const PartnersSlider = () => {
     <>
       <Slider {...slider_setting} className="partner-slider">
         {logos.map((logo, i) => (
-          <div key={i} className="item">
+          <div key={i} className="item" style={{ width: 'auto' }}>
             <div className="logo d-flex align-items-center">
               <Image
                 src={logo}

@@ -9,7 +9,7 @@ import uploadIcon from '@/assets/images/icon/icon_11.svg';
 import { useAppDispatch } from '@/redux/hook';
 import { setStep } from '@/redux/features/stepSlice';
 import { setRegisterStep } from '@/redux/features/fatkhur/registerSlice';
-import { createEducation_Experience } from '@/libs/Registration';
+// import { createEducation_Experience } from '@/libs/Registration';
 import { string } from 'zod';
 import { fileToBase64 } from '@/libs/Registration/utils';
 import { useRouter } from 'next/navigation';
@@ -224,15 +224,15 @@ const RegisterFormStep2 = () => {
     };
 
     /* call server-side function */
-    const send = await createEducation_Experience(
-      formData,
-      userDocument,
-      agreement,
-    );
-    console.info(send);
-    if (!send.success) {
-      return console.error(send.message);
-    }
+    // const send = await createEducation_Experience(
+    //   formData,
+    //   userDocument,
+    //   agreement,
+    // );
+    // console.info(send);
+    // if (!send.success) {
+    //   return console.error(send.message);
+    // }
 
     router.push('/');
   };

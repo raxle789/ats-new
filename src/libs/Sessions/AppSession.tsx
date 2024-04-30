@@ -2,40 +2,21 @@
 
 import { useContext, useState, createContext, useEffect } from "react";
 import { getUserSession } from ".";
-// import { JwtPayload } from "jsonwebtoken";
-
-type AppSession = {
-  session: { name?: string, value?: string }[];
-  fetchSession?: () => Promise<void>;
-}
+import { getCookie, getCookies } from "cookies-next";
 
 const SessionContext = createContext<any>(undefined);
 
 export default function AppSession({ children } : { children: React.ReactNode }) {
-  const [session, setSession] = useState(undefined);
+  // const [session, setSession] = useState<any>();
 
-  /* FETCH TO GET SESSION */
-  // const getSession = async () => {
-  //   const response = await fetch('api/sessions', {
-  //     method: 'GET'
-  //   });
-
-  //   const body = await response.json();
-  //   console.log('body server-side', body);
-
-  //   setSession(body);
-  // };
-
-  // useEffect(() => {
-  //   getSession();
-  // }, []);
+  /* GET BOTH -> Server and Client Session */
+  /**
+   * Code here
+   */
+  const cookies = getCookies(); // getting all cookies.
 
   return (
-    <SessionContext.Provider value={{
-      session,
-      // getSession
-    }
-    }>
+    <SessionContext.Provider value={cookies}>
       {children}
     </SessionContext.Provider>
   );

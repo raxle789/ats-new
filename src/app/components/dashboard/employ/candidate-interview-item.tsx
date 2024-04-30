@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import ActionApplicant from '../candidate/action-applicant';
 import { ICandidate } from '@/data/candidate-data';
 import Image from 'next/image';
-import { useAppDispatch } from '@/redux/hook';
-import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
 import { Select } from 'antd';
 import { Tag } from 'antd';
+import CandidateDetailsModal from '../../common/popup/candidate-details-modal';
 
 type TSub = {
   name: string;
@@ -42,9 +41,9 @@ const interview: TInterviewer = {
 };
 
 const CandidateInterviewItem = ({ item }: { item: ICandidate }) => {
-  const dispatch = useAppDispatch();
+  const [isOpenModal, setModalOpen] = useState(false);
   const showModal = () => {
-    dispatch(setIsOpen(true));
+    setModalOpen(true);
   };
 
   const [value, setValue] = useState<string>('interview1');
@@ -122,28 +121,32 @@ const CandidateInterviewItem = ({ item }: { item: ICandidate }) => {
                 <div>
                   {interview[value] &&
                     interview[value].names.map((interviewItem, index) => (
-                      <div key={index}>
-                        <p className="d-inline me-3">{interviewItem.name}</p>
-                        {interviewItem.status === 'Waiting' && (
-                          <Tag color="#1e87f0" style={{ color: 'white' }}>
-                            Waiting
-                          </Tag>
-                        )}
-                        {interviewItem.status === 'Hire' && (
-                          <Tag color="#29d259" style={{ color: 'white' }}>
-                            Hire
-                          </Tag>
-                        )}
-                        {interviewItem.status === 'Reject' && (
-                          <Tag color="#ff2730" style={{ color: 'white' }}>
-                            Reject
-                          </Tag>
-                        )}
-                        {interviewItem.status === 'Keep In View' && (
-                          <Tag color="#f0f000" style={{ color: 'white' }}>
-                            Keep In View
-                          </Tag>
-                        )}
+                      <div key={index} className="row">
+                        <div className="col-lg-9">
+                          <p className="d-inline me-3">{interviewItem.name}</p>
+                        </div>
+                        <div className="col-lg-3">
+                          {interviewItem.status === 'Waiting' && (
+                            <Tag color="#1e87f0" style={{ color: 'white' }}>
+                              Waiting
+                            </Tag>
+                          )}
+                          {interviewItem.status === 'Hire' && (
+                            <Tag color="#29d259" style={{ color: 'white' }}>
+                              Hire
+                            </Tag>
+                          )}
+                          {interviewItem.status === 'Reject' && (
+                            <Tag color="#ff2730" style={{ color: 'white' }}>
+                              Reject
+                            </Tag>
+                          )}
+                          {interviewItem.status === 'Keep In View' && (
+                            <Tag color="#f0f000" style={{ color: 'white' }}>
+                              Keep In View
+                            </Tag>
+                          )}
+                        </div>
                       </div>
                     ))}
                 </div>
@@ -168,6 +171,13 @@ const CandidateInterviewItem = ({ item }: { item: ICandidate }) => {
           </div>
         </div>
       </div>
+
+      {/* start modal */}
+      <CandidateDetailsModal
+        isOpen={isOpenModal}
+        setIsOpenModal={setModalOpen}
+      />
+      {/* end modal */}
     </div>
   );
 };
