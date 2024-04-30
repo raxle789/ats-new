@@ -499,7 +499,7 @@ const PersonalDataForm = () => {
   ];
 
   const certifInitItems: any[] = [];
-  const [activeCertifKey, setActiveCertifKey] = useState();
+  const [activeCertifKey, setActiveCertifKey] = useState('');
   const [certifItems, setCertifItems] = useState(certifInitItems);
   const newCertifTabIndex = useRef(0);
 
@@ -726,7 +726,7 @@ const PersonalDataForm = () => {
                 >
                   <Input
                     placeholder="Your Email"
-                    disabled={!editState}
+                    disabled
                     // defaultValue={regSessionDecoded.user?.email ?? ''}
                   />
                 </Form.Item>

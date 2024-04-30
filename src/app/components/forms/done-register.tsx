@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Modal } from 'antd';
-import { FileDoneOutlined } from '@ant-design/icons';
+import { AiOutlineFileDone } from 'react-icons/ai';
 import { useRouter } from 'next/navigation';
 
 const DoneRegisterPage = () => {
@@ -38,7 +38,7 @@ const DoneRegisterPage = () => {
         style={{ width: '100%', height: '350px' }}
       >
         <div className="d-flex flex-column justify-content-center align-items-center">
-          <FileDoneOutlined style={{ fontSize: '50px' }} />
+          <AiOutlineFileDone style={{ fontSize: '50px' }} />
           <p className="mt-2">Register is Completed</p>
         </div>
       </div>
