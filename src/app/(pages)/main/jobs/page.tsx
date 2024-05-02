@@ -8,6 +8,8 @@ import JobList from '../../../components/jobs/list/job-list-area';
 // import JobPortalIntro from '../../../components/job-portal-intro/job-portal-intro';
 // import FooterOne from '@/layouts/footers/footer-one';
 
+export const revalidate = 0;
+
 interface IProps {
   searchParams: {
     page?: string;

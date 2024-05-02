@@ -259,7 +259,7 @@ export async function setPositionLevelRequirement(
 ) {
   try {
     prisma.$transaction(async (tx) => {
-      const { id } = await tx.requirementFields.findUnique({
+      const requirementFieldData = await tx.requirementFields.findFirst({
         where: {
           name: requirementFieldName,
         },
@@ -269,7 +269,7 @@ export async function setPositionLevelRequirement(
         where: {
           positionLevelId_requirementFieldId: {
             positionLevelId: positionLevelId,
-            requirementFieldId: id,
+            requirementFieldId: requirementFieldData.id,
           },
         },
         update: {
@@ -277,7 +277,7 @@ export async function setPositionLevelRequirement(
         },
         create: {
           positionLevelId: positionLevelId,
-          requirementFieldId: id,
+          requirementFieldId: requirementFieldData.id,
           value: value,
         },
       });

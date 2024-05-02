@@ -12,7 +12,7 @@ const DoneRegisterPage = () => {
 
   const handleOk = () => {
     setIsModalOpen(false);
-    router.push('/main/job');
+    router.push('/main/jobs');
   };
   const handleCancel = () => {
     setIsModalOpen(false);

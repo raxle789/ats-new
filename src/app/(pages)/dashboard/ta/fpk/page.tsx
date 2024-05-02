@@ -1,5 +1,5 @@
 import React from 'react';
-import EmployJobFpk from '@/app/components/dashboard/employ/job-fpk';
+import EmployJobFpk from '@/app/components/dashboard/employ/job-fpk-area';
 
 export const revalidate = 0;
 

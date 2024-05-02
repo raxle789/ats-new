@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Pagination from '@/ui/pagination';
+import SearchBar from '@/ui/search-bar';
+import EmployShortSelect from './short-select';
 import { Spin } from 'antd';
 import ActionJobVacancies from '../candidate/action-job-vacancies';
 import { notification, Button, Checkbox, Popover } from 'antd';
@@ -9,11 +12,11 @@ import ActionCheckboxJob from '../../common/popup/action-checkbox-jobs';
 
 const moment = require('moment');
 
-const EmployJobItem: React.FC<JobItemProps> = ({ jobVacancyData }) => {
+const EmployJobItem: React.FC<JobItemProps> = ({ jobVacancyData, perPage }) => {
   const [loading, setLoading] = useState(false);
 
   const [api, contextHolder] = notification.useNotification();
-  const initialCheckboxState = jobVacancyData?.reduce(
+  const initialCheckboxState = jobVacancyData?.data?.reduce(
     (acc: { [key: string]: boolean }, _: any, index: string) => {
       return {
         ...acc,
@@ -96,7 +99,7 @@ const EmployJobItem: React.FC<JobItemProps> = ({ jobVacancyData }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {jobVacancyData?.map((data: any, index: number) => (
+                    {jobVacancyData?.data?.map((data: any, index: number) => (
                       <React.Fragment key={index}>
                         <tr>
                           <td>

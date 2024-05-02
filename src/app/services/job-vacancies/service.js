@@ -800,6 +800,7 @@ export async function getJobVacancy(jobVacancyId) {
         jobFunctions: {
           select: {
             id: true,
+            name: true,
           },
         },
         employmentStatus: {
@@ -810,11 +811,13 @@ export async function getJobVacancy(jobVacancyId) {
         positionLevels: {
           select: {
             level: true,
+            name: true,
           },
         },
         verticals: {
           select: {
             code: true,
+            name: true,
           },
         },
         jobVacancyLineIndustries: {
@@ -1650,5 +1653,49 @@ export async function editJobVacancy(
     });
   } catch (e) {
     console.log(e);
+  }
+}
+
+export async function applyJobVacancy(candidateId, jobVacancyId) {
+  try {
+    // console.info(candidateId);
+
+    // console.info(jobVacancyId);
+
+    await prisma.candidateStates.create({
+      data: {
+        candidateId: candidateId,
+        jobVacancyId: jobVacancyId,
+        stateName: 'WAITING',
+      },
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export async function candidateAlreadyApplyJobVacancy(
+  candidateId,
+  jobVacancyId,
+) {
+  try {
+    const total = await prisma.candidateStates.count({
+      where: {
+        AND: [
+          {
+            candidateId: candidateId,
+          },
+          {
+            jobVacancyId: jobVacancyId,
+          },
+        ],
+      },
+    });
+
+    return total;
+  } catch (e) {
+    console.log(e);
+
+    return 0;
   }
 }

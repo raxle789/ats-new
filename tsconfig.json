@@ -36,7 +36,7 @@
     ".next/types/**/*.ts",
     "src/app/pages/user/layout.jsx",
     "src/app/pages/main/job/page.jsx",
-    "src/app/components/dashboard/employ/job-fpk.tsx",
+    "src/app/components/dashboard/employ/job-fpk-area.tsx",
     "src/app/services/connection/entity/efpk.js",
     "src/app/(pages)/api/upload/upload.js"
   ],

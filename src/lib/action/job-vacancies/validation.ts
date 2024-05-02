@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const validateTaId = z.object({
-  taId: z.coerce
+  taId: z
     .number({
       required_error: 'TA required!',
       invalid_type_error: 'TA id must be a number!',
@@ -100,7 +100,7 @@ export const validateEfpk = z.object({
       invalid_type_error: 'Location code must be a string!',
     })
     .trim(),
-  sla_days: z.coerce
+  sla_days: z
     .number({
       required_error: 'SLA days required!',
       invalid_type_error: 'SLA days must be a number!',
@@ -118,6 +118,12 @@ export const validateVerticalCode = z.object({
 });
 
 export const validateJobVacancySchema = z.object({
+  taId: z
+    .number({
+      required_error: 'Ta id required!',
+      invalid_type_error: 'Ta id must be a number!',
+    })
+    .int(),
   jobEfpk: z.coerce
     .string({
       required_error: 'Job FPK required!',
@@ -139,7 +145,7 @@ export const validateJobVacancySchema = z.object({
     })
     .trim()
     .min(1),
-  jobFunction: z.coerce
+  jobFunction: z
     .number({
       required_error: 'Job function required!',
       invalid_type_error: 'Job function id must be a number!',
@@ -152,7 +158,7 @@ export const validateJobVacancySchema = z.object({
     })
     .trim()
     .min(1),
-  jobPositionLevel: z.coerce
+  jobPositionLevel: z
     .number({
       required_error: 'Position level required!',
       invalid_type_error: 'Position level must be a number!',
@@ -173,7 +179,7 @@ export const validateJobVacancySchema = z.object({
     })
     .trim()
     .min(1),
-  jobLineIndustry: z.coerce
+  jobLineIndustry: z
     .number({
       required_error: 'Line industry required!',
       invalid_type_error: 'Line industry id must be a number!',
@@ -227,7 +233,7 @@ export const validateJobVacancySchema = z.object({
       invalid_type_error: 'Age parameter checkbox must be a boolean!',
     })
     .default(false),
-  age: z.coerce
+  age: z
     .number({
       required_error: 'Age parameter required!',
       invalid_type_error: 'Age parameter must be a number!',
@@ -243,7 +249,7 @@ export const validateJobVacancySchema = z.object({
       invalid_type_error: 'Gender parameter checkbox must be a boolean!',
     })
     .default(false),
-  gender: z.coerce
+  gender: z
     .number({
       required_error: 'Gender parameter required!',
       invalid_type_error: 'Gender parameter id must be a number!',
@@ -311,7 +317,7 @@ export const validateJobVacancySchema = z.object({
     .refine((val) => val === 'yes' || val === 'no', {
       message: 'Job career fest must be yes or no!',
     }),
-  jobTaCollaborator: z.coerce
+  jobTaCollaborator: z
     .number({
       required_error: 'Ta collaborator required!',
       invalid_type_error: 'Ta collaborator must be a number!',
@@ -320,7 +326,7 @@ export const validateJobVacancySchema = z.object({
     .nullable()
     .transform((val) => (val === null ? [] : val))
     .default([]),
-  jobUserCollaborator: z.coerce
+  jobUserCollaborator: z
     .number({
       required_error: 'User collaborator required!',
       invalid_type_error: 'User collaborator must be a number!',
@@ -332,7 +338,28 @@ export const validateJobVacancySchema = z.object({
 });
 
 export const validateJobVacancyId = z.object({
-  jobVacancyId: z.coerce
+  // taId: z.coerce
+  //   .number({
+  //     required_error: 'Ta id required!',
+  //     invalid_type_error: 'Ta id must be a number!',
+  //   })
+  //   .int(),
+  jobVacancyId: z
+    .number({
+      required_error: 'Job vacancy id required!',
+      invalid_type_error: 'Job vacancy id must be a number!',
+    })
+    .int(),
+});
+
+export const validateCandidateApply = z.object({
+  candidateId: z
+    .number({
+      required_error: 'Candidate id required!',
+      invalid_type_error: 'Candidate id must be a number!',
+    })
+    .int(),
+  jobVacancyId: z
     .number({
       required_error: 'Job vacancy id required!',
       invalid_type_error: 'Job vacancy id must be a number!',

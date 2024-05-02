@@ -168,7 +168,7 @@ export async function updateCandidate(formData: any) {
       blood_type: formData.bloodType,
       ethnicity: formData.ethnicity,
       gender: formData.gender,
-      marital_status: formData.maritalStatus,
+      maritalStatus: formData.maritalStatus,
       /* Failed to insert, unsync with master data citys -> create view or db seed master city */
       // birthCityId: formData.profile.placeOfBirth, /* VALUE MUST BE THE ID OF CITYS */
       birthCity: formData.placeOfBirth,
@@ -219,18 +219,24 @@ export async function storingAddress(
     /* Store 2 address data, one of them "isCurrent" property "true" */
     const currentAddress = await prisma.addresses.create({
       data: {
-        candidate_id: regSession.candidate.id,
+        candidateId: regSession.candidate.id,
         street: formData.permanentAddress,
         country: formData.country,
         city: formData.city,
-        zip_code: formData.zipCode,
+        zipCode: formData.zipCode,
         rt: formData.rt,
         rw: formData.rw,
         subdistrict: formData.subdistrict,
         village: formData.village,
+<<<<<<< HEAD
         is_current: 'true',
         current_address: formData.currentAddress,
         created_at: new Date(Date.now()),
+=======
+        isCurrent: 'true',
+        currentAddress: formData.currentAddress,
+        createdAt: new Date(Date.now()),
+>>>>>>> e5c6cfcc2b66a49376d0e82eb4f5309c3c54a1d5
       },
     });
     console.info('Result after storing address...', currentAddress);
@@ -260,31 +266,42 @@ export async function storingAddress(
   const address = await prisma.addresses.createMany({
     data: [
       {
-        candidate_id: regSession.candidate.id,
+        candidateId: regSession.candidate.id,
         street: formData.permanentAddress,
         country: formData.country,
         city: formData.city,
-        zip_code: formData.zipCode,
+        zipCode: formData.zipCode,
         rt: formData.rt,
         rw: formData.rw,
         subdistrict: formData.subdistrict,
         village: formData.village,
+<<<<<<< HEAD
         is_current: 'false',
         created_at: new Date(Date.now()),
+=======
+        isCurrent: 'false',
+        createdAt: new Date(Date.now()),
+>>>>>>> e5c6cfcc2b66a49376d0e82eb4f5309c3c54a1d5
       },
       {
-        candidate_id: regSession.candidate.id,
+        candidateId: regSession.candidate.id,
         street: formData.currentAddress,
         country: formData.country,
         city: formData.city,
-        zip_code: formData.zipCode,
+        zipCode: formData.zipCode,
         rt: formData.rt,
         rw: formData.rw,
         subdistrict: formData.subdistrict,
         village: formData.village,
+<<<<<<< HEAD
         is_current: 'true',
         current_address: formData.currentAddress,
         created_at: new Date(Date.now()),
+=======
+        isCurrent: 'true',
+        currentAddress: formData.currentAddress,
+        createdAt: new Date(Date.now()),
+>>>>>>> e5c6cfcc2b66a49376d0e82eb4f5309c3c54a1d5
       },
     ],
   });
@@ -329,13 +346,17 @@ export async function storeFamilys(formData: any) {
   let manipulatedFamily: any[] = [];
   familyList.forEach((value: any) => {
     const familys = {
-      candidate_id: regSession.candidate.id,
+      candidateId: regSession.candidate.id,
       name: value.name,
       /* UBAH GENDER ID JADI GENDER NCARCHAR */
       gender: value.gender, // change from gender_id to gender
-      date_of_birth: value.dateOfBirth,
+      dateOfBirth: value.dateOfBirth,
       relationStatus: value.relation,
+<<<<<<< HEAD
       created_at: new Date(Date.now()),
+=======
+      createdAt: new Date(Date.now()),
+>>>>>>> e5c6cfcc2b66a49376d0e82eb4f5309c3c54a1d5
     };
     /* Store to defined empty array */
     if (familys.name === undefined) {
@@ -394,7 +415,7 @@ export async function storeEducation(
         start_year: startyear,
         end_year: endYear,
         university_name: formData.schoolName[0],
-        city_of_school: formData.cityOfSchool,
+        cityOfSchool: formData.cityOfSchool,
         gpa: formData.gpa,
         is_latest: false,
         is_graduate: false,
@@ -452,10 +473,17 @@ export async function storeCertification(
     let manipulatedCertifications: any[] = [];
     certificationList.forEach((value) => {
       const certification = {
+<<<<<<< HEAD
         candidate_id: regSession.candidate.id,
         certificate_id: Number(value.certificationName[0]),
         institution_name: value.institution,
         issued_date: new Date(month, year),
+=======
+        candidateId: regSession.candidate.id,
+        certificateId: Number(value.certificationName[0]),
+        institutionName: value.institution,
+        issuedDate: new Date(month, year),
+>>>>>>> e5c6cfcc2b66a49376d0e82eb4f5309c3c54a1d5
         created_at: new Date(Date.now()),
       };
       /* Store to defined empty array */
@@ -507,15 +535,24 @@ export async function storeSkills(formData: any) {
   const skillList: any[] = formData;
   skillList.forEach((value) => {
     const skill = {
+<<<<<<< HEAD
       candidate_id: regSession.candidate.id,
       skill_id: value,
+=======
+      candidateId: regSession.candidate.id,
+      skillId: value,
+>>>>>>> e5c6cfcc2b66a49376d0e82eb4f5309c3c54a1d5
     };
     /* Store manipulated data to empty array */
     manipulatedSkills.push(skill);
   });
   console.info('Manipulated skills data...', manipulatedSkills);
   console.info('Begin store skills data...');
+<<<<<<< HEAD
   const skills = await prisma.candidate_skills.createMany({
+=======
+  const skills = await prisma.candidateSkills.createMany({
+>>>>>>> e5c6cfcc2b66a49376d0e82eb4f5309c3c54a1d5
     data: manipulatedSkills,
   });
   /* Guard check */
@@ -550,10 +587,14 @@ export async function storeLanguage(formData: any) {
   let manipulatedLanguage: any[] = [];
   languageList.forEach((value) => {
     const language = {
-      candidate_id: regSession.candidate.id,
+      candidateId: regSession.candidate.id,
       name: value.name,
       level: value.level,
+<<<<<<< HEAD
       created_at: new Date(Date.now()),
+=======
+      createdAt: new Date(Date.now()),
+>>>>>>> e5c6cfcc2b66a49376d0e82eb4f5309c3c54a1d5
     };
     /* Store value to defined empty array */
     manipulatedLanguage.push(language);
@@ -699,11 +740,15 @@ export async function storeEmergencyContact(formData: any) {
   console.info('reg-session-data', regSession);
   /* Begin to store Emergency contact-data */
   console.info('Begin to store emergency contact...');
-  const emergencyContact = await prisma.emergency_contacts.create({
+  const emergencyContact = await prisma.emergencyContacts.create({
     data: {
-      phone_number: formData.emergencyContactPhoneNumber,
+      phoneNumber: formData.emergencyContactPhoneNumber,
       name: formData.emergencyContactName,
+<<<<<<< HEAD
       relation_status: formData.emergencyContactRelation,
+=======
+      relationStatus: formData.emergencyContactRelation,
+>>>>>>> e5c6cfcc2b66a49376d0e82eb4f5309c3c54a1d5
     },
   });
   console.info('Result after store emergency contact...', emergencyContact);
