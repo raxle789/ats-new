@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Spin } from 'antd';
 import ActionJobVacancies from '../candidate/action-job-vacancies';
 import { notification, Button, Checkbox, Popover } from 'antd';
@@ -23,6 +23,7 @@ const EmployJobItem: React.FC<JobItemProps> = ({ jobVacancyData }) => {
     {},
   );
   const [checkboxAllValue, setCheckboxAllValue] = useState(false);
+  const [popOverState, setPopOverState] = useState(false);
   const [checkbox, setCheckbox] = useState<{ [key: string]: boolean }>(
     initialCheckboxState,
   );
@@ -47,6 +48,18 @@ const EmployJobItem: React.FC<JobItemProps> = ({ jobVacancyData }) => {
       setCheckboxAllValue(false);
     }
   };
+
+  useEffect(() => {
+    const countTrueValues = Object.values(checkbox).reduce(
+      (acc, curr) => acc + (curr ? 1 : 0),
+      0,
+    );
+    if (countTrueValues > 1) {
+      setPopOverState(true);
+    } else {
+      setPopOverState(false);
+    }
+  }, [checkbox]);
   return (
     <>
       {contextHolder}
@@ -63,7 +76,7 @@ const EmployJobItem: React.FC<JobItemProps> = ({ jobVacancyData }) => {
                         <Popover
                           content={<ActionCheckboxJob />}
                           trigger="click"
-                          open={checkboxAllValue}
+                          open={popOverState}
                         >
                           <Checkbox
                             onChange={onChangeCheckboxAll}
@@ -86,6 +99,13 @@ const EmployJobItem: React.FC<JobItemProps> = ({ jobVacancyData }) => {
                     {jobVacancyData?.map((data: any, index: number) => (
                       <React.Fragment key={index}>
                         <tr>
+                          <td>
+                            <Checkbox
+                              className="me-2"
+                              checked={checkbox[index]}
+                              onChange={() => onChangeCheckbox(index)}
+                            ></Checkbox>
+                          </td>
                           <td>
                             <b>{`${data?.jobTitleName ?? '-'}`}</b>
                             <br />

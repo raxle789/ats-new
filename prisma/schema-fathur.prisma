@@ -58,7 +58,7 @@ model Candidates {
   identityInfoId       Int?
   date_of_birth        DateTime?             @db.Date
   candidate_questions  CandidateQuestions[]
-  candidateStates      CandidateStates[]
+  CandidateStates      CandidateStates[]
   emergency_contacts   EmergencyContacts?    @relation(fields: [emengencyContactId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_02cb34982ecd17fda09c240254e")
   users                Users?                @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_10d0384a816526f8c7f6b1e67b3")
   banks                banks?                @relation(fields: [bankId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_4942769253874bef2bc42d1858d")
@@ -361,6 +361,7 @@ model RequirementFields {
   createdAt                 DateTime?                   @default(now()) @map("created_at") @db.DateTime
   updatedAt                 DateTime?                   @updatedAt @map("updated_at") @db.DateTime
   requirementFieldParserId  Int?                        @map("requirement_field_parser_id")
+  job_vacancy_requirements  job_vacancy_requirements[]
   positionLevelRequirements PositionLevelRequirements[]
   requirementFieldParsers   RequirementFieldParsers?    @relation(fields: [requirementFieldParserId], references: [id])
   jobVacancyRequirements    JobVacancyRequirements[]
@@ -399,6 +400,7 @@ model PositionLevels {
   createdAt                 DateTime?                   @default(now()) @map("created_at") @db.DateTime
   updatedAt                 DateTime?                   @updatedAt @map("updated_at") @db.DateTime
   // prointId                  Int?                        @map("proint_id")
+  job_vacancies             JobVacancies[]
   positionLevelRequirements PositionLevelRequirements[]
   jobVacancies              JobVacancies[]
 
@@ -409,8 +411,8 @@ model JobVacancyRequirements {
   jobVacancyId       Int               @map("job_vacancy_id") @db.Int
   requirementFieldId Int               @map("requirement_field_id") @db.Int
   value              String?           @db.Text
-  jobVacancies       JobVacancies      @relation(fields: [jobVacancyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  requirementFields  RequirementFields @relation(fields: [requirementFieldId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  jobVacancies       JobVacancies      @relation(fields: [jobVacancyId], references: [id])
+  requirementFields  RequirementFields @relation(fields: [requirementFieldId], references: [id])
 
   @@id([jobVacancyId, requirementFieldId])
   @@map("job_vacancy_requirements")
@@ -438,7 +440,6 @@ model JobFunctions {
 model EmploymentStatus {
   id           Int            @id @default(autoincrement()) @db.Int
   name         String         @unique @db.NVarChar(510)
-  alias        String?        @db.NVarChar(510)
   prointId     Int?           @map("proint_id") @db.Int
   createdAt    DateTime?      @default(now()) @map("created_at") @db.DateTime
   updatedAt    DateTime?      @updatedAt @map("updated_at") @db.DateTime
@@ -510,8 +511,7 @@ model CandidateQuestions {
 
 model States {
   id              Int               @id @default(autoincrement())
-  name            String            @unique @db.NVarChar(255)
-  alias           String?           @db.NVarChar(510)
+  name            String            @db.NVarChar(255)
   createdAt       DateTime?         @default(now()) @map("created_at") @db.DateTime
   updatedAt       DateTime?         @updatedAt @map("updated_at") @db.DateTime
   candidateStates CandidateStates[]
@@ -520,15 +520,15 @@ model States {
 }
 
 model CandidateStates {
-  id           Int          @id @default(autoincrement()) @db.Int
-  candidateId  Int          @map("candidate_id") @db.Int
-  jobVacancyId Int          @map("job_vacancy_id") @db.Int
-  stateName    String       @map("state_name") @db.NVarChar(255)
+  candidateId  Int          @map("candidate_id")
+  jobVacancyId Int          @map("job_vacancy_id")
+  stateId      Int          @map("state_id")
   assignedAt   DateTime     @default(now()) @map("assigned_at") @db.DateTime
-  candidates   Candidates   @relation(fields: [candidateId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  jobVacancies JobVacancies @relation(fields: [jobVacancyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  states       States       @relation(fields: [stateName], references: [name], onDelete: Cascade, onUpdate: Cascade)
+  candidates   Candidates   @relation(fields: [candidateId], references: [id])
+  jobVacancies JobVacancies @relation(fields: [jobVacancyId], references: [id])
+  states       States       @relation(fields: [stateId], references: [id])
 
+  @@id([candidateId, jobVacancyId, stateId])
   @@map("candidate_states")
 }
 
@@ -585,8 +585,8 @@ model Verticals {
 model JobVacancyLineIndustries {
   jobVacancyId   Int            @map("job_vacancy_id")
   lineIndustryId Int            @map("line_industry_id")
-  jobVacancies   JobVacancies   @relation(fields: [jobVacancyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  lineIndustries LineIndustries @relation(fields: [lineIndustryId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  jobVacancies   JobVacancies   @relation(fields: [jobVacancyId], references: [id])
+  lineIndustries LineIndustries @relation(fields: [lineIndustryId], references: [id])
 
   @@id([jobVacancyId, lineIndustryId])
   @@map("job_vacancy_line_industries")
@@ -595,7 +595,7 @@ model JobVacancyLineIndustries {
 model JobVacancyTaCollaborators {
   jobVacancyId Int          @map("job_vacancy_id")
   taId         Int          @map("ta_id")
-  jobVacancies JobVacancies @relation(fields: [jobVacancyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  jobVacancies JobVacancies @relation(fields: [jobVacancyId], references: [id])
   ta           Users        @relation(fields: [taId], references: [id], onUpdate: NoAction)
 
   @@id([jobVacancyId, taId])
@@ -605,7 +605,7 @@ model JobVacancyTaCollaborators {
 model JobVacancyUserCollaborators {
   jobVacancyId Int          @map("job_vacancy_id")
   userId       Int          @map("user_id")
-  jobVacancies JobVacancies @relation(fields: [jobVacancyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  jobVacancies JobVacancies @relation(fields: [jobVacancyId], references: [id])
   users        Users        @relation(fields: [userId], references: [id], onUpdate: NoAction)
 
   @@id([jobVacancyId, userId])

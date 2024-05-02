@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import EmployJobItem from './job-item';
 import EmployShortSelect from './short-select';
@@ -13,7 +13,8 @@ import SearchBar from '@/ui/search-bar';
 import { useAppDispatch } from '@/redux/hook';
 import { setApplicantStep } from '@/redux/features/applicantStepSlice';
 import { Popover, Checkbox } from 'antd';
-import ActionCheckboxJob from '../../common/popup/action-checkbox-jobs';
+import type { CheckboxProps } from 'antd';
+import ActionCheckboxPipeline from '../../common/popup/action-checkbox-pipeline';
 
 const CandidateInterview = () => {
   const dispatch = useAppDispatch();
@@ -33,7 +34,7 @@ const CandidateInterview = () => {
     }
     router.replace(`${pathname}?${params.toString()}`);
   }, 300);
-  const candidate_items = candidate_data.slice(0, 3);
+  const candidate_items = candidate_data.slice(0, 10);
 
   const initialCheckboxState = candidate_data?.reduce(
     (acc: { [key: string]: boolean }, _: any, index: string) => {
@@ -48,6 +49,7 @@ const CandidateInterview = () => {
   const [checkbox, setCheckbox] = useState<{ [key: string]: boolean }>(
     initialCheckboxState,
   );
+  const [popOverState, setPopOverState] = useState(false);
   const onChangeCheckboxAll: CheckboxProps['onChange'] = (e) => {
     const checked = e.target.checked;
     const updatedCheckbox: { [key: string]: boolean } = {};
@@ -59,22 +61,23 @@ const CandidateInterview = () => {
     setCheckbox(updatedCheckbox);
     setCheckboxAllValue(checked);
   };
-  const onChangeCheckbox = (index: number) => {
-    setCheckbox((prevState: any) => ({
-      ...prevState,
-      [index]: !prevState[index],
-    }));
 
-    if (checkboxAllValue || !checkbox[index]) {
-      setCheckboxAllValue(false);
+  useEffect(() => {
+    const countTrueValues = Object.values(checkbox).reduce(
+      (acc, curr) => acc + (curr ? 1 : 0),
+      0,
+    );
+    if (countTrueValues > 1) {
+      setPopOverState(true);
+    } else {
+      setPopOverState(false);
     }
-  };
+  }, [checkbox]);
   return (
     <>
       <div className="d-sm-flex align-items-start justify-content-between mb-10 lg-mb-30">
         <div>
-          <h3 className="main-title m0">(internship) Announcer Radio</h3>
-          <p>Daniel Sulistio</p>
+          <h3 className="main-title m0">Candidates</h3>
         </div>
         <div className="d-flex ms-auto xs-mt-30">
           <div className="short-filter ms-auto">
@@ -92,89 +95,19 @@ const CandidateInterview = () => {
           </div>
         </div>
       </div>
-      <div className="nav-bar-responsive d-flex align-items-center justify-content-center mb-40 pb-3 overflow-auto">
-        <Link href="#" className="d-flex flex-column align-items-center me-4">
-          <span>0</span>
-          <span>Applicants</span>
-        </Link>
-        <Link href="#" className="d-flex flex-column align-items-center me-4">
-          <span>0</span>
-          <span>Shortlisted</span>
-        </Link>
-        <Link href="#" className="d-flex flex-column align-items-center me-4">
-          <span>0</span>
-          <span className="text-center">Talent Pool</span>
-        </Link>
-        <Link
-          href="/dashboard/ta/preview-page/assessment"
-          className="d-flex flex-column align-items-center me-4"
-          onClick={() =>
-            dispatch(setApplicantStep({ currentStep: 'assessment' }))
-          }
-        >
-          <span>3</span>
-          <span>Assessment</span>
-        </Link>
-        <Link
-          href="/dashboard/ta/preview-page/interview"
-          onClick={() =>
-            dispatch(setApplicantStep({ currentStep: 'interview' }))
-          }
-          className="d-flex flex-column align-items-center me-4"
-        >
-          <span>0</span>
-          <span>Interview</span>
-        </Link>
-        <Link href="#" className="d-flex flex-column align-items-center me-4">
-          <span>0</span>
-          <span className="text-center">Ref Check</span>
-        </Link>
-        <Link href="#" className="d-flex flex-column align-items-center me-4">
-          <span>0</span>
-          <span>Offering</span>
-        </Link>
-        <Link href="#" className="d-flex flex-column align-items-center me-4">
-          <span>0</span>
-          <span>MCU</span>
-        </Link>
-        <Link href="#" className="d-flex flex-column align-items-center me-4">
-          <span>0</span>
-          <span>Agreement</span>
-        </Link>
-        <Link href="#" className="d-flex flex-column align-items-center">
-          <span>0</span>
-          <span>Boarding</span>
-        </Link>
-      </div>
       <div className="d-flex justify-content-between align-items-center mb-40">
         <div>
           <h4 className="sub-main-title">Interview</h4>
         </div>
-        {/* <form
-          onSubmit={(e) => e.preventDefault()}
-          className="search-form form-fpk"
-        >
-          <input
-            type="text"
-            placeholder="Search here.."
-            onChange={(e) => handleJobFpkSearch(e.target.value)}
-            defaultValue={searchParams.get('query')?.toString()}
-          />
-          <button type="submit">
-            <Image src={search} alt="search" className="lazy-img m-auto" />
-          </button>
-        </form> */}
         <SearchBar />
       </div>
 
-      <div
-        className="position-relative p-5"
-        style={{ width: '50px', height: '50px', background: 'white' }}
-      >
+      <div className="card-checkbox">
         <Popover
-          content={<ActionCheckboxJob />}
+          content={<ActionCheckboxPipeline />}
           trigger="click"
-          open={checkboxAllValue}
+          open={popOverState}
+          placement="right"
         >
           <Checkbox
             onChange={onChangeCheckboxAll}
@@ -184,7 +117,14 @@ const CandidateInterview = () => {
       </div>
       <div className="wrapper">
         {candidate_items.map((item) => (
-          <CandidateInterviewItem key={item.id} item={item} />
+          <CandidateInterviewItem
+            key={item.id}
+            item={item}
+            checkboxState={checkbox}
+            checkboxAllValue={checkboxAllValue}
+            setCheckbox={setCheckbox}
+            setCheckboxAllValue={setCheckboxAllValue}
+          />
         ))}
       </div>
     </>

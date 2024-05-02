@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
+import React, { SetStateAction, useState } from 'react';
 import ActionApplicant from '../candidate/action-applicant';
 import { ICandidate } from '@/data/candidate-data';
 import Image from 'next/image';
-import { Tag, Select, Popover, Checkbox } from 'antd';
-import type { CheckboxProps } from 'antd';
+import { Tag, Select, Checkbox } from 'antd';
 import CandidateDetailsModal from '../../common/popup/candidate-details-modal';
-import ActionCheckboxJob from '../../common/popup/action-checkbox-jobs';
-import candidate_data from '@/data/candidate-data';
 
 type TSub = {
   name: string;
@@ -42,7 +39,21 @@ const interview: TInterviewer = {
   },
 };
 
-const CandidateInterviewItem = ({ item }: { item: ICandidate }) => {
+interface IProps {
+  item: ICandidate;
+  checkboxState: { [key: string]: boolean };
+  checkboxAllValue: boolean;
+  setCheckbox: React.Dispatch<SetStateAction<{ [key: string]: boolean }>>;
+  setCheckboxAllValue: React.Dispatch<boolean>;
+}
+
+const CandidateInterviewItem: React.FC<IProps> = ({
+  item,
+  checkboxState,
+  checkboxAllValue,
+  setCheckbox,
+  setCheckboxAllValue,
+}) => {
   const [isOpenModal, setModalOpen] = useState(false);
   const showModal = () => {
     setModalOpen(true);
@@ -53,16 +64,28 @@ const CandidateInterviewItem = ({ item }: { item: ICandidate }) => {
     setValue(value);
   };
 
+  const onChangeCheckbox = (index: number) => {
+    setCheckbox((prevState: any) => ({
+      ...prevState,
+      [index]: !prevState[index],
+    }));
+
+    if (checkboxAllValue || !checkboxState[index]) {
+      setCheckboxAllValue(false);
+    }
+  };
   return (
     <>
       <div className="candidate-profile-card list-layout border-0 mb-25">
         <div className="d-flex">
           <div className="cadidate-avatar online position-relative d-block me-auto ms-auto mt-auto mb-auto">
-            {/* <Checkbox
-              className="me-2"
-              checked={checkbox[item.id]}
-              onChange={() => onChangeCheckbox(item.id)}
-            ></Checkbox> */}
+            <div style={{ position: 'absolute', top: '-45px', left: '12px' }}>
+              <Checkbox
+                className="me-2"
+                checked={checkboxState[item.id]}
+                onChange={() => onChangeCheckbox(item.id)}
+              ></Checkbox>
+            </div>
             <a href="#" className="rounded-circle">
               <Image
                 src={item.img}

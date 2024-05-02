@@ -1404,7 +1404,7 @@ const Stage3Form = () => {
         dateOfBirth: dayjs(regSessionDecoded.candidate?.date_of_birth) ?? '',
       },
       formalCheckbox: true,
-      certificationCheckbox: true,
+      certificationCheckbox: false,
     });
     setIndex(index + 1);
     setExpIdx(expIdx + 1);
