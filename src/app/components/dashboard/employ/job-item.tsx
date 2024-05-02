@@ -86,7 +86,7 @@ const EmployJobItem: React.FC<JobItemProps> = ({ jobVacancyData, perPage }) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {jobVacancyData?.map((data: any, index: number) => (
+                    {jobVacancyData?.data?.map((data: any, index: number) => (
                       <React.Fragment key={index}>
                         <tr>
                           <td>

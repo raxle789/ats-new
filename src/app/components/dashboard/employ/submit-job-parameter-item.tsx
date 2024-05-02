@@ -294,7 +294,9 @@ const EmployJobParameterItem: React.FC<Props> = ({
     <>
       {contextHolder}
       <Spin spinning={loading}>
-        <h2 className="main-title">Edit Position Level Requirement</h2>
+        <h2 className="main-title">
+          Edit {positionLevelRequirementData?.name} Position Level Requirement
+        </h2>
 
         <Form
           form={form}
@@ -511,11 +513,6 @@ const EmployJobParameterItem: React.FC<Props> = ({
                   optionFilterProp="children"
                   filterOption={(input, option) =>
                     (option?.label ?? '').includes(input)
-                  }
-                  filterSort={(optionA, optionB) =>
-                    (optionA?.label ?? '')
-                      .toLowerCase()
-                      .localeCompare((optionB?.label ?? '').toLowerCase())
                   }
                   options={educationLevelData}
                 />

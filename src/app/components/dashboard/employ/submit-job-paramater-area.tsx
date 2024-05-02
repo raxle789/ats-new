@@ -60,6 +60,8 @@ const EmployJobParameter: React.FC<Props> = async ({ params }) => {
         .then((res) => {
           const data = res ?? {};
 
+          // console.info(data);
+
           return data;
         })
         .catch((e) => {

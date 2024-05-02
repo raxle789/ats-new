@@ -57,7 +57,7 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa, perPage }) => {
 
   useEffect(() => {
     if (fpkData?.data?.length) {
-      fpkData?.data?.map(async (data: any) => {
+      fpkData?.data?.map((data: any) => {
         formRef.current[data?.requestNo]?.setFieldsValue({
           efpkRequestNo: data?.requestNo,
           taId: data?.taId,
@@ -66,12 +66,12 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa, perPage }) => {
     }
   }, [fpkData, offset]);
 
-  function showLoader(show: boolean) {
-    setLoading(show);
-    // setTimeout(() => {
-    //   setLoading(false);
-    // }, 3000);
-  }
+  // function showLoader(show: boolean) {
+  //   setLoading(show);
+  //   // setTimeout(() => {
+  //   //   setLoading(false);
+  //   // }, 3000);
+  // }
 
   function handleChange(value, requestNo) {
     if (value) {
@@ -93,7 +93,7 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa, perPage }) => {
       [values.efpkRequestNo]: false,
     }));
 
-    showLoader(true);
+    setLoading(true);
 
     // setLoading(true);
 
@@ -118,14 +118,14 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa, perPage }) => {
                   // form.resetFields();
                   router.refresh();
 
-                  showLoader(false);
+                  setLoading(false);
                 })
                 .catch((e: string) => console.log('Error assigning TA: ', e));
             }, 2000);
           }).catch((e) => console.log('Error assigning TA: ', e));
         },
         onCancel() {
-          showLoader(false);
+          setLoading(false);
 
           router.refresh();
         },

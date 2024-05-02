@@ -1,11 +1,27 @@
+'use server';
+
 import React from 'react';
+import { getUserSession } from '@/libs/Sessions';
 import JobDetailsItem from './job-details-item';
-import { getJobVacancyData } from '@/lib/action/job-vacancies/action';
+import {
+  getJobVacancyData,
+  candidateApplyJobVacancy,
+} from '@/lib/action/job-vacancies/action';
 import CryptoJS from 'crypto-js';
 import { IJobType } from '@/types/job-data-type';
 import Image from 'next/image';
 
 const JobDetailsArea = async ({ params }) => {
+  // const candidateId = await (async () => {
+  //   const candidateSession = await getUserSession('auth');
+
+  //   if (candidateSession) {
+  //     return candidateSession?.candidate?.id;
+  //   }
+
+  //   return false;
+  // })();
+
   const jobVacancyId = (() => {
     if (params?.id) {
       try {
@@ -24,9 +40,11 @@ const JobDetailsArea = async ({ params }) => {
       } catch (e) {
         console.log(e);
 
-        return 0;
+        return false;
       }
     }
+
+    return false;
   })();
 
   const jobVacancyData = await (async () => {
@@ -49,7 +67,12 @@ const JobDetailsArea = async ({ params }) => {
     return {};
   })();
 
-  return <JobDetailsItem jobVacancyData={jobVacancyData} />;
+  return (
+    <JobDetailsItem
+      jobVacancyData={jobVacancyData}
+      candidateApplyJobVacancy={candidateApplyJobVacancy}
+    />
+  );
 };
 
 export default JobDetailsArea;

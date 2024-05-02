@@ -27,8 +27,12 @@ import {
   getLastEfpkApprovalByRequestNo,
   getEfpkInitiatorNameByRequestNo,
   editJobVacancy,
+  applyJobVacancy,
+  candidateAlreadyApplyJobVacancy,
 } from '../../../app/services/job-vacancies/service';
-import Cheerio from 'cheerio';
+import { getUserSession } from '@/libs/Sessions';
+import _ from 'lodash';
+import moment from 'moment';
 import { permanentRedirect } from 'next/navigation';
 import CryptoJS from 'crypto-js';
 import { revalidatePath } from 'next/cache';
@@ -39,11 +43,8 @@ import {
   validateVerticalCode,
   validateJobVacancySchema,
   validateJobVacancyId,
+  validateCandidateApply,
 } from './validation';
-
-const moment = require('moment');
-
-const _ = require('lodash');
 
 export async function getAllEfpkDataByTa(taId) {
   const validate = validateTaId.safeParse({ taId });
@@ -199,39 +200,42 @@ export async function getAllDepartmentDataByVertical(verticalCode) {
 }
 
 export async function insertJobVacancy(taId, values) {
-  const validate = validateJobVacancySchema.safeParse(values);
+  const decryptedTaId = (() => {
+    if (taId) {
+      try {
+        const query = decodeURIComponent(taId);
+
+        const decryptedValue = CryptoJS.Rabbit.decrypt(
+          String(query),
+          process.env.NEXT_PUBLIC_SECRET_KEY,
+        );
+
+        const convertString = decryptedValue.toString(CryptoJS.enc.Utf8);
+
+        const originalValue = Number(convertString);
+
+        return originalValue;
+      } catch (e) {
+        console.log(e);
+
+        return false;
+      }
+    }
+
+    return false;
+  })();
+
+  const validate = validateJobVacancySchema.safeParse({
+    ...values,
+    taId: decryptedTaId,
+  });
 
   if (validate.success) {
-    const decryptedTaId = (() => {
-      if (taId) {
-        try {
-          const query = decodeURIComponent(taId);
+    await createJobVacancy(validate?.data?.taId, validate?.data);
 
-          const decryptedValue = CryptoJS.Rabbit.decrypt(
-            String(query),
-            process.env.NEXT_PUBLIC_SECRET_KEY,
-          );
+    revalidatePath('/jobs');
 
-          const convertString = decryptedValue.toString(CryptoJS.enc.Utf8);
-
-          const originalValue = Number(convertString);
-
-          return originalValue;
-        } catch (e) {
-          console.log(e);
-
-          return 0;
-        }
-      }
-
-      return 0;
-    })();
-
-    await createJobVacancy(decryptedTaId, validate?.data);
-
-    revalidatePath('/dashboard/ta/submit-job');
-
-    revalidatePath('/main/jobs');
+    revalidatePath('/dashboard/ta/jobs');
 
     permanentRedirect('/dashboard/ta/jobs');
   } else {
@@ -242,13 +246,17 @@ export async function insertJobVacancy(taId, values) {
 export async function getJobVacancyData(jobVacancyId, isCandidateView = false) {
   const data = await getJobVacancy(jobVacancyId);
 
+  const session = await getUserSession('auth');
+
   if (isCandidateView) {
     if (data && !_.isEmpty(data)) {
-      let newData = {
-        jobId: CryptoJS.Rabbit.encrypt(
-          String(data?.id),
-          process.env.NEXT_PUBLIC_SECRET_KEY,
-        ).toString(),
+      const newData = {
+        jobId: encodeURIComponent(
+          CryptoJS.Rabbit.encrypt(
+            String(data?.id),
+            process.env.NEXT_PUBLIC_SECRET_KEY,
+          ).toString(),
+        ),
         jobTitleAliases: data?.jobTitleAliases,
         jobDescription: data?.jobDescription,
         jobRequirement: data?.jobRequirement,
@@ -282,6 +290,31 @@ export async function getJobVacancyData(jobVacancyId, isCandidateView = false) {
         // ),
       };
 
+      if (session) {
+        const isCandidateAlreadyApply = await (async () => {
+          const candidateAlreadyApply = await candidateAlreadyApplyJobVacancy(
+            session?.candidate?.id,
+            data?.id,
+          );
+
+          if (candidateAlreadyApply) {
+            return true;
+          }
+
+          return false;
+        })();
+
+        return {
+          ...newData,
+          candidateAlreadyApply: isCandidateAlreadyApply,
+        };
+      }
+
+      return {
+        ...newData,
+        candidateAlreadyApply: false,
+      };
+
       // for await (const d of data?.jobVacancyRequirements) {
       //   let newValue = null;
 
@@ -310,18 +343,18 @@ export async function getJobVacancyData(jobVacancyId, isCandidateView = false) {
 
       //   newData = { ...newData, [d?.requirementFields?.name]: newValue };
       // }
-
-      return newData;
     }
 
     return {};
   } else {
     if (data && !_.isEmpty(data)) {
       let newData = {
-        jobId: CryptoJS.Rabbit.encrypt(
-          String(data?.id),
-          process.env.NEXT_PUBLIC_SECRET_KEY,
-        ).toString(),
+        jobId: encodeURIComponent(
+          CryptoJS.Rabbit.encrypt(
+            String(data?.id),
+            process.env.NEXT_PUBLIC_SECRET_KEY,
+          ).toString(),
+        ),
         jobEfpk:
           data?.efpkJobVacancies?.length > 0
             ? data?.efpkJobVacancies[0]?.efpkRequestNo
@@ -431,13 +464,17 @@ export async function getJobVacancyData(jobVacancyId, isCandidateView = false) {
 export async function getAllJobVacancyData(offset, perPage) {
   const data = await getAllJobVacancy(offset, perPage);
 
+  const session = await getUserSession('auth');
+
   const newData = await Promise.all(
     data?.data?.map(async (d) => {
-      return {
-        jobId: CryptoJS.Rabbit.encrypt(
-          String(d?.id),
-          process.env.NEXT_PUBLIC_SECRET_KEY,
-        ).toString(),
+      const data = {
+        jobId: encodeURIComponent(
+          CryptoJS.Rabbit.encrypt(
+            String(d?.id),
+            process.env.NEXT_PUBLIC_SECRET_KEY,
+          ).toString(),
+        ),
         jobTitleName: await getJobTitleByCode(d?.jobTitleCode),
         jobTitleAlias: d?.jobTitleAliases,
         positionLevelName: d?.positionLevels?.name,
@@ -482,6 +519,31 @@ export async function getAllJobVacancyData(offset, perPage) {
         recruiter: d?.ta?.name,
         efpkStatus: d?.efpkJobVacancies?.length > 0 ? 'Done' : 'Not Yet',
       };
+
+      if (session) {
+        const isCandidateAlreadyApply = await (async () => {
+          const candidateAlreadyApply = await candidateAlreadyApplyJobVacancy(
+            session?.candidate?.id,
+            d?.id,
+          );
+
+          if (candidateAlreadyApply) {
+            return true;
+          }
+
+          return false;
+        })();
+
+        return {
+          ...data,
+          candidateAlreadyApply: isCandidateAlreadyApply,
+        };
+      }
+
+      return {
+        ...data,
+        candidateAlreadyApply: false,
+      };
     }),
   );
 
@@ -511,7 +573,7 @@ export async function getAllJobVacancyData(offset, perPage) {
 }
 
 export async function updateJobVacancy(taId, jobVacancyId, values) {
-  const id = (() => {
+  const decryptedJobVacancyId = (() => {
     if (jobVacancyId) {
       try {
         const query = decodeURIComponent(jobVacancyId);
@@ -529,11 +591,11 @@ export async function updateJobVacancy(taId, jobVacancyId, values) {
       } catch (e) {
         console.log(e);
 
-        return 0;
+        return false;
       }
     }
 
-    return 0;
+    return false;
   })();
 
   const decryptedTaId = (() => {
@@ -554,34 +616,84 @@ export async function updateJobVacancy(taId, jobVacancyId, values) {
       } catch (e) {
         console.log(e);
 
-        return 0;
+        return false;
       }
     }
 
-    return 0;
+    return false;
   })();
 
-  const validateId = validateJobVacancyId.safeParse({ jobVacancyId: id });
+  const validateId = validateJobVacancyId.safeParse({
+    jobVacancyId: decryptedJobVacancyId,
+  });
 
   if (validateId.success) {
-    const validate = validateJobVacancySchema.safeParse(values);
+    const validateSchema = validateJobVacancySchema.safeParse({
+      ...values,
+      taId: decryptedTaId,
+    });
 
-    if (validate.success) {
+    if (validateSchema.success) {
       await editJobVacancy(
         decryptedTaId,
         validateId?.data?.jobVacancyId,
-        validate?.data,
+        validateSchema?.data,
       );
 
-      revalidatePath('/dashboard/ta/submit-job');
+      revalidatePath('/jobs');
 
-      revalidatePath('/main/jobs');
+      revalidatePath('/dashboard/ta/jobs');
 
       permanentRedirect('/dashboard/ta/jobs');
     } else {
-      console.log(validate.error);
+      console.log(validateSchema.error);
     }
   } else {
     console.log(validateId.error);
+  }
+}
+
+export async function candidateApplyJobVacancy(jobVacancyId) {
+  const session = await getUserSession('auth');
+
+  // console.info(session.candidate.id);
+
+  const decryptedJobVacancyId = (() => {
+    if (jobVacancyId) {
+      try {
+        const query = decodeURIComponent(jobVacancyId);
+
+        const decryptedValue = CryptoJS.Rabbit.decrypt(
+          String(query),
+          process.env.NEXT_PUBLIC_SECRET_KEY,
+        );
+
+        const convertString = decryptedValue.toString(CryptoJS.enc.Utf8);
+
+        const originalValue = Number(convertString);
+
+        return originalValue;
+      } catch (e) {
+        console.log(e);
+
+        return false;
+      }
+    }
+
+    return false;
+  })();
+
+  const validate = validateCandidateApply.safeParse({
+    candidateId: session?.candidate?.id,
+    jobVacancyId: decryptedJobVacancyId,
+  });
+
+  if (validate.success) {
+    await applyJobVacancy(
+      validate?.data?.candidateId,
+      validate?.data?.jobVacancyId,
+    );
+  } else {
+    console.log(validate.error);
   }
 }

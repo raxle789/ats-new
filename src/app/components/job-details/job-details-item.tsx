@@ -1,8 +1,85 @@
-import Image from 'next/image';
+'use client';
 
-const JobDetailsItem = ({ jobVacancyData }) => {
+import Image from 'next/image';
+import { ExclamationCircleFilled } from '@ant-design/icons';
+import { useState } from 'react';
+import {
+  Cascader,
+  Spin,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Mentions,
+  Select,
+  TimePicker,
+  TreeSelect,
+  Checkbox,
+  Col,
+  Row,
+  Slider,
+  Radio,
+  Button,
+  notification,
+  Modal,
+} from 'antd';
+import { useRouter } from 'next/navigation';
+
+const { confirm } = Modal;
+
+const JobDetailsItem = ({ jobVacancyData, candidateApplyJobVacancy }) => {
+  const router = useRouter();
+
+  const [api, contextHolder] = notification.useNotification();
+
+  const [loading, setLoading] = useState(false);
+
+  function handleCandidateApplyJobVacancy(jobId) {
+    setLoading(true);
+
+    confirm({
+      title: 'Do you want to create new job parameter?',
+      icon: <ExclamationCircleFilled />,
+      centered: true,
+      content:
+        'When clicked the OK button, this dialog will be closed after 1 second',
+      onOk() {
+        return new Promise<void>((resolve, reject) => {
+          setTimeout(() => {
+            api.success({
+              message: 'Notification',
+              description: <p>Successfully Create New Job Parameter</p>,
+              placement: 'topRight',
+            });
+            // console.info(values);
+            candidateApplyJobVacancy(jobId)
+              .then(() => {
+                setLoading(false);
+
+                router.refresh();
+              })
+              .catch((e: string) => {
+                console.log('Error apply job vacancy: ', e);
+
+                setLoading(false);
+
+                router.refresh();
+              });
+            // router.replace('/dashboard/ta/parameter');
+            resolve();
+          }, 2000);
+        }).catch(() => console.log('Oops errors!'));
+      },
+      onCancel() {
+        setLoading(false);
+
+        router.refresh();
+      },
+    });
+  }
+
   return (
-    <>
+    <Spin spinning={loading}>
       <section className="job-details pt-100 lg-pt-80 pb-130 lg-pb-80">
         <div className="container">
           <div className="row">
@@ -106,16 +183,44 @@ const JobDetailsItem = ({ jobVacancyData }) => {
                     <div>{job.experience}</div>
                   </li> */}
                   </ul>
-                  <a href="#" className="btn-one w-100 mt-25">
+                  <Form
+                    name={`candidateApplyJobVacancyForm${jobVacancyData?.jobId}`}
+                    layout="vertical"
+                    variant="filled"
+                  >
+                    <Form.Item name="candidateApplyBtn">
+                      <Button
+                        htmlType="button"
+                        disabled={jobVacancyData?.candidateAlreadyApply}
+                        className="btn-one w-100 mt-25"
+                        onClick={() =>
+                          handleCandidateApplyJobVacancy(jobVacancyData?.jobId)
+                        }
+                      >
+                        {jobVacancyData?.candidateAlreadyApply
+                          ? 'Applied'
+                          : 'Apply'}
+                      </Button>
+                    </Form.Item>
+                  </Form>
+                  {/* <button
+                    type="button"
+                    className="btn-one w-100 mt-25"
+                    onClick={() => {
+                      candidateApplyJobVacancy(jobVacancyData?.jobId);
+
+                      router.refresh();
+                    }}
+                  >
                     Apply Now
-                  </a>
+                  </button> */}
                 </div>
               </div>
             </div>
           </div>
         </div>
       </section>
-    </>
+    </Spin>
   );
 };
 
