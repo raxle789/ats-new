@@ -466,7 +466,7 @@ export async function createJobVacancy(
   },
 ) {
   try {
-    prisma.$transaction(async (tx) => {
+    const data = prisma.$transaction(async (tx) => {
       const { id } = await tx.jobVacancies.create({
         data: {
           jobTitleAliases: jobTitleAliases,
@@ -507,20 +507,6 @@ export async function createJobVacancy(
         }),
       });
 
-      // const ageRequirementFieldData = await tx.requirementFields.findFirst({
-      //   where: {
-      //     name: 'age',
-      //   },
-      // });
-
-      // await tx.jobVacancyRequirements.create({
-      //   data: {
-      //     jobVacancyId: id,
-      //     requirementFieldId: ageRequirementFieldData.id,
-      //     value: age === '1' ? null : age,
-      //   },
-      // });
-
       if (ageParameterCheckbox) {
         const ageRequirementFieldData = await tx.requirementFields.findFirst({
           where: {
@@ -550,20 +536,6 @@ export async function createJobVacancy(
           },
         });
       }
-
-      // const genderRequirementFieldData = await tx.requirementFields.findFirst({
-      //   where: {
-      //     name: 'gender',
-      //   },
-      // });
-
-      // await tx.jobVacancyRequirements.create({
-      //   data: {
-      //     jobVacancyId: id,
-      //     requirementFieldId: genderRequirementFieldData.id,
-      //     value: gender === '0' ? null : gender,
-      //   },
-      // });
 
       if (genderParameterCheckbox) {
         const genderRequirementFieldData = await tx.requirementFields.findFirst(
@@ -598,38 +570,6 @@ export async function createJobVacancy(
           },
         });
       }
-
-      // const newSkillParameter = await Promise.all(
-      //   special_skill?.map(async (skillId) => {
-      //     if (typeof skillId === 'string') {
-      //       const data = await tx.skills.create({
-      //         data: {
-      //           name: skillId,
-      //         },
-      //       });
-
-      //       return data.id;
-      //     } else {
-      //       return skillId;
-      //     }
-      //   }),
-      // );
-
-      // const skillRequirementFieldData = await tx.requirementFields.findFirst({
-      //   where: {
-      //     name: 'special_skill',
-      //   },
-      // });
-
-      // await tx.jobVacancyRequirements.create({
-      //   data: {
-      //     jobVacancyId: id,
-      //     requirementFieldId: skillRequirementFieldData.id,
-      //     value: newSkillParameter?.length
-      //       ? JSON.stringify(newSkillParameter)
-      //       : null,
-      //   },
-      // });
 
       if (special_skillParameterCheckbox) {
         const newSkillParameter = await Promise.all(
@@ -678,39 +618,6 @@ export async function createJobVacancy(
           },
         });
       }
-
-      // const newCertificateParameter = await Promise.all(
-      //   certification?.map(async (certificateId) => {
-      //     if (typeof certificateId === 'string') {
-      //       const data = await tx.certificates.create({
-      //         data: {
-      //           name: certificateId,
-      //         },
-      //       });
-
-      //       return data.id;
-      //     } else {
-      //       return certificateId;
-      //     }
-      //   }),
-      // );
-
-      // const certificateRequirementFieldData =
-      //   await tx.requirementFields.findFirst({
-      //     where: {
-      //       name: 'certification',
-      //     },
-      //   });
-
-      // await tx.jobVacancyRequirements.create({
-      //   data: {
-      //     jobVacancyId: id,
-      //     requirementFieldId: certificateRequirementFieldData.id,
-      //     value: newCertificateParameter?.length
-      //       ? JSON.stringify(newCertificateParameter)
-      //       : null,
-      //   },
-      // });
 
       if (certificationParameterCheckbox) {
         const newCertificateParameter = await Promise.all(
@@ -779,9 +686,15 @@ export async function createJobVacancy(
           };
         }),
       });
+
+      return id;
     });
+
+    return data;
   } catch (e) {
     console.log(e);
+
+    return 0;
   }
 }
 
@@ -1159,7 +1072,7 @@ export async function editJobVacancy(
   },
 ) {
   try {
-    prisma.$transaction(async (tx) => {
+    const data = prisma.$transaction(async (tx) => {
       const { id } = await tx.jobVacancies.update({
         where: {
           id: jobVacancyId,
@@ -1253,40 +1166,6 @@ export async function editJobVacancy(
         });
       }
 
-      // const ageRequirementFieldData = await tx.requirementFields.findFirst({
-      //   where: {
-      //     name: 'age',
-      //   },
-      // });
-
-      // await tx.jobVacancyRequirements.update({
-      //   where: {
-      //     jobVacancyId_requirementFieldId: {
-      //       jobVacancyId: id,
-      //       requirementFieldId: ageRequirementFieldData.id,
-      //     },
-      //   },
-      //   data: {
-      //     value: age === '1' ? null : age,
-      //   },
-      // });
-
-      // if (ageParameterCheckbox) {
-      //   const ageRequirementFieldData = await tx.requirementFields.findFirst({
-      //     where: {
-      //       name: 'age',
-      //     },
-      //   });
-
-      //   await tx.jobVacancyRequirements.create({
-      //     data: {
-      //       jobVacancyId: id,
-      //       requirementFieldId: ageRequirementFieldData.id,
-      //       value: age === '1' ? null : age,
-      //     },
-      //   });
-      // }
-
       if (genderParameterCheckbox) {
         const genderRequirementFieldData = await tx.requirementFields.findFirst(
           {
@@ -1328,42 +1207,6 @@ export async function editJobVacancy(
           },
         });
       }
-
-      // const genderRequirementFieldData = await tx.requirementFields.findFirst({
-      //   where: {
-      //     name: 'gender',
-      //   },
-      // });
-
-      // await tx.jobVacancyRequirements.update({
-      //   where: {
-      //     jobVacancyId_requirementFieldId: {
-      //       jobVacancyId: id,
-      //       requirementFieldId: genderRequirementFieldData.id,
-      //     },
-      //   },
-      //   data: {
-      //     value: gender === '0' ? null : gender,
-      //   },
-      // });
-
-      // if (genderParameterCheckbox) {
-      //   const genderRequirementFieldData = await tx.requirementFields.findFirst(
-      //     {
-      //       where: {
-      //         name: 'gender',
-      //       },
-      //     },
-      //   );
-
-      //   await tx.jobVacancyRequirements.create({
-      //     data: {
-      //       jobVacancyId: id,
-      //       requirementFieldId: genderRequirementFieldData.id,
-      //       value: gender === '0' ? null : gender,
-      //     },
-      //   });
-      // }
 
       if (special_skillParameterCheckbox) {
         const newSkillParameter = await Promise.all(
@@ -1420,76 +1263,6 @@ export async function editJobVacancy(
           },
         });
       }
-
-      // const newSkillParameter = await Promise.all(
-      //   special_skill?.map(async (skillId) => {
-      //     if (typeof skillId === 'string') {
-      //       const data = await tx.skills.create({
-      //         data: {
-      //           name: skillId,
-      //         },
-      //       });
-
-      //       return data?.id;
-      //     } else {
-      //       return skillId;
-      //     }
-      //   }),
-      // );
-
-      // const skillRequirementFieldData = await tx.requirementFields.findFirst({
-      //   where: {
-      //     name: 'special_skill',
-      //   },
-      // });
-
-      // await tx.jobVacancyRequirements.update({
-      //   where: {
-      //     jobVacancyId_requirementFieldId: {
-      //       jobVacancyId: id,
-      //       requirementFieldId: skillRequirementFieldData.id,
-      //     },
-      //   },
-      //   data: {
-      //     value: newSkillParameter?.length
-      //       ? JSON.stringify(newSkillParameter)
-      //       : null,
-      //   },
-      // });
-
-      // if (special_skillParameterCheckbox) {
-      //   const newSkillParameter = await Promise.all(
-      //     special_skill.map(async (skillId) => {
-      //       if (typeof skillId === 'string') {
-      //         const data = await tx.skills.create({
-      //           data: {
-      //             name: skillId,
-      //           },
-      //         });
-
-      //         return data.id;
-      //       } else {
-      //         return skillId;
-      //       }
-      //     }),
-      //   );
-
-      //   const skillRequirementFieldData = await tx.requirementFields.findFirst({
-      //     where: {
-      //       name: 'special_skill',
-      //     },
-      //   });
-
-      //   await tx.jobVacancyRequirements.create({
-      //     data: {
-      //       jobVacancyId: id,
-      //       requirementFieldId: skillRequirementFieldData.id,
-      //       value: newSkillParameter.length()
-      //         ? JSON.stringify(newSkillParameter)
-      //         : null,
-      //     },
-      //   });
-      // }
 
       if (certificationParameterCheckbox) {
         const newCertificateParameter = await Promise.all(
@@ -1549,78 +1322,6 @@ export async function editJobVacancy(
         });
       }
 
-      // const newCertificateParameter = await Promise.all(
-      //   certification?.map(async (certificateId) => {
-      //     if (typeof certificateId === 'string') {
-      //       const data = await tx.certificates.create({
-      //         data: {
-      //           name: certificateId,
-      //         },
-      //       });
-
-      //       return data.id;
-      //     } else {
-      //       return certificateId;
-      //     }
-      //   }),
-      // );
-
-      // const certificateRequirementFieldData =
-      //   await tx.requirementFields.findFirst({
-      //     where: {
-      //       name: 'certification',
-      //     },
-      //   });
-
-      // await tx.jobVacancyRequirements.update({
-      //   where: {
-      //     jobVacancyId_requirementFieldId: {
-      //       jobVacancyId: id,
-      //       requirementFieldId: certificateRequirementFieldData.id,
-      //     },
-      //   },
-      //   data: {
-      //     value: newCertificateParameter?.length
-      //       ? JSON.stringify(newCertificateParameter)
-      //       : null,
-      //   },
-      // });
-
-      // if (certificationParameterCheckbox) {
-      //   const newCertificateParameter = await Promise.all(
-      //     certification.map(async (certificateId) => {
-      //       if (typeof certificateId === 'string') {
-      //         const data = await tx.certificates.create({
-      //           data: {
-      //             name: certificateId,
-      //           },
-      //         });
-
-      //         return data.id;
-      //       } else {
-      //         return certificateId;
-      //       }
-      //     }),
-      //   );
-
-      //   const certificateRequirementFieldData =
-      //     await tx.requirementFields.findFirst({
-      //       where: {
-      //         name: 'certification',
-      //       },
-      //     });
-
-      //   await tx.jobVacancyRequirements.create({
-      //     data: {
-      //       jobVacancyId: id,
-      //       requirementFieldId: certificateRequirementFieldData.id,
-      //       value: newCertificateParameter.length()
-      //         ? JSON.stringify(newCertificateParameter)
-      //         : null,
-      //     },
-      //   });
-      // }
-
       await tx.jobVacancyTaCollaborators.deleteMany({
         where: {
           jobVacancyId: id,
@@ -1650,9 +1351,15 @@ export async function editJobVacancy(
           };
         }),
       });
+
+      return id;
     });
+
+    return data;
   } catch (e) {
     console.log(e);
+
+    return 0;
   }
 }
 
@@ -1662,15 +1369,19 @@ export async function applyJobVacancy(candidateId, jobVacancyId) {
 
     // console.info(jobVacancyId);
 
-    await prisma.candidateStates.create({
+    const data = await prisma.candidateStates.create({
       data: {
         candidateId: candidateId,
         jobVacancyId: jobVacancyId,
         stateName: 'WAITING',
       },
     });
+
+    return data;
   } catch (e) {
     console.log(e);
+
+    return {};
   }
 }
 

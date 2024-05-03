@@ -1,10 +1,12 @@
 'use client';
 
 import Image from 'next/image';
+import * as messages from '@/ui/message';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useState } from 'react';
 import {
   Cascader,
+  message,
   Spin,
   DatePicker,
   Form,
@@ -30,7 +32,9 @@ const { confirm } = Modal;
 const JobDetailsItem = ({ jobVacancyData, candidateApplyJobVacancy }) => {
   const router = useRouter();
 
-  const [api, contextHolder] = notification.useNotification();
+  const [disabled, setDisabled] = useState(false);
+
+  const [api, contextHolder] = message.useMessage();
 
   const [loading, setLoading] = useState(false);
 
@@ -38,37 +42,30 @@ const JobDetailsItem = ({ jobVacancyData, candidateApplyJobVacancy }) => {
     setLoading(true);
 
     confirm({
-      title: 'Do you want to create new job parameter?',
+      title: 'Confirmation',
       icon: <ExclamationCircleFilled />,
       centered: true,
-      content:
-        'When clicked the OK button, this dialog will be closed after 1 second',
+      content: 'Do want to apply this job?',
       onOk() {
         return new Promise<void>((resolve, reject) => {
-          setTimeout(() => {
-            api.success({
-              message: 'Notification',
-              description: <p>Successfully Create New Job Parameter</p>,
-              placement: 'topRight',
-            });
-            // console.info(values);
-            candidateApplyJobVacancy(jobId)
-              .then(() => {
-                setLoading(false);
+          setTimeout(async () => {
+            const validate = await candidateApplyJobVacancy(jobId);
 
-                router.refresh();
-              })
-              .catch((e: string) => {
-                console.log('Error apply job vacancy: ', e);
+            if (validate?.success) {
+              setDisabled(true);
 
-                setLoading(false);
+              messages?.success(api, validate?.message);
+            } else {
+              messages?.error(api, validate?.message);
+            }
 
-                router.refresh();
-              });
-            // router.replace('/dashboard/ta/parameter');
+            setLoading(false);
+
+            router.refresh();
+
             resolve();
           }, 2000);
-        }).catch(() => console.log('Oops errors!'));
+        }).catch((e) => console.log('Error Apply Job Vacancy: ', e));
       },
       onCancel() {
         setLoading(false);
@@ -79,7 +76,11 @@ const JobDetailsItem = ({ jobVacancyData, candidateApplyJobVacancy }) => {
   }
 
   return (
-    <Spin spinning={loading}>
+    <>
+      <Spin spinning={loading} fullscreen />
+
+      {contextHolder}
+
       <section className="job-details pt-100 lg-pt-80 pb-130 lg-pb-80">
         <div className="container">
           <div className="row">
@@ -191,7 +192,9 @@ const JobDetailsItem = ({ jobVacancyData, candidateApplyJobVacancy }) => {
                     <Form.Item name="candidateApplyBtn">
                       <Button
                         htmlType="button"
-                        disabled={jobVacancyData?.candidateAlreadyApply}
+                        disabled={
+                          jobVacancyData?.candidateAlreadyApply || disabled
+                        }
                         className="btn-one w-100 mt-25 d-flex align-items-center justify-content-center"
                         onClick={() =>
                           handleCandidateApplyJobVacancy(jobVacancyData?.jobId)
@@ -220,7 +223,7 @@ const JobDetailsItem = ({ jobVacancyData, candidateApplyJobVacancy }) => {
           </div>
         </div>
       </section>
-    </Spin>
+    </>
   );
 };
 

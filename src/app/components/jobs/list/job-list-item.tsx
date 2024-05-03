@@ -1,11 +1,16 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import Pagination from '@/ui/pagination';
 import { Spin } from 'antd';
 import NiceSelect from '@/ui/nice-select';
 import ListItemTwo from './list-item-2';
 
-const JobListItem = ({ jobVacancyData, candidateApplyJobVacancy }: any) => {
+const JobListItem = ({
+  jobVacancyData,
+  perPage,
+  candidateApplyJobVacancy,
+}: any) => {
   const [loading, setLoading] = useState(false);
 
   // const buttonRef = useRef({});
@@ -37,8 +42,9 @@ const JobListItem = ({ jobVacancyData, candidateApplyJobVacancy }: any) => {
   //   console.info(jobVacancyData);
 
   return (
-    <div className="col-xl-9 col-lg-8">
-      <Spin spinning={loading} className="col-lg-8">
+    <>
+      <Spin spinning={loading} fullscreen />
+      <div className="col-xl-9 col-lg-8">
         {/* <div> */}
         <div className="job-post-item-wrapper ms-xxl-5 ms-xl-3">
           <div className="upper-filter d-flex justify-content-between align-items-center mb-20">
@@ -86,8 +92,19 @@ const JobListItem = ({ jobVacancyData, candidateApplyJobVacancy }: any) => {
           </div> */}
           </div>
         </div>
-      </Spin>
-    </div>
+        <div>
+          <Pagination
+            pageRangeDisplayed={3}
+            totalData={jobVacancyData?.total}
+            disabled={
+              !jobVacancyData.data || jobVacancyData?.total <= Number(perPage)
+                ? true
+                : false
+            }
+          />
+        </div>
+      </div>
+    </>
   );
 };
 

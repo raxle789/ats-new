@@ -71,10 +71,11 @@ const JobList: React.FC<IProps> = async ({ searchParams }) => {
           <JobFilter />
           <JobListItem
             jobVacancyData={jobVacancyData}
+            perPage={perPage}
             candidateApplyJobVacancy={candidateApplyJobVacancy}
           />
         </div>
-        <div className="d-flex justify-content-center mt-30">
+        {/* <div className="d-flex justify-content-center mt-30">
           <Pagination
             pageRangeDisplayed={3}
             totalData={jobVacancyData?.total}
@@ -84,7 +85,7 @@ const JobList: React.FC<IProps> = async ({ searchParams }) => {
                 : false
             }
           />
-        </div>
+        </div> */}
       </div>
     </section>
   );
