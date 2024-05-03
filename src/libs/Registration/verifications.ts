@@ -29,7 +29,7 @@ export async function sendOTP(payload: { email: string }) {
     const randomNumber = Math.floor(Math.random() * 9);
     generatedNumber.push(randomNumber);
   };
-  const OTP = Number(generatedNumber.join(''));
+  const OTP = generatedNumber.join('').toString();
 
   /**
    * Set server-side cookies
@@ -64,7 +64,7 @@ export async function sendOTP(payload: { email: string }) {
   };
 };
 
-export async function compareOTP(clientOTP: number, email: string) {
+export async function compareOTP(clientOTP: string, email: string) {
   /* Get otp-session */
   const otpSession = await getUserSession('otp');
   console.info('OTP SESSION ->', otpSession);
@@ -73,7 +73,7 @@ export async function compareOTP(clientOTP: number, email: string) {
   /**
    * Check client-otp matched server-otp
    */
-  if(clientOTP === otpSession.otp) {
+  if(clientOTP.toString() === otpSession.otp) {
     console.info('Client OTP matched server-otp...');
     /* Updating email verification status */
     const updateEmailVerificationStatus = await updateVerifiedUserEmail(email);

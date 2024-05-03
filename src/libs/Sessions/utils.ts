@@ -4,7 +4,7 @@
 const sessionName = {
   auth: 'era-user-auth',
   reg: 'era-user-reg',
-  otp: 'otp-number-verification'
+  otp: 'otp-number-verification',
 }
 
 const ENCODER = new TextEncoder();
