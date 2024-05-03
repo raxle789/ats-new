@@ -3,19 +3,11 @@ import React, { useState } from 'react';
 import SearchBar from '@/ui/search-bar';
 import candidate_data from '@/data/candidate-data';
 import CandidatesItems from './candidates-items';
+import CandidatesFilter from './candidates-filter';
 import { Button, Popover } from 'antd';
 
 const CandidatesArea = () => {
   const candidate_items = candidate_data.slice(0, 10);
-  const text = <span>Title</span>;
-
-  const content = (
-    <div>
-      <p>Content</p>
-      <p>Content</p>
-    </div>
-  );
-
   const [popOverState, setPopOverState] = useState(false);
   const filterButtonClick = () => {
     setPopOverState(!popOverState);
@@ -29,16 +21,19 @@ const CandidatesArea = () => {
         <div className="d-flex xs-mt-30 justify-content-end align-items-center">
           <SearchBar />
           <div className="short-filter d-flex align-items-center ms-3">
+            {/* <div className="popover-filter"> */}
             <Popover
               placement="bottom"
-              title={text}
-              content={content}
+              // title={text}
+              content={<CandidatesFilter />}
               open={popOverState}
+              // style={{ width: '400px' }}
             >
               <Button type="primary" onClick={filterButtonClick}>
                 Filter by
               </Button>
             </Popover>
+            {/* </div> */}
           </div>
         </div>
       </div>
