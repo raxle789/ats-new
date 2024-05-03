@@ -231,15 +231,26 @@ export async function insertJobVacancy(taId, values) {
   });
 
   if (validate.success) {
-    await createJobVacancy(validate?.data?.taId, validate?.data);
+    const data = await createJobVacancy(validate?.data?.taId, validate?.data);
 
-    revalidatePath('/jobs');
-
-    revalidatePath('/dashboard/ta/jobs');
-
-    permanentRedirect('/dashboard/ta/jobs');
+    if (data) {
+      return {
+        success: true,
+        message: 'Successfully Create A New Job Vacancy',
+      };
+    } else {
+      return {
+        success: false,
+        message: 'Please Try Again Later',
+      };
+    }
   } else {
     console.log(validate.error);
+
+    return {
+      success: false,
+      message: 'Error Creating A New Job Vacancy, Please Check Your Input',
+    };
   }
 }
 
@@ -634,22 +645,38 @@ export async function updateJobVacancy(taId, jobVacancyId, values) {
     });
 
     if (validateSchema.success) {
-      await editJobVacancy(
+      const data = await editJobVacancy(
         decryptedTaId,
         validateId?.data?.jobVacancyId,
         validateSchema?.data,
       );
 
-      revalidatePath('/jobs');
-
-      revalidatePath('/dashboard/ta/jobs');
-
-      permanentRedirect('/dashboard/ta/jobs');
+      if (data) {
+        return {
+          success: true,
+          message: 'Successfully Edit Job Vacancy',
+        };
+      } else {
+        return {
+          success: false,
+          message: 'Please Try Again Later',
+        };
+      }
     } else {
       console.log(validateSchema.error);
+
+      return {
+        success: false,
+        message: 'Error Editing Job Vacancy, Please Check Your Input',
+      };
     }
   } else {
     console.log(validateId.error);
+
+    return {
+      success: false,
+      message: "Error Editing Job Vacancy, Job Vacancy Doesn't Exist",
+    };
   }
 }
 
@@ -689,11 +716,28 @@ export async function candidateApplyJobVacancy(jobVacancyId) {
   });
 
   if (validate.success) {
-    await applyJobVacancy(
+    const data = await applyJobVacancy(
       validate?.data?.candidateId,
       validate?.data?.jobVacancyId,
     );
+
+    if (!_.isEmpty(data)) {
+      return {
+        success: true,
+        message: 'Successfully Apply A New Job',
+      };
+    } else {
+      return {
+        success: false,
+        message: 'Please Try Again Later',
+      };
+    }
   } else {
     console.log(validate.error);
+
+    return {
+      success: false,
+      message: 'Please Complete Your Personal Data First',
+    };
   }
 }

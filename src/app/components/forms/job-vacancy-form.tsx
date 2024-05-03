@@ -133,9 +133,11 @@ const JobVacancyForm = ({
         <h4 className="dash-title-three">Job Position</h4>
         <div className="dash-input-wrapper mb-30">
           <Form.Item
-            label="Job Title"
+            label="Job Title FPK"
             name="jobTitle"
-            rules={[{ required: true, message: 'Please Select Job Title!' }]}
+            rules={[
+              { required: true, message: 'Please Select Job Title FPK!' },
+            ]}
           >
             <Select
               className="select"
@@ -158,10 +160,10 @@ const JobVacancyForm = ({
         </div>
         <div className="dash-input-wrapper mb-30">
           <Form.Item
-            label="Job Title Aliases"
+            label="Job Posting Name"
             name="jobTitleAliases"
             rules={[
-              { required: true, message: 'Please Input Job Title Aliases!' },
+              { required: true, message: 'Please Input Job Posting Name!' },
             ]}
           >
             <Input

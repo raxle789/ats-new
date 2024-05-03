@@ -1,9 +1,12 @@
 'use client';
 
 import React from 'react';
+import { useState } from 'react';
+import * as messages from '@/ui/message';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import {
   Cascader,
+  message,
   Spin,
   DatePicker,
   Form,
@@ -35,7 +38,9 @@ const { confirm } = Modal;
 const ListItemTwo = ({ item, setLoading, candidateApplyJobVacancy }) => {
   const router = useRouter();
 
-  const [api, contextHolder] = notification.useNotification();
+  const [disabled, setDisabled] = useState(false);
+
+  const [api, contextHolder] = message.useMessage();
 
   const { wishlist } = useAppSelector((state) => state.wishlist);
 
@@ -48,73 +53,86 @@ const ListItemTwo = ({ item, setLoading, candidateApplyJobVacancy }) => {
   };
 
   function handleCandidateApplyJobVacancy(jobId) {
-    // setLoading(true);
+    setLoading(true);
 
-    // confirm({
-    //   title: 'Do you want to create new job parameter?',
-    //   icon: <ExclamationCircleFilled />,
-    //   centered: true,
-    //   content:
-    //     'When clicked the OK button, this dialog will be closed after 1 second',
-    //   onOk() {
-    //     return new Promise<void>((resolve, reject) => {
-    //       setTimeout(() => {
-    //         api.success({
-    //           message: 'Notification',
-    //           description: <p>Successfully Create New Job Parameter</p>,
-    //           placement: 'topRight',
-    //         });
-    //         // console.info(values);
-    //         candidateApplyJobVacancy(jobId)
-    //           .then(() => {
-    //             setLoading(false);
+    confirm({
+      title: 'Confirmation',
+      icon: <ExclamationCircleFilled />,
+      centered: true,
+      content: 'Do want to apply this job?',
+      onOk() {
+        return new Promise<void>((resolve, reject) => {
+          setTimeout(async () => {
+            const validate = await candidateApplyJobVacancy(jobId);
+            // .then((res) => {
+            //   setLoading(false);
 
-    //             router.refresh();
-    //           })
-    //           .catch((e: string) => {
-    //             console.log('Error apply job vacancy: ', e);
+            //   router.refresh();
 
-    //             setLoading(false);
-    //           });
-    //         // router.replace('/dashboard/ta/parameter');
-    //         resolve();
-    //       }, 2000);
-    //     }).catch(() => console.log('Oops errors!'));
-    //   },
-    //   onCancel() {
-    //     setLoading(false);
+            //   return res;
+            // })
+            // .catch((e) => {
+            //   console.log('Error apply job vacancy: ', e);
 
-    //     router.refresh();
-    //   },
-    // });
-    new Promise<void>((resolve, reject) => {
-      setTimeout(() => {
-        api.success({
-          message: 'Notification',
-          description: <p>Successfully Create New Job Parameter</p>,
-          placement: 'topRight',
-        });
-        // console.info(values);
-        candidateApplyJobVacancy(jobId)
-          .then(() => {
+            //   setLoading(false);
+
+            //   return {
+            //     success: false,
+            //     message: 'Please Try Again Later',
+            //   };
+            // });
+
+            if (validate?.success) {
+              setDisabled(true);
+
+              messages?.success(api, validate?.message);
+            } else {
+              messages?.error(api, validate?.message);
+            }
+
             setLoading(false);
 
             router.refresh();
-          })
-          .catch((e: string) => {
-            console.log('Error apply job vacancy: ', e);
 
-            setLoading(false);
-          });
-        // router.replace('/dashboard/ta/parameter');
-        resolve();
-      }, 4000);
-    }).catch(() => console.log('Oops errors!'));
+            resolve();
+          }, 2000);
+        }).catch((e) => console.log('Error apply job vacancy: ', e));
+      },
+      onCancel() {
+        setLoading(false);
+
+        router.refresh();
+      },
+    });
+    // new Promise<void>((resolve, reject) => {
+    //   setTimeout(() => {
+    //     api.success({
+    //       message: 'Notification',
+    //       description: <p>Successfully Create New Job Parameter</p>,
+    //       placement: 'topRight',
+    //     });
+    //     // console.info(values);
+    //     candidateApplyJobVacancy(jobId)
+    //       .then(() => {
+    //         setLoading(false);
+
+    //         router.refresh();
+    //       })
+    //       .catch((e: string) => {
+    //         console.log('Error apply job vacancy: ', e);
+
+    //         setLoading(false);
+    //       });
+    //     // router.replace('/dashboard/ta/parameter');
+    //     resolve();
+    //   }, 4000);
+    // }).catch(() => console.log('Oops errors!'));
   }
 
   return (
     <>
       {contextHolder}
+
       <div className="job-list-one style-two position-relative border-style mb-20">
         <div className="row justify-content-between align-items-center">
           <div className="col-md-6">
@@ -123,6 +141,7 @@ const ListItemTwo = ({ item, setLoading, candidateApplyJobVacancy }) => {
                 <Link
                   href={`/main/jobs/${item?.jobId}`}
                   className="title fw-500 tran3s"
+                  onClick={() => setLoading(true)}
                 >
                   {item?.jobTitleAlias
                     ? item?.jobTitleAlias?.slice(0, 30)
@@ -163,7 +182,7 @@ const ListItemTwo = ({ item, setLoading, candidateApplyJobVacancy }) => {
                 >
                   <Button
                     htmlType="button"
-                    disabled={item?.candidateAlreadyApply}
+                    disabled={item?.candidateAlreadyApply || disabled}
                     className="apply-btn tran3s d-flex align-items-center justify-content-center"
                     onClick={() => handleCandidateApplyJobVacancy(item?.jobId)}
                   >
