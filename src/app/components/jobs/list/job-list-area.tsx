@@ -1,8 +1,12 @@
 'use server';
 
 import React from 'react';
+import { getUserSession } from '@/libs/Sessions';
 import Pagination from '@/ui/pagination';
-import { getAllJobVacancyData } from '@/lib/action/job-vacancies/action';
+import {
+  getAllJobVacancyData,
+  candidateApplyJobVacancy,
+} from '@/lib/action/job-vacancies/action';
 import JobListItem from './job-list-item';
 import JobFilter from '../filter/job-filter';
 
@@ -16,9 +20,22 @@ interface IProps {
 
 const JobList: React.FC<IProps> = async ({ searchParams }) => {
   const page = searchParams?.page ?? '1';
+
   const perPage = searchParams?.perPage ?? '10';
+
   const searchQuery = searchParams?.query ?? '';
+
   const offset = (Number(page) - 1) * Number(perPage);
+
+  // const candidateId = await (async () => {
+  //   const candidateSession = await getUserSession('auth');
+
+  //   if (candidateSession) {
+  //     return candidateSession?.candidate?.id;
+  //   }
+
+  //   return false;
+  // })();
 
   const jobVacancyData = await getAllJobVacancyData(offset, Number(perPage))
     .then((res) => {
@@ -26,7 +43,7 @@ const JobList: React.FC<IProps> = async ({ searchParams }) => {
 
       const total = res?.total ?? 0;
 
-      console.info(data);
+      // console.info(data);
 
       return {
         data: data,
@@ -35,19 +52,30 @@ const JobList: React.FC<IProps> = async ({ searchParams }) => {
     })
     .catch((e) => {
       console.log('Error getting job vacancy data: ', e);
+
       return {
         data: [],
         total: 0,
       };
     });
+
+  // const candidateAlreadyApply = () => {
+  //   if (candidateId) {
+  //   }
+  // };
+
   return (
     <section className="job-listing-three pt-110 lg-pt-80 pb-160 xl-pb-150 lg-pb-80">
       <div className="container">
         <div className="row">
           <JobFilter />
-          <JobListItem jobVacancyData={jobVacancyData?.data} />
+          <JobListItem
+            jobVacancyData={jobVacancyData}
+            perPage={perPage}
+            candidateApplyJobVacancy={candidateApplyJobVacancy}
+          />
         </div>
-        <div className="d-flex justify-content-center mt-30">
+        {/* <div className="d-flex justify-content-center mt-30">
           <Pagination
             pageRangeDisplayed={3}
             totalData={jobVacancyData?.total}
@@ -57,7 +85,7 @@ const JobList: React.FC<IProps> = async ({ searchParams }) => {
                 : false
             }
           />
-        </div>
+        </div> */}
       </div>
     </section>
   );

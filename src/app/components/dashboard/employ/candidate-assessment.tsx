@@ -115,7 +115,7 @@ const CandidateAssessment = () => {
   }, 300);
   const candidate_items = candidate_data.slice(0, 3);
 
-  const isModalOpen = useAppSelector((state) => state.candidateModal.isOpen);
+  // const isModalOpen = useAppSelector((state) => state.candidateModal.isOpen);
   const handleCancel = () => {
     dispatch(setIsOpen(false));
   };
@@ -256,7 +256,7 @@ const CandidateAssessment = () => {
       <Modal
         title="Candidate Details"
         centered
-        open={isModalOpen}
+        // open={isModalOpen}
         onCancel={handleCancel}
         footer={null}
         wrapClassName="custom-modal-wrapper"

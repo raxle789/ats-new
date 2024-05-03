@@ -55,7 +55,7 @@ const EmployJobParameterItem: React.FC<Props> = ({
 
   const [form] = Form.useForm();
 
-  const [spinning, setSpinning] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   // const openNotification = (placement) => {
   //   api.info({
@@ -149,14 +149,14 @@ const EmployJobParameterItem: React.FC<Props> = ({
   // };
 
   const showLoader = (show: boolean) => {
-    setSpinning(show);
+    setLoading(show);
     // setTimeout(() => {
-    //   setSpinning(false);
+    //   setLoading(false);
     // }, 3000);
   };
 
   function handleJobParameter(values: boolean) {
-    showLoader(true);
+    setLoading(true);
 
     confirm({
       title: 'Do you want to create new job parameter?',
@@ -176,6 +176,8 @@ const EmployJobParameterItem: React.FC<Props> = ({
             setPositionLevelRequirementData(values)
               .then(() => {
                 form.resetFields();
+
+                router.refresh();
               })
               .catch((e: string) =>
                 console.log('Error set position level requirement data: ', e),
@@ -186,9 +188,9 @@ const EmployJobParameterItem: React.FC<Props> = ({
         }).catch(() => console.log('Oops errors!'));
       },
       onCancel() {
-        router.refresh();
+        setLoading(false);
 
-        showLoader(false);
+        router.refresh();
       },
     });
   }
@@ -290,16 +292,20 @@ const EmployJobParameterItem: React.FC<Props> = ({
 
   return (
     <>
-      <Spin spinning={spinning} fullscreen />
       {contextHolder}
-      <Form
-        form={form}
-        className="bg-white card-box border-20"
-        layout="vertical"
-        variant="filled"
-        onFinish={handleJobParameter}
-      >
-        {/* <h4 className="dash-title-three">Parameter Information</h4>
+      <Spin spinning={loading}>
+        <h2 className="main-title">
+          Edit {positionLevelRequirementData?.name} Position Level Requirement
+        </h2>
+
+        <Form
+          form={form}
+          className="bg-white card-box border-20"
+          layout="vertical"
+          variant="filled"
+          onFinish={handleJobParameter}
+        >
+          {/* <h4 className="dash-title-three">Parameter Information</h4>
         <div className="dash-input-wrapper mb-30">
           <Form.Item
             label="Position Level"
@@ -353,58 +359,58 @@ const EmployJobParameterItem: React.FC<Props> = ({
           </Form.Item>
         </div> */}
 
-        <h4 className="dash-title-three">Requirement Settings</h4>
-        <Form.Item className="d-none" name="positionLevelId">
-          <Input className="d-none" type="hidden" />
-        </Form.Item>
-        <div className="dash-input-wrapper mb-30">
-          <Form.Item
-            label="Position Level"
-            name="job_level"
-            rules={[
-              { required: true, message: 'Please Select Position Level!' },
-            ]}
-          >
-            <Select
-              className="select"
-              size="large"
-              showSearch
-              allowClear
-              placeholder="Select Position Level"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                (option?.label ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              options={positionLevelData}
-            />
+          <h4 className="dash-title-three">Requirement Settings</h4>
+          <Form.Item className="d-none" name="positionLevelId">
+            <Input className="d-none" type="hidden" />
           </Form.Item>
-        </div>
-        <div className="dash-input-wrapper mb-30">
-          <div className="col-lg-12">
+          <div className="dash-input-wrapper mb-30">
             <Form.Item
-              // name="minimumYearOfExperienceParameter"
-              name="min_year_experience"
-              label="Total Experience"
+              label="Position Level"
+              name="job_level"
               rules={[
-                {
-                  required: true,
-                  message: 'Please Input Total Experience Parameter!',
-                },
+                { required: true, message: 'Please Select Position Level!' },
               ]}
             >
-              <InputNumber
-                className="select d-flex align-items-center w-100"
-                min={0}
-                step={1}
-                placeholder="Input Total Experience"
-                style={{ height: '40px' }}
+              <Select
+                className="select"
+                size="large"
+                showSearch
+                allowClear
+                placeholder="Select Position Level"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                options={positionLevelData}
               />
-              {/* <Select
+            </Form.Item>
+          </div>
+          <div className="dash-input-wrapper mb-30">
+            <div className="col-lg-12">
+              <Form.Item
+                // name="minimumYearOfExperienceParameter"
+                name="min_year_experience"
+                label="Total Experience"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please Input Total Experience Parameter!',
+                  },
+                ]}
+              >
+                <InputNumber
+                  className="select d-flex align-items-center w-100"
+                  min={0}
+                  step={1}
+                  placeholder="Input Total Experience"
+                  style={{ height: '40px' }}
+                />
+                {/* <Select
                 className="select"
                 size="large"
                 showSearch
@@ -447,79 +453,74 @@ const EmployJobParameterItem: React.FC<Props> = ({
                   },
                 ]}
               /> */}
-            </Form.Item>
+              </Form.Item>
+            </div>
           </div>
-        </div>
-        {/* </div> */}
-        <div className="dash-input-wrapper mb-30">
-          <div className="col-lg-12">
-            <Form.Item
-              label="Line Industry"
-              name="line_industry"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please Select Line Industry!',
-                },
-              ]}
-            >
-              <Select
-                className="select"
-                mode="multiple"
-                size="large"
-                showSearch
-                allowClear
-                // disabled={!educationLevelParameterState}
-                placeholder="Select Line Industry"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? '').includes(input)
-                }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? '')
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? '').toLowerCase())
-                }
-                options={lineIndustryData}
-              />
-            </Form.Item>
+          {/* </div> */}
+          <div className="dash-input-wrapper mb-30">
+            <div className="col-lg-12">
+              <Form.Item
+                label="Line Industry"
+                name="line_industry"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please Select Line Industry!',
+                  },
+                ]}
+              >
+                <Select
+                  className="select"
+                  mode="multiple"
+                  size="large"
+                  showSearch
+                  allowClear
+                  // disabled={!educationLevelParameterState}
+                  placeholder="Select Line Industry"
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').includes(input)
+                  }
+                  filterSort={(optionA, optionB) =>
+                    (optionA?.label ?? '')
+                      .toLowerCase()
+                      .localeCompare((optionB?.label ?? '').toLowerCase())
+                  }
+                  options={lineIndustryData}
+                />
+              </Form.Item>
+            </div>
           </div>
-        </div>
-        <div className="dash-input-wrapper mb-30">
-          <div className="col-lg-12">
-            <Form.Item
-              label="Minimum Education Level"
-              name="education_level"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please Select Minimum Education Level!',
-                },
-              ]}
-            >
-              <Select
-                className="select"
-                size="large"
-                showSearch
-                allowClear
-                // disabled={!educationLevelParameterState}
-                placeholder="Select Minimum Education Level"
-                optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label ?? '').includes(input)
-                }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? '')
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? '').toLowerCase())
-                }
-                options={educationLevelData}
-              />
-            </Form.Item>
+          <div className="dash-input-wrapper mb-30">
+            <div className="col-lg-12">
+              <Form.Item
+                label="Minimum Education Level"
+                name="education_level"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please Select Minimum Education Level!',
+                  },
+                ]}
+              >
+                <Select
+                  className="select"
+                  size="large"
+                  showSearch
+                  allowClear
+                  // disabled={!educationLevelParameterState}
+                  placeholder="Select Minimum Education Level"
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').includes(input)
+                  }
+                  options={educationLevelData}
+                />
+              </Form.Item>
+            </div>
           </div>
-        </div>
-        {/* </div> */}
-        {/* <div className="dash-input-wrapper mb-30">
+          {/* </div> */}
+          {/* <div className="dash-input-wrapper mb-30">
           <div className="col-lg-12">
             <Form.Item
               label="Major of Studies"
@@ -577,34 +578,34 @@ const EmployJobParameterItem: React.FC<Props> = ({
             </Form.Item>
           </div>
         </div> */}
-        {/* </div> */}
-        <div className="dash-input-wrapper mb-30">
-          <div className="col-lg-12">
-            <Form.Item
-              label="Minimum GPA"
-              name="grade"
-              rules={[
-                {
-                  required: true,
-                  message: 'Please Input Minimum GPA!',
-                },
-              ]}
-            >
-              <InputNumber
-                className="select d-flex align-items-center w-100"
-                // size="small"
-                min={1}
-                max={4}
-                step={0.01}
-                placeholder="Input Minimum GPA"
-                style={{ height: '40px' }}
-                // disabled={!gradeParameterState}
-              />
-            </Form.Item>
+          {/* </div> */}
+          <div className="dash-input-wrapper mb-30">
+            <div className="col-lg-12">
+              <Form.Item
+                label="Minimum GPA"
+                name="grade"
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please Input Minimum GPA!',
+                  },
+                ]}
+              >
+                <InputNumber
+                  className="select d-flex align-items-center w-100"
+                  // size="small"
+                  min={1}
+                  max={4}
+                  step={0.01}
+                  placeholder="Input Minimum GPA"
+                  style={{ height: '40px' }}
+                  // disabled={!gradeParameterState}
+                />
+              </Form.Item>
+            </div>
           </div>
-        </div>
-        {/* </div> */}
-        {/* <div className="dash-input-wrapper mb-30">
+          {/* </div> */}
+          {/* <div className="dash-input-wrapper mb-30">
           <div className="col-xxl-8">
             <Form.Item
               label="Special Skill"
@@ -641,8 +642,8 @@ const EmployJobParameterItem: React.FC<Props> = ({
             </Form.Item>
           </div>
         </div> */}
-        {/* </div> */}
-        {/* <div className="dash-input-wrapper mb-30">
+          {/* </div> */}
+          {/* <div className="dash-input-wrapper mb-30">
           <div className="col-xxl-8">
             <Form.Item
               label="Certifications"
@@ -679,78 +680,82 @@ const EmployJobParameterItem: React.FC<Props> = ({
             </Form.Item>
           </div>
         </div> */}
-        {/* </div> */}
-        <div className="dash-input-wrapper mb-5">
-          <Form.Item label="Salary Range" name="salary">
-            <Form.List name="salary">
-              {() => (
-                <div className="row">
-                  <div className="col-lg-5">
-                    <Form.Item
-                      label="Start Salary Range"
-                      name="start_salary"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please Input Start Salary Range!',
-                        },
-                      ]}
-                    >
-                      <InputNumber
-                        className="select d-flex align-items-center w-100"
-                        min={0}
-                        placeholder="Input Start Salary Range"
-                        style={{ height: '40px' }}
-                        formatter={(value) =>
-                          `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-                        }
-                        parser={(value: string | undefined): string | number =>
-                          value!.replace(/\Rp\s?|(\.*)/g, '')
-                        }
-                        // formatter={handleFormatter}
-                        // parser={handleParser}
-                        // disabled={!salaryRangeParameterState}
-                      />
-                    </Form.Item>
+          {/* </div> */}
+          <div className="dash-input-wrapper mb-5">
+            <Form.Item label="Salary Range" name="salary">
+              <Form.List name="salary">
+                {() => (
+                  <div className="row">
+                    <div className="col-lg-5">
+                      <Form.Item
+                        label="Start Salary Range"
+                        name="start_salary"
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Please Input Start Salary Range!',
+                          },
+                        ]}
+                      >
+                        <InputNumber
+                          className="select d-flex align-items-center w-100"
+                          min={0}
+                          placeholder="Input Start Salary Range"
+                          style={{ height: '40px' }}
+                          formatter={(value) =>
+                            `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                          }
+                          parser={(
+                            value: string | undefined,
+                          ): string | number =>
+                            value!.replace(/\Rp\s?|(\.*)/g, '')
+                          }
+                          // formatter={handleFormatter}
+                          // parser={handleParser}
+                          // disabled={!salaryRangeParameterState}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="col-lg-2 d-flex align-items-center justify-content-center">
+                      <b>
+                        <p className="text-center">__</p>
+                      </b>
+                    </div>
+                    <div className="col-lg-5">
+                      <Form.Item
+                        label="End Salary Range"
+                        name="end_salary"
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Please Input End Salary Range!',
+                          },
+                        ]}
+                      >
+                        <InputNumber
+                          className="select d-flex align-items-center w-100"
+                          min={0}
+                          placeholder="Input End Salary Range"
+                          style={{ height: '40px' }}
+                          formatter={(value) =>
+                            `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                          }
+                          parser={(
+                            value: string | undefined,
+                          ): string | number =>
+                            value!.replace(/\Rp\s?|(\.*)/g, '')
+                          }
+                          // disabled={!salaryRangeParameterState}
+                        />
+                      </Form.Item>
+                    </div>
                   </div>
-                  <div className="col-lg-2 d-flex align-items-center justify-content-center">
-                    <b>
-                      <p className="text-center">__</p>
-                    </b>
-                  </div>
-                  <div className="col-lg-5">
-                    <Form.Item
-                      label="End Salary Range"
-                      name="end_salary"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please Input End Salary Range!',
-                        },
-                      ]}
-                    >
-                      <InputNumber
-                        className="select d-flex align-items-center w-100"
-                        min={0}
-                        placeholder="Input End Salary Range"
-                        style={{ height: '40px' }}
-                        formatter={(value) =>
-                          `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-                        }
-                        parser={(value: string | undefined): string | number =>
-                          value!.replace(/\Rp\s?|(\.*)/g, '')
-                        }
-                        // disabled={!salaryRangeParameterState}
-                      />
-                    </Form.Item>
-                  </div>
-                </div>
-              )}
-            </Form.List>
-          </Form.Item>
-        </div>
+                )}
+              </Form.List>
+            </Form.Item>
+          </div>
 
-        {/* <div className="dash-input-wrapper mb-30">
+          {/* <div className="dash-input-wrapper mb-30">
           <div className="col-xxl-8">
             <Form.Item
               label="Domicile"
@@ -808,8 +813,8 @@ const EmployJobParameterItem: React.FC<Props> = ({
             </Form.Item>
           </div>
         </div> */}
-        {/* </div> */}
-        {/* <div className="dash-input-wrapper mb-30">
+          {/* </div> */}
+          {/* <div className="dash-input-wrapper mb-30">
           <div className="col-xxl-8">
             <Form.Item
               label="Maximum Age"
@@ -831,8 +836,8 @@ const EmployJobParameterItem: React.FC<Props> = ({
             </Form.Item>
           </div>
         </div> */}
-        {/* </div> */}
-        {/* <div className="dash-input-wrapper mb-30">
+          {/* </div> */}
+          {/* <div className="dash-input-wrapper mb-30">
           <div className="col-xxl-8">
             <Form.Item
               label="Gender"
@@ -890,8 +895,8 @@ const EmployJobParameterItem: React.FC<Props> = ({
             </Form.Item>
           </div>
         </div> */}
-        {/* // </div> */}
-        {/* <div className="dash-input-wrapper mb-30">
+          {/* // </div> */}
+          {/* <div className="dash-input-wrapper mb-30">
           <div className="col-xxl-8">
             <Form.Item
               label="Religion"
@@ -949,8 +954,8 @@ const EmployJobParameterItem: React.FC<Props> = ({
             </Form.Item>
           </div>
         </div> */}
-        {/* </div> */}
-        {/* <div className="dash-input-wrapper mb-30">
+          {/* </div> */}
+          {/* <div className="dash-input-wrapper mb-30">
           <div className="col-xxl-8">
             <Form.Item
               label="Race"
@@ -1008,8 +1013,8 @@ const EmployJobParameterItem: React.FC<Props> = ({
             </Form.Item>
           </div>
         </div> */}
-        {/* </div> */}
-        {/* <div className="dash-input-wrapper mb-30">
+          {/* </div> */}
+          {/* <div className="dash-input-wrapper mb-30">
           <div className="row">
             <div className="col-xxl-4">
               <Form.Item
@@ -1033,7 +1038,7 @@ const EmployJobParameterItem: React.FC<Props> = ({
             </div>
           </div>
         </div> */}
-        {/* <div className="dash-input-wrapper mb-30">
+          {/* <div className="dash-input-wrapper mb-30">
           <div className="row">
             <div className="col-xxl-4">
               <Form.Item
@@ -1053,7 +1058,7 @@ const EmployJobParameterItem: React.FC<Props> = ({
             </div>
           </div>
         </div> */}
-        {/* <div className="dash-input-wrapper mb-30">
+          {/* <div className="dash-input-wrapper mb-30">
           <div className="row">
             <div className="col-xxl-4">
               <Form.Item
@@ -1074,35 +1079,36 @@ const EmployJobParameterItem: React.FC<Props> = ({
           </div>
         </div> */}
 
-        <div className="button-group d-flex flex-row align-items-center justify-content-start mt-50 w-100">
-          <Form.Item className="mb-0">
-            <Button
-              className="dash-btn-two tran3s me-3"
-              htmlType="submit"
-              style={{
-                height: '40px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                paddingBottom: '3px',
-              }}
-            >
-              Submit
-            </Button>
-          </Form.Item>
-          {/* <a href="#" className="dash-btn-two tran3s me-3">
+          <div className="button-group d-flex flex-row align-items-center justify-content-start mt-50 w-100">
+            <Form.Item className="mb-0">
+              <Button
+                className="dash-btn-two tran3s me-3"
+                htmlType="submit"
+                style={{
+                  height: '40px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  paddingBottom: '3px',
+                }}
+              >
+                Submit
+              </Button>
+            </Form.Item>
+            {/* <a href="#" className="dash-btn-two tran3s me-3">
               Next
             </a> */}
-          <Link
-            href="/dashboard/ta/parameter"
-            className="dash-cancel-btn tran3s"
-            type="button"
-            onClick={() => showLoader(true)}
-          >
-            Cancel
-          </Link>
-        </div>
-      </Form>
+            <Link
+              href="/dashboard/ta/parameter"
+              className="dash-cancel-btn tran3s"
+              type="button"
+              onClick={() => setLoading(true)}
+            >
+              Cancel
+            </Link>
+          </div>
+        </Form>
+      </Spin>
     </>
   );
 };

@@ -38,7 +38,7 @@ export async function createUser(formData: any) {
         saveUser: ['failed to create user'],
       },
     };
-  };
+  }
 
   console.info('create user successfully', user);
   /* create register-payload */
@@ -46,8 +46,8 @@ export async function createUser(formData: any) {
     user: {
       id: user.id,
       name: user.name,
-      email: user.email
-    }
+      email: user.email,
+    },
   };
 
   /* set-register session */
@@ -59,7 +59,7 @@ export async function createUser(formData: any) {
   return {
     success: true,
     data: {
-      user: registerPayloadSession.user
+      user: registerPayloadSession.user,
     },
   };
 }
@@ -100,8 +100,8 @@ export async function createCandidate(formData: any) {
     candidate: {
       id: candidate.id,
       phone_number: candidate.phone_number,
-      date_of_birth: candidate.date_of_birth
-    }
+      date_of_birth: candidate.date_of_birth,
+    },
   };
 
   /* set register-session */
@@ -130,16 +130,16 @@ export async function storeProfilePhoto(manipulatedPhotoFile: any) {
       created_at: new Date(Date.now()),
       updated_at: new Date(Date.now()),
       documentTypeId: 1, // THE ID OF THE DOCUMENT TYPE
-      candidate_id: regSession.candidate.id
-    }
+      candidate_id: regSession.candidate.id,
+    },
   });
   console.info('Result after storing document...', document);
-  if(!document) {
+  if (!document) {
     return {
       success: false,
-      message: 'Failed to store photo profile, try-again!'
+      message: 'Failed to store photo profile, try-again!',
     };
-  };
+  }
   console.info('Store profile photo successfully', document);
 
   /* Close connection */
@@ -147,12 +147,12 @@ export async function storeProfilePhoto(manipulatedPhotoFile: any) {
 
   return {
     success: true,
-    data: 'Success to store photo profile'
+    data: 'Success to store photo profile',
   };
-};
+}
 
 /**
- * 
+ *
  * @param formData State of candidate input-data profile
  * @returns Object contains "success" and "message" properties if fails and return "success" and "data" properties is susccess.
  */
@@ -162,26 +162,26 @@ export async function updateCandidate(formData: any) {
   /* Updating candidate data */
   const candidate = await prisma.candidates.update({
     where: {
-      id: regSession.candidate.id
+      id: regSession.candidate.id,
     },
     data: {
       blood_type: formData.bloodType,
       ethnicity: formData.ethnicity,
       gender: formData.gender,
-      marital_status: formData.maritalStatus,
+      maritalStatus: formData.maritalStatus,
       /* Failed to insert, unsync with master data citys -> create view or db seed master city */
       // birthCityId: formData.profile.placeOfBirth, /* VALUE MUST BE THE ID OF CITYS */
       birthCity: formData.placeOfBirth,
       religion: formData.religion,
-    }
+    },
   });
   console.info('Result after updating candidate data...', candidate);
-  if(!candidate) {
+  if (!candidate) {
     return {
       success: false,
-      message: 'Failed to update candidate data, try again'
+      message: 'Failed to update candidate data, try again',
     };
-  };
+  }
   console.info('Update candidate data successfully', candidate);
 
   /* Close connection */
@@ -189,16 +189,19 @@ export async function updateCandidate(formData: any) {
 
   return {
     success: true,
-    data: candidate
-  }
-};
+    data: candidate,
+  };
+}
 
 /**
- * 
+ *
  * @param formData State of candidate input-data Address
  * @param isCurrent Is the condition when the candidate current address same as the primary address.
  */
-export async function storingAddress(formData: any, isCurrent: string | undefined) {
+export async function storingAddress(
+  formData: any,
+  isCurrent: string | undefined,
+) {
   const regSession = await getUserSession('reg');
   console.info('reg-session-data', regSession);
   /**
@@ -209,33 +212,35 @@ export async function storingAddress(formData: any, isCurrent: string | undefine
   console.info('Begin store address data...');
   console.info('Checking the current address...');
   console.info('Is Current Address?...', isCurrent);
-  if(isCurrent === "on") {
-    console.info('Candidate has the same current address as the primary address...')
+  if (isCurrent === 'on') {
+    console.info(
+      'Candidate has the same current address as the primary address...',
+    );
     /* Store 2 address data, one of them "isCurrent" property "true" */
     const currentAddress = await prisma.addresses.create({
       data: {
-        candidate_id: regSession.candidate.id,
+        candidateId: regSession.candidate.id,
         street: formData.permanentAddress,
         country: formData.country,
         city: formData.city,
-        zip_code: formData.zipCode,
+        zipCode: formData.zipCode,
         rt: formData.rt,
         rw: formData.rw,
         subdistrict: formData.subdistrict,
         village: formData.village,
-        is_current: 'true',
-        current_address: formData.currentAddress,
-        created_at: new Date(Date.now())
-      }
+        isCurrent: 'true',
+        currentAddress: formData.currentAddress,
+        createdAt: new Date(Date.now()),
+      },
     });
     console.info('Result after storing address...', currentAddress);
     /* Guard check */
-    if(!currentAddress) {
+    if (!currentAddress) {
       return {
         success: false,
-        message: 'Failed to storing address, try again'
+        message: 'Failed to storing address, try again',
       };
-    };
+    }
     console.info('Storing address data successfully', currentAddress);
 
     /* Close connection */
@@ -243,51 +248,53 @@ export async function storingAddress(formData: any, isCurrent: string | undefine
 
     return {
       success: true,
-      data: currentAddress
+      data: currentAddress,
     };
-  };
-  console.info('Candidate current address is different from the primary address...');
+  }
+  console.info(
+    'Candidate current address is different from the primary address...',
+  );
   /**
    * Store address data here
    */
   const address = await prisma.addresses.createMany({
     data: [
       {
-        candidate_id: regSession.candidate.id,
+        candidateId: regSession.candidate.id,
         street: formData.permanentAddress,
         country: formData.country,
         city: formData.city,
-        zip_code: formData.zipCode,
+        zipCode: formData.zipCode,
         rt: formData.rt,
         rw: formData.rw,
         subdistrict: formData.subdistrict,
         village: formData.village,
-        is_current: 'false',
-        created_at: new Date(Date.now())
+        isCurrent: 'false',
+        createdAt: new Date(Date.now()),
       },
       {
-        candidate_id: regSession.candidate.id,
+        candidateId: regSession.candidate.id,
         street: formData.currentAddress,
         country: formData.country,
         city: formData.city,
-        zip_code: formData.zipCode,
+        zipCode: formData.zipCode,
         rt: formData.rt,
         rw: formData.rw,
         subdistrict: formData.subdistrict,
         village: formData.village,
-        is_current: 'true',
-        current_address: formData.currentAddress,
-        created_at: new Date(Date.now())
-      }
-    ]
+        isCurrent: 'true',
+        currentAddress: formData.currentAddress,
+        createdAt: new Date(Date.now()),
+      },
+    ],
   });
   console.info('Resuult after storing address data...', address);
   /* Guard check */
-  if(!address) {
+  if (!address) {
     return {
       success: false,
-      message: 'Failed to storing address-data, try again'
-    }
+      message: 'Failed to storing address-data, try again',
+    };
   }
   console.info('Storing address data successfully...', address);
 
@@ -296,12 +303,12 @@ export async function storingAddress(formData: any, isCurrent: string | undefine
 
   return {
     success: true,
-    data: address
+    data: address,
   };
-};
+}
 
 /**
- * 
+ *
  * @param formData State of candidate input-data Familys
  */
 export async function storeFamilys(formData: any) {
@@ -322,16 +329,16 @@ export async function storeFamilys(formData: any) {
   let manipulatedFamily: any[] = [];
   familyList.forEach((value: any) => {
     const familys = {
-      candidate_id: regSession.candidate.id,
+      candidateId: regSession.candidate.id,
       name: value.name,
       /* UBAH GENDER ID JADI GENDER NCARCHAR */
       gender: value.gender, // change from gender_id to gender
-      date_of_birth: value.dateOfBirth,
+      dateOfBirth: value.dateOfBirth,
       relationStatus: value.relation,
-      created_at: new Date(Date.now())
+      createdAt: new Date(Date.now()),
     };
     /* Store to defined empty array */
-    if(familys.name === undefined) {
+    if (familys.name === undefined) {
       return;
     } else {
       manipulatedFamily.push(familys);
@@ -342,16 +349,16 @@ export async function storeFamilys(formData: any) {
    * await prisma.createMany()
    */
   const familys = await prisma.families.createMany({
-    data: manipulatedFamily
+    data: manipulatedFamily,
   });
   console.info('Result after storing familys data...', familys);
   /* Guard check */
-  if(!familys) {
+  if (!familys) {
     return {
       success: false,
-      message: 'Failed to store family-data, try again'
+      message: 'Failed to store family-data, try again',
     };
-  };
+  }
   console.info('Storing familys data successfully...', familys);
 
   /* Close connection */
@@ -359,20 +366,25 @@ export async function storeFamilys(formData: any) {
 
   return {
     success: true,
-    data: familys
+    data: familys,
   };
-};
+}
 
 /**
- * 
+ *
  * @param formData State of candidate input-data Education
  * @summary Done Fixed
  */
-export async function storeEducation(formData: any, startyear: number, endYear: number, isFormal: boolean | undefined) {
+export async function storeEducation(
+  formData: any,
+  startyear: number,
+  endYear: number,
+  isFormal: boolean | undefined,
+) {
   const regSession = await getUserSession('reg');
   console.info('reg-session-data');
   /* Storing Education */
-  if(isFormal === true) {
+  if (isFormal === true) {
     console.info('Begin storing education data...');
     const education = await prisma.educations.create({
       data: {
@@ -382,50 +394,55 @@ export async function storeEducation(formData: any, startyear: number, endYear: 
         start_year: startyear,
         end_year: endYear,
         university_name: formData.schoolName[0],
-        city_of_school: formData.cityOfSchool,
+        cityOfSchool: formData.cityOfSchool,
         gpa: formData.gpa,
         is_latest: false,
         is_graduate: false,
-        created_at: new Date(Date.now())
-      }
+        created_at: new Date(Date.now()),
+      },
     });
     console.info('Result after storing education data...', education);
     /* Guard check */
-    if(!education) {
+    if (!education) {
       return {
         success: false,
-        message: 'Failed to store education-data'
+        message: 'Failed to store education-data',
       };
-    };
+    }
     console.info('Storing education data successfully...', education);
 
     /* Close connection */
     await prisma.$disconnect();
 
     return {
-        success: true,
-        data: education
+      success: true,
+      data: education,
     };
-  };
+  }
 
   return {
     success: true,
-    data: 'Formal checkbox unchecked, no-store education'
+    data: 'Formal checkbox unchecked, no-store education',
   };
-};
+}
 
 /**
- * 
+ *
  * @param formData State of candidate input-data certifications
- * @returns 
+ * @returns
  * @summary Done Fixed
  */
-export async function storeCertification(formData: any, month: number, year: number, isCertificates: boolean | undefined) {
+export async function storeCertification(
+  formData: any,
+  month: number,
+  year: number,
+  isCertificates: boolean | undefined,
+) {
   const regSession = await getUserSession('reg');
   console.info('reg-session-data', regSession);
   /* Storing  certification */
   console.info('Begin to maipulating certification data...');
-  if(isCertificates === true) {
+  if (isCertificates === true) {
     /**
      * New Certificates Schema
      * id, name, institution, issuedData, candidate-ID
@@ -433,30 +450,30 @@ export async function storeCertification(formData: any, month: number, year: num
     /* Transform to array of object */
     const certificationList = transformToArrayOfObject(formData);
     let manipulatedCertifications: any[] = [];
-    certificationList.forEach(value => {
+    certificationList.forEach((value) => {
       const certification = {
-        candidate_id: regSession.candidate.id,
-        certificate_id: Number(value.certificationName[0]),
-        institution_name: value.institution,
-        issued_date: new Date(month, year),
-        created_at: new Date(Date.now())
+        candidateId: regSession.candidate.id,
+        certificateId: Number(value.certificationName[0]),
+        institutionName: value.institution,
+        issuedDate: new Date(month, year),
+        created_at: new Date(Date.now()),
       };
       /* Store to defined empty array */
       manipulatedCertifications.push(certification);
     });
-    console.info('Manipulated certifications...', manipulatedCertifications)
+    console.info('Manipulated certifications...', manipulatedCertifications);
     console.info('Begin to storing certification data...');
     /* Store certifications here */
     const certifications = await prisma.certifications.createMany({
-      data: manipulatedCertifications
+      data: manipulatedCertifications,
     });
     console.info('Result after store certifications...', certifications);
-    if(!certifications) {
+    if (!certifications) {
       return {
         success: false,
-        message: 'Failed to store certification data, try again'
+        message: 'Failed to store certification data, try again',
       };
-    };
+    }
     console.info('Storing certifications successfully...', certifications);
 
     /* Close connection */
@@ -464,17 +481,17 @@ export async function storeCertification(formData: any, month: number, year: num
 
     return {
       success: true,
-      data: certifications
+      data: certifications,
     };
-  };
+  }
   return {
     success: true,
-    data: 'Certificates checkbox unchecked'
-  }
-};
+    data: 'Certificates checkbox unchecked',
+  };
+}
 
 /**
- * 
+ *
  * @param formData State of candidate input-data skills.
  * @summary Done Fixed
  */
@@ -483,29 +500,29 @@ export async function storeSkills(formData: any) {
   console.info('reg-session-data', regSession);
   /**
    * Store to candidate-skills table.
-   * 
+   *
    */
   console.log('Begin manipulating skills data...');
   let manipulatedSkills: any[] = [];
   const skillList: any[] = formData;
-  skillList.forEach(value => {
+  skillList.forEach((value) => {
     const skill = {
-      candidate_id: regSession.candidate.id,
-      skill_id: value
+      candidateId: regSession.candidate.id,
+      skillId: value,
     };
     /* Store manipulated data to empty array */
     manipulatedSkills.push(skill);
   });
   console.info('Manipulated skills data...', manipulatedSkills);
   console.info('Begin store skills data...');
-  const skills = await prisma.candidate_skills.createMany({
-    data: manipulatedSkills
+  const skills = await prisma.candidateSkills.createMany({
+    data: manipulatedSkills,
   });
   /* Guard check */
-  if(!skills) {
+  if (!skills) {
     return {
       success: false,
-      message: 'Failed to store skills data, try again'
+      message: 'Failed to store skills data, try again',
     };
   }
   console.info('Result after storing skills data...', skills);
@@ -515,14 +532,14 @@ export async function storeSkills(formData: any) {
 
   return {
     success: true,
-    data: skills
+    data: skills,
   };
-};
+}
 
 /**
- * 
+ *
  * @param formData State of candidate input-data language
- * @returns 
+ * @returns
  */
 export async function storeLanguage(formData: any) {
   const regSession = await getUserSession('reg');
@@ -531,12 +548,12 @@ export async function storeLanguage(formData: any) {
   console.info('Begin manipulating language data...');
   const languageList = transformToArrayOfObject(formData);
   let manipulatedLanguage: any[] = [];
-  languageList.forEach(value => {
+  languageList.forEach((value) => {
     const language = {
-      candidate_id: regSession.candidate.id,
+      candidateId: regSession.candidate.id,
       name: value.name,
       level: value.level,
-      created_at: new Date(Date.now())
+      createdAt: new Date(Date.now()),
     };
     /* Store value to defined empty array */
     manipulatedLanguage.push(language);
@@ -549,16 +566,16 @@ export async function storeLanguage(formData: any) {
    * return the value
    */
   const language = await prisma.languages.createMany({
-    data: manipulatedLanguage
+    data: manipulatedLanguage,
   });
   console.info('Result after storing language data...', language);
   /* Guard check */
-  if(!language) {
+  if (!language) {
     return {
       success: false,
-      message: 'Failed to store skills data, try again'
+      message: 'Failed to store skills data, try again',
     };
-  };
+  }
   console.info('Storing language data successfully...', language);
 
   /* Close connection */
@@ -566,20 +583,20 @@ export async function storeLanguage(formData: any) {
 
   return {
     success: true,
-    data: language
+    data: language,
   };
-};
+}
 
 export async function storeExperiences(formData: any, isExperienced: string) {
   /* Getting reg-session data */
   const regSession = await getUserSession('reg');
   console.info('reg-session-data', regSession);
-  if(isExperienced === "Professional") {
+  if (isExperienced === 'Professional') {
     /* Begin to store Experience data */
     const experienceList: any[] = transformToArrayOfObject(formData);
     console.info('LENGTH', experienceList.length);
     let manipulatedExperienceList: any[] = [];
-    experienceList.forEach(value => {
+    experienceList.forEach((value) => {
       const experience = {
         candidateId: regSession.candidate.id,
         job_title: value.jobTitle,
@@ -591,47 +608,50 @@ export async function storeExperiences(formData: any, isExperienced: string) {
         salary: value.currentSalary,
         start_at: value.startYear,
         end_at: value.endYear,
-        is_currently: value.currentYear === "on" ? true : false,
-        created_at: new Date(Date.now())
+        is_currently: value.currentYear === 'on' ? true : false,
+        created_at: new Date(Date.now()),
       };
-      if(experience.job_title === undefined) {
+      if (experience.job_title === undefined) {
         return;
-      }else {
+      } else {
         manipulatedExperienceList.push(experience);
-      };
+      }
     });
-    console.info('manipulated experience list result', manipulatedExperienceList)
+    console.info(
+      'manipulated experience list result',
+      manipulatedExperienceList,
+    );
     console.info('Begin to store Experience data...');
     const experience = await prisma.working_experiences.createMany({
-      data: manipulatedExperienceList
+      data: manipulatedExperienceList,
     });
     console.info('Result after storing experience...', experience);
     /* Guard check */
-    if(!experience) {
+    if (!experience) {
       return {
         success: false,
-        message: 'Failed to store experience, try again'
+        message: 'Failed to store experience, try again',
       };
-    };
+    }
     console.info('Storing experience data successfully...', experience);
     /* Updating expected-salary data */
     console.info('Begin updating expected-salary data...');
     const candidate = await prisma.candidates.update({
       where: {
-        id: regSession.candidate.id
+        id: regSession.candidate.id,
       },
       data: {
-        current_salary: Number(formData.expectedSalary)
-      }
+        current_salary: Number(formData.expectedSalary),
+      },
     });
     console.info('Result after updating expected-salary data...', candidate);
     /* Guard check */
-    if(!candidate) {
+    if (!candidate) {
       return {
         success: false,
-        message: 'Failed to update expected-salary data, try again'
+        message: 'Failed to update expected-salary data, try again',
       };
-    };
+    }
     console.info('Updating expected-salary data successfully...', candidate);
 
     /* Close connection */
@@ -639,25 +659,25 @@ export async function storeExperiences(formData: any, isExperienced: string) {
 
     return {
       success: true,
-      data: experience
+      data: experience,
     };
-  } else if(isExperienced === "Fresh Graduate") {
+  } else if (isExperienced === 'Fresh Graduate') {
     console.info('Begin updating expected-salary data...');
     const candidate = await prisma.candidates.update({
       where: {
-        id: regSession.candidate.id
+        id: regSession.candidate.id,
       },
       data: {
-        current_salary: Number(formData.expectedSalary)
-      }
+        current_salary: Number(formData.expectedSalary),
+      },
     });
     /* Guard check */
-    if(!candidate) {
+    if (!candidate) {
       return {
         success: false,
-        message: 'Failed to update expected-salary data, try again'
+        message: 'Failed to update expected-salary data, try again',
       };
-    };
+    }
     console.info('Updating expected-salary data successfully...', candidate);
 
     /* Close connection */
@@ -665,52 +685,55 @@ export async function storeExperiences(formData: any, isExperienced: string) {
 
     return {
       success: true,
-      data: candidate
+      data: candidate,
     };
-  };
+  }
   return {
     success: true,
-    message: 'No operation performed!'
+    message: 'No operation performed!',
   };
-};
+}
 
 export async function storeEmergencyContact(formData: any) {
   const regSession = await getUserSession('reg');
   console.info('reg-session-data', regSession);
   /* Begin to store Emergency contact-data */
   console.info('Begin to store emergency contact...');
-  const emergencyContact = await prisma.emergency_contacts.create({
+  const emergencyContact = await prisma.emergencyContacts.create({
     data: {
-      phone_number: formData.emergencyContactPhoneNumber,
+      phoneNumber: formData.emergencyContactPhoneNumber,
       name: formData.emergencyContactName,
-      relation_status: formData.emergencyContactRelation
-    }
+      relationStatus: formData.emergencyContactRelation,
+    },
   });
   console.info('Result after store emergency contact...', emergencyContact);
-  if(!emergencyContact) {
+  if (!emergencyContact) {
     return {
       success: false,
-      message: 'Failed to store emergency contact'
+      message: 'Failed to store emergency contact',
     };
-  };
+  }
   console.info('Storing emergency contact successfully', emergencyContact);
   /* Update emergencyContactID for candidate */
   console.info('Begin to updating candidate emergency conatact ID...');
   const updateCandidate = await prisma.candidates.update({
     where: {
-      id: regSession.candidate.id
+      id: regSession.candidate.id,
     },
     data: {
-      emengencyContactId: emergencyContact.id
-    }
+      emengencyContactId: emergencyContact.id,
+    },
   });
-  console.info('Result after updating candidate emergency contact ID...', updateCandidate);
-  if(!updateCandidate) {
+  console.info(
+    'Result after updating candidate emergency contact ID...',
+    updateCandidate,
+  );
+  if (!updateCandidate) {
     return {
       success: false,
-      message: 'Failed to updating candidate emergency contact ID...'
+      message: 'Failed to updating candidate emergency contact ID...',
     };
-  };
+  }
   /* Updating emergency contact-ID */
 
   /* Close connection */
@@ -718,12 +741,12 @@ export async function storeEmergencyContact(formData: any) {
 
   return {
     success: true,
-    data: emergencyContact
+    data: emergencyContact,
   };
-};
+}
 
 /**
- * 
+ *
  * @param formData State of candidate input-data question answer.
  */
 export async function storeCandidateQuestions(formData: any) {
@@ -737,36 +760,39 @@ export async function storeCandidateQuestions(formData: any) {
         candidateId: regSession.candidate.id,
         questionId: 1,
         answer: formData.noticePeriod,
-        created_at: new Date(Date.now())
+        created_at: new Date(Date.now()),
       },
       {
         candidateId: regSession.candidate.id,
         questionId: 2,
         answer: [formData.everWorkedMonth, formData.everWorkedYear].toString(),
-        created_at: new Date(Date.now())
+        created_at: new Date(Date.now()),
       },
       {
         candidateId: regSession.candidate.id,
         questionId: 3,
         answer: [formData.diseaseName, formData.diseaseYear].toString(),
-        created_at: new Date(Date.now())
+        created_at: new Date(Date.now()),
       },
       {
         candidateId: regSession.candidate.id,
         questionId: 4,
         answer: [formData.relationName, formData.relationPosition].toString(),
-        created_at: new Date(Date.now())
-      }
-    ]
+        created_at: new Date(Date.now()),
+      },
+    ],
   });
-  console.info('Result after storing candidate-question data...', candidateQuestions);
+  console.info(
+    'Result after storing candidate-question data...',
+    candidateQuestions,
+  );
   /* Guard check */
-  if(!candidateQuestions) {
+  if (!candidateQuestions) {
     return {
       success: false,
-      message: 'Failed to store candidate-question data, try again'
+      message: 'Failed to store candidate-question data, try again',
     };
-  };
+  }
   console.info('Storing candidate-question data...', candidateQuestions);
 
   /* Close connection */
@@ -774,9 +800,9 @@ export async function storeCandidateQuestions(formData: any) {
 
   return {
     success: true,
-    data: candidateQuestions
+    data: candidateQuestions,
   };
-};
+}
 
 export async function storeCurriculumVitae(manipulatedCurriculumVitae: any) {
   const regSession = await getUserSession('reg');
@@ -793,62 +819,71 @@ export async function storeCurriculumVitae(manipulatedCurriculumVitae: any) {
       created_at: new Date(Date.now()),
       updated_at: new Date(Date.now()),
       documentTypeId: 2,
-      candidate_id: regSession.candidate.id
-    }
+      candidate_id: regSession.candidate.id,
+    },
   });
   console.info('Result after storing curriculum vitae document...', document);
   /* Guard check */
-  if(!document) {
+  if (!document) {
     return {
       success: false,
-      message: 'Failed to store curriculum-vitae document, try again'
+      message: 'Failed to store curriculum-vitae document, try again',
     };
-  };
+  }
   console.info('Store curriculum-vitae document successfully...', document);
 
   /* Close connection */
   await prisma.$disconnect();
 
   /* set auth-session */
-  await setUserSession('auth', { user: { id: regSession.user.id }, candidate: { id: regSession.candidate.id } });
+  await setUserSession('auth', {
+    user: { id: regSession.user.id },
+    candidate: { id: regSession.candidate.id },
+  });
 
   /* delete reg-session */
   await deleteSession('reg');
 
   return {
     success: true,
-    data: 'Success store CV'
+    data: 'Success store CV',
   };
-};
+}
 
 export async function updateVerifiedUserEmail(email: string) {
   console.info('Begin updating user email verification status...');
   const updateUser = await prisma.users.update({
     where: {
-      email: email
+      email: email,
     },
     data: {
-      is_email_verified: true
-    }
+      is_email_verified: true,
+    },
   });
-  console.info('Result after updating user email verification status...', updateUser);
+  console.info(
+    'Result after updating user email verification status...',
+    updateUser,
+  );
   /* Guard check */
-  if(!updateUser) {
+  if (!updateUser) {
     return {
       success: false,
-      message: 'Failed to update user email verification status!'
+      message: 'Failed to update user email verification status!',
     };
-  };
-  console.info('Update user email verification status successfully...', updateUser);
+  }
+  console.info(
+    'Update user email verification status successfully...',
+    updateUser,
+  );
 
   /* Close connection */
   await prisma.$disconnect();
 
   return {
     success: true,
-    data: updateUser
+    data: updateUser,
   };
-};
+}
 
 export async function checkEmailVerifiedStatus(): Promise<boolean> {
   console.info('Getting user reg-session data...');
@@ -856,15 +891,15 @@ export async function checkEmailVerifiedStatus(): Promise<boolean> {
   console.info('reg-session -> ', regSession);
   const userEmailVerifiedStatus = await prisma.users.findUnique({
     where: {
-      email: regSession.user.email
-    }
+      email: regSession.user.email,
+    },
   });
   console.info('user-data -> ', userEmailVerifiedStatus);
-  if(!userEmailVerifiedStatus?.is_email_verified) {
+  if (!userEmailVerifiedStatus?.is_email_verified) {
     console.info('Email is not verified...');
     return false;
   }
   console.info('Email is verified...');
   return true;
-};
+}
 /* NOT USED */

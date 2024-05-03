@@ -68,9 +68,9 @@ const EmployParameterArea: React.FC<Props> = async ({ searchParams }) => {
 
   const offset = (Number(page) - 1) * Number(perPage);
 
-  const getData = () => {
+  const positionLevelRequirementData = await (async () => {
     if (searchQuery) {
-      return searchPositionLevelRequirementData(
+      return await searchPositionLevelRequirementData(
         searchQuery,
         offset,
         Number(perPage),
@@ -85,11 +85,16 @@ const EmployParameterArea: React.FC<Props> = async ({ searchParams }) => {
             total: total,
           };
         })
-        .catch((e) =>
-          console.log('Error searching position level requirements: ', e),
-        );
+        .catch((e) => {
+          console.log('Error searching position level requirements: ', e);
+
+          return {
+            data: [],
+            total: 0,
+          };
+        });
     } else {
-      return getAllPositionLevelRequirementData(offset, Number(perPage))
+      return await getAllPositionLevelRequirementData(offset, Number(perPage))
         .then((res) => {
           const data = res?.data ?? [];
 
@@ -100,11 +105,16 @@ const EmployParameterArea: React.FC<Props> = async ({ searchParams }) => {
             total: total,
           };
         })
-        .catch((e) =>
-          console.log('Error getting position level requirements: ', e),
-        );
+        .catch((e) => {
+          console.log('Error getting position level requirements: ', e);
+
+          return {
+            data: [],
+            total: 0,
+          };
+        });
     }
-  };
+  })();
 
   // if (searchQuery) {
   //   offset = 0;
@@ -126,7 +136,7 @@ const EmployParameterArea: React.FC<Props> = async ({ searchParams }) => {
   //   router.replace(`${pathname}?${params.toString()}`);
   // }, 500);
 
-  const positionLevelRequirementData = await getData();
+  // const positionLevelRequirementData = await getData();
 
   // const userData = await getUserData();
 
@@ -138,7 +148,7 @@ const EmployParameterArea: React.FC<Props> = async ({ searchParams }) => {
       {/* <DashboardHeader /> */}
       {/* header end */}
 
-      <div className="job-fpk-header d-sm-flex flex-wrap align-items-center justify-content-between mb-40 lg-mb-30">
+      {/* <div className="job-fpk-header d-sm-flex flex-wrap align-items-center justify-content-between mb-40 lg-mb-30">
         <h2 className="main-title m0 flex-grow-1">
           Position Level Requirements
         </h2>
@@ -149,15 +159,16 @@ const EmployParameterArea: React.FC<Props> = async ({ searchParams }) => {
             <EmployShortSelect />
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="bg-white card-box border-20">
         <EmployJobParameter
-          positionLevelRequirementData={positionLevelRequirementData?.data}
+          positionLevelRequirementData={positionLevelRequirementData}
+          perPage={perPage}
         />
       </div>
 
-      <div className="d-flex justify-content-center mt-30">
+      {/* <div className="d-flex justify-content-center mt-30">
         <Pagination
           pageRangeDisplayed={3}
           totalData={positionLevelRequirementData?.total}
@@ -168,29 +179,7 @@ const EmployParameterArea: React.FC<Props> = async ({ searchParams }) => {
               : false
           }
         />
-        {/* <ul className="style-none d-flex align-items-center">
-          <li>
-            <a href="#" className="active">
-              1
-            </a>
-          </li>
-          <li>
-            <a href="#">2</a>
-          </li>
-          <li>
-            <a href="#">3</a>
-          </li>
-          <li>..</li>
-          <li>
-            <a href="#">7</a>
-          </li>
-          <li>
-            <a href="#">
-              <i className="bi bi-chevron-right"></i>
-            </a>
-          </li>
-        </ul> */}
-      </div>
+      </div> */}
     </>
   );
 };

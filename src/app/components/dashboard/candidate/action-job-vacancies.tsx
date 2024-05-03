@@ -16,7 +16,7 @@ const ActionJobVacancies = ({ jobId, setLoading }) => {
         <Link
           className="dropdown-item"
           href={{
-            pathname: `/dashboard/ta/submit-job/${encodeURIComponent(jobId)}}`,
+            pathname: `/dashboard/ta/submit-job/${jobId}}`,
           }}
           onClick={() => setLoading(true)}
         >

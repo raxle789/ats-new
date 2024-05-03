@@ -1,20 +1,12 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import * as messages from '@/ui/message';
 import JobVacancyForm from '../../forms/job-vacancy-form';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-// import Image from 'next/image';
-// import DashboardHeader from '../candidate/dashboard-header';
-import ReactQuill from 'react-quill';
-// import StateSelect from '../candidate/state-select';
-// import CitySelect from '../candidate/city-select';
-// import CountrySelect from '../candidate/country-select';
-// import EmployExperience from './employ-experience';
-// import icon from '@/assets/dashboard/images/icon/icon_16.svg';
-// import NiceSelect from '@/ui/nice-select';
-// import { SmileOutlined } from '@ant-design/icons';
 import {
   Cascader,
+  message,
   Alert,
   Spin,
   DatePicker,
@@ -111,7 +103,7 @@ const SubmitJobItem = ({
 
   const pathname = usePathname();
 
-  const [api, contextHolder] = notification.useNotification();
+  const [api, contextHolder] = message.useMessage();
 
   const [form] = Form.useForm();
 
@@ -244,43 +236,66 @@ const SubmitJobItem = ({
     }
   }
 
-  const formModalRef = useRef(null);
-
   function handleSubmitJobVacancy(values) {
-    setParameterState({});
+    setLoading(true);
 
     confirm({
-      title: 'Do you want to submit job posting?',
+      title: 'Confirmation',
       icon: <ExclamationCircleFilled />,
       centered: true,
-      content:
-        'When clicked the OK button, this dialog will be closed after 1 second',
+      content: 'Do you want to submit this job vacancy?',
       onOk() {
         return new Promise<void>((resolve, reject) => {
-          setTimeout(() => {
-            api.success({
-              message: 'Notification',
-              description: <p>Successfully Create New Job Posting</p>,
-              placement: 'topRight',
-            });
+          setTimeout(async () => {
             if (jobVacancyData && !_.isEmpty(jobVacancyData)) {
-              submitJobVacancy(taId, jobVacancyData?.jobId, values)
-                .then(() => {
-                  form.resetFields();
-                })
-                .catch((e) => console.log('Error edit job vacancy: ', e));
+              const validate = await submitJobVacancy(
+                taId,
+                jobVacancyData?.jobId,
+                values,
+              );
+
+              if (validate?.success) {
+                messages.success(api, validate?.message);
+              } else {
+                messages.error(api, validate?.message);
+              }
+
+              setParameterState({});
+
+              form.resetFields();
+
+              router.refresh();
             } else {
-              submitJobVacancy(taId, values)
-                .then(() => {
-                  form.resetFields();
-                })
-                .catch((e) => console.log('Error create new job vacancy: ', e));
+              const validate = await submitJobVacancy(taId, values);
+
+              if (validate?.success) {
+                messages.success(api, validate?.message);
+              } else {
+                messages.error(api, validate?.message);
+              }
+
+              setParameterState({});
+
+              form.resetFields();
+
+              router.refresh();
             }
-            resolve();
+            resolve(
+              new Promise<void>((resolve) => {
+                setTimeout(
+                  () => resolve(router.replace('/dashboard/ta/jobs')),
+                  1000,
+                );
+              }),
+            );
           }, 2000);
-        }).catch(() => console.log('Oops errors!'));
+        }).catch((e) => console.log('Error Submit Job Vacancy: ', e));
       },
-      onCancel() {},
+      onCancel() {
+        setLoading(false);
+
+        router.refresh();
+      },
     });
   }
 
@@ -293,7 +308,9 @@ const SubmitJobItem = ({
     <>
       {contextHolder}
 
-      <div>
+      <Spin spinning={loading} fullscreen />
+
+      {/* <div>
         <Modal
           title="Choose FPK"
           centered
@@ -339,7 +356,7 @@ const SubmitJobItem = ({
             </Form.Item>
           </Form>
         </Modal>
-      </div>
+      </div> */}
 
       {/* <Form onFinish={(values) => console.info(values)}>
         <div className="dash-input-wrapper mb-30">
@@ -409,40 +426,43 @@ const SubmitJobItem = ({
         </Form.Item>
       </Form> */}
 
-      <Spin spinning={loading}>
-        <JobVacancyForm
-          efpkData={efpkData}
-          jobTitleData={jobTitleData}
-          jobFunctionData={jobFunctionData}
-          employmentStatusData={employmentStatusData}
-          positionLevelData={positionLevelData}
-          verticalData={verticalData}
-          departmentData={department}
-          lineIndustryData={lineIndustryData}
-          regionData={regionData}
-          workLocationData={workLocationData}
-          genderData={genderData}
-          skillData={skillData}
-          certificateData={certificateData}
-          taData={taData}
-          userData={userData}
-          form={form}
-          handleJobVacancy={handleSubmitJobVacancy}
-          handleEfpkChange={handleEfpkChange}
-          handlePositionLevelChange={handlePositionLevelChange}
-          handleVerticalChange={handleVerticalChange}
-          parameterState={parameterState}
-          setParameterState={setParameterState}
-          // ageParameterState={ageParameterState}
-          // setAgeParameterState={setAgeParameterState}
-          // genderParameterState={genderParameterState}
-          // setGenderParameterState={setGenderParameterState}
-          // skillParameterState={skillParameterState}
-          // setSkillParameterState={setSkillParameterState}
-          // certificateParameterState={certificateParameterState}
-          // setCertificateParameterState={setCertificateParameterState}
-        />
-      </Spin>
+      <h2 className="main-title">
+        {jobVacancyData && !_.isEmpty(jobVacancyData)
+          ? 'Edit Job'
+          : 'Post a New Job'}
+      </h2>
+      <JobVacancyForm
+        efpkData={efpkData}
+        jobTitleData={jobTitleData}
+        jobFunctionData={jobFunctionData}
+        employmentStatusData={employmentStatusData}
+        positionLevelData={positionLevelData}
+        verticalData={verticalData}
+        departmentData={department}
+        lineIndustryData={lineIndustryData}
+        regionData={regionData}
+        workLocationData={workLocationData}
+        genderData={genderData}
+        skillData={skillData}
+        certificateData={certificateData}
+        taData={taData}
+        userData={userData}
+        form={form}
+        handleJobVacancy={handleSubmitJobVacancy}
+        handleEfpkChange={handleEfpkChange}
+        handlePositionLevelChange={handlePositionLevelChange}
+        handleVerticalChange={handleVerticalChange}
+        parameterState={parameterState}
+        setParameterState={setParameterState}
+        // ageParameterState={ageParameterState}
+        // setAgeParameterState={setAgeParameterState}
+        // genderParameterState={genderParameterState}
+        // setGenderParameterState={setGenderParameterState}
+        // skillParameterState={skillParameterState}
+        // setSkillParameterState={setSkillParameterState}
+        // certificateParameterState={certificateParameterState}
+        // setCertificateParameterState={setCertificateParameterState}
+      />
 
       {/* <Form
         form={form}

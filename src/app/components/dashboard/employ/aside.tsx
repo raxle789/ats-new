@@ -80,8 +80,8 @@ const nav_data: {
     id: 6,
     icon: nav_6,
     icon_active: nav_6_active,
-    link: '/dashboard/employ-dashboard/saved-candidate',
-    title: 'Saved Candidate',
+    link: '/dashboard/ta/candidates',
+    title: 'Candidates',
   },
   {
     id: 7,

@@ -60,6 +60,8 @@ const EmployJobParameter: React.FC<Props> = async ({ params }) => {
         .then((res) => {
           const data = res ?? {};
 
+          // console.info(data);
+
           return data;
         })
         .catch((e) => {
@@ -110,8 +112,6 @@ const EmployJobParameter: React.FC<Props> = async ({ params }) => {
 
   return (
     <>
-      <h2 className="main-title">Edit Position Level Requirement</h2>
-
       <EmployJobParameterItem
         positionLevelRequirementData={positionLevelRequirementData}
         positionLevelData={positionLevelData}

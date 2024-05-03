@@ -1846,12 +1846,26 @@
 }
 
 // Custom Styles
-.delete-jobs-btn {
+.action-checkbox-btn {
   padding-top: 3px;
   padding-bottom: 28px;
 }
 
-.delete-jobs-icon {
+.action-checkbox-icon {
   font-size: 25px;
   color: white;
+}
+
+.card-checkbox {
+  width: 50px;
+  height: 50px;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 10px;
+  position: relative;
+  top: 2px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
 }
