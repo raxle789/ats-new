@@ -15,28 +15,37 @@ import logo_era_putih from '@/assets/images/home/logo_era_putih.png';
 import logo_era_career from '@/assets/images/home/logo_era_career.png';
 import { authSession } from '@/libs/Sessions/utils';
 import { userLoggedOut } from '@/libs/Login';
-import { message } from 'antd';
+import { message, Spin } from 'antd';
 /* server components */
 // import { getSession } from '@/lib/Authentication';
 
 const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
   const dispatch = useAppDispatch();
   const { sticky } = useSticky();
-/**
- * Session Context
- */
+  /**
+   * Session Context
+   */
   const session = useAppSessionContext();
   const authSessionValue = session[`${authSession}`];
   const [scrollDistance, setScrollDistance] = useState<number>(0);
+  const [spinning, setSpinning] = useState(false);
+
+  const handleLogout = async () => {
+    setSpinning(true);
+    await userLoggedOut();
+    setTimeout(() => {
+      setSpinning(false);
+    }, 1000);
+  };
 
   useEffect(() => {
-
     const handleScroll = () => {
       setScrollDistance(window.scrollY);
     };
 
     window.addEventListener('scroll', handleScroll);
   }, []);
+
   return (
     <>
       <header
@@ -60,37 +69,35 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
               </div>
               <div className="right-widget ms-auto ms-lg-0 order-lg-2">
                 <ul className="d-flex align-items-center style-none">
-                  {authSessionValue !== undefined ?
-                    (
+                  {authSessionValue !== undefined ? (
+                    <li>
+                      <Link
+                        href="/"
+                        className="btn-five w-100"
+                        onClick={handleLogout}
+                      >
+                        Logout
+                      </Link>
+                    </li>
+                  ) : (
+                    <>
                       <li>
-                        <Link
-                          href="/"
-                          className="btn-five w-100"
-                          onClick={async () => await userLoggedOut() }
+                        <a
+                          href="#"
+                          className={`fw-500 login-btn-three ${dark_style ? 'dark-style' : ''} ${scrollDistance > 100 ? 'btn-when-scroll' : ''} tran3s`}
+                          data-bs-toggle="modal"
+                          data-bs-target="#loginModal"
                         >
-                          Logout
+                          Login
+                        </a>
+                      </li>
+                      <li className="d-none d-md-block ms-3">
+                        <Link href="/register" className="btn-five">
+                          Register
                         </Link>
                       </li>
-                    ) : (
-                      <>
-                        <li>
-                          <a
-                            href="#"
-                            className={`fw-500 login-btn-three ${dark_style ? 'dark-style' : ''} ${scrollDistance > 100 ? 'btn-when-scroll' : ''} tran3s`}
-                            data-bs-toggle="modal"
-                            data-bs-target="#loginModal"
-                          >
-                            Login
-                          </a>
-                        </li>
-                        <li className="d-none d-md-block ms-3">
-                          <Link href="/register" className="btn-five">
-                            Register
-                          </Link>
-                        </li>
-                      </>
-                    )
-                  }
+                    </>
+                  )}
                 </ul>
               </div>
 
@@ -123,10 +130,12 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
                     {/* menus start */}
                     <Menus />
                     {/* menus end */}
+                    {authSessionValue !== undefined && (
                       <li className="d-md-none mt-5">
                         <Link
                           href="#"
                           className="btn-five w-100"
+                          onClick={handleLogout}
                           // onClick={() =>
                           //   dispatch(setAuthState({ newAuthState: false }))
                           // }
@@ -134,11 +143,12 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
                           Logout
                         </Link>
                       </li>
-                      <li className="d-md-none mt-5">
-                        <Link href="/register" className="btn-five w-100">
-                          Register
-                        </Link>
-                      </li>
+                    )}
+                    <li className="d-md-none mt-5">
+                      <Link href="/register" className="btn-five w-100">
+                        Register
+                      </Link>
+                    </li>
                   </ul>
                 </div>
               </nav>
@@ -147,8 +157,11 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
         </div>
       </header>
 
+      {/* loading component */}
+      <Spin spinning={spinning} fullscreen />
+
       {/* login modal start */}
-      <LoginModal />
+      <LoginModal setSpinning={setSpinning} />
       {/* login modal end */}
     </>
   );

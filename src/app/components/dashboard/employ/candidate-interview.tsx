@@ -77,7 +77,8 @@ const CandidateInterview = () => {
     <>
       <div className="d-sm-flex align-items-start justify-content-between mb-10 lg-mb-30">
         <div>
-          <h3 className="main-title m0">Candidates</h3>
+          <h3 className="main-title m0">(internship) Announcer Radio</h3>
+          <p>Daniel Sulistio</p>
         </div>
         <div className="d-flex ms-auto xs-mt-30">
           <div className="short-filter ms-auto">
@@ -94,6 +95,60 @@ const CandidateInterview = () => {
             </div>
           </div>
         </div>
+      </div>
+      <div className="nav-bar-responsive d-flex align-items-center justify-content-center mb-40 pb-3 overflow-auto">
+        <Link href="#" className="d-flex flex-column align-items-center me-4">
+          <span>0</span>
+          <span>Applicants</span>
+        </Link>
+        <Link href="#" className="d-flex flex-column align-items-center me-4">
+          <span>0</span>
+          <span>Shortlisted</span>
+        </Link>
+        <Link href="#" className="d-flex flex-column align-items-center me-4">
+          <span>0</span>
+          <span className="text-center">Talent Pool</span>
+        </Link>
+        <Link
+          href="/dashboard/ta/preview-page/assessment"
+          className="d-flex flex-column align-items-center me-4"
+          onClick={() =>
+            dispatch(setApplicantStep({ currentStep: 'assessment' }))
+          }
+        >
+          <span>3</span>
+          <span>Assessment</span>
+        </Link>
+        <Link
+          href="/dashboard/ta/preview-page/interview"
+          onClick={() =>
+            dispatch(setApplicantStep({ currentStep: 'interview' }))
+          }
+          className="d-flex flex-column align-items-center me-4"
+        >
+          <span>0</span>
+          <span>Interview</span>
+        </Link>
+        <Link href="#" className="d-flex flex-column align-items-center me-4">
+          <span>0</span>
+          <span className="text-center">Ref Check</span>
+        </Link>
+        <Link href="#" className="d-flex flex-column align-items-center me-4">
+          <span>0</span>
+          <span>Offering</span>
+        </Link>
+        <Link href="#" className="d-flex flex-column align-items-center me-4">
+          <span>0</span>
+          <span>MCU</span>
+        </Link>
+        <Link href="#" className="d-flex flex-column align-items-center me-4">
+          <span>0</span>
+          <span>Agreement</span>
+        </Link>
+        <Link href="#" className="d-flex flex-column align-items-center">
+          <span>0</span>
+          <span>Boarding</span>
+        </Link>
       </div>
       <div className="d-flex justify-content-between align-items-center mb-40">
         <div>
