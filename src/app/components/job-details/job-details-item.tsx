@@ -192,7 +192,7 @@ const JobDetailsItem = ({ jobVacancyData, candidateApplyJobVacancy }) => {
                       <Button
                         htmlType="button"
                         disabled={jobVacancyData?.candidateAlreadyApply}
-                        className="btn-one w-100 mt-25"
+                        className="btn-one w-100 mt-25 d-flex align-items-center justify-content-center"
                         onClick={() =>
                           handleCandidateApplyJobVacancy(jobVacancyData?.jobId)
                         }

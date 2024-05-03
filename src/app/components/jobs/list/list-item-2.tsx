@@ -48,45 +48,68 @@ const ListItemTwo = ({ item, setLoading, candidateApplyJobVacancy }) => {
   };
 
   function handleCandidateApplyJobVacancy(jobId) {
-    setLoading(true);
+    // setLoading(true);
 
-    confirm({
-      title: 'Do you want to create new job parameter?',
-      icon: <ExclamationCircleFilled />,
-      centered: true,
-      content:
-        'When clicked the OK button, this dialog will be closed after 1 second',
-      onOk() {
-        return new Promise<void>((resolve, reject) => {
-          setTimeout(() => {
-            api.success({
-              message: 'Notification',
-              description: <p>Successfully Create New Job Parameter</p>,
-              placement: 'topRight',
-            });
-            // console.info(values);
-            candidateApplyJobVacancy(jobId)
-              .then(() => {
-                setLoading(false);
+    // confirm({
+    //   title: 'Do you want to create new job parameter?',
+    //   icon: <ExclamationCircleFilled />,
+    //   centered: true,
+    //   content:
+    //     'When clicked the OK button, this dialog will be closed after 1 second',
+    //   onOk() {
+    //     return new Promise<void>((resolve, reject) => {
+    //       setTimeout(() => {
+    //         api.success({
+    //           message: 'Notification',
+    //           description: <p>Successfully Create New Job Parameter</p>,
+    //           placement: 'topRight',
+    //         });
+    //         // console.info(values);
+    //         candidateApplyJobVacancy(jobId)
+    //           .then(() => {
+    //             setLoading(false);
 
-                router.refresh();
-              })
-              .catch((e: string) => {
-                console.log('Error apply job vacancy: ', e);
+    //             router.refresh();
+    //           })
+    //           .catch((e: string) => {
+    //             console.log('Error apply job vacancy: ', e);
 
-                setLoading(false);
-              });
-            // router.replace('/dashboard/ta/parameter');
-            resolve();
-          }, 2000);
-        }).catch(() => console.log('Oops errors!'));
-      },
-      onCancel() {
-        setLoading(false);
+    //             setLoading(false);
+    //           });
+    //         // router.replace('/dashboard/ta/parameter');
+    //         resolve();
+    //       }, 2000);
+    //     }).catch(() => console.log('Oops errors!'));
+    //   },
+    //   onCancel() {
+    //     setLoading(false);
 
-        router.refresh();
-      },
-    });
+    //     router.refresh();
+    //   },
+    // });
+    new Promise<void>((resolve, reject) => {
+      setTimeout(() => {
+        api.success({
+          message: 'Notification',
+          description: <p>Successfully Create New Job Parameter</p>,
+          placement: 'topRight',
+        });
+        // console.info(values);
+        candidateApplyJobVacancy(jobId)
+          .then(() => {
+            setLoading(false);
+
+            router.refresh();
+          })
+          .catch((e: string) => {
+            console.log('Error apply job vacancy: ', e);
+
+            setLoading(false);
+          });
+        // router.replace('/dashboard/ta/parameter');
+        resolve();
+      }, 4000);
+    }).catch(() => console.log('Oops errors!'));
   }
 
   return (
@@ -132,12 +155,16 @@ const ListItemTwo = ({ item, setLoading, candidateApplyJobVacancy }) => {
                 name={`candidateApplyJobVacancyForm${item?.jobId}`}
                 layout="vertical"
                 variant="filled"
+                className="mt-20"
               >
-                <Form.Item name="candidateApplyBtn">
+                <Form.Item
+                  name="candidateApplyBtn"
+                  className="d-flex align-items-center"
+                >
                   <Button
                     htmlType="button"
                     disabled={item?.candidateAlreadyApply}
-                    className="apply-btn text-center tran3s"
+                    className="apply-btn tran3s d-flex align-items-center justify-content-center"
                     onClick={() => handleCandidateApplyJobVacancy(item?.jobId)}
                   >
                     {item?.candidateAlreadyApply ? 'Applied' : 'Apply'}

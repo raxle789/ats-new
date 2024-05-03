@@ -37,8 +37,9 @@ const JobListItem = ({ jobVacancyData, candidateApplyJobVacancy }: any) => {
   //   console.info(jobVacancyData);
 
   return (
-    <Spin spinning={loading}>
-      <div className="col-xl-9 col-lg-8">
+    <div className="col-xl-9 col-lg-8">
+      <Spin spinning={loading} className="col-lg-8">
+        {/* <div> */}
         <div className="job-post-item-wrapper ms-xxl-5 ms-xl-3">
           <div className="upper-filter d-flex justify-content-between align-items-center mb-20">
             <div className="total-job-found">
@@ -85,8 +86,8 @@ const JobListItem = ({ jobVacancyData, candidateApplyJobVacancy }: any) => {
           </div> */}
           </div>
         </div>
-      </div>
-    </Spin>
+      </Spin>
+    </div>
   );
 };
 
