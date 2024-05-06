@@ -1,23 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import EmployJobItem from './job-item';
 import EmployShortSelect from './short-select';
 import ActionDropdownJobDetails from '../candidate/action-dropdown-job-details';
-import Image from 'next/image';
 import search from '@/assets/dashboard/images/icon/icon_10.svg';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
 import candidate_data from '@/data/candidate-data';
 import CandidateAssessmentItem from './candidate-assessment-item';
 import SearchBar from '@/ui/search-bar';
-import { Modal } from 'antd';
-import type { MenuProps } from 'antd';
-import { Menu } from 'antd';
-import type { CollapseProps } from 'antd';
+import { Modal, Menu, Popover, Checkbox } from 'antd';
+import type { CollapseProps, CheckboxProps, MenuProps } from 'antd';
 import { Collapse } from 'antd';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { setApplicantStep } from '@/redux/features/applicantStepSlice';
 import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
+import ActionCheckboxPipeline from '../../common/popup/action-checkbox-pipeline';
 
 const text = `
   A dog is a type of domesticated animal.
@@ -113,7 +111,7 @@ const CandidateAssessment = () => {
     }
     router.replace(`${pathname}?${params.toString()}`);
   }, 300);
-  const candidate_items = candidate_data.slice(0, 3);
+  const candidate_items = candidate_data.slice(0, 10);
 
   // const isModalOpen = useAppSelector((state) => state.candidateModal.isOpen);
   const handleCancel = () => {
@@ -124,6 +122,44 @@ const CandidateAssessment = () => {
   const onClickHandle: MenuProps['onClick'] = (e) => {
     setCurrent(e.key);
   };
+
+  const initialCheckboxState = candidate_data?.reduce(
+    (acc: { [key: string]: boolean }, _: any, index: string) => {
+      return {
+        ...acc,
+        [index]: false,
+      };
+    },
+    {},
+  );
+  const [checkboxAllValue, setCheckboxAllValue] = useState(false);
+  const [checkbox, setCheckbox] = useState<{ [key: string]: boolean }>(
+    initialCheckboxState,
+  );
+  const [popOverState, setPopOverState] = useState(false);
+  const onChangeCheckboxAll: CheckboxProps['onChange'] = (e) => {
+    const checked = e.target.checked;
+    const updatedCheckbox: { [key: string]: boolean } = {};
+
+    Object.keys(checkbox).forEach((key: string) => {
+      updatedCheckbox[key] = checked;
+    });
+
+    setCheckbox(updatedCheckbox);
+    setCheckboxAllValue(checked);
+  };
+
+  useEffect(() => {
+    const countTrueValues = Object.values(checkbox).reduce(
+      (acc, curr) => acc + (curr ? 1 : 0),
+      0,
+    );
+    if (countTrueValues > 1) {
+      setPopOverState(true);
+    } else {
+      setPopOverState(false);
+    }
+  }, [checkbox]);
   return (
     <>
       <div className="d-sm-flex align-items-start justify-content-between mb-10 lg-mb-30">
@@ -222,9 +258,29 @@ const CandidateAssessment = () => {
         <SearchBar />
       </div>
 
+      <div className="card-checkbox">
+        <Popover
+          content={<ActionCheckboxPipeline />}
+          trigger="click"
+          open={popOverState}
+          placement="right"
+        >
+          <Checkbox
+            onChange={onChangeCheckboxAll}
+            checked={checkboxAllValue}
+          ></Checkbox>
+        </Popover>
+      </div>
       <div className="wrapper">
         {candidate_items.map((item) => (
-          <CandidateAssessmentItem key={item.id} item={item} />
+          <CandidateAssessmentItem
+            key={item.id}
+            item={item}
+            checkboxState={checkbox}
+            checkboxAllValue={checkboxAllValue}
+            setCheckbox={setCheckbox}
+            setCheckboxAllValue={setCheckboxAllValue}
+          />
         ))}
       </div>
 

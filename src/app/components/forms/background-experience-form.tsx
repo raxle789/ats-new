@@ -503,9 +503,10 @@ const BackgroundExperienceForm = () => {
   };
   return (
     <>
-      <h2 className="main-title">Background Experience</h2>
+      {/* <h2 className="main-title">Background Experience</h2> */}
 
-      <div className="bg-white card-box border-20">
+      {/* <div className="bg-white card-box border-20"> */}
+      <div>
         <div className="mb-25">
           <button
             className="d-flex align-items-center justify-content-center edit-btn-form"
