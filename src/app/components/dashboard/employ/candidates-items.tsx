@@ -25,7 +25,7 @@ const CandidatesItems = ({ item }: { item: ICandidate }) => {
           </a>
         </div>
         <div className="right-side">
-          <div className="row gx-1 align-items-start mb-30">
+          <div className="row gx-1 align-items-start mb-40">
             <div className="col-lg-3">
               <div className="position-relative mt-1">
                 <h4 className="candidate-name mb-0">

@@ -1576,6 +1576,7 @@ const Stage3Form = () => {
                 <Select
                   className="w-100"
                   showSearch
+                  mode="tags"
                   placeholder="Your place of birth"
                   optionFilterProp="children"
                   filterOption={(input, option) =>
@@ -1841,6 +1842,7 @@ const Stage3Form = () => {
                 <Select
                   className="w-100"
                   showSearch
+                  mode="tags"
                   placeholder="Your City"
                   optionFilterProp="children"
                   filterOption={(input, option) =>
@@ -2171,6 +2173,7 @@ const Stage3Form = () => {
                       className="w-100"
                       placeholder="Your City of School"
                       showSearch
+                      mode="tags"
                       filterOption={(input, option) =>
                         (option?.label.toLowerCase() ?? '').includes(input)
                       }
@@ -2345,9 +2348,26 @@ const Stage3Form = () => {
                         className="w-100"
                         placeholder="Select Level"
                         options={[
-                          { value: 'fluent', label: 'Fluent' },
-                          { value: 'intermediate', label: 'Intermediate' },
-                          { value: 'basic', label: 'Basic' },
+                          {
+                            value: 'Elementary proficiency',
+                            label: 'Elementary proficiency',
+                          },
+                          {
+                            value: 'Limited working proficiency',
+                            label: 'Limited working proficiency',
+                          },
+                          {
+                            value: 'Professional working proficiency',
+                            label: 'Professional working proficiency',
+                          },
+                          {
+                            value: 'Full professional proficiency',
+                            label: 'Full professional proficiency',
+                          },
+                          {
+                            value: 'Native or bilingual proficiency',
+                            label: 'Native or bilingual proficiency',
+                          },
                         ]}
                       />
                     </Form.Item>
@@ -2705,7 +2725,7 @@ const Stage3Form = () => {
                   },
                 ]}
               >
-                <Upload action="" listType="text" maxCount={1} accept=".pdf">
+                <Upload action="" listType="picture" maxCount={1} accept=".pdf">
                   <Button
                     icon={
                       // <UploadOutlined
