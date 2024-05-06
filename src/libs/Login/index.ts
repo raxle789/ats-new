@@ -3,7 +3,7 @@
 import bcrypt from 'bcrypt';
 import * as Validation from '../validations';
 import prisma from '@/root/prisma';
-import { deleteSession, setUserSession, Utils } from '../Sessions';
+import { deleteSession, setUserSession } from '../Sessions';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 

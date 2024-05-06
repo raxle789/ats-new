@@ -68,9 +68,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     console.info('user required data is completed...');
     /* Directing to job list */
     router.push('/dashboard/user');
-    setTimeout(() => {
-      setSpinning(false);
-    }, 1000);
+    setSpinning(false);
   };
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (

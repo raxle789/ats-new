@@ -85,7 +85,7 @@ type FieldType = {
     bloodType?: string;
     maritalStatus?: string;
   };
-  addressCheckbox?: string;
+  addressCheckbox?: boolean;
   address?: {
     permanentAddress?: string;
     country?: string;
@@ -169,7 +169,7 @@ type FieldType = {
 
 type MasterData = {
   citys?: {
-    value: id;
+    value: string;
     label: string;
   }[];
   ethnicity?: {
@@ -448,6 +448,7 @@ const Stage3Form = () => {
 
   const [addressCheck, setAddressCheck] = useState<boolean>(false);
   const handleAddressCheck: CheckboxProps['onChange'] = (e) => {
+    console.log('CURRENT', e.target.checked);
     setAddressCheck(e.target.checked);
   };
 
@@ -1169,10 +1170,9 @@ const Stage3Form = () => {
 
   const handleOk = async () => {
     setIsModalOpen(false);
-    setSpinning(true);
+    // setSpinning(true);
     const values = form.getFieldsValue();
     console.log('ok value form: ', values);
-    // jalankan fungsi simpan data
     console.log('Manipulating profile-photo file...');
     const photoBase64 = await fileToBase64(profilePhoto[0].originFileObj);
     const photoFile = {
@@ -1211,15 +1211,15 @@ const Stage3Form = () => {
       country: values.address.country,
       city: values.address.city,
       zipCode: values.address.zipCode,
-      rt: values.address.rt,
-      rw: values.address.rw,
-      subdistrict: values.address.subdistrict,
-      village: values.address.village,
+      rt: values.address.country === "Indonesia" ? values.address.rt : 'NotInIndonesia',
+      rw: values.address.country === "Indonesia" ? values.address.rw : 'NotInIndonesia',
+      subdistrict: values.address.country === "Indonesia" ? values.address.subdistrict : 'NotInIndonesia',
+      village: values.address.country === "Indonesia" ? values.address.village : 'NotInIndonesia',
       currentAddress: values.address.currentAddress,
     };
     const storeAddress = await storingAddress(
       manipulatedAddressData,
-      values.addressCheckbox,
+      addressCheck
     );
     if (storeAddress.success !== true) {
       console.info(storeAddress.message as string);
@@ -1366,12 +1366,12 @@ const Stage3Form = () => {
     const storeCV = await storeCurriculumVitae(manipulatedCurriculumVitae);
     if (storeCV.success !== true) {
       console.info(storeCV.message as string);
-      return setErrors(storeCV.errors as string);
+      return setErrors(storeCV.message as string);
     }
     console.info('Store cv document successfully', storeCV);
 
     /* set auth-session */
-    // await setUserSession('auth', { user: { id: regSessionDecoded.user.id }, candidate: { id: regSessionDecoded.candidate.id } });
+    await setUserSession('auth', { user: { id: regSessionDecoded.user.id }, candidate: { id: regSessionDecoded.candidate.id } });
 
     dispatch(setRegisterStep(4));
     setTimeout(() => {
@@ -1406,6 +1406,7 @@ const Stage3Form = () => {
         phoneNumber: regSessionDecoded.candidate?.phone_number ?? '',
         dateOfBirth: dayjs(regSessionDecoded.candidate?.date_of_birth) ?? '',
       },
+      addressCheckbox: false,
       formalCheckbox: true,
       certificationCheckbox: false,
     });
@@ -1588,7 +1589,7 @@ const Stage3Form = () => {
                       .localeCompare((optionB?.label ?? '').toLowerCase())
                   }
                   /* Feted Data */
-                  options={citysName}
+                  options={citysName as { value: string; label: string }[]}
                 />
               </Form.Item>
             </div>
@@ -1854,7 +1855,7 @@ const Stage3Form = () => {
                       .localeCompare((optionB?.label ?? '').toLowerCase())
                   }
                   /* Fetched Data */
-                  options={citysName}
+                  options={citysName as { value: string; label: string }[] }
                 />
               </Form.Item>
             </div>
@@ -1955,11 +1956,11 @@ const Stage3Form = () => {
           <div className="col-12">
             <div className="input-group-meta position-relative mb-0">
               <Form.Item<FieldType> name="addressCheckbox" className="mb-2">
-                <div className="d-flex align-items-center pt-10">
-                  <Checkbox onChange={handleAddressCheck}>
+                {/* <div className="d-flex align-items-center pt-10"> */}
+                  <Checkbox onChange={handleAddressCheck} checked={addressCheck} value={addressCheck}>
                     Same as Permanent Address
                   </Checkbox>
-                </div>
+                {/* </div> */}
               </Form.Item>
             </div>
           </div>
@@ -1969,12 +1970,14 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'currentAddress']}
                 className="mb-0"
+                /*
                 rules={[
                   {
                     required: true,
                     message: 'Please input your current address!',
                   },
                 ]}
+                */
               >
                 <Input
                   disabled={addressCheck}

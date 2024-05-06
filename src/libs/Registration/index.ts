@@ -159,6 +159,8 @@ export async function storeProfilePhoto(manipulatedPhotoFile: any) {
 export async function updateCandidate(formData: any) {
   const regSession = await getUserSession('reg');
   console.info('reg-session-data', regSession);
+  /* Guard place of birth */
+  const birthCity = Array.isArray(formData.placeOfBirth) ? formData.placeOfBirth[0] : formData.placeOfBirth;
   /* Updating candidate data */
   const candidate = await prisma.candidates.update({
     where: {
@@ -169,9 +171,8 @@ export async function updateCandidate(formData: any) {
       ethnicity: formData.ethnicity,
       gender: formData.gender,
       maritalStatus: formData.maritalStatus,
-      /* Failed to insert, unsync with master data citys -> create view or db seed master city */
-      // birthCityId: formData.profile.placeOfBirth, /* VALUE MUST BE THE ID OF CITYS */
-      birthCity: formData.placeOfBirth,
+      /* Guard Birth City */
+      birthCity: birthCity.toUpperCase(),
       religion: formData.religion,
     },
   });
@@ -181,7 +182,7 @@ export async function updateCandidate(formData: any) {
       success: false,
       message: 'Failed to update candidate data, try again',
     };
-  }
+  };
   console.info('Update candidate data successfully', candidate);
 
   /* Close connection */
@@ -200,7 +201,7 @@ export async function updateCandidate(formData: any) {
  */
 export async function storingAddress(
   formData: any,
-  isCurrent: string | undefined,
+  isCurrent: boolean,
 ) {
   const regSession = await getUserSession('reg');
   console.info('reg-session-data', regSession);
@@ -212,7 +213,7 @@ export async function storingAddress(
   console.info('Begin store address data...');
   console.info('Checking the current address...');
   console.info('Is Current Address?...', isCurrent);
-  if (isCurrent === 'on') {
+  if (isCurrent) {
     console.info(
       'Candidate has the same current address as the primary address...',
     );
@@ -222,7 +223,7 @@ export async function storingAddress(
         candidateId: regSession.candidate.id,
         street: formData.permanentAddress,
         country: formData.country,
-        city: formData.city,
+        city: formData.city[0],
         zipCode: formData.zipCode,
         rt: formData.rt,
         rw: formData.rw,
@@ -250,7 +251,7 @@ export async function storingAddress(
       success: true,
       data: currentAddress,
     };
-  }
+  };
   console.info(
     'Candidate current address is different from the primary address...',
   );
@@ -263,7 +264,7 @@ export async function storingAddress(
         candidateId: regSession.candidate.id,
         street: formData.permanentAddress,
         country: formData.country,
-        city: formData.city,
+        city: formData.city[0],
         zipCode: formData.zipCode,
         rt: formData.rt,
         rw: formData.rw,
@@ -276,7 +277,7 @@ export async function storingAddress(
         candidateId: regSession.candidate.id,
         street: formData.currentAddress,
         country: formData.country,
-        city: formData.city,
+        city: formData.city[0],
         zipCode: formData.zipCode,
         rt: formData.rt,
         rw: formData.rw,
@@ -390,11 +391,11 @@ export async function storeEducation(
       data: {
         candidateId: regSession.candidate.id,
         level: formData.educationLevel,
-        major: formData.educationMajor[0],
+        major: formData.educationMajor[0].toUpperCase(),
         start_year: startyear,
         end_year: endYear,
         university_name: formData.schoolName[0],
-        cityOfSchool: formData.cityOfSchool,
+        cityOfSchool: formData.cityOfSchool[0].toUpperCase(),
         gpa: formData.gpa,
         is_latest: false,
         is_graduate: false,

@@ -1,3 +1,5 @@
+'use server';
+
 import * as Utils from './utils';
 import * as Jwt from './jwt';
 /* Next-Server */
@@ -15,7 +17,7 @@ export async function getUserSession(sessionName: 'auth' | 'reg' | 'otp'): Promi
       const authSession = cookies().get(Utils.authSession)?.value;
       if(!authSession) return false;
       const decryptedAuthSession = Jwt.DecryptSession(authSession as string);
-      console.log('Decrypted session', decryptedAuthSession);
+      // console.log('Decrypted session', decryptedAuthSession);
       return decryptedAuthSession;
 
     case 'reg':
@@ -89,4 +91,4 @@ export async function deleteSession(sessionName: 'auth' | 'reg' | 'otp') {
   };
 };
 
-export { Utils };
+// export { Utils };
