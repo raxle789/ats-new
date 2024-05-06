@@ -93,7 +93,6 @@ const ApplicantsItems: React.FC<IProps> = ({
                 <span>Last Education</span>
                 <div>{item.education}</div>
               </div>
-
               <div className="candidate-info mt-2">
                 <span>Expected Salary</span>
                 <div>{item.expectedSalary}</div>
