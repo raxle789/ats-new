@@ -7,10 +7,9 @@ import BackgroundExperienceForm from '../../forms/background-experience-form';
 import DocumentForm from '../../forms/doc-form';
 
 const DashboardProfileArea = () => {
-  const [keyState, setKeyState] = useState('');
+  const [keyState, setKeyState] = useState('1');
 
   const onChange = (key: string) => {
-    console.log(key);
     setKeyState(key);
   };
 

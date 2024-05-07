@@ -62,8 +62,8 @@ const nav_data: {
     id: 4,
     icon: nav_4,
     icon_active: nav_4_active,
-    link: '/dashboard/candidate-dashboard/messages',
-    title: 'Messages',
+    link: '/dashboard/user/applied-jobs',
+    title: 'Applied Jobs',
   },
   {
     id: 5,

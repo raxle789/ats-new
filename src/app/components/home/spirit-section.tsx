@@ -44,7 +44,7 @@ const SpiritSection = () => {
       >
         <div
           className="carousel-inner"
-          style={{ borderTopLeftRadius: '12%', borderBottomRightRadius: '12%' }}
+          style={{ borderTopRightRadius: '20%', borderBottomLeftRadius: '20%' }}
         >
           <div className="carousel-item active">
             <Image

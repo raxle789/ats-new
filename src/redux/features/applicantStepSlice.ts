@@ -2,16 +2,17 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 // Define a type for the slice state
 interface IApplicantStepState {
-  step: string;
+  step: number;
 }
 
 interface ISetApplicantStepPayload {
-  currentStep: string;
+  currentStep: number;
 }
 
 // Define the initial state using that type
 const initialState: IApplicantStepState = {
-  step: 'initial',
+  // number 1 means applicant menu, 2 is shortlisted, and so on
+  step: 1,
 };
 
 export const applicantStepSlice = createSlice({
