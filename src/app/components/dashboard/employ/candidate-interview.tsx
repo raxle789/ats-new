@@ -22,7 +22,7 @@ const CandidateInterview = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  dispatch(setApplicantStep({ currentStep: 'interview' }));
+  dispatch(setApplicantStep({ currentStep: 5 }));
 
   const handleJobFpkSearch = useDebouncedCallback((value) => {
     const params = new URLSearchParams(searchParams);
@@ -112,18 +112,14 @@ const CandidateInterview = () => {
         <Link
           href="/dashboard/ta/preview-page/assessment"
           className="d-flex flex-column align-items-center me-4"
-          onClick={() =>
-            dispatch(setApplicantStep({ currentStep: 'assessment' }))
-          }
+          onClick={() => dispatch(setApplicantStep({ currentStep: 4 }))}
         >
           <span>3</span>
           <span>Assessment</span>
         </Link>
         <Link
           href="/dashboard/ta/preview-page/interview"
-          onClick={() =>
-            dispatch(setApplicantStep({ currentStep: 'interview' }))
-          }
+          onClick={() => dispatch(setApplicantStep({ currentStep: 5 }))}
           className="d-flex flex-column align-items-center me-4"
         >
           <span>0</span>

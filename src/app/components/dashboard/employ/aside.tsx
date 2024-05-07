@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import Image, { StaticImageData } from 'next/image';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
@@ -29,16 +29,24 @@ import nav_8 from '@/assets/dashboard/images/icon/icon_8.svg';
 import LogoutModal from '../../common/popup/logout-modal';
 import logo2 from '@/assets/images/logo/erajaya_logo4.jpg';
 
+// import { ExpendableButton } from './expendable-button';
+import { ExpendableButtonAside } from './expendable-button-aside';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 
 import { setIsOpen } from '@/redux/features/sidebarSlice';
 
+type subLink = {
+  link: string;
+  title: string;
+};
+
 // nav data
 const nav_data: {
   id: number;
-  icon: StaticImageData;
-  icon_active: StaticImageData;
+  icon: any;
+  icon_active: any;
   link: string;
+  subLink?: subLink[];
   title: string;
 }[] = [
   {
@@ -74,6 +82,7 @@ const nav_data: {
     icon: nav_5,
     icon_active: nav_5_active,
     link: '/dashboard/ta/submit-job',
+    // subLink: [],
     title: 'Submit Job',
   },
   {
@@ -81,6 +90,9 @@ const nav_data: {
     icon: nav_6,
     icon_active: nav_6_active,
     link: '/dashboard/ta/candidates',
+    subLink: [
+      { link: '/dashboard/ta/candidates/blacklisted', title: 'Blacklisted' },
+    ],
     title: 'Candidates',
   },
   {
@@ -117,6 +129,10 @@ const EmployAside = () => {
     }
   };
 
+  const [isButtonOpen, setIsButtonOpen] = useState(false);
+  const toggleOpen = () => {
+    setIsButtonOpen(!isButtonOpen);
+  };
   return (
     <>
       <aside className={`dash-aside-navbar ${isOpenSidebar ? 'show' : ''}`}>
@@ -203,20 +219,65 @@ const EmployAside = () => {
           <nav className="dasboard-main-nav">
             <ul className="style-none">
               {nav_data.map((m) => {
-                const isActive = pathname === m.link;
+                let isActive = false;
+                if (m.id === 6) {
+                  isActive =
+                    pathname === m.link ||
+                    pathname === '/dashboard/ta/candidates/blacklisted';
+                } else {
+                  isActive = pathname === m.link;
+                }
                 return (
                   <li key={m.id} onClick={handleClick}>
                     <Link
                       href={m.link}
                       className={`d-flex w-100 align-items-center ${isActive ? 'active' : ''}`}
+                      style={
+                        isButtonOpen
+                          ? {
+                              borderBottomLeftRadius: '0px',
+                              borderBottomRightRadius: '0px',
+                            }
+                          : m.subLink
+                            ? { paddingTop: '10px', paddingBottom: '10px' }
+                            : {}
+                      }
                     >
                       <Image
                         src={isActive ? m.icon_active : m.icon}
                         alt=""
                         className="lazy-img"
                       />
-                      <span>{m.title}</span>
+                      <span className="d-flex align-items-center">
+                        {m.title}
+                        {m.subLink && (
+                          <ExpendableButtonAside
+                            isActive={isActive}
+                            isOpen={isButtonOpen}
+                            toggle={toggleOpen}
+                          />
+                        )}
+                      </span>
                     </Link>
+                    {isButtonOpen &&
+                      m.subLink &&
+                      m.subLink.map((item, index) => (
+                        <Link
+                          key={index}
+                          href={item.link}
+                          className={`ml-3 sub-link ${isActive ? 'active' : ''}`}
+                          style={
+                            isButtonOpen
+                              ? {
+                                  borderTopLeftRadius: '0px',
+                                  borderTopRightRadius: '0px',
+                                }
+                              : {}
+                          }
+                        >
+                          <span>{item.title}</span>
+                        </Link>
+                      ))}
                   </li>
                 );
               })}

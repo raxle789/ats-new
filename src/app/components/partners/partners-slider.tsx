@@ -9,7 +9,7 @@ import logo_4 from '@/assets/images/home/partner-logo/Garmin.png';
 import logo_5 from '@/assets/images/home/partner-logo/IT.png';
 import logo_6 from '@/assets/images/home/partner-logo/JD.png';
 import logo_7 from '@/assets/images/home/partner-logo/Nasa_Samsung.png';
-import logo_8 from '@/assets/images/home/partner-logo/TFS.png';
+// import logo_8 from '@/assets/images/home/partner-logo/TFS.png';
 import logo_9 from '@/assets/images/home/partner-logo/UR.png';
 import logo_10 from '@/assets/images/home/partner-logo/Wellings.png';
 import logo_11 from '@/assets/images/home/partner-logo/dji.png';
@@ -58,7 +58,7 @@ const logos: StaticImageData[] = [
   logo_5,
   logo_6,
   logo_7,
-  logo_8,
+  // logo_8,
   logo_9,
   logo_10,
   logo_11,

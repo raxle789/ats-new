@@ -89,16 +89,6 @@ const CandidateAssessmentItem: React.FC<IProps> = ({
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6">
               <div className="candidate-info">
-                <span>Test Name</span>
-                <div>Psikotes Online - 1</div>
-              </div>
-              <div className="candidate-info mt-2 mb-40">
-                <span>Status</span>
-                <div>Tidak direkomendasikan</div>
-              </div>
-            </div>
-            <div className="col-lg-4 col-md-4 col-sm-6">
-              <div className="candidate-info">
                 <span>Start Test</span>
                 <div>22-02-2024 01:00:00</div>
               </div>
@@ -106,10 +96,16 @@ const CandidateAssessmentItem: React.FC<IProps> = ({
                 <span>End Test</span>
                 <div>26-02-2024 23:59:59</div>
               </div>
-              {/* <div className="candidate-info mt-2">
-                <span>Score</span>
-                <div>{item.score}</div>
-              </div> */}
+            </div>
+            <div className="col-lg-4 col-md-4 col-sm-6">
+              <div className="candidate-info">
+                <span>Test Name</span>
+                <div>Psikotes Online - 1</div>
+              </div>
+              <div className="candidate-info mt-2 mb-40">
+                <span>Status</span>
+                <div>Tidak direkomendasikan</div>
+              </div>
             </div>
             <div className="col-xl-1 col-md-4">
               <div className="d-flex justify-content-md-end align-items-center">

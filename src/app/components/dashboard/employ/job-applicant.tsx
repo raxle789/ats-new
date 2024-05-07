@@ -15,6 +15,9 @@ import type { CheckboxProps } from 'antd';
 import { Checkbox, Popover } from 'antd';
 import ActionCheckboxPipeline from '../../common/popup/action-checkbox-pipeline';
 import ApplicantsItems from './applicants-item';
+import ApplicantMenu from './applicant-menu';
+import { Tabs } from 'antd';
+import type { TabsProps } from 'antd';
 
 const JobApplicantArea = () => {
   const dispatch = useAppDispatch();
@@ -22,7 +25,7 @@ const JobApplicantArea = () => {
   const router = useRouter();
   const pathname = usePathname();
 
-  dispatch(setApplicantStep({ currentStep: 'initial' }));
+  dispatch(setApplicantStep({ currentStep: 1 }));
 
   const handleJobFpkSearch = useDebouncedCallback((value) => {
     const params = new URLSearchParams(searchParams);
@@ -34,46 +37,55 @@ const JobApplicantArea = () => {
     }
     router.replace(`${pathname}?${params.toString()}`);
   }, 300);
-  const candidate_items = candidate_data.slice(0, 10);
 
-  const initialCheckboxState = candidate_data?.reduce(
-    (acc: { [key: string]: boolean }, _: any, index: string) => {
-      return {
-        ...acc,
-        [index]: false,
-      };
-    },
-    {},
-  );
-  const [checkboxAllValue, setCheckboxAllValue] = useState(false);
-  const [checkbox, setCheckbox] = useState<{ [key: string]: boolean }>(
-    initialCheckboxState,
-  );
-  const [popOverState, setPopOverState] = useState(false);
-  const onChangeCheckboxAll: CheckboxProps['onChange'] = (e) => {
-    const checked = e.target.checked;
-    const updatedCheckbox: { [key: string]: boolean } = {};
+  const [keyState, setKeyState] = useState('1');
 
-    Object.keys(checkbox).forEach((key: string) => {
-      updatedCheckbox[key] = checked;
-    });
-
-    setCheckbox(updatedCheckbox);
-    setCheckboxAllValue(checked);
+  const onChange = (key: string) => {
+    setKeyState(key);
   };
 
-  useEffect(() => {
-    const countTrueValues = Object.values(checkbox).reduce(
-      (acc, curr) => acc + (curr ? 1 : 0),
-      0,
-    );
-    if (countTrueValues > 1) {
-      setPopOverState(true);
-    } else {
-      setPopOverState(false);
-    }
-  }, [checkbox]);
-
+  const items: TabsProps['items'] = [
+    {
+      key: '1',
+      label: 'Applicant 200',
+    },
+    {
+      key: '2',
+      label: 'Shortlisted 200',
+    },
+    {
+      key: '3',
+      label: 'Talent Pool 200',
+    },
+    {
+      key: '4',
+      label: 'Assessment 200',
+    },
+    {
+      key: '5',
+      label: 'Interview 200',
+    },
+    {
+      key: '6',
+      label: 'Ref Check 200',
+    },
+    {
+      key: '7',
+      label: 'Offering 200',
+    },
+    {
+      key: '8',
+      label: 'MCU 200',
+    },
+    {
+      key: '9',
+      label: 'Agreement 200',
+    },
+    {
+      key: '10',
+      label: 'Boarding 200',
+    },
+  ];
   return (
     <>
       <div className="d-sm-flex align-items-start justify-content-between mb-10 lg-mb-30">
@@ -97,8 +109,8 @@ const JobApplicantArea = () => {
           </div>
         </div>
       </div>
-      <div className="nav-bar-responsive d-flex align-items-center justify-content-center mb-40 pb-3 overflow-auto">
-        <Link href="#" className="d-flex flex-column align-items-center me-4">
+      {/* <div className="nav-bar-responsive d-flex align-items-center justify-content-center mb-40 pb-3 overflow-auto"> */}
+      {/* <Link href="#" className="d-flex flex-column align-items-center me-4">
           <span>0</span>
           <span>Applicants</span>
         </Link>
@@ -149,8 +161,9 @@ const JobApplicantArea = () => {
         <Link href="#" className="d-flex flex-column align-items-center">
           <span>0</span>
           <span>Boarding</span>
-        </Link>
-      </div>
+        </Link> */}
+      {/* </div> */}
+
       <div className="d-flex justify-content-end mb-40">
         <form
           onSubmit={(e) => e.preventDefault()}
@@ -168,56 +181,8 @@ const JobApplicantArea = () => {
         </form>
       </div>
 
-      <div className="card-checkbox">
-        <Popover
-          content={<ActionCheckboxPipeline />}
-          trigger="click"
-          open={popOverState}
-          placement="right"
-        >
-          <Checkbox
-            onChange={onChangeCheckboxAll}
-            checked={checkboxAllValue}
-          ></Checkbox>
-        </Popover>
-      </div>
-      <div className="wrapper">
-        {candidate_items.map((item) => (
-          <ApplicantsItems
-            key={item.id}
-            item={item}
-            checkboxState={checkbox}
-            checkboxAllValue={checkboxAllValue}
-            setCheckbox={setCheckbox}
-            setCheckboxAllValue={setCheckboxAllValue}
-          />
-        ))}
-      </div>
-
-      <div className="dash-pagination d-flex justify-content-end mt-30">
-        <ul className="style-none d-flex align-items-center">
-          <li>
-            <a href="#" className="active">
-              1
-            </a>
-          </li>
-          <li>
-            <a href="#">2</a>
-          </li>
-          <li>
-            <a href="#">3</a>
-          </li>
-          <li>..</li>
-          <li>
-            <a href="#">7</a>
-          </li>
-          <li>
-            <a href="#">
-              <i className="bi bi-chevron-right"></i>
-            </a>
-          </li>
-        </ul>
-      </div>
+      <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+      {keyState === '1' && <ApplicantMenu />}
     </>
   );
 };
