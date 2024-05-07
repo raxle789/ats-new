@@ -37,13 +37,17 @@ const JobList: React.FC<IProps> = async ({ searchParams }) => {
   //   return false;
   // })();
 
-  const jobVacancyData = await getAllJobVacancyData(offset, Number(perPage))
+  const jobVacancyData = await getAllJobVacancyData(
+    offset,
+    Number(perPage),
+    true,
+  )
     .then((res) => {
       const data = res?.data ?? [];
 
       const total = res?.total ?? 0;
 
-      // console.info(data);
+      console.info(data);
 
       return {
         data: data,
@@ -51,7 +55,7 @@ const JobList: React.FC<IProps> = async ({ searchParams }) => {
       };
     })
     .catch((e) => {
-      console.log('Error getting job vacancy data: ', e);
+      console.log('Failed Getting Job Vacancy Data: ', e);
 
       return {
         data: [],

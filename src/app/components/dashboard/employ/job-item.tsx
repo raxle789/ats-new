@@ -1,10 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import * as confirmations from '@/utils/confirmation';
+import { useRouter } from 'next/navigation';
+import { ExclamationCircleFilled } from '@ant-design/icons';
+import * as messages from '@/utils/message';
 import Pagination from '@/ui/pagination';
 import SearchBar from '@/ui/search-bar';
 import EmployShortSelect from './short-select';
-import { Spin } from 'antd';
+import { Spin, Modal, message } from 'antd';
 import ActionJobVacancies from '../candidate/action-job-vacancies';
 import { notification, Button, Checkbox, Popover } from 'antd';
 import type { CheckboxProps } from 'antd';
@@ -12,10 +16,19 @@ import ActionCheckboxJob from '../../common/popup/action-checkbox-jobs';
 
 const moment = require('moment');
 
-const EmployJobItem: React.FC<JobItemProps> = ({ jobVacancyData, perPage }) => {
+const { confirm } = Modal;
+
+const EmployJobItem: React.FC<JobItemProps> = ({
+  jobVacancyData,
+  perPage,
+  deleteJobVacancyData,
+}) => {
+  const router = useRouter();
+
+  const [api, contextHolder] = message.useMessage();
+
   const [loading, setLoading] = useState(false);
 
-  const [api, contextHolder] = notification.useNotification();
   const initialCheckboxState = jobVacancyData?.data?.reduce(
     (acc: { [key: string]: boolean }, _: any, index: string) => {
       return {
@@ -63,6 +76,78 @@ const EmployJobItem: React.FC<JobItemProps> = ({ jobVacancyData, perPage }) => {
       setPopOverState(false);
     }
   }, [checkbox]);
+
+  function handleJobVacancy(
+    handleType: 'view' | 'edit' | 'duplicate' | 'delete',
+    jobId,
+  ) {
+    setLoading(true);
+
+    if (handleType === 'edit') {
+      confirm({
+        ...confirmations?.editConfirmation('jobVacancy'),
+        onOk() {
+          return new Promise<void>((resolve, reject) => {
+            setTimeout(async () => {
+              resolve(router.push(`/dashboard/ta/submit-job/edit/${jobId}}`));
+            }, 2000);
+          }).catch((e) => console.log('Error Editing Job Vacancy: ', e));
+        },
+        onCancel() {
+          router.refresh();
+
+          setLoading(false);
+        },
+      });
+    } else if (handleType === 'duplicate') {
+      confirm({
+        ...confirmations?.duplicateConfirmation('jobVacancy'),
+        onOk() {
+          return new Promise<void>((resolve, reject) => {
+            setTimeout(async () => {
+              resolve(
+                router.push(`/dashboard/ta/submit-job/duplicate/${jobId}`),
+              );
+            }, 2000);
+          }).catch((e) => console.log('Error Duplicating Job Vacancy: ', e));
+        },
+        onCancel() {
+          router.refresh();
+
+          setLoading(false);
+        },
+      });
+    } else if (handleType === 'delete') {
+      confirm({
+        ...confirmations?.deleteConfirmation('jobVacancy'),
+        onOk() {
+          return new Promise<void>((resolve, reject) => {
+            setTimeout(async () => {
+              const validate = await deleteJobVacancyData(jobId);
+
+              if (validate?.success) {
+                messages.success(api, validate?.message);
+
+                router.refresh();
+              } else {
+                messages.error(api, validate?.message);
+
+                router.refresh();
+              }
+
+              resolve(setLoading(false));
+            }, 2000);
+          }).catch((e) => console.log('Error Deleting Job Vacancy: ', e));
+        },
+        onCancel() {
+          router.refresh();
+
+          setLoading(false);
+        },
+      });
+    }
+  }
+
   return (
     <>
       {contextHolder}
@@ -154,6 +239,7 @@ const EmployJobItem: React.FC<JobItemProps> = ({ jobVacancyData, perPage }) => {
                             <ActionJobVacancies
                               jobId={data?.jobId}
                               setLoading={setLoading}
+                              handleJobVacancy={handleJobVacancy}
                             />
                             {/* action dropdown end */}
                           </div>

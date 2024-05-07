@@ -1,24 +1,29 @@
 'use client';
 
 import React from 'react';
+import { useRouter } from 'next/navigation';
+import * as messages from '@/utils/message';
+import * as confirmations from '@/utils/confirmation';
+import _ from 'lodash';
 import Pagination from '@/ui/pagination';
 import EmployShortSelect from './short-select';
 import SearchBar from '@/ui/search-bar';
-import { Spin } from 'antd';
-import CryptoJS from 'crypto-js';
+import { Spin, Modal } from 'antd';
 import Link from 'next/link';
 import { FaEdit } from 'react-icons/fa';
 import ActionDropdown from '../candidate/action-dropdown';
 import { useState, useEffect } from 'react';
 import { ExpendableButton } from './expendable-button';
 
-const _ = require('lodash');
+const { confirm } = Modal;
 
 type Props = {
   positionLevelRequirementData: [];
 };
 
 const EmployJobParameter = ({ positionLevelRequirementData, perPage }) => {
+  const router = useRouter();
+
   const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
     {},
   );
@@ -121,83 +126,108 @@ const EmployJobParameter = ({ positionLevelRequirementData, perPage }) => {
     }));
   };
 
-  const showLoader = () => {
+  function handlePositionLevelRequirement(handleType: 'edit', positionLevelId) {
     setLoading(true);
-    // setTimeout(() => {
-    //   setLoading(false);
-    // }, 3000);
-  };
+
+    if (handleType === 'edit') {
+      confirm({
+        ...confirmations?.editConfirmation('positionLevelRequirement'),
+        onOk() {
+          return new Promise<void>((resolve, reject) => {
+            setTimeout(async () => {
+              resolve(
+                router.push(
+                  `/dashboard/ta/submit-parameter/${positionLevelId}`,
+                ),
+              );
+            }, 2000);
+          }).catch((e) =>
+            console.log("Error Setting Position's Level Requirement: ", e),
+          );
+        },
+        onCancel() {
+          router.refresh();
+
+          setLoading(false);
+        },
+      });
+    }
+  }
+
+  // const showLoader = () => {
+  //   setLoading(true);
+  //   // setTimeout(() => {
+  //   //   setLoading(false);
+  //   // }, 3000);
+  // };
 
   return (
     <>
-      <Spin spinning={loading}>
-        <div className="job-fpk-header d-sm-flex flex-wrap align-items-center justify-content-between mb-40 lg-mb-30">
-          <h2 className="main-title m0 flex-grow-1">
-            Position Level Requirements
-          </h2>
-          <div className="d-flex xs-mt-30 justify-content-between align-items-center">
-            <SearchBar />
-            <div className="short-filter d-flex align-items-center ms-3">
-              <div className="text-dark fw-500 me-2">Filter by:</div>
-              <EmployShortSelect />
-            </div>
+      <Spin spinning={loading} fullscreen />
+
+      <div className="job-fpk-header d-sm-flex flex-wrap align-items-center justify-content-between mb-40 lg-mb-30">
+        <h2 className="main-title m0 flex-grow-1">
+          Position Level Requirements
+        </h2>
+        <div className="d-flex xs-mt-30 justify-content-between align-items-center">
+          <SearchBar />
+          <div className="short-filter d-flex align-items-center ms-3">
+            <div className="text-dark fw-500 me-2">Filter by:</div>
+            <EmployShortSelect />
           </div>
         </div>
-        <div className="tab-content" id="nav-tabContent">
-          <div className="tab-pane fade show active" id="a1" role="tabpanel">
-            <div className="table-responsive">
-              <table className="table job-alert-table w-100">
-                <thead>
-                  <tr>
-                    <th scope="col" style={{ width: '136.66px' }}>
-                      No
-                    </th>
-                    <th scope="col" style={{ width: '438.63px' }}>
-                      Parameter Name
-                    </th>
-                    <th scope="col">More</th>
-                    <th scope="col">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="border-0">
-                  {positionLevelRequirementData?.data?.map(
-                    (data: any, index: number) => (
-                      <React.Fragment key={index}>
-                        <tr>
-                          <td>{`${index + 1 ?? ''}`}</td>
-                          {/* <td>{parameterData?.parameterIndex + 1}</td> */}
-                          <td>{`${data?.name ?? ''} (Level: ${data?.level})`}</td>
-                          <td>
-                            <div className="d-flex justify-content-center align-items-center">
-                              <ExpendableButton
-                                isOpen={expandedRows[index]}
-                                toggle={() => toggleRowExpansion(index)}
-                              />
-                            </div>
-                          </td>
-                          <td>
-                            <div>
-                              <Link
-                                className="edit-container"
-                                href={{
-                                  pathname: `/dashboard/ta/submit-parameter/${encodeURIComponent(
-                                    CryptoJS.Rabbit.encrypt(
-                                      String(data?.id),
-                                      process.env.NEXT_PUBLIC_SECRET_KEY,
-                                    ).toString(),
-                                  )}`,
-                                  // query: {
-                                  //   '': CryptoJS.Rabbit.encrypt(
-                                  //     String(data.id),
-                                  //     process.env.NEXT_PUBLIC_SECRET_KEY,
-                                  //   ).toString(),
-                                  // },
-                                }}
-                                onClick={showLoader}
-                              >
-                                <FaEdit className="edit-action" />
-                              </Link>
-                              {/* <button
+      </div>
+      <div className="tab-content" id="nav-tabContent">
+        <div className="tab-pane fade show active" id="a1" role="tabpanel">
+          <div className="table-responsive">
+            <table className="table job-alert-table w-100">
+              <thead>
+                <tr>
+                  <th scope="col" style={{ width: '136.66px' }}>
+                    No
+                  </th>
+                  <th scope="col" style={{ width: '438.63px' }}>
+                    Parameter Name
+                  </th>
+                  <th scope="col">More</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody className="border-0">
+                {positionLevelRequirementData?.data?.map(
+                  (data: any, index: number) => (
+                    <React.Fragment key={index}>
+                      <tr>
+                        <td>{`${index + 1 ?? ''}`}</td>
+                        {/* <td>{parameterData?.parameterIndex + 1}</td> */}
+                        <td>{`${data?.name ?? ''} (Level: ${data?.level})`}</td>
+                        <td>
+                          <div className="d-flex justify-content-center align-items-center">
+                            <ExpendableButton
+                              isOpen={expandedRows[index]}
+                              toggle={() => toggleRowExpansion(index)}
+                            />
+                          </div>
+                        </td>
+                        <td>
+                          <div>
+                            <Link
+                              className="edit-container"
+                              href="#"
+                              // query: {
+                              //   '': CryptoJS.Rabbit.encrypt(
+                              //     String(data.id),
+                              //     process.env.NEXT_PUBLIC_SECRET_KEY,
+                              //   ).toString(),
+                              // },
+
+                              onClick={() =>
+                                handlePositionLevelRequirement('edit', data?.id)
+                              }
+                            >
+                              <FaEdit className="edit-action" />
+                            </Link>
+                            {/* <button
                             className="action-btn dropdown-toggle"
                             type="button"
                             data-bs-toggle="dropdown"
@@ -206,36 +236,36 @@ const EmployJobParameter = ({ positionLevelRequirementData, perPage }) => {
                             <span></span>
                           </button>
                           <ActionDropdown /> */}
-                              {/* <i className="fa-solid fa-trash-can">oke</i> */}
-                            </div>
-                          </td>
-                        </tr>
-                        {expandedRows[index] && (
-                          <tr>
-                            <td></td>
-                            <td colSpan={3}>
-                              <div
-                                className={
-                                  expandedRows[index]
-                                    ? 'expanded-row-open'
-                                    : 'expanded-row-close'
-                                }
-                              >
-                                <div className="row">
-                                  {data?.positionLevelRequirements?.map(
-                                    (d: any, index: number) => {
-                                      return (
-                                        <div key={index} className="col-lg-6">
-                                          <p>
-                                            <b>{`${d?.requirementFields?.name}: `}</b>
-                                            {/* <b>{`${subTitle[d?.requirementFields?.name ?? '']}: `}</b> */}
-                                            {d?.value ?? '-'}
-                                          </p>
-                                        </div>
-                                      );
-                                    },
-                                  )}
-                                  {/* <div className="col-6">
+                            {/* <i className="fa-solid fa-trash-can">oke</i> */}
+                          </div>
+                        </td>
+                      </tr>
+                      {expandedRows[index] && (
+                        <tr>
+                          <td></td>
+                          <td colSpan={3}>
+                            <div
+                              className={
+                                expandedRows[index]
+                                  ? 'expanded-row-open'
+                                  : 'expanded-row-close'
+                              }
+                            >
+                              <div className="row">
+                                {data?.positionLevelRequirements?.map(
+                                  (d: any, index: number) => {
+                                    return (
+                                      <div key={index} className="col-lg-6">
+                                        <p>
+                                          <b>{`${d?.requirementFields?.name}: `}</b>
+                                          {/* <b>{`${subTitle[d?.requirementFields?.name ?? '']}: `}</b> */}
+                                          {d?.value ?? '-'}
+                                        </p>
+                                      </div>
+                                    );
+                                  },
+                                )}
+                                {/* <div className="col-6">
                                 <p>
                                   <b>Total Year Of Experience: </b>
                                   {`${data?.totalYearOfExperienceParameter ?? '-'}`}
@@ -263,31 +293,31 @@ const EmployJobParameter = ({ positionLevelRequirementData, perPage }) => {
                                   {`${data?.jobLevelParameter ? 'Yes' : 'No'}`}
                                 </p>
                               </div> */}
-                                </div>
                               </div>
-                            </td>
-                          </tr>
-                        )}
-                      </React.Fragment>
-                    ),
-                  )}
-                </tbody>
-              </table>
-            </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  ),
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
-        <div className="d-flex justify-content-center mt-30">
-          <Pagination
-            pageRangeDisplayed={3}
-            totalData={positionLevelRequirementData?.total}
-            disabled={
-              !positionLevelRequirementData ||
-              positionLevelRequirementData?.total <= Number(perPage)
-                ? true
-                : false
-            }
-          />
-          {/* <ul className="style-none d-flex align-items-center">
+      </div>
+      <div className="d-flex justify-content-center mt-30">
+        <Pagination
+          pageRangeDisplayed={3}
+          totalData={positionLevelRequirementData?.total}
+          disabled={
+            !positionLevelRequirementData ||
+            positionLevelRequirementData?.total <= Number(perPage)
+              ? true
+              : false
+          }
+        />
+        {/* <ul className="style-none d-flex align-items-center">
           <li>
             <a href="#" className="active">
               1
@@ -309,8 +339,7 @@ const EmployJobParameter = ({ positionLevelRequirementData, perPage }) => {
             </a>
           </li>
         </ul> */}
-        </div>
-      </Spin>
+      </div>
     </>
   );
 };

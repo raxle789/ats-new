@@ -3,8 +3,8 @@ import { z } from 'zod';
 export const validateTaId = z.object({
   taId: z
     .number({
-      required_error: 'TA required!',
-      invalid_type_error: 'TA id must be a number!',
+      required_error: 'TA Required!',
+      invalid_type_error: 'TA Id Must Be A Number!',
     })
     .int(),
 });
@@ -12,8 +12,8 @@ export const validateTaId = z.object({
 export const validateRequestNo = z.object({
   requestNo: z.coerce
     .string({
-      required_error: 'Request no required!',
-      invalid_type_error: 'Request no must be a string!',
+      required_error: 'FPK Request No Required!',
+      invalid_type_error: ' FPK Request No Must Be A String!',
     })
     .trim(),
 });
@@ -21,26 +21,26 @@ export const validateRequestNo = z.object({
 export const validateEfpk = z.object({
   RequestNo: z.coerce
     .string({
-      required_error: 'Request no required!',
-      invalid_type_error: 'Request no must be a string!',
+      required_error: 'FPK Request No Required!',
+      invalid_type_error: 'FPK Request No Must Be A String!',
     })
     .trim(),
   JobTitleCode: z.coerce
     .string({
-      required_error: 'Job title code required!',
-      invalid_type_error: 'Job title code must be a string!',
+      required_error: 'Job Title Code Required!',
+      invalid_type_error: 'Job Title Code Must Be A String!',
     })
     .trim(),
   EmpType: z.coerce
     .string({
-      required_error: 'Employment type required!',
-      invalid_type_error: 'Employment type must be a string!',
+      required_error: 'Employment Type Required!',
+      invalid_type_error: 'Employment Type Must Be A String!',
     })
     .trim(),
   JobLvlCode: z.coerce
     .string({
-      required_error: 'Job level code required!',
-      invalid_type_error: 'Job level code must be a string!',
+      required_error: 'Job Level Code Required!',
+      invalid_type_error: 'Job Level Code Must Be A String!',
     })
     .trim()
     .transform((val, ctx) => {
@@ -58,7 +58,7 @@ export const validateEfpk = z.object({
         if (isNaN(Number(isMatch))) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: 'Job level code cannot parse to number!',
+            message: 'Job Level Code Cannot Parse to Number!',
           });
         }
 
@@ -66,14 +66,14 @@ export const validateEfpk = z.object({
       } else {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Job level code cannot parse to number!',
+          message: 'Job Level Code Cannot Parse to Number!',
         });
       }
     }),
   OrgGroupName: z.coerce
     .string({
-      required_error: 'Organization group name required!',
-      invalid_type_error: 'Organization group name must be a string!',
+      required_error: 'Organization Group Name Required!',
+      invalid_type_error: 'Organization Group Name Must Be A String!',
     })
     .trim()
     .transform((val, ctx) => {
@@ -84,26 +84,26 @@ export const validateEfpk = z.object({
       } else {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Organization group name cannot be parsed!',
+          message: 'Organization Group Name Cannot Parse to String!',
         });
       }
     }),
   OrgGroupCode: z.coerce
     .string({
-      required_error: 'Organization group code required!',
-      invalid_type_error: 'Organization group code must be a string!',
+      required_error: 'Organization Group Code Required!',
+      invalid_type_error: 'Organization Group Code Must Be A String!',
     })
     .trim(),
   LocationCode: z.coerce
     .string({
-      required_error: 'Location code required!',
-      invalid_type_error: 'Location code must be a string!',
+      required_error: 'Location Code Required!',
+      invalid_type_error: 'Location Code Must Be A String!',
     })
     .trim(),
   sla_days: z
     .number({
-      required_error: 'SLA days required!',
-      invalid_type_error: 'SLA days must be a number!',
+      required_error: 'SLA Days Required!',
+      invalid_type_error: 'SLA Days Must Be A Number!',
     })
     .int(),
 });
@@ -111,8 +111,8 @@ export const validateEfpk = z.object({
 export const validateVerticalCode = z.object({
   verticalCode: z.coerce
     .string({
-      required_error: 'Vertical code required!',
-      invalid_type_error: 'Vertical code must be a string!',
+      required_error: 'Vertical Code Required!',
+      invalid_type_error: 'Vertical Code Must Be A String!',
     })
     .trim(),
 });
@@ -120,8 +120,8 @@ export const validateVerticalCode = z.object({
 export const validateJobVacancySchema = z.object({
   taId: z
     .number({
-      required_error: 'Ta Id Required !',
-      invalid_type_error: 'Ta Id Must Be A Number!',
+      required_error: 'TA Id Required !',
+      invalid_type_error: 'TA Id Must Be A Number!',
     })
     .int(),
   jobEfpk: z.coerce
@@ -319,8 +319,8 @@ export const validateJobVacancySchema = z.object({
     }),
   jobTaCollaborator: z
     .number({
-      required_error: 'Ta Collaborator Required!',
-      invalid_type_error: 'Ta Collaborator Id Must Be A Number!',
+      required_error: 'TA Collaborator Required!',
+      invalid_type_error: 'TA Collaborator Id Must Be A Number!',
     })
     .array()
     .nullable()
@@ -340,8 +340,8 @@ export const validateJobVacancySchema = z.object({
 export const validateJobVacancyId = z.object({
   // taId: z.coerce
   //   .number({
-  //     required_error: 'Ta id required!',
-  //     invalid_type_error: 'Ta id must be a number!',
+  //     required_error: 'TA id required!',
+  //     invalid_type_error: 'TA id must be a number!',
   //   })
   //   .int(),
   jobVacancyId: z
@@ -355,17 +355,35 @@ export const validateJobVacancyId = z.object({
 export const validateCandidateApply = z.object({
   candidateId: z
     .number({
-      required_error: 'Candidate id required!',
-      invalid_type_error: 'Candidate id must be a number!',
+      required_error: 'Candidate Id Required!',
+      invalid_type_error: 'Candidate Id Must Be A Number!',
     })
     .int(),
   jobVacancyId: z
     .number({
-      required_error: 'Job vacancy id required!',
-      invalid_type_error: 'Job vacancy id must be a number!',
+      required_error: 'Job Vacancy Id Required!',
+      invalid_type_error: 'Job Vacancy Id Must Be A Number!',
     })
     .int(),
 });
+
+// export const validateJobVacancyIdAndStateName = z.object({
+//   jobVacancyId: z
+//     .number({
+//       required_error: 'Job Vacancy Id Required!',
+//       invalid_type_error: 'Job Vacancy Id Must Be A Number!',
+//     })
+//     .int(),
+//   stateName: z.coerce
+//     .string({
+//       required_error: 'State Name Required!',
+//       invalid_type_error: 'State Name Must Be A String!',
+//     })
+//     .trim()
+//     .refine((val) => val === 'WAITING' || val === 'ASSESSMENT', {
+//       message: 'State Name Must Be Waiting Or Assessment!',
+//     }),
+// });
 
 // const validateJobVacancy = z.object({
 //   id: z.coerce
@@ -570,13 +588,13 @@ export const validateCandidateApply = z.object({
 //       message: 'Job career fest must be yes or no!',
 //     }),
 //   taId: z.coerce.number({
-//     required_error: 'Ta id required!',
-//     invalid_type_error: 'Ta id must be a number!',
+//     required_error: 'TA id required!',
+//     invalid_type_error: 'TA id must be a number!',
 //   }),
 //   jobTaCollaborator: z.coerce
 //     .number({
-//       required_error: 'Ta collaborator required!',
-//       invalid_type_error: 'Ta collaborator must be a number!',
+//       required_error: 'TA collaborator required!',
+//       invalid_type_error: 'TA collaborator must be a number!',
 //     })
 //     .array()
 //     .default([]),

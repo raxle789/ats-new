@@ -1,4 +1,7 @@
 import { Metadata } from 'next';
+import * as crypto from '@/lib/utils/utils';
+import CryptoJS from 'crypto-js';
+import { getAllApplicantDataByJobVacancyId } from '@/lib/action/job-vacancies/job-vacancy-details/action';
 import Wrapper from '@/layouts/wrapper';
 import HeaderSix from '@/layouts/headers/header-6';
 import HeroBannerSix from './components/hero-banners/hero-banner-six';
@@ -27,6 +30,33 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
+  // const data = await getAllApplicantDataByJobVacancyId(2, 0, 10);
+
+  // console.info(data);
+
+  const encryptedData = CryptoJS.Rabbit.encrypt(
+    String(2),
+    process.env.NEXT_PUBLIC_SECRET_KEY,
+  ).toString();
+
+  const encryptedData2 = CryptoJS.Rabbit.encrypt(
+    String(2),
+    process.env.NEXT_PUBLIC_SECRET_KEY,
+  ).toString();
+
+  const encryptedData3 = CryptoJS.Rabbit.encrypt(
+    String(2),
+    process.env.NEXT_PUBLIC_SECRET_KEY,
+  ).toString();
+
+  const ayam = crypto.decryptData(encryptedData);
+
+  console.info(ayam);
+
+  console.info(encryptedData2);
+
+  console.info(encryptedData3);
+
   return (
     <Wrapper>
       <div className="main-page-wrapper">

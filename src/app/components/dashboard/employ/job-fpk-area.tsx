@@ -96,7 +96,7 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
           };
         })
         .catch((e) => {
-          console.log('Error search efpk data: ', e);
+          console.log('Failed Searching FPK Data: ', e);
 
           return {
             data: [],
@@ -118,7 +118,7 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
           };
         })
         .catch((e) => {
-          console.log('Error get efpk data: ', e);
+          console.log('Failed Getting FPK Data: ', e);
 
           return {
             data: [],
@@ -139,7 +139,7 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
       return data;
     })
     .catch((e) => {
-      console.log('Error getting ta data: ', e);
+      console.log('Failed Getting TA Data: ', e);
 
       return [];
     });

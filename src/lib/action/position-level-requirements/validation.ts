@@ -1,52 +1,76 @@
 import { z } from 'zod';
+import CryptoJS from 'crypto-js';
 
 export const validateForm = z.object({
   positionLevelId: z.coerce
+    .string({
+      required_error: 'Position Level Required!',
+      invalid_type_error: 'Position Level Id Must Be A String!',
+    })
+    .trim()
+    .transform((val, ctx) => {
+      try {
+        const query = decodeURIComponent(val) ?? '';
+
+        const decryptedValue = CryptoJS.Rabbit.decrypt(
+          String(query),
+          process.env.NEXT_PUBLIC_SECRET_KEY,
+        );
+
+        const convertString = decryptedValue.toString(CryptoJS.enc.Utf8);
+
+        const originalValue = Number(convertString);
+
+        return originalValue;
+      } catch (e) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Invalid Position Level Id's format!",
+        });
+
+        return z.NEVER;
+      }
+    }),
+  job_level: z
     .number({
-      required_error: 'Position level required!',
-      invalid_type_error: 'Position level id must be a number!',
+      required_error: 'Job Level Required!',
+      invalid_type_error: 'Job Level Must Be A Number!',
     })
     .int(),
-  job_level: z.coerce
+  min_year_experience: z
     .number({
-      required_error: 'Job level required!',
-      invalid_type_error: 'Job level must be a number!',
+      required_error: 'Year Of Experience Required!',
+      invalid_type_error: 'Year Of Experience Must Be A Number!',
     })
     .int(),
-  min_year_experience: z.coerce
+  line_industry: z
     .number({
-      required_error: 'Year of experience required!',
-      invalid_type_error: 'Year of experience must be a number!',
-    })
-    .int(),
-  line_industry: z.coerce
-    .number({
-      required_error: 'Line industry required!',
-      invalid_type_error: 'Line industry id must be a number!',
+      required_error: 'Line Industry Required!',
+      invalid_type_error: 'Line Industry Must Be A Number!',
     })
     .array(),
-  education_level: z.coerce
+  education_level: z
     .number({
-      required_error: 'Education level required!',
-      invalid_type_error: 'Education level must be a number!',
+      required_error: 'Education Level Required!',
+      invalid_type_error: 'Education Level Must Be A Number!',
     })
     .int(),
-  grade: z.coerce.number({
-    required_error: 'Grade required!',
-    invalid_type_error: 'Grade must be a number!',
+  grade: z.number({
+    required_error: 'Grade Required!',
+    invalid_type_error: 'Grade Must Be A Number!',
   }),
   salary: z
     .object({
-      start_salary: z.coerce
+      start_salary: z
         .number({
-          required_error: 'Start salary required!',
-          invalid_type_error: 'Start salary must be a number!',
+          required_error: 'Start Salary Required!',
+          invalid_type_error: 'Start Salary Must Be A Number!',
         })
         .int(),
-      end_salary: z.coerce
+      end_salary: z
         .number({
-          required_error: 'End salary required!',
-          invalid_type_error: 'End salary must be a number!',
+          required_error: 'End Salary Required!',
+          invalid_type_error: 'End Salary Must Be A Number!',
         })
         .int(),
     })
@@ -54,7 +78,7 @@ export const validateForm = z.object({
       if (val.start_salary < 0 || val.end_salary < 0) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Salary cannot be negative!',
+          message: 'Salary Cannot Be Negative!',
         });
 
         return z.NEVER;
@@ -63,7 +87,7 @@ export const validateForm = z.object({
       if (val.start_salary > val.end_salary) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Start salary must be less than end salary!',
+          message: 'Start Salary Cannot Be Greater Than End Salary!',
         });
 
         return z.NEVER;
@@ -74,22 +98,22 @@ export const validateForm = z.object({
 });
 
 export const validatePositionLevelRequirementSchema = z.object({
-  positionLevelId: z.coerce
+  positionLevelId: z
     .number({
-      required_error: 'Position level required!',
-      invalid_type_error: 'Position id must be a number!',
+      required_error: 'Position Level Required!',
+      invalid_type_error: 'Position Level Id Must Be A Number!',
     })
     .int(),
   key: z.coerce
     .string({
-      required_error: 'Key required!',
-      invalid_type_error: 'Key must be a string!',
+      required_error: 'Position Level Requirement Field Required!',
+      invalid_type_error: 'Position Level Requirement Field Must Be A String',
     })
     .trim(),
   newValue: z.coerce
     .string({
-      required_error: 'Value required!',
-      invalid_type_error: 'Value must be a string!',
+      required_error: 'Position Level Requirement Value Required!',
+      invalid_type_error: 'Position Level Requirement Value Must Be A String!',
     })
     .trim(),
 });

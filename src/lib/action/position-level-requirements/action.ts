@@ -9,6 +9,8 @@ import {
   setPositionLevelRequirement,
   searchPositionLevelRequirement,
 } from '../../../app/services/position-level-requirements/service';
+import CryptoJS from 'crypto-js';
+import _ from 'lodash';
 // import * as parserFunctions from '../requirement-parsers/action';
 import {
   validateForm,
@@ -131,10 +133,22 @@ async function formatPositionLevelRequirementData(data) {
   //   console.info(validateData.error);
   // }
 
-  if (data?.data) {
+  if (data?.data && data?.data?.length) {
     await Promise.all(
       data?.data?.map(async (a) => {
-        if (a?.positionLevelRequirements) {
+        if (a && !_.isEmpty(a)) {
+          a.id = encodeURIComponent(
+            CryptoJS.Rabbit.encrypt(
+              String(a?.id),
+              process.env.NEXT_PUBLIC_SECRET_KEY,
+            ).toString(),
+          );
+        }
+
+        if (
+          a?.positionLevelRequirements &&
+          a?.positionLevelRequirements?.length
+        ) {
           await Promise.all(
             a?.positionLevelRequirements?.map(async (d) => {
               if (d?.value !== null && d?.value !== undefined && d?.value) {
@@ -225,7 +239,14 @@ export async function getPositionLevelRequirementData(positionLevelId) {
 
   const data = await getPositionLevelRequirement(positionLevelId);
 
-  if (data) {
+  if (data && !_.isEmpty(data)) {
+    data.id = encodeURIComponent(
+      CryptoJS.Rabbit.encrypt(
+        String(data?.id),
+        process.env.NEXT_PUBLIC_SECRET_KEY,
+      ).toString(),
+    );
+
     await Promise.all(
       data?.positionLevelRequirements?.map(async (d) => {
         if (d?.value !== null && d?.value !== undefined && d?.value) {
@@ -378,11 +399,18 @@ export async function setPositionLevelRequirementData(values) {
       }
     }
 
-    revalidatePath('/dashboard/ta/parameter');
-
-    permanentRedirect('/dashboard/ta/parameter');
+    return {
+      success: true,
+      message: "Successfully Set Position Level's Requirements",
+    };
   } else {
     console.log(formValidation.error);
+
+    return {
+      success: false,
+      message:
+        "Failed to Set Position Level's Requirements, Please Check Your Inputs",
+    };
   }
 }
 
