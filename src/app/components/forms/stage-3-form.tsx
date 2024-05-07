@@ -375,6 +375,7 @@ const Stage3Form = () => {
       },
     });
     const jobLevelsData = await levels.json();
+    console.info('FETCHED JOB LEVEL -> ', jobLevelsData);
     setMasterData((prevState) => ({
       ...prevState,
       job_levels: jobLevelsData,
@@ -1374,9 +1375,9 @@ const Stage3Form = () => {
     await setUserSession('auth', { user: { id: regSessionDecoded.user.id }, candidate: { id: regSessionDecoded.candidate.id } });
 
     dispatch(setRegisterStep(4));
-    setTimeout(() => {
-      setSpinning(false);
-    }, 1000);
+    // setTimeout(() => {
+    //   setSpinning(false);
+    // }, 1000);
     message.success('Your data successfully saved');
   };
   const handleCancel = () => {

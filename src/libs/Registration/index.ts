@@ -390,7 +390,7 @@ export async function storeEducation(
     const education = await prisma.educations.create({
       data: {
         candidateId: regSession.candidate.id,
-        level: formData.educationLevel,
+        level: formData.educationLevel.toString(),
         major: formData.educationMajor[0].toUpperCase(),
         start_year: startyear,
         end_year: endYear,
@@ -642,7 +642,7 @@ export async function storeExperiences(formData: any, isExperienced: string) {
         id: regSession.candidate.id,
       },
       data: {
-        current_salary: Number(formData.expectedSalary),
+        expected_salary: Number(formData.expectedSalary),
       },
     });
     console.info('Result after updating expected-salary data...', candidate);
@@ -669,7 +669,7 @@ export async function storeExperiences(formData: any, isExperienced: string) {
         id: regSession.candidate.id,
       },
       data: {
-        current_salary: Number(formData.expectedSalary),
+        expected_salary: Number(formData.expectedSalary),
       },
     });
     /* Guard check */
