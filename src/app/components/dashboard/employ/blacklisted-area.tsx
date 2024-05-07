@@ -6,7 +6,7 @@ import CandidatesItems from './candidates-items';
 import CandidatesFilter from './candidates-filter';
 import { Button, Popover } from 'antd';
 
-const CandidatesArea = () => {
+const BlacklistedArea = () => {
   const candidate_items = candidate_data.slice(0, 10);
   const [popOverState, setPopOverState] = useState(false);
   const filterButtonClick = () => {
@@ -16,7 +16,7 @@ const CandidatesArea = () => {
     <>
       <div className="job-fpk-header mb-40 lg-mb-30">
         <div className="d-sm-flex align-items-start justify-content-between mb-40 lg-mb-30">
-          <h2 className="main-title m0 flex-grow-1">Candidates</h2>
+          <h2 className="main-title m0 flex-grow-1">Blacklisted</h2>
         </div>
         <div className="d-flex xs-mt-30 justify-content-end align-items-center">
           <SearchBar />
@@ -58,4 +58,4 @@ const CandidatesArea = () => {
   );
 };
 
-export default CandidatesArea;
+export default BlacklistedArea;

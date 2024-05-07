@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import ImageNext from 'next/image';
 import {
   Input,
   Form,
@@ -28,6 +29,8 @@ import type {
 } from 'antd';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
+import { getAddress, getEducation, getEmergency, getFamilies, getLanguages, getProfileNCandidate, getQuestions, getSkills } from '@/libs/Candidate/retrieve-data';
+import dayjs from 'dayjs';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
@@ -123,7 +126,7 @@ type FieldType = {
 
 type MasterData = {
   citys?: {
-    value: id;
+    value: string;
     label: string;
   }[];
   ethnicity?: {
@@ -178,6 +181,76 @@ const PersonalDataForm = () => {
     { value: string; label: string }[] | null
   >(null);
   const [masterData, setMasterData] = useState<MasterData | null>(null);
+  /* From Fetched */
+  const [profileData, setProfileData] = useState<any>({});
+  const [addresses, setAddresses] = useState<any>({});
+  const [families, setFamilies] = useState<any>({});
+  const [education, setEducation] = useState<any>({});
+  const [skills, setSkills] = useState<any>({});
+  const [languages, setLanguages] = useState<any>({});
+  const [emergency, setEmergency] = useState<any>({});
+  const [questions, setQuestions] = useState<any>({});
+  const [error, setError] = useState<string>('');
+
+  const fetchProfileData = async () => {
+    const profileData = await getProfileNCandidate();
+    if(!profileData.success) return setError(profileData.message as string);
+    setPreviewImage(profileData.data?.document);
+    return setProfileData(profileData.data?.profile);
+  };
+
+  const fetchAddress = async () => {
+    const addressesData = await getAddress();
+    if(!addressesData.success) return setError(addressesData.message as string);
+    setAddresses(addressesData.data);
+  };
+
+  const fetchFamilies = async () => {
+    const familiesData = await getFamilies();
+    if(!familiesData.success) return setError(familiesData.message as string);
+    return setFamilies(familiesData.data);
+  };
+
+  const fetchEducation = async () => {
+    const educationData = await getEducation();
+    if(!educationData.success) return message.error(educationData.message as string);
+    return setEducation(educationData.data);
+  };
+
+  const fetchSkills = async () => {
+    const skillsData = await getSkills();
+    if(!skillsData.success) return message.error(skillsData.message as string);
+    return setSkills(skillsData.data);
+  };
+
+  const fetchLanguages = async () => {
+    const languagesData = await getLanguages();
+    if(!languagesData.success) return message.error(languagesData.message as string);
+    return setLanguages(languagesData.data);
+  };
+
+  const fetchEmergency = async () => {
+    const emergencyData = await getEmergency();
+    if(!emergencyData.success) return message.error(emergencyData.message as string);
+    return setEmergency(emergencyData.data);
+  };
+
+  const fetchQuestions = async () => {
+    const questionsData = await getQuestions();
+    if(!questionsData.success) return message.error(questionsData.message as string);
+    return setQuestions(questionsData.data);
+  }
+
+  useEffect(() => {
+    fetchProfileData();
+    fetchAddress();
+    fetchFamilies();
+    fetchEducation();
+    fetchSkills();
+    fetchLanguages();
+    fetchEmergency();
+    fetchQuestions();
+  }, []);
 
   /* Fetching Master Data */
   const fetchCitys = async () => {
@@ -215,13 +288,9 @@ const PersonalDataForm = () => {
   };
 
   const handlePreview = async (file: UploadFile) => {
-    console.log(file);
     if (!file.url && !file.preview) {
       file.preview = await getBase64(file.originFileObj as FileType);
-    }
-
-    console.log('okeoke');
-    console.log('file: ', file);
+    };
     setPreviewImage(file.url || (file.preview as string));
     setPreviewOpen(true);
   };
@@ -614,7 +683,8 @@ const PersonalDataForm = () => {
   const handleSubmit: FormProps<FieldType>['onFinish'] = (values) => {
     if (editState) {
       // jalankan simpan data
-    }
+    };
+    console.log('Submitted Value -> ', values);
   };
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
@@ -627,11 +697,84 @@ const PersonalDataForm = () => {
       message.error(`Failed: ${errorMessage}`);
     }
   };
+  // console.info('Candidate -> ', profileData.candidate?.users?.email);
+  // console.info('Address', addresses.street);
+  // console.info('Address check value -> ', addresses[0]?.street);
+  useEffect(() => {
+    form.setFieldsValue({
+      profile: {
+        email: profileData.candidate?.users?.email,
+        fullname: profileData.candidate?.users.name,
+        phoneNumber: profileData.candidate?.phone_number,
+        dateOfBirth: dayjs(profileData.candidate?.date_of_birth),
+        placeOfBirth: profileData.candidate?.birthCity,
+        gender: profileData.candidate?.gender,
+        religion: profileData.candidate?.religion,
+        ethnicity: profileData.candidate?.ethnicity,
+        bloodType: profileData.candidate?.blood_type,
+        maritalStatus: profileData.candidate?.maritalStatus
+      },
+      addressCheckbox: addresses.length === 2 ? false : true,
+      address: {
+        permanentAddress: addresses[0]?.street,
+        country: addresses[0]?.country,
+        rt: addresses[0]?.rt,
+        rw: addresses[0]?.rw,
+        city: addresses[0]?.city,
+        subdistrict: addresses[0]?.subdistrict,
+        village: addresses[0]?.village,
+        zipCode: addresses[0]?.zipCode,
+        currentAddress: addresses.length === 2 ? addresses[1]?.currentAddress : addresses[0]?.street
+      },
+      families: {
+        0: {
+          relation: families[0]?.relationStatus,
+          name: families[0]?.name,
+          gender: families[0]?.gender,
+          dateOfBirth: dayjs(families[0]?.dateOfBirth)
+        },
+        1: {
+          relation: families[1]?.relationStatus,
+          name: families[1]?.name,
+          gender: families[1]?.gender,
+          dateOfBirth: dayjs(families[1]?.dateOfBirth)
+        },
+      },
+      skills: skills,
+      education: {
+        educationLevel: education?.level,
+        educationMajor: education?.major,
+        schoolName: education?.university_name,
+        gpa: education?.gpa,
+        cityOfSchool: education?.cityOfSchool,
+        startEduYear: dayjs(education?.start_year),
+        endEduYear: dayjs(education?.end_year),
+      },
+      language: languages,
+      others: {
+        emergencyContactName: emergency?.name,
+        emergencyContactPhoneNumber: emergency?.phoneNumber,
+        emergencyContactRelation: emergency?.relationStatus,
+        noticePeriod: questions[0],
+        // everWorkedMonth: ,
+        // everWorkedYear: ,
+        diseaseName: questions[1],
+        diseaseYear: '2027',
+        relationName: 'Wika Salim',
+        relationPosition: 'Mantan Istri'
+      }
+    });
+  }, [profileData, addresses, families, education, skills]);
+  useEffect(() => {
+    if(families.length > 1) {
+      families.forEach(val => {
+        add();
+      });
+    };
+  }, [families]);
   return (
     <>
-      <h2 className="main-title">Personal Data</h2>
-
-      <div className="bg-white card-box border-20">
+      <div>
         <div className="mb-25">
           <button
             className="d-flex align-items-center justify-content-center edit-btn-form"
@@ -643,6 +786,7 @@ const PersonalDataForm = () => {
         <Form
           name="personal-data-form"
           variant="filled"
+          form={form}
           onFinish={handleSubmit}
           onFinishFailed={onFinishFailed}
         >
@@ -651,15 +795,16 @@ const PersonalDataForm = () => {
             <div className="col-4">
               <div className="input-group-meta position-relative mb-15">
                 <label>Upload Photo*</label>
+                <ImageNext src={previewImage} alt='Profile' width={60} height={60}/>
                 <Form.Item<FieldType>
                   name={['profile', 'uploadPhoto']}
                   className="mb-0"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please upload your photo!',
-                    },
-                  ]}
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //     message: 'Please upload your photo!',
+                  //   },
+                  // ]}
                 >
                   <div>
                     <Upload
@@ -706,9 +851,9 @@ const PersonalDataForm = () => {
                 <label>Full Name (as per ID/Passport)*</label>
                 <Form.Item<FieldType>
                   name={['profile', 'fullname']}
-                  rules={[
-                    { required: true, message: 'Please input your fullname!' },
-                  ]}
+                  // rules={[
+                  //   { required: true, message: 'Please input your fullname!' },
+                  // ]}
                 >
                   <Input
                     placeholder="Your Full Name"
@@ -727,6 +872,7 @@ const PersonalDataForm = () => {
                   <Input
                     placeholder="Your Email"
                     disabled
+                    defaultValue={profileData.candidate?.users?.email}
                     // defaultValue={regSessionDecoded.user?.email ?? ''}
                   />
                 </Form.Item>
@@ -801,7 +947,7 @@ const PersonalDataForm = () => {
                     }
                     disabled={!editState}
                     /* Feted Data */
-                    options={citysName}
+                    options={citysName as { value: string; label: string }[]}
                   />
                 </Form.Item>
               </div>
@@ -1076,7 +1222,7 @@ const PersonalDataForm = () => {
                     }
                     disabled={!editState}
                     /* Fetched Data */
-                    options={citysName}
+                    options={citysName as { value: string; label: string }[]}
                   />
                 </Form.Item>
               </div>
@@ -1184,6 +1330,7 @@ const PersonalDataForm = () => {
                     <Checkbox
                       onChange={handleAddressCheck}
                       disabled={!editState}
+                      checked={addresses.length === 2 ? false : true}
                     >
                       Same as Permanent Address
                     </Checkbox>

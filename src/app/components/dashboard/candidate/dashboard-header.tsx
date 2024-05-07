@@ -101,7 +101,7 @@ const CandidateDashboardHeader = () => {
         </div>
         <div>
           <Link
-            href="/dashboard/employ-dashboard/submit-job"
+            href="/main/jobs"
             className="job-post-btn tran3s"
           >
             Apply a Job

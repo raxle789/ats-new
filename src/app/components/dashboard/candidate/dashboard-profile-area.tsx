@@ -1,83 +1,41 @@
 'use client';
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import { IoDocumentTextOutline } from 'react-icons/io5';
-import { AiOutlineUser } from 'react-icons/ai';
-import { PiPath } from 'react-icons/pi';
+import React, { useState } from 'react';
+import { Tabs } from 'antd';
+import type { TabsProps } from 'antd';
+import PersonalDataForm from '../../forms/personal-data-form';
+import BackgroundExperienceForm from '../../forms/background-experience-form';
+import DocumentForm from '../../forms/doc-form';
 
 const DashboardProfileArea = () => {
-  const router = useRouter();
+  const [keyState, setKeyState] = useState('1');
+
+  const onChange = (key: string) => {
+    setKeyState(key);
+  };
+
+  const items: TabsProps['items'] = [
+    {
+      key: '1',
+      label: 'Personal Data',
+    },
+    {
+      key: '2',
+      label: 'Background Experience',
+    },
+    {
+      key: '3',
+      label: 'Documents',
+    },
+  ];
   return (
     <>
       <h2 className="main-title">My Profile</h2>
 
       <div className="bg-white card-box border-20">
-        <div className="d-flex align-items-center">
-          <AiOutlineUser
-            style={{
-              fontSize: '23px',
-              marginBottom: '2px',
-              marginRight: '5px',
-            }}
-          />
-          <a
-            style={{
-              fontSize: '17px',
-              cursor: 'pointer',
-              color: 'black',
-              fontWeight: '500',
-            }}
-            onClick={() => {
-              router.push('/dashboard/user/profile/personal-data');
-            }}
-          >
-            Personal Data
-          </a>
-        </div>
-        <div className="mt-2 d-flex align-items-center">
-          <PiPath
-            style={{
-              fontSize: '23px',
-              marginBottom: '2px',
-              marginRight: '5px',
-            }}
-          />
-          <a
-            style={{
-              fontSize: '17px',
-              cursor: 'pointer',
-              color: 'black',
-              fontWeight: '500',
-            }}
-            onClick={() => {
-              router.push('');
-            }}
-          >
-            Background Experience
-          </a>
-        </div>
-        <div className="mt-2 d-flex align-items-center">
-          <IoDocumentTextOutline
-            style={{
-              fontSize: '23px',
-              marginBottom: '2px',
-              marginRight: '5px',
-            }}
-          />
-          <a
-            style={{
-              fontSize: '17px',
-              cursor: 'pointer',
-              color: 'black',
-              fontWeight: '500',
-            }}
-            onClick={() => {
-              router.push('/dashboard/user/profile/document');
-            }}
-          >
-            Document
-          </a>
-        </div>
+        <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+        {keyState === '1' && <PersonalDataForm />}
+        {keyState === '2' && <BackgroundExperienceForm />}
+        {keyState === '3' && <DocumentForm />}
       </div>
     </>
   );

@@ -105,6 +105,17 @@
     img {
       max-width: 20px;
     }
+    .dropdown-icon-aside {
+      max-width: 23px;
+      height: auto;
+    }
+  }
+  .dasboard-main-nav {
+    .sub-link {
+      padding-left: 40px;
+      width: 100%;
+      margin-top: -5px;
+    }
   }
   .profile-complete-status {
     margin: 60px 0 75px 20px;
@@ -1761,6 +1772,24 @@
   }
 }
 
+.expanded-button-aside {
+  position: relative;
+  top: -10px;
+  left: 30px;
+  .dropdown-icon-aside {
+    width: 27px;
+    height: auto;
+  }
+  .rotated {
+    transform: rotate(180deg);
+    transition: all 0.3s;
+  }
+  .not-rotated {
+    transform: rotate(0deg);
+    transition: all 0.3s;
+  }
+}
+
 .form-item-custom-ant {
   margin-bottom: 0px;
 }
@@ -1868,4 +1897,14 @@
   top: 2px;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
+}
+
+.popover-filter-form {
+  width: 400px;
+}
+
+.checkbox-pipeline-action {
+  position: absolute;
+  top: -45px;
+  left: 12px;
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal } from 'antd';
+import { Modal, Spin } from 'antd';
 import { AiOutlineFileDone } from 'react-icons/ai';
 import { useRouter } from 'next/navigation';
 
@@ -9,10 +9,15 @@ const DoneRegisterPage = () => {
   const showModal = () => {
     setIsModalOpen(true);
   };
+  const [spinning, setSpinning] = useState(false);
 
   const handleOk = () => {
     setIsModalOpen(false);
+    setSpinning(true);
     router.push('/main/jobs');
+    setTimeout(() => {
+      setSpinning(false);
+    }, 500);
   };
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -42,6 +47,8 @@ const DoneRegisterPage = () => {
           <p className="mt-2">Register is Completed</p>
         </div>
       </div>
+
+      <Spin fullscreen spinning={spinning} />
     </>
   );
 };

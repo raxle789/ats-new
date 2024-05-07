@@ -14,7 +14,7 @@ const ActionApplicant = () => {
   return (
     <>
       <ul className="dropdown-menu dropdown-menu-end">
-        {currentStep === 'assessment' && (
+        {currentStep === 4 && (
           <>
             <li>
               <a
@@ -51,43 +51,58 @@ const ActionApplicant = () => {
             </li>
           </>
         )}
-        {currentStep === 'interview' && (
-          <>
-            <li>
-              <a className="applicant-action" onClick={showModal}>
-                Create Interview
-              </a>
-            </li>
-          </>
+        {currentStep === 5 && (
+          <li>
+            <a className="applicant-action" onClick={showModal}>
+              Create Interview
+            </a>
+          </li>
         )}
-        {currentStep === 'initial' && (
-          <>
-            <li>
-              <a className="applicant-action">Assign to Assessment</a>
-            </li>
-            <li>
-              <a className="applicant-action">Assign to Interview</a>
-            </li>
-          </>
+        {currentStep <= 4 && (
+          <li>
+            <a className="applicant-action">Assign to Assessment</a>
+          </li>
         )}
-        <li>
-          <a className="applicant-action">Assign to Offering</a>
-        </li>
-        <li>
-          <a className="applicant-action">Assign to Ref Check</a>
-        </li>
-        <li>
-          <a className="applicant-action">Assign to Agreement</a>
-        </li>
-        <li>
-          <a className="applicant-action">Assign to Boarding</a>
-        </li>
-        <li>
-          <a className="applicant-action">Reject</a>
-        </li>
-        <li>
-          <a className="applicant-action">Blacklist</a>
-        </li>
+        {currentStep <= 5 && (
+          <li>
+            <a className="applicant-action">Assign to Interview</a>
+          </li>
+        )}
+        {currentStep <= 6 && (
+          <li>
+            <a className="applicant-action">Assign to Ref Check</a>
+          </li>
+        )}
+        {currentStep <= 7 && (
+          <li>
+            <a className="applicant-action">Assign to Offering</a>
+          </li>
+        )}
+        {currentStep <= 8 && (
+          <li>
+            <a className="applicant-action">Assign to MCU</a>
+          </li>
+        )}
+        {currentStep <= 9 && (
+          <li>
+            <a className="applicant-action">Assign to Agreement</a>
+          </li>
+        )}
+        {currentStep <= 10 && (
+          <li>
+            <a className="applicant-action">Assign to Boarding</a>
+          </li>
+        )}
+        {currentStep <= 11 && (
+          <li>
+            <a className="applicant-action">Reject</a>
+          </li>
+        )}
+        {currentStep <= 12 && (
+          <li>
+            <a className="applicant-action">Blacklist</a>
+          </li>
+        )}
       </ul>
 
       <CreateInterviewModal

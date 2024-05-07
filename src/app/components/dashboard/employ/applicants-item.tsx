@@ -1,5 +1,6 @@
+'use client';
 import React, { SetStateAction } from 'react';
-import ActionApplicant from '../candidate/action-applicant';
+import ActionCandidate from './action-card-candidate';
 import { ICandidate } from '@/data/candidate-data';
 import Image from 'next/image';
 import { useAppDispatch } from '@/redux/hook';
@@ -14,7 +15,7 @@ interface IProps {
   setCheckboxAllValue: React.Dispatch<boolean>;
 }
 
-const CandidateAssessmentItem: React.FC<IProps> = ({
+const ApplicantsItems: React.FC<IProps> = ({
   item,
   checkboxState,
   checkboxAllValue,
@@ -89,22 +90,26 @@ const CandidateAssessmentItem: React.FC<IProps> = ({
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6">
               <div className="candidate-info">
-                <span>Start Test</span>
-                <div>22-02-2024 01:00:00</div>
+                <span>Last Education</span>
+                <div>{item.education}</div>
               </div>
               <div className="candidate-info mt-2">
-                <span>End Test</span>
-                <div>26-02-2024 23:59:59</div>
+                <span>Expected Salary</span>
+                <div>{item.expectedSalary}</div>
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6">
               <div className="candidate-info">
-                <span>Test Name</span>
-                <div>Psikotes Online - 1</div>
+                <span>Year of Experience</span>
+                <div>{item.yearExperience}</div>
               </div>
-              <div className="candidate-info mt-2 mb-40">
+              <div className="candidate-info mt-2">
                 <span>Status</span>
-                <div>Tidak direkomendasikan</div>
+                <div>{item.status}</div>
+              </div>
+              <div className="candidate-info mt-2">
+                <span>Score</span>
+                <div>{item.score}</div>
               </div>
             </div>
             <div className="col-xl-1 col-md-4">
@@ -117,7 +122,7 @@ const CandidateAssessmentItem: React.FC<IProps> = ({
                     aria-expanded="false"
                   >
                     <span>
-                      <ActionApplicant />
+                      <ActionCandidate />
                     </span>
                   </button>
                 </div>
@@ -130,4 +135,4 @@ const CandidateAssessmentItem: React.FC<IProps> = ({
   );
 };
 
-export default CandidateAssessmentItem;
+export default ApplicantsItems;

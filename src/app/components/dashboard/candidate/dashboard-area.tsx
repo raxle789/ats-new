@@ -1,5 +1,6 @@
 'use client';
-import React from 'react';
+
+import React, { useEffect, useState } from 'react';
 import Image, { StaticImageData } from 'next/image';
 import job_data from '@/data/job-data';
 import icon_1 from '@/assets/dashboard/images/icon/icon_12.svg';
@@ -8,39 +9,59 @@ import icon_3 from '@/assets/dashboard/images/icon/icon_14.svg';
 import icon_4 from '@/assets/dashboard/images/icon/icon_15.svg';
 import main_graph from '@/assets/dashboard/images/main-graph.png';
 import DashboardHeader from './dashboard-header';
+import { Alert, Button, Tag } from 'antd';
+import { getAppliedJobs } from '@/libs/Candidate/retrieve-data';
+import Paragraph from 'antd/es/typography/Paragraph';
+import { useRouter } from 'next/navigation';
 
 // card item
-export function CardItem({
-  img,
-  value,
-  title,
-}: {
-  img: StaticImageData;
-  value: string;
-  title: string;
-}) {
-  return (
-    <div className="col-lg-3 col-6">
-      <div className="dash-card-one bg-white border-30 position-relative mb-15">
-        <div className="d-sm-flex align-items-center justify-content-between">
-          <div className="icon rounded-circle d-flex align-items-center justify-content-center order-sm-1">
-            <Image src={img} alt="icon" className="lazy-img" />
-          </div>
-          <div className="order-sm-0">
-            <div className="value fw-500">{value}</div>
-            <span>{title}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+// export function CardItem({
+//   img,
+//   value,
+//   title,
+// }: {
+//   img: StaticImageData;
+//   value: string;
+//   title: string;
+// }) {
+//   return (
+//     <div className="col-lg-3 col-6">
+//       <div className="dash-card-one bg-white border-30 position-relative mb-15">
+//         <div className="d-sm-flex align-items-center justify-content-between">
+//           <div className="icon rounded-circle d-flex align-items-center justify-content-center order-sm-1">
+//             <Image src={img} alt="icon" className="lazy-img" />
+//           </div>
+//           <div className="order-sm-0">
+//             <div className="value fw-500">{value}</div>
+//             <span>{title}</span>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
 // props type
 // type IProps = {
 //   setIsOpenSidebar: React.Dispatch<React.SetStateAction<boolean>>
 // }
 const DashboardArea = () => {
   const job_items = [...job_data.reverse().slice(0, 5)];
+  const [appliedJobs, setAppliedJobs] = useState<any | []>([]);
+  const [error, setError] = useState<string>('');
+  const router = useRouter();
+
+  const getAppliedJobsData = async () => {
+    const appliedJobsSData = await getAppliedJobs();
+    if(appliedJobsSData.success) {
+      if(typeof appliedJobsSData.data === "string") return setError(appliedJobsSData.data);
+      return setAppliedJobs(appliedJobsSData.data);
+    };
+    return setError(appliedJobsSData.message as string);
+  };
+
+  useEffect(() => {
+    getAppliedJobsData();
+  }, []);
 
   return (
     <>
@@ -57,7 +78,7 @@ const DashboardArea = () => {
           <div className="recent-job-tab bg-white border-20 mt-30 h-100">
             <h4 className="dash-title-two">Recommended Jobs 20</h4>
             <div className="wrapper">
-              {job_items.map((j) => (
+              {/* {job_items.map((j) => (
                 <div
                   key={j.id}
                   className="job-item-list d-flex align-items-center"
@@ -107,7 +128,12 @@ const DashboardArea = () => {
                     </ul>
                   </div>
                 </div>
-              ))}
+              ))} */}
+              <Alert
+                message="No Recommendations"
+                description="There are no job recommendations for now"
+                type="warning"
+              />
             </div>
           </div>
         </div>
@@ -115,14 +141,16 @@ const DashboardArea = () => {
           <div className="recent-job-tab bg-white border-20 mt-30 w-100">
             <h4 className="dash-title-two">Recent Applied Job 20</h4>
             <div className="wrapper">
-              {job_items.map((j) => (
+              {appliedJobs.length !== 0 ?
+              (appliedJobs.map((job: any) => (
                 <div
-                  key={j.id}
+                  key={job.id}
                   className="job-item-list d-flex align-items-center"
+                  // style={{ border: '1px solid black' }}
                 >
                   <div>
                     <Image
-                      src={j.logo}
+                      src={job_items[0].logo}
                       alt="logo"
                       width={40}
                       height={40}
@@ -131,11 +159,17 @@ const DashboardArea = () => {
                   </div>
                   <div className="job-title">
                     <h6 className="mb-5">
-                      <a href="#">Job Title</a>
+                      <a href="#" style={{ textDecoration: 'none', cursor: 'default' }}>{job.jobVacancies.jobTitleAliases}</a>
                     </h6>
+                    <Tag color={(job.stateName === "WAITING") ? '#FFA500'
+                    : (job.stateName === "ASSESSMENT") ? '#00FFFF'
+                    : (job.stateName === "INTERVIEW") ? '#0000FF'
+                    : (job.stateName === "OFFERING") ? '##00A36C' : ''} style={{ marginBottom: '1rem' }}>
+                      {job.stateName}
+                    </Tag>
                     <div className="meta row">
-                      <span className="col-lg-5">Assistant Manager</span>
-                      <span className="col-lg-7">Fulltime</span>
+                      <span className="col-lg-5">{job.jobVacancies.positionLevels.name}</span>
+                      <span className="col-lg-7">{job.jobVacancies.employmentStatusName}</span>
                     </div>
                   </div>
                   <div className="job-action">
@@ -151,21 +185,39 @@ const DashboardArea = () => {
                       <li>
                         <a
                           className="dropdown-item"
-                          href="#"
+                          href={`/main/jobs/${job.jobVacancyId}`}
                           style={{ color: 'rgba(0, 0, 0, 0.7)' }}
                         >
                           View Job
                         </a>
                       </li>
-                      <li>
+                      {/* <li>
                         <a className="dropdown-item" href="#">
                           Delete
                         </a>
-                      </li>
+                      </li> */}
                     </ul>
                   </div>
                 </div>
-              ))}
+              ))) :
+              (<>
+                <Alert
+                  message={'Empty Applied Jobs'}
+                  description={error}
+                  type='info'
+                />
+                <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'space-between' }}>
+                  <Paragraph ellipsis>
+                    Would you like to apply for the job now?
+                  </Paragraph>
+                  <Button type='primary'
+                    style={{ padding: '0rem 2rem' }}
+                    onClick={() => router.push('/main/jobs')}>
+                      Go
+                  </Button>
+                </div>
+              </>)
+              }
             </div>
           </div>
         </div>

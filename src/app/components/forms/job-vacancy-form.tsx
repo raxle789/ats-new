@@ -112,7 +112,7 @@ const JobVacancyForm = ({
             <Select
               className="select"
               onChange={(value) => handleEfpkChange(value)}
-              size="large"
+              // size="large"
               showSearch
               allowClear
               placeholder="Select Job FPK"
@@ -143,7 +143,7 @@ const JobVacancyForm = ({
               className="select"
               disabled={true}
               showSearch
-              size="large"
+              // size="large"
               allowClear
               optionFilterProp="children"
               filterOption={(input, option) =>
@@ -169,8 +169,8 @@ const JobVacancyForm = ({
           >
             <Input
               placeholder="Input Job Title Aliases"
-              size="large"
-              style={{ height: '40px' }}
+              size="middle"
+              style={{ height: '32px' }}
             />
           </Form.Item>
         </div>
@@ -182,7 +182,7 @@ const JobVacancyForm = ({
           >
             <Select
               className="select"
-              size="large"
+              // size="large"
               showSearch
               allowClear
               placeholder="Select Job Function"
@@ -212,7 +212,7 @@ const JobVacancyForm = ({
           >
             <Select
               className="select"
-              size="large"
+              // size="large"
               showSearch
               allowClear
               placeholder="Select Employment Status"
@@ -243,7 +243,7 @@ const JobVacancyForm = ({
             <Select
               className="select"
               onChange={(value) => handlePositionLevelChange(value)}
-              size="large"
+              // size="large"
               showSearch
               allowClear
               placeholder="Select Job Position Level"
@@ -269,7 +269,7 @@ const JobVacancyForm = ({
             <Select
               className="select"
               onChange={(value) => handleVerticalChange(value)}
-              size="large"
+              // size="large"
               showSearch
               allowClear
               placeholder="Select Job Vertical"
@@ -296,7 +296,7 @@ const JobVacancyForm = ({
           >
             <Select
               className="select"
-              size="large"
+              // size="large"
               showSearch
               allowClear
               placeholder="Select Job Department"
@@ -327,7 +327,7 @@ const JobVacancyForm = ({
             <Select
               className="select"
               showSearch
-              size="large"
+              // size="large"
               mode="multiple"
               allowClear
               optionFilterProp="children"
@@ -352,7 +352,7 @@ const JobVacancyForm = ({
           >
             <Select
               className="select"
-              size="large"
+              // size="large"
               showSearch
               allowClear
               placeholder="Select Job Region"
@@ -382,7 +382,7 @@ const JobVacancyForm = ({
           >
             <Select
               className="select"
-              size="large"
+              // size="large"
               showSearch
               allowClear
               placeholder="Select Job Work Location"
@@ -430,9 +430,9 @@ const JobVacancyForm = ({
           >
             <RangePicker
               className="range"
-              size="small"
+              size="middle"
               placeholder={['Published Date', 'Expired Date']}
-              style={{ height: '50px', paddingLeft: '12px' }}
+              // style={{ height: '50px', paddingLeft: '12px' }}
             />
           </Form.Item>
         </div>
@@ -513,7 +513,7 @@ const JobVacancyForm = ({
                   disabled={!parameterState['ageParameterState']}
                   min={18}
                   placeholder="Input Age!"
-                  style={{ height: '40px' }}
+                  style={{ height: '32px' }}
                 />
               </Form.Item>
             </div>
@@ -522,7 +522,11 @@ const JobVacancyForm = ({
         <div className="dash-input-wrapper mb-30">
           <div className="row">
             <div className="col-xxl-2">
-              <Form.Item name="genderParameterCheckbox" valuePropName="checked">
+              <Form.Item
+                name="genderParameterCheckbox"
+                valuePropName="checked"
+                className="form-item-custom-ant"
+              >
                 <Checkbox
                   className="checkbox d-flex align-items-center"
                   checked={parameterState['genderParameterState']}
@@ -553,7 +557,7 @@ const JobVacancyForm = ({
               >
                 <Select
                   className="select"
-                  size="large"
+                  // size="large"
                   showSearch
                   allowClear
                   disabled={!parameterState['genderParameterState']}
@@ -579,6 +583,7 @@ const JobVacancyForm = ({
               <Form.Item
                 name="special_skillParameterCheckbox"
                 valuePropName="checked"
+                className="form-item-custom-ant"
               >
                 <Checkbox
                   className="checkbox d-flex align-items-center"
@@ -611,7 +616,7 @@ const JobVacancyForm = ({
                 <Select
                   className="select"
                   mode="tags"
-                  size="large"
+                  // size="large"
                   showSearch
                   allowClear
                   disabled={!parameterState['special_skillParameterState']}
@@ -637,6 +642,7 @@ const JobVacancyForm = ({
               <Form.Item
                 name="certificationParameterCheckbox"
                 valuePropName="checked"
+                className="form-item-custom-ant"
               >
                 <Checkbox
                   className="checkbox d-flex align-items-center"
@@ -669,7 +675,7 @@ const JobVacancyForm = ({
                 <Select
                   className="select"
                   mode="tags"
-                  size="large"
+                  // size="large"
                   showSearch
                   allowClear
                   disabled={!parameterState['certificationParameterState']}
@@ -795,7 +801,7 @@ const JobVacancyForm = ({
           <Form.Item label="TA Collaborator" name="jobTaCollaborator">
             <Select
               className="select"
-              size="large"
+              // size="large"
               mode="multiple"
               allowClear
               optionFilterProp="children"
@@ -816,7 +822,7 @@ const JobVacancyForm = ({
           <Form.Item label="User Collaborator" name="jobUserCollaborator">
             <Select
               className="select"
-              size="large"
+              // size="large"
               mode="multiple"
               allowClear
               optionFilterProp="children"

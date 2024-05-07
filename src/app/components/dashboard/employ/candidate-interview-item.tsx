@@ -79,7 +79,7 @@ const CandidateInterviewItem: React.FC<IProps> = ({
       <div className="candidate-profile-card list-layout border-0 mb-25">
         <div className="d-flex">
           <div className="cadidate-avatar online position-relative d-block me-auto ms-auto mt-auto mb-auto">
-            <div style={{ position: 'absolute', top: '-45px', left: '12px' }}>
+            <div className="checkbox-pipeline-action">
               <Checkbox
                 className="me-2"
                 checked={checkboxState[item.id]}
