@@ -234,10 +234,14 @@ const EmployAside = () => {
                       className={`d-flex w-100 align-items-center ${isActive ? 'active' : ''}`}
                       style={
                         isButtonOpen
-                          ? {
-                              borderBottomLeftRadius: '0px',
-                              borderBottomRightRadius: '0px',
-                            }
+                          ? m.subLink
+                            ? {
+                                borderBottomLeftRadius: '0px',
+                                borderBottomRightRadius: '0px',
+                                paddingTop: '10px',
+                                paddingBottom: '10px',
+                              }
+                            : {}
                           : m.subLink
                             ? { paddingTop: '10px', paddingBottom: '10px' }
                             : {}
