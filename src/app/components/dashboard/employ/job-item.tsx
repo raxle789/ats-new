@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import * as confirmations from '@/utils/confirmation';
 import { useRouter } from 'next/navigation';
 import { ExclamationCircleFilled } from '@ant-design/icons';
@@ -83,7 +84,23 @@ const EmployJobItem: React.FC<JobItemProps> = ({
   ) {
     setLoading(true);
 
-    if (handleType === 'edit') {
+    if (handleType === 'view') {
+      confirm({
+        ...confirmations?.viewConfirmation('jobVacancy'),
+        onOk() {
+          return new Promise<void>((resolve, reject) => {
+            setTimeout(async () => {
+              resolve(router.push(`/main/jobs/${jobId}`));
+            }, 2000);
+          }).catch((e) => console.log('Failed Viewing Job Vacancy: ', e));
+        },
+        onCancel() {
+          router.refresh();
+
+          setLoading(false);
+        },
+      });
+    } else if (handleType === 'edit') {
       confirm({
         ...confirmations?.editConfirmation('jobVacancy'),
         onOk() {
@@ -91,7 +108,7 @@ const EmployJobItem: React.FC<JobItemProps> = ({
             setTimeout(async () => {
               resolve(router.push(`/dashboard/ta/submit-job/edit/${jobId}}`));
             }, 2000);
-          }).catch((e) => console.log('Error Editing Job Vacancy: ', e));
+          }).catch((e) => console.log('Failed Editing Job Vacancy: ', e));
         },
         onCancel() {
           router.refresh();
@@ -109,7 +126,7 @@ const EmployJobItem: React.FC<JobItemProps> = ({
                 router.push(`/dashboard/ta/submit-job/duplicate/${jobId}`),
               );
             }, 2000);
-          }).catch((e) => console.log('Error Duplicating Job Vacancy: ', e));
+          }).catch((e) => console.log('Failed Duplicating Job Vacancy: ', e));
         },
         onCancel() {
           router.refresh();
@@ -137,7 +154,7 @@ const EmployJobItem: React.FC<JobItemProps> = ({
 
               resolve(setLoading(false));
             }, 2000);
-          }).catch((e) => console.log('Error Deleting Job Vacancy: ', e));
+          }).catch((e) => console.log('Failed Deleting Job Vacancy: ', e));
         },
         onCancel() {
           router.refresh();
@@ -209,7 +226,10 @@ const EmployJobItem: React.FC<JobItemProps> = ({
                           ></Checkbox>
                         </td>
                         <td>
-                          <b>{`${data?.jobTitleName ?? '-'}`}</b>
+                          <Link
+                            href={`/dashboard/ta/jobs/${data?.jobId}`}
+                            onClick={() => setLoading(true)}
+                          >{`${data?.jobTitleName ?? '-'}`}</Link>
                           <br />
                           {`${data?.departmentName ?? '-'}`} <br />
                           Status:

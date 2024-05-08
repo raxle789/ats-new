@@ -3,6 +3,8 @@
 import {
   getAllApplicantByJobVacancyId,
   getJobVacancy,
+  getAllApplicantTotalByJobVacancyId,
+  getAllApplicantTotalByJobVacancyIdAndStateName,
   getJobTitleByCode,
   getAllApplicantByJobVacancyIdAndStateName,
 } from '@/app/services/job-vacancies/service';
@@ -25,6 +27,36 @@ export async function getJobVacancyData(jobVacancyId) {
         jobId: await crypto.encryptData(data?.id),
         jobTitleName: await getJobTitleByCode(data?.jobTitleCode),
         jobTitleAliases: data?.jobTitleAliases,
+        recruiter: data?.ta?.name,
+        applicants: await getAllApplicantTotalByJobVacancyId(data?.id),
+        assessment: await getAllApplicantTotalByJobVacancyIdAndStateName(
+          data?.id,
+          'ASSESSMENT',
+        ),
+        interview: await getAllApplicantTotalByJobVacancyIdAndStateName(
+          data?.id,
+          'INTERVIEW',
+        ),
+        referenceCheck: await getAllApplicantTotalByJobVacancyIdAndStateName(
+          data?.id,
+          'REFERENCE CHECK',
+        ),
+        offering: await getAllApplicantTotalByJobVacancyIdAndStateName(
+          data?.id,
+          'OFFERING',
+        ),
+        mcu: await getAllApplicantTotalByJobVacancyIdAndStateName(
+          data?.id,
+          'MCU',
+        ),
+        agreement: await getAllApplicantTotalByJobVacancyIdAndStateName(
+          data?.id,
+          'AGREEMENT',
+        ),
+        onboarding: await getAllApplicantTotalByJobVacancyIdAndStateName(
+          data?.id,
+          'ONBOARDING',
+        ),
       };
 
       return newData;

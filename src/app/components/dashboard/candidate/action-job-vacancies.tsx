@@ -9,38 +9,42 @@ const ActionJobVacancies = ({ jobId, setLoading, handleJobVacancy }) => {
   return (
     <ul className="dropdown-menu dropdown-menu-end">
       <li>
-        <a className="dropdown-item" href="#">
+        <button
+          className="dropdown-item"
+          type="button"
+          onClick={() => handleJobVacancy('view', jobId)}
+        >
           <Image src={edit} alt="icon" className="lazy-img" /> View
-        </a>
+        </button>
       </li>
       <li>
-        <Link
+        <button
           className="dropdown-item"
-          href="#"
+          type="button"
           onClick={() => handleJobVacancy('edit', jobId)}
         >
           <Image src={edit} alt="icon" className="lazy-img" /> Edit
-        </Link>
+        </button>
       </li>
       <li>
-        <Link
+        <button
           className="dropdown-item"
-          href="#"
+          type="button"
           onClick={() => {
             handleJobVacancy('duplicate', jobId);
           }}
         >
           <Image src={edit} alt="icon" className="lazy-img" /> Duplicate
-        </Link>
+        </button>
       </li>
       <li>
-        <Link
+        <button
           className="dropdown-item"
-          href="#"
+          type="button"
           onClick={() => handleJobVacancy('delete', jobId)}
         >
           <Image src={delete_icon} alt="icon" className="lazy-img" /> Delete
-        </Link>
+        </button>
       </li>
     </ul>
   );

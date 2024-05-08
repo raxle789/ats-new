@@ -710,6 +710,11 @@ export async function getJobVacancy(jobVacancyId) {
             efpkRequestNo: true,
           },
         },
+        ta: {
+          select: {
+            name: true,
+          },
+        },
         jobFunctions: {
           select: {
             id: true,

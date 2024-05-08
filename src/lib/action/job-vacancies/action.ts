@@ -253,7 +253,7 @@ export async function getJobVacancyData(
     });
 
     if (validate.success) {
-      const data = await getJobVacancy(jobVacancyId);
+      const data = await getJobVacancy(validate?.data?.jobVacancyId);
 
       const session = await getUserSession('auth');
 
@@ -474,7 +474,11 @@ export async function getAllJobVacancyData(
                   'days',
                 );
 
-                return different < 0 ? `0 days` : `${different} days`;
+                return !different
+                  ? 'Undefined'
+                  : different < 0
+                    ? '0 days'
+                    : `${different} days`;
               })(),
               user: await getEfpkInitiatorNameByRequestNo(
                 d?.efpkJobVacancies[0]?.efpkRequestNo,

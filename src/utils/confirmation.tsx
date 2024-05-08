@@ -105,3 +105,16 @@ export function cancelConfirmation(
 
   return confirmation;
 }
+
+export function viewConfirmation(handleType: 'jobVacancy') {
+  const confirmation = (() => {
+    if (handleType === 'jobVacancy') {
+      return {
+        ...confirmationTemplate,
+        content: 'Do you want to view this job vacancy?',
+      };
+    }
+  })();
+
+  return confirmation;
+}
