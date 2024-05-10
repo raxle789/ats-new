@@ -5,6 +5,8 @@ import type { TabsProps } from 'antd';
 import PersonalDataForm from '../../forms/personal-data-form';
 import BackgroundExperienceForm from '../../forms/background-experience-form';
 import DocumentForm from '../../forms/doc-form';
+import EducationSkillsForm from '../../forms/education-skills-form';
+import AdditionalInformationForm from '../../forms/additional-information-form';
 
 const DashboardProfileArea = () => {
   const [keyState, setKeyState] = useState('1');
@@ -24,6 +26,14 @@ const DashboardProfileArea = () => {
     },
     {
       key: '3',
+      label: 'Education & Skills',
+    },
+    {
+      key: '4',
+      label: 'Additional Information',
+    },
+    {
+      key: '5',
       label: 'Documents',
     },
   ];
@@ -35,7 +45,9 @@ const DashboardProfileArea = () => {
         <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
         {keyState === '1' && <PersonalDataForm />}
         {keyState === '2' && <BackgroundExperienceForm />}
-        {keyState === '3' && <DocumentForm />}
+        {keyState === '3' && <EducationSkillsForm />}
+        {keyState === '4' && <AdditionalInformationForm />}
+        {keyState === '5' && <DocumentForm />}
       </div>
     </>
   );
