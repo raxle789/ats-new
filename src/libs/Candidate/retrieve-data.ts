@@ -66,7 +66,7 @@ export async function getProfileNCandidate() {
       },
     });
     await prisma.$disconnect();
-    console.info('PROFILE PROFILE', profileData);
+    // console.info('PROFILE PROFILE', profileData);
     const { file_base, ...rest } = profileData;
     return {
       success: true,
@@ -96,7 +96,7 @@ export async function getAddress() {
         candidateId: id
       }
     });
-    console.info('Address -> ', addresses);
+    // console.info('Address -> ', addresses);
     await prisma.$disconnect();
     return {
       success: true,
@@ -123,7 +123,7 @@ export async function getFamilies() {
         candidateId: id
       }
     });
-    console.info('FAMILIES -> ', families);
+    // console.info('FAMILIES -> ', families);
     await prisma.$disconnect();
     return {
       success: true,
@@ -150,7 +150,7 @@ export async function getEducation() {
         candidateId: id
       },
     });
-    console.info('FETCHED EDUCATION -> ',education);
+    // console.info('FETCHED EDUCATION -> ',education);
     await prisma.$disconnect();
     return {
       success: true,
@@ -183,7 +183,7 @@ export async function getSkills() {
         }
       }
     });
-    console.info('FETCHED SKILLS -> ',skills);
+    // console.info('FETCHED SKILLS -> ',skills);
     await prisma.$disconnect();
     let filteredSkills: string[] = [];
     if(skills.length > 1) {
@@ -220,13 +220,13 @@ export async function getLanguages() {
         level: true
       }
     });
-    console.info('FETCHED LANGUAGES -> ',languages);
+    // console.info('FETCHED LANGUAGES -> ',languages);
     await prisma.$disconnect();
     let filteredLanguages: any = {};
     languages.forEach((value, index) => {
       filteredLanguages[`${index}`] = value;
     });
-    console.info('FILTERED LANGUAGES', filteredLanguages);
+    // console.info('FILTERED LANGUAGES', filteredLanguages);
     return {
       success: true,
       data: filteredLanguages
@@ -254,7 +254,7 @@ export async function getEmergency() {
         emergency_contacts: true
       }
     });
-    console.info('FETCHED EMERGENCY -> ', emergency);
+    // console.info('FETCHED EMERGENCY -> ', emergency);
     await prisma.$disconnect();
     return {
       success: true,
@@ -289,7 +289,7 @@ export async function getQuestions() {
     questions.forEach((value) => {
       filteredQuestion.push(value.answer);
     });
-    console.info('FILTERED QUESTIONS', filteredQuestion);
+    // console.info('FILTERED QUESTIONS', filteredQuestion);
     return {
       success: true,
       data: filteredQuestion

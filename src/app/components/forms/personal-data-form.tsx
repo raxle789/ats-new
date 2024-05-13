@@ -40,6 +40,8 @@ import {
   getSkills,
 } from '@/libs/Candidate/retrieve-data';
 import dayjs from 'dayjs';
+import { convertToPlainObject, fileToBase64 } from '@/libs/Registration/utils';
+import { updateCandidateProfile } from '@/libs/Candidate/actions';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
@@ -182,17 +184,6 @@ const PersonalDataForm = () => {
     return setQuestions(questionsData.data);
   };
 
-  useEffect(() => {
-    fetchProfileData();
-    fetchAddress();
-    fetchFamilies();
-    fetchEducation();
-    fetchSkills();
-    fetchLanguages();
-    fetchEmergency();
-    fetchQuestions();
-  }, []);
-
   /* Fetching Master Data */
   const fetchCitys = async () => {
     const citys = await fetch('/api/client-data/citys', {
@@ -210,6 +201,49 @@ const PersonalDataForm = () => {
     citysNameOnly.forEach((city) => (city.value = city.label));
     setCitysName(citysNameOnly);
   };
+
+  const fetchEthnicity = async () => {
+    const ethnicity = await fetch('/api/client-data/ethnicity', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const ethnicityData = await ethnicity.json();
+    setMasterData((prevState) => ({
+      ...prevState,
+      ethnicity: ethnicityData,
+    }));
+  };
+
+  const fetchCountrys = async () => {
+    const countrys = await fetch('/api/client-data/countrys', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const countrysData = await countrys.json();
+    setMasterData((prevState) => ({
+      ...prevState,
+      countrys: countrysData,
+    }));
+  };
+
+  useEffect(() => {
+    fetchProfileData();
+    fetchAddress();
+    fetchFamilies();
+    fetchEducation();
+    fetchSkills();
+    fetchLanguages();
+    fetchEmergency();
+    fetchQuestions();
+
+    fetchCitys();
+    fetchEthnicity();
+    fetchCountrys();
+  }, [editState]);
 
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
@@ -258,11 +292,33 @@ const PersonalDataForm = () => {
     setAddressCheck(e.target.checked);
   };
 
-  const handleSubmit: FormProps<FieldType>['onFinish'] = (values) => {
+  const handleSubmit: FormProps<FieldType>['onFinish'] =  async (values) => {
     if (editState) {
       // jalankan simpan data
-    }
-    console.log('Submitted Value -> ', values);
+      console.log('submitted values: ', values);
+      console.log('file submitted: ', fileList[0].originFileObj);
+      const photoBase64 = await fileToBase64(fileList[0].originFileObj as File);
+      const plainValues = convertToPlainObject(values);
+      const manipulatedSubmittedValues = {
+        address: {
+          ...plainValues.address
+        },
+        profile: {
+          ...plainValues.profile,
+          uploadPhoto: {
+            original_name: fileList[0].originFileObj?.name,
+            byte_size: fileList[0].originFileObj?.size,
+            file_base: photoBase64
+          }
+        }
+      };
+      const updateProfile = await updateCandidateProfile(manipulatedSubmittedValues);
+      if(!updateProfile.success) {
+        return message.error(updateProfile.message);
+      };
+      setEditState(false);
+      return message.success(updateProfile.message);
+    };
   };
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
@@ -273,11 +329,8 @@ const PersonalDataForm = () => {
         .map((field) => field.errors.join(', '))
         .join('; ');
       message.error(`Failed: ${errorMessage}`);
-    }
+    };
   };
-  // console.info('Candidate -> ', profileData.candidate?.users?.email);
-  // console.info('Address', addresses.street);
-  // console.info('Address check value -> ', addresses[0]?.street);
   useEffect(() => {
     form.setFieldsValue({
       profile: {
@@ -449,7 +502,7 @@ const PersonalDataForm = () => {
                       // value={regSessionDecoded.user?.name ?? ''}
                     />
                   )}
-                  {!editState && <p className="mb-0">Abdullah Udin</p>}
+                  {!editState && <p className="mb-0">{profileData.candidate?.users?.name}</p>}
                 </Form.Item>
               </div>
               <div className="input-group-meta position-relative mb-0">
@@ -466,7 +519,7 @@ const PersonalDataForm = () => {
                       // defaultValue={regSessionDecoded.user?.email ?? ''}
                     />
                   )}
-                  {!editState && <p className="mb-0">udin@gmail.com</p>}
+                  {!editState && <p className="mb-0">{profileData.candidate?.users?.email}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -489,7 +542,7 @@ const PersonalDataForm = () => {
                       // defaultValue={regSessionDecoded.candidate?.phone_number ?? ''}
                     />
                   )}
-                  {!editState && <p className="mb-0">0989898989</p>}
+                  {!editState && <p className="mb-0">{profileData.candidate?.phone_number}</p>}
                 </Form.Item>
               </div>
               <div className="input-group-meta position-relative mb-0">
@@ -513,7 +566,7 @@ const PersonalDataForm = () => {
                       disabled={!editState}
                     />
                   )}
-                  {!editState && <p className="mb-0">26 April 2003</p>}
+                  {!editState && <p className="mb-0">{dayjs(profileData.candidate?.date_of_birth).format('YYYY-MM-DD')}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -546,10 +599,11 @@ const PersonalDataForm = () => {
                       }
                       disabled={!editState}
                       /* Feted Data */
-                      options={citysName as { value: string; label: string }[]}
+                      // options={citysName as { value: string; label: string }[]}
+                      options={masterData?.citys}
                     />
                   )}
-                  {!editState && <p className="mb-0">Bekasi City</p>}
+                  {!editState && <p className="mb-0">{profileData.candidate?.birthCity}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -577,7 +631,7 @@ const PersonalDataForm = () => {
                       disabled={!editState}
                     />
                   )}
-                  {!editState && <p className="mb-0">Male</p>}
+                  {!editState && <p className="mb-0">{profileData.candidate?.gender}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -637,7 +691,7 @@ const PersonalDataForm = () => {
                       ]}
                     />
                   )}
-                  {!editState && <p className="mb-0">Islam</p>}
+                  {!editState && <p className="mb-0">{profileData.candidate?.religion}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -673,7 +727,7 @@ const PersonalDataForm = () => {
                       options={masterData?.ethnicity}
                     />
                   )}
-                  {!editState && <p className="mb-0">Madura</p>}
+                  {!editState && <p className="mb-0">{profileData.candidate?.ethnicity}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -697,7 +751,7 @@ const PersonalDataForm = () => {
                       disabled={!editState}
                     />
                   )}
-                  {!editState && <p className="mb-0">O</p>}
+                  {!editState && <p className="mb-0">{profileData.candidate?.blood_type}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -750,7 +804,7 @@ const PersonalDataForm = () => {
                       ]}
                     />
                   )}
-                  {!editState && <p className="mb-0">Single</p>}
+                  {!editState && <p className="mb-0">{profileData.candidate?.maritalStatus}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -778,7 +832,7 @@ const PersonalDataForm = () => {
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">Jl perumahan galaxy utara</p>
+                    <p className="mb-0">{addresses[0]?.street}</p>
                   )}
                 </Form.Item>
               </div>
@@ -816,7 +870,7 @@ const PersonalDataForm = () => {
                       options={masterData?.countrys}
                     />
                   )}
-                  {!editState && <p className="mb-0">Indonesia</p>}
+                  {!editState && <p className="mb-0">{addresses[0]?.country}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -852,7 +906,7 @@ const PersonalDataForm = () => {
                       options={citysName as { value: string; label: string }[]}
                     />
                   )}
-                  {!editState && <p className="mb-0">Bogor City</p>}
+                  {!editState && <p className="mb-0">{addresses[0]?.city}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -872,7 +926,7 @@ const PersonalDataForm = () => {
                   {editState && (
                     <Input placeholder="Your Zip Code" disabled={!editState} />
                   )}
-                  {!editState && <p className="mb-0">17125</p>}
+                  {!editState && <p className="mb-0">{addresses[0]?.zipCode}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -890,9 +944,9 @@ const PersonalDataForm = () => {
                   // ]}
                 >
                   {editState && (
-                    <Input placeholder="Your RT" disabled={!editState} />
+                    <Input placeholder="Your RT" disabled={!editState || addresses[0]?.country !== 'Indonesia'} />
                   )}
-                  {!editState && <p className="mb-0">15</p>}
+                  {!editState && <p className="mb-0">{addresses[0]?.rt}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -910,9 +964,9 @@ const PersonalDataForm = () => {
                   // ]}
                 >
                   {editState && (
-                    <Input placeholder="Your RW" disabled={!editState} />
+                    <Input placeholder="Your RW" disabled={!editState || addresses[0]?.country !== 'Indonesia'} />
                   )}
-                  {!editState && <p className="mb-0">12</p>}
+                  {!editState && <p className="mb-0">{addresses[0]?.rw}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -932,10 +986,10 @@ const PersonalDataForm = () => {
                   {editState && (
                     <Input
                       placeholder="Your Subdistrict"
-                      disabled={!editState}
+                      disabled={!editState || addresses[0]?.country !== 'Indonesia'}
                     />
                   )}
-                  {!editState && <p className="mb-0">Amegakure</p>}
+                  {!editState && <p className="mb-0">{addresses[0]?.subdistrict}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -953,9 +1007,9 @@ const PersonalDataForm = () => {
                   // ]}
                 >
                   {editState && (
-                    <Input placeholder="Your Village" disabled={!editState} />
+                    <Input placeholder="Your Village" disabled={!editState || addresses[0]?.country !== 'Indonesia'} />
                   )}
-                  {!editState && <p className="mb-0">Amegakure</p>}
+                  {!editState && <p className="mb-0">{addresses[0]?.village}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -989,7 +1043,9 @@ const PersonalDataForm = () => {
                       placeholder="Your Current Address"
                     />
                   )}
-                  {!editState && <p className="mb-0">Jl perumahan galaxy 23</p>}
+                  {!editState && <p className="mb-0">{addresses.length === 2
+            ? addresses[1]?.currentAddress
+            : addresses[0]?.street}</p>}
                 </Form.Item>
               </div>
             </div>
