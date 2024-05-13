@@ -66,6 +66,7 @@ export async function getProfileNCandidate() {
       },
     });
     await prisma.$disconnect();
+    console.info('PROFILE PROFILE', profileData);
     const { file_base, ...rest } = profileData;
     return {
       success: true,
