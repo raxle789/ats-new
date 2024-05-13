@@ -11,7 +11,7 @@ let transporter = nodemailer.createTransport({
   secure: true,
   auth: {
     user: 'intern-fatkhur.rozak@erajaya.com',
-    pass: 'Gudanggaram76#'
+    pass: 'Gudanggaram76#',
   },
 });
 
@@ -19,16 +19,16 @@ let transporter = nodemailer.createTransport({
 const isReady = async () => await transporter.verify();
 
 /**
- * 
+ *
  * @param payload OBject contains email property of user.
  */
 export async function sendOTP(payload: { email: string }) {
   const COUNT = 6;
   let generatedNumber: number[] = [];
-  for(let index = 0; index <  COUNT; index++) {
+  for (let index = 0; index < COUNT; index++) {
     const randomNumber = Math.floor(Math.random() * 9);
     generatedNumber.push(randomNumber);
-  };
+  }
   const OTP = generatedNumber.join('').toString();
 
   /**
@@ -46,56 +46,73 @@ export async function sendOTP(payload: { email: string }) {
     from: 'intern-fatkhur.rozak@erajaya.com',
     to: String(payload.email),
     subject: 'Your OTP Number',
-    html: `<h3> ${OTP} </h3>`
+    html: `<h3> ${OTP} </h3>`,
   });
 
   console.info('Result of sending OTP...', sendOTP);
   /* Guard Check */
-  if(!sendOTP) {
+  if (!sendOTP) {
     return {
       success: false,
-      message: 'Faiiled to send OTP number!'
-    }
-  };
+      message: 'Faiiled to send OTP number!',
+    };
+  }
 
   return {
     success: true,
-    data: sendOTP
+    data: sendOTP,
   };
-};
+}
 
 export async function compareOTP(clientOTP: string, email: string) {
   /* Get otp-session */
   const otpSession = await getUserSession('otp');
   console.info('OTP SESSION ->', otpSession);
   /* Guard check */
-  if(!otpSession) return { success: false, message: 'OTP number is expired or not available' };
+  if (!otpSession)
+    return {
+      success: false,
+      message: 'OTP number is expired or not available',
+    };
   /**
    * Check client-otp matched server-otp
    */
-  if(clientOTP.toString() === otpSession.otp) {
+  if (clientOTP.toString() === otpSession.otp) {
+    console.info(clientOTP, 'dan', otpSession.otp);
     console.info('Client OTP matched server-otp...');
     /* Updating email verification status */
     const updateEmailVerificationStatus = await updateVerifiedUserEmail(email);
-    if(updateEmailVerificationStatus.success !== true) return { success: false, message: 'Failed to update email verification status' };
+    if (updateEmailVerificationStatus.success !== true)
+      return {
+        success: false,
+        message: 'Failed to update email verification status',
+      };
     /* Delete otp-session */
     await deleteSession('otp');
     /* Update reg-session */
     const regSession = await getUserSession('reg');
-    await setUserSession('reg', {
-      user: regSession.user,
-      candidate: {
-        ...regSession.candidate,
-        is_email_verified: true
-      }
-    }, undefined);
-    return { success: true, message: 'Your OTP verfication is valid', data: updateEmailVerificationStatus }
-  };
+    await setUserSession(
+      'reg',
+      {
+        user: regSession.user,
+        candidate: {
+          ...regSession.candidate,
+          is_email_verified: true,
+        },
+      },
+      undefined,
+    );
+    return {
+      success: true,
+      message: 'Your OTP verfication is valid',
+      data: updateEmailVerificationStatus,
+    };
+  }
 
   console.info('Client OTP does not match server OTP...');
 
   return {
     success: false,
-    message: 'Wrong OTP verfication'
+    message: 'Wrong OTP verfication',
   };
-};
+}

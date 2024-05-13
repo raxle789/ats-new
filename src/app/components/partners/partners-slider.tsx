@@ -23,13 +23,13 @@ const slider_setting = {
   dots: false,
   arrows: false,
   centerPadding: '0px',
-  slidesToShow: 6,
+  slidesToShow: 7,
   slidesToScroll: 1,
   autoplay: true,
   autoplaySpeed: 3500,
   responsive: [
     {
-      breakpoint: 1400,
+      breakpoint: 1100,
       settings: {
         slidesToShow: 5,
       },

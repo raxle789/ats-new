@@ -1171,7 +1171,7 @@ const Stage3Form = () => {
 
   const handleOk = async () => {
     setIsModalOpen(false);
-    // setSpinning(true);
+    setSpinning(true);
     const values = form.getFieldsValue();
     console.log('ok value form: ', values);
     console.log('Manipulating profile-photo file...');
@@ -1212,15 +1212,27 @@ const Stage3Form = () => {
       country: values.address.country,
       city: values.address.city,
       zipCode: values.address.zipCode,
-      rt: values.address.country === "Indonesia" ? values.address.rt : 'NotInIndonesia',
-      rw: values.address.country === "Indonesia" ? values.address.rw : 'NotInIndonesia',
-      subdistrict: values.address.country === "Indonesia" ? values.address.subdistrict : 'NotInIndonesia',
-      village: values.address.country === "Indonesia" ? values.address.village : 'NotInIndonesia',
+      rt:
+        values.address.country === 'Indonesia'
+          ? values.address.rt
+          : 'NotInIndonesia',
+      rw:
+        values.address.country === 'Indonesia'
+          ? values.address.rw
+          : 'NotInIndonesia',
+      subdistrict:
+        values.address.country === 'Indonesia'
+          ? values.address.subdistrict
+          : 'NotInIndonesia',
+      village:
+        values.address.country === 'Indonesia'
+          ? values.address.village
+          : 'NotInIndonesia',
       currentAddress: values.address.currentAddress,
     };
     const storeAddress = await storingAddress(
       manipulatedAddressData,
-      addressCheck
+      addressCheck,
     );
     if (storeAddress.success !== true) {
       console.info(storeAddress.message as string);
@@ -1372,12 +1384,15 @@ const Stage3Form = () => {
     console.info('Store cv document successfully', storeCV);
 
     /* set auth-session */
-    await setUserSession('auth', { user: { id: regSessionDecoded.user.id }, candidate: { id: regSessionDecoded.candidate.id } });
+    await setUserSession('auth', {
+      user: { id: regSessionDecoded.user.id },
+      candidate: { id: regSessionDecoded.candidate.id },
+    });
 
     dispatch(setRegisterStep(4));
-    // setTimeout(() => {
-    //   setSpinning(false);
-    // }, 1000);
+    setTimeout(() => {
+      setSpinning(false);
+    }, 1000);
     message.success('Your data successfully saved');
   };
   const handleCancel = () => {
@@ -1845,6 +1860,7 @@ const Stage3Form = () => {
                   className="w-100"
                   showSearch
                   mode="tags"
+                  maxCount={1}
                   placeholder="Your City"
                   optionFilterProp="children"
                   filterOption={(input, option) =>
@@ -1856,7 +1872,7 @@ const Stage3Form = () => {
                       .localeCompare((optionB?.label ?? '').toLowerCase())
                   }
                   /* Fetched Data */
-                  options={citysName as { value: string; label: string }[] }
+                  options={citysName as { value: string; label: string }[]}
                 />
               </Form.Item>
             </div>
@@ -1958,9 +1974,13 @@ const Stage3Form = () => {
             <div className="input-group-meta position-relative mb-0">
               <Form.Item<FieldType> name="addressCheckbox" className="mb-2">
                 {/* <div className="d-flex align-items-center pt-10"> */}
-                  <Checkbox onChange={handleAddressCheck} checked={addressCheck} value={addressCheck}>
-                    Same as Permanent Address
-                  </Checkbox>
+                <Checkbox
+                  onChange={handleAddressCheck}
+                  checked={addressCheck}
+                  value={addressCheck}
+                >
+                  Same as Permanent Address
+                </Checkbox>
                 {/* </div> */}
               </Form.Item>
             </div>
@@ -2178,6 +2198,7 @@ const Stage3Form = () => {
                       placeholder="Your City of School"
                       showSearch
                       mode="tags"
+                      maxCount={1}
                       filterOption={(input, option) =>
                         (option?.label.toLowerCase() ?? '').includes(input)
                       }

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useState } from 'react';
-import * as messages from '@/ui/message';
+import * as messages from '@/utils/message';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import {
   Cascader,

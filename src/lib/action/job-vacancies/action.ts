@@ -2,6 +2,8 @@
 
 import {
   getAllEfpkByTa,
+  getAllApplicantTotalByJobVacancyIdAndStateName,
+  getAllApplicantTotalByJobVacancyId,
   getEfpkByRequestNo,
   getAllJobTitle,
   getAllJobFunction,
@@ -29,13 +31,14 @@ import {
   editJobVacancy,
   applyJobVacancy,
   candidateAlreadyApplyJobVacancy,
+  deleteJobVacancy,
+  getAllApplicantByJobVacancyId,
+  getAllApplicantByJobVacancyIdAndStateName,
 } from '../../../app/services/job-vacancies/service';
+import * as crypto from '@/lib/utils/utils';
 import { getUserSession } from '@/libs/Sessions';
 import _ from 'lodash';
 import moment from 'moment';
-import { permanentRedirect } from 'next/navigation';
-import CryptoJS from 'crypto-js';
-import { revalidatePath } from 'next/cache';
 import {
   validateTaId,
   validateRequestNo,
@@ -200,363 +203,320 @@ export async function getAllDepartmentDataByVertical(verticalCode) {
 }
 
 export async function insertJobVacancy(taId, values) {
-  const decryptedTaId = (() => {
-    if (taId) {
-      try {
-        const query = decodeURIComponent(taId);
+  const decryptedTaId = await crypto.decryptData(taId);
 
-        const decryptedValue = CryptoJS.Rabbit.decrypt(
-          String(query),
-          process.env.NEXT_PUBLIC_SECRET_KEY,
-        );
+  if (decryptedTaId) {
+    const validate = validateJobVacancySchema.safeParse({
+      ...values,
+      taId: decryptedTaId,
+    });
 
-        const convertString = decryptedValue.toString(CryptoJS.enc.Utf8);
+    if (validate.success) {
+      const data = await createJobVacancy(validate?.data?.taId, validate?.data);
 
-        const originalValue = Number(convertString);
-
-        return originalValue;
-      } catch (e) {
-        console.log(e);
-
-        return false;
-      }
-    }
-
-    return false;
-  })();
-
-  const validate = validateJobVacancySchema.safeParse({
-    ...values,
-    taId: decryptedTaId,
-  });
-
-  if (validate.success) {
-    const data = await createJobVacancy(validate?.data?.taId, validate?.data);
-
-    if (data) {
-      return {
-        success: true,
-        message: 'Successfully Create A New Job Vacancy',
-      };
-    } else {
-      return {
-        success: false,
-        message: 'Please Try Again Later',
-      };
-    }
-  } else {
-    console.log(validate.error);
-
-    return {
-      success: false,
-      message: 'Error Creating A New Job Vacancy, Please Check Your Input',
-    };
-  }
-}
-
-export async function getJobVacancyData(jobVacancyId, isCandidateView = false) {
-  const data = await getJobVacancy(jobVacancyId);
-
-  const session = await getUserSession('auth');
-
-  if (isCandidateView) {
-    if (data && !_.isEmpty(data)) {
-      const newData = {
-        jobId: encodeURIComponent(
-          CryptoJS.Rabbit.encrypt(
-            String(data?.id),
-            process.env.NEXT_PUBLIC_SECRET_KEY,
-          ).toString(),
-        ),
-        jobTitleAliases: data?.jobTitleAliases,
-        jobDescription: data?.jobDescription,
-        jobRequirement: data?.jobRequirement,
-        verticalName: data?.verticals?.name,
-        jobFunctionName: data?.jobFunctions?.name,
-        workLocation: await getWorkLocationByLocationCode(data?.locationCode),
-        positionLevelName: data?.positionLevels?.name,
-        jobTypeName: data?.employmentStatus?.name,
-        publishedDate: moment(data?.publishedDate, 'YYYY-MM-DD').format(
-          'DD-MMM-YYYY',
-        ),
-
-        // jobDepartment: data?.organizationGroupCode,
-        // jobLineIndustry: data?.jobVacancyLineIndustries?.map(
-        //   (d) => d?.lineIndustryId,
-        // ),
-        // jobRegion: data?.locationGroupCode,
-        // jobWorkLocationAddress: data?.workLocationAddress,
-        // jobPublishedDateAndExpiredDate: [
-        //   data?.publishedDate,
-        //   data?.expiredDate,
-        // ],
-        // jobVacancyRequirements: data?.jobVacancyRequirements,
-        // jobVideoInterview: data?.isVideoInterview,
-        // jobAutoAssessment: data?.isAutoAssessment,
-        // jobConfidential: data?.isConfidential,
-        // jobCareerFest: data?.isCareerFest,
-        // jobTaCollaborator: data?.jobVacancyTaCollaborators?.map((d) => d?.taId),
-        // jobUserCollaborator: data?.jobVacancyUserCollaborators?.map(
-        //   (d) => d?.userId,
-        // ),
-      };
-
-      if (session) {
-        const isCandidateAlreadyApply = await (async () => {
-          const candidateAlreadyApply = await candidateAlreadyApplyJobVacancy(
-            session?.candidate?.id,
-            data?.id,
-          );
-
-          if (candidateAlreadyApply) {
-            return true;
-          }
-
-          return false;
-        })();
-
+      if (data) {
         return {
-          ...newData,
-          candidateAlreadyApply: isCandidateAlreadyApply,
+          success: true,
+          message: 'Successfully Create A New Job Vacancy',
+        };
+      } else {
+        return {
+          success: false,
+          message: 'Please Try Again Later',
         };
       }
+    } else {
+      console.log(validate.error);
 
       return {
-        ...newData,
-        candidateAlreadyApply: false,
+        success: false,
+        message: 'Failed Creating A New Job Vacancy, Please Check Your Input',
       };
-
-      // for await (const d of data?.jobVacancyRequirements) {
-      //   let newValue = null;
-
-      //   if (d?.value) {
-      //     newData = {
-      //       ...newData,
-      //       [`${d?.requirementFields?.name}ParameterCheckbox`]: true,
-      //     };
-
-      //     const parserFunctions = require('../requirement-parsers/action');
-
-      //     const parserFunction =
-      //       parserFunctions[
-      //         d?.requirementFields?.requirementFieldParsers?.name
-      //       ];
-
-      //     newValue = await parserFunction(d?.value, true);
-      //   } else {
-      //     newData = {
-      //       ...newData,
-      //       [`${d?.requirementFields?.name}ParameterCheckbox`]: false,
-      //     };
-
-      //     newValue = null;
-      //   }
-
-      //   newData = { ...newData, [d?.requirementFields?.name]: newValue };
-      // }
     }
-
-    return {};
-  } else {
-    if (data && !_.isEmpty(data)) {
-      let newData = {
-        jobId: encodeURIComponent(
-          CryptoJS.Rabbit.encrypt(
-            String(data?.id),
-            process.env.NEXT_PUBLIC_SECRET_KEY,
-          ).toString(),
-        ),
-        jobEfpk:
-          data?.efpkJobVacancies?.length > 0
-            ? data?.efpkJobVacancies[0]?.efpkRequestNo
-            : '',
-        jobTitle: data?.jobTitleCode,
-        jobTitleAliases: data.jobTitleAliases,
-        jobFunction: data?.jobFunctions?.id,
-        jobEmploymentStatus: data?.employmentStatus?.name,
-        jobPositionLevel: data?.positionLevel,
-        jobVertical: data?.verticalCode,
-        jobDepartment: data?.organizationGroupCode,
-        jobLineIndustry: data?.jobVacancyLineIndustries?.map(
-          (d) => d?.lineIndustryId,
-        ),
-        jobRegion: data?.locationGroupCode,
-        jobWorkLocation: data?.locationCode,
-        jobWorkLocationAddress: data?.workLocationAddress,
-        jobPublishedDateAndExpiredDate: [
-          data?.publishedDate,
-          data?.expiredDate,
-        ],
-        jobDescription: data?.jobDescription,
-        jobRequirement: data?.jobRequirement,
-        jobVacancyRequirements: data?.jobVacancyRequirements,
-        // ageParameterCheckbox:
-        //   data?.jobVacancyRequirements.length > 0 &&
-        //   data?.jobVacancyRequirements?.some(
-        //     (d) => d?.requirementFields?.name === 'age',
-        //   )
-        //     ? true
-        //     : false,
-        // ageParameter:
-        //   data?.jobVacancyRequirements?.length > 0 &&
-        //   data?.jobVacancyRequirements?.some(
-        //     (d) => d?.requirementFields?.name === 'age',
-        //   )
-        //     ? Number(
-        //         data.jobVacancyRequirements.find(
-        //           (d) => d?.requirementFields?.name === 'age',
-        //         )?.value,
-        //       )
-        //     : 0,
-        // genderParameterCheckbox:
-        //   data?.jobVacancyRequirements.length > 0 &&
-        //   data?.jobVacancyRequirements?.some(
-        //     (d) => d?.requirementFields?.name === 'gender',
-        //   )
-        //     ? true
-        //     : false,
-        // genderParameter:
-        //   data?.jobVacancyRequirements?.length > 0 &&
-        //   data?.jobVacancyRequirements?.some(
-        //     (d) => d?.requirementFields?.name === 'gender',
-        //   )
-        //     ? Number(
-        //         data.jobVacancyRequirements.find(
-        //           (d) => d?.requirementFields?.name === 'gender',
-        //         )?.value,
-        //       )
-        //     : 0,
-        jobVideoInterview: data?.isVideoInterview,
-        jobAutoAssessment: data?.isAutoAssessment,
-        jobConfidential: data?.isConfidential,
-        jobCareerFest: data?.isCareerFest,
-        jobTaCollaborator: data?.jobVacancyTaCollaborators?.map((d) => d?.taId),
-        jobUserCollaborator: data?.jobVacancyUserCollaborators?.map(
-          (d) => d?.userId,
-        ),
-      };
-
-      for await (const d of data?.jobVacancyRequirements) {
-        let newValue = null;
-
-        if (d?.value) {
-          newData = {
-            ...newData,
-            [`${d?.requirementFields?.name}ParameterCheckbox`]: true,
-          };
-
-          const parserFunctions = require('../requirement-parsers/action');
-
-          const parserFunction =
-            parserFunctions[
-              d?.requirementFields?.requirementFieldParsers?.name
-            ];
-
-          newValue = await parserFunction(d?.value, true);
-        } else {
-          newData = {
-            ...newData,
-            [`${d?.requirementFields?.name}ParameterCheckbox`]: false,
-          };
-
-          newValue = null;
-        }
-
-        newData = { ...newData, [d?.requirementFields?.name]: newValue };
-      }
-
-      return newData;
-    }
-
-    return {};
   }
+
+  return {
+    success: false,
+    message: 'Failed Creating A New Job Vacancy, Please Check Your Input',
+  };
 }
 
-export async function getAllJobVacancyData(offset, perPage) {
+export async function getJobVacancyData(
+  jobVacancyId,
+  isCandidateView: true | false = false,
+) {
+  const decryptedJobVacancyId = await crypto.decryptData(jobVacancyId);
+
+  if (decryptedJobVacancyId) {
+    const validate = validateJobVacancyId.safeParse({
+      jobVacancyId: decryptedJobVacancyId,
+    });
+
+    if (validate.success) {
+      const data = await getJobVacancy(jobVacancyId);
+
+      const session = await getUserSession('auth');
+
+      if (isCandidateView) {
+        if (data && !_.isEmpty(data)) {
+          const newData = {
+            jobId: await crypto.encryptData(data?.id),
+            jobTitleAliases: data?.jobTitleAliases,
+            jobDescription: data?.jobDescription,
+            jobRequirement: data?.jobRequirement,
+            verticalName: data?.verticals?.name,
+            jobFunctionName: data?.jobFunctions?.name,
+            workLocation: await getWorkLocationByLocationCode(
+              data?.locationCode,
+            ),
+            positionLevelName: data?.positionLevels?.name,
+            jobTypeName: data?.employmentStatus?.name,
+            publishedDate: moment(data?.publishedDate, 'YYYY-MM-DD').format(
+              'DD-MMM-YYYY',
+            ),
+
+            // jobDepartment: data?.organizationGroupCode,
+            // jobLineIndustry: data?.jobVacancyLineIndustries?.map(
+            //   (d) => d?.lineIndustryId,
+            // ),
+            // jobRegion: data?.locationGroupCode,
+            // jobWorkLocationAddress: data?.workLocationAddress,
+            // jobPublishedDateAndExpiredDate: [
+            //   data?.publishedDate,
+            //   data?.expiredDate,
+            // ],
+            // jobVacancyRequirements: data?.jobVacancyRequirements,
+            // jobVideoInterview: data?.isVideoInterview,
+            // jobAutoAssessment: data?.isAutoAssessment,
+            // jobConfidential: data?.isConfidential,
+            // jobCareerFest: data?.isCareerFest,
+            // jobTaCollaborator: data?.jobVacancyTaCollaborators?.map((d) => d?.taId),
+            // jobUserCollaborator: data?.jobVacancyUserCollaborators?.map(
+            //   (d) => d?.userId,
+            // ),
+          };
+
+          if (session) {
+            const isCandidateAlreadyApply = await (async () => {
+              const candidateAlreadyApply =
+                await candidateAlreadyApplyJobVacancy(
+                  session?.candidate?.id,
+                  data?.id,
+                );
+
+              if (candidateAlreadyApply) {
+                return true;
+              }
+
+              return false;
+            })();
+
+            return {
+              ...newData,
+              candidateAlreadyApply: isCandidateAlreadyApply,
+            };
+          }
+
+          return {
+            ...newData,
+            candidateAlreadyApply: false,
+          };
+        }
+
+        return {};
+      } else {
+        if (data && !_.isEmpty(data)) {
+          let newData = {
+            jobId: await crypto.encryptData(data?.id),
+            jobEfpk:
+              data?.efpkJobVacancies?.length > 0
+                ? data?.efpkJobVacancies[0]?.efpkRequestNo
+                : '',
+            jobTitle: data?.jobTitleCode,
+            jobTitleAliases: data.jobTitleAliases,
+            jobFunction: data?.jobFunctions?.id,
+            jobEmploymentStatus: data?.employmentStatus?.name,
+            jobPositionLevel: data?.positionLevel,
+            jobVertical: data?.verticalCode,
+            jobDepartment: data?.organizationGroupCode,
+            jobLineIndustry: data?.jobVacancyLineIndustries?.map(
+              (d) => d?.lineIndustryId,
+            ),
+            jobRegion: data?.locationGroupCode,
+            jobWorkLocation: data?.locationCode,
+            jobWorkLocationAddress: data?.workLocationAddress,
+            jobPublishedDateAndExpiredDate: [
+              data?.publishedDate,
+              data?.expiredDate,
+            ],
+            jobDescription: data?.jobDescription,
+            jobRequirement: data?.jobRequirement,
+            jobVacancyRequirements: data?.jobVacancyRequirements,
+            jobVideoInterview: data?.isVideoInterview,
+            jobAutoAssessment: data?.isAutoAssessment,
+            jobConfidential: data?.isConfidential,
+            jobCareerFest: data?.isCareerFest,
+            jobTaCollaborator: data?.jobVacancyTaCollaborators?.map(
+              (d) => d?.taId,
+            ),
+            jobUserCollaborator: data?.jobVacancyUserCollaborators?.map(
+              (d) => d?.userId,
+            ),
+          };
+
+          for await (const d of data?.jobVacancyRequirements) {
+            let newValue = null;
+
+            if (d?.value) {
+              newData = {
+                ...newData,
+                [`${d?.requirementFields?.name}ParameterCheckbox`]: true,
+              };
+
+              const parserFunctions = require('../requirement-parsers/action');
+
+              const parserFunction =
+                parserFunctions[
+                  d?.requirementFields?.requirementFieldParsers?.name
+                ];
+
+              newValue = await parserFunction(d?.value, true);
+            } else {
+              newData = {
+                ...newData,
+                [`${d?.requirementFields?.name}ParameterCheckbox`]: false,
+              };
+
+              newValue = null;
+            }
+
+            newData = { ...newData, [d?.requirementFields?.name]: newValue };
+          }
+
+          return newData;
+        }
+
+        return {};
+      }
+    } else {
+      console.log(validate.error);
+
+      return {};
+    }
+  }
+
+  return {};
+}
+
+export async function getAllJobVacancyData(
+  offset,
+  perPage,
+  isCandidateView: true | false = false,
+) {
   const data = await getAllJobVacancy(offset, perPage);
 
   const session = await getUserSession('auth');
 
-  const newData = await Promise.all(
-    data?.data?.map(async (d) => {
-      const data = {
-        jobId: encodeURIComponent(
-          CryptoJS.Rabbit.encrypt(
-            String(d?.id),
-            process.env.NEXT_PUBLIC_SECRET_KEY,
-          ).toString(),
-        ),
-        jobTitleName: await getJobTitleByCode(d?.jobTitleCode),
-        jobTitleAlias: d?.jobTitleAliases,
-        positionLevelName: d?.positionLevels?.name,
-        jobFunctionName: d?.jobFunctions?.name,
-        departmentName: await getDepartmentByOrganizationGroupCode(
-          d?.organizationGroupCode,
-        ),
-        workLocation: await getWorkLocationByLocationCode(d?.locationCode),
-        publishedDate: moment(d.publishedDate, 'YYYY-MM-DD').format(
-          'DD-MMM-YYYY',
-        ),
-        status: moment(d?.expiredDate, 'YYYY-MM-DD').isSameOrAfter(moment())
-          ? 'Posted'
-          : 'Expired',
-        endPosted: moment(d?.expiredDate, 'YYYY-MM-DD').format('DD-MMM-YYYY'),
-        applicants:
-          d?.candidateStates?.length <= 0 ? 0 : d?.candidateStates?.length,
-        assessment:
-          d?.candidateStates?.length <= 0 ? 0 : d?.candidateStates?.length,
-        interview:
-          d?.candidateStates?.length <= 0 ? 0 : d?.candidateStates?.length,
-        sla: await (async () => {
-          const lastApprovalDate = await getLastEfpkApprovalByRequestNo(
-            d?.efpkJobVacancies[0]?.efpkRequestNo,
-          );
+  const newData = await (async () => {
+    if (data?.data && data?.data?.length) {
+      return await Promise.all(
+        data?.data?.map(async (d) => {
+          const data = await (async () => {
+            if (isCandidateView) {
+              return {
+                jobId: await crypto.encryptData(d?.id),
+                jobTitleAlias: d?.jobTitleAliases,
+                positionLevelName: d?.positionLevels?.name,
+                jobFunctionName: d?.jobFunctions?.name,
+                workLocation: await getWorkLocationByLocationCode(
+                  d?.locationCode,
+                ),
+                publishedDate: moment(d.publishedDate, 'YYYY-MM-DD').format(
+                  'DD-MMM-YYYY',
+                ),
+              };
+            }
+            return {
+              jobId: await crypto.encryptData(d?.id),
+              jobTitleName: await getJobTitleByCode(d?.jobTitleCode),
+              departmentName: await getDepartmentByOrganizationGroupCode(
+                d?.organizationGroupCode,
+              ),
+              status: moment(d?.expiredDate, 'YYYY-MM-DD').isSameOrAfter(
+                moment(),
+              )
+                ? 'Posted'
+                : 'Expired',
+              endPosted: moment(d?.expiredDate, 'YYYY-MM-DD').format(
+                'DD-MMM-YYYY',
+              ),
+              applicants: await getAllApplicantTotalByJobVacancyId(d?.id),
+              assessment: await getAllApplicantTotalByJobVacancyIdAndStateName(
+                d?.id,
+                'ASSESSMENT',
+              ),
+              interview: await getAllApplicantTotalByJobVacancyIdAndStateName(
+                d?.id,
+                'INTERVIEW',
+              ),
+              sla: await (async () => {
+                const lastApprovalDate = await getLastEfpkApprovalByRequestNo(
+                  d?.efpkJobVacancies[0]?.efpkRequestNo,
+                );
 
-          const sla = moment(lastApprovalDate, 'DD/MM/YYYY').add(
-            d?.positionLevels?.slaDays,
-            'days',
-          );
+                const sla = moment(lastApprovalDate, 'DD/MM/YYYY').add(
+                  d?.positionLevels?.slaDays,
+                  'days',
+                );
 
-          const different = sla.diff(
-            moment(lastApprovalDate, 'DD/MM/YYYY'),
-            'days',
-          );
+                const different = sla.diff(
+                  moment(lastApprovalDate, 'DD/MM/YYYY'),
+                  'days',
+                );
 
-          return different < 0 ? `0 days` : `${different} days`;
-        })(),
-        user: await getEfpkInitiatorNameByRequestNo(
-          d?.efpkJobVacancies[0]?.efpkRequestNo,
-        ),
-        recruiter: d?.ta?.name,
-        efpkStatus: d?.efpkJobVacancies?.length > 0 ? 'Done' : 'Not Yet',
-      };
+                return different < 0 ? `0 days` : `${different} days`;
+              })(),
+              user: await getEfpkInitiatorNameByRequestNo(
+                d?.efpkJobVacancies[0]?.efpkRequestNo,
+              ),
+              recruiter: d?.ta?.name,
+              efpkStatus: d?.efpkJobVacancies?.length > 0 ? 'Done' : 'Not Yet',
+            };
+          })();
 
-      if (session) {
-        const isCandidateAlreadyApply = await (async () => {
-          const candidateAlreadyApply = await candidateAlreadyApplyJobVacancy(
-            session?.candidate?.id,
-            d?.id,
-          );
+          if (session && isCandidateView) {
+            const isCandidateAlreadyApply = await (async () => {
+              const candidateAlreadyApply =
+                await candidateAlreadyApplyJobVacancy(
+                  session?.candidate?.id,
+                  d?.id,
+                );
 
-          if (candidateAlreadyApply) {
-            return true;
+              if (candidateAlreadyApply) {
+                return true;
+              }
+
+              return false;
+            })();
+
+            return {
+              ...data,
+              candidateAlreadyApply: isCandidateAlreadyApply,
+            };
+          } else if (!session && isCandidateView) {
+            return {
+              ...data,
+              candidateAlreadyApply: false,
+            };
+          } else {
+            return data;
           }
+        }),
+      );
+    }
 
-          return false;
-        })();
-
-        return {
-          ...data,
-          candidateAlreadyApply: isCandidateAlreadyApply,
-        };
-      }
-
-      return {
-        ...data,
-        candidateAlreadyApply: false,
-      };
-    }),
-  );
+    return [];
+  })();
 
   // await Promise.all(
   //   data.map(async (d) => {
@@ -579,82 +539,91 @@ export async function getAllJobVacancyData(offset, perPage) {
 
   return {
     data: newData,
-    total: data.total,
+    total: data?.total,
   };
 }
 
 export async function updateJobVacancy(taId, jobVacancyId, values) {
-  const decryptedJobVacancyId = (() => {
-    if (jobVacancyId) {
-      try {
-        const query = decodeURIComponent(jobVacancyId);
+  const decryptedJobVacancyId = await crypto.decryptData(jobVacancyId);
 
-        const decryptedValue = CryptoJS.Rabbit.decrypt(
-          String(query),
-          process.env.NEXT_PUBLIC_SECRET_KEY,
-        );
+  const decryptedTaId = await crypto.decryptData(taId);
 
-        const convertString = decryptedValue.toString(CryptoJS.enc.Utf8);
-
-        const originalValue = Number(convertString);
-
-        return originalValue;
-      } catch (e) {
-        console.log(e);
-
-        return false;
-      }
-    }
-
-    return false;
-  })();
-
-  const decryptedTaId = (() => {
-    if (taId) {
-      try {
-        const query = decodeURIComponent(taId);
-
-        const decryptedValue = CryptoJS.Rabbit.decrypt(
-          String(query),
-          process.env.NEXT_PUBLIC_SECRET_KEY,
-        );
-
-        const convertString = decryptedValue.toString(CryptoJS.enc.Utf8);
-
-        const originalValue = Number(convertString);
-
-        return originalValue;
-      } catch (e) {
-        console.log(e);
-
-        return false;
-      }
-    }
-
-    return false;
-  })();
-
-  const validateId = validateJobVacancyId.safeParse({
-    jobVacancyId: decryptedJobVacancyId,
-  });
-
-  if (validateId.success) {
-    const validateSchema = validateJobVacancySchema.safeParse({
-      ...values,
-      taId: decryptedTaId,
+  if (decryptedJobVacancyId && decryptedTaId) {
+    const validateId = validateJobVacancyId.safeParse({
+      jobVacancyId: decryptedJobVacancyId,
     });
 
-    if (validateSchema.success) {
-      const data = await editJobVacancy(
-        decryptedTaId,
-        validateId?.data?.jobVacancyId,
-        validateSchema?.data,
+    if (validateId.success) {
+      const validateSchema = validateJobVacancySchema.safeParse({
+        ...values,
+        taId: decryptedTaId,
+      });
+
+      if (validateSchema.success) {
+        const data = await editJobVacancy(
+          decryptedTaId,
+          validateId?.data?.jobVacancyId,
+          validateSchema?.data,
+        );
+
+        if (data) {
+          return {
+            success: true,
+            message: 'Successfully Edit Job Vacancy',
+          };
+        } else {
+          return {
+            success: false,
+            message: 'Please Try Again Later',
+          };
+        }
+      } else {
+        console.log(validateSchema.error);
+
+        return {
+          success: false,
+          message: 'Error Editing Job Vacancy, Please Check Your Input',
+        };
+      }
+    } else {
+      console.log(validateId.error);
+
+      return {
+        success: false,
+        message: "Failed Editing Job Vacancy Data, Job Vacancy Doesn't Exist",
+      };
+    }
+  }
+
+  return {
+    success: false,
+    message: "Failed Editing Job Vacancy Data, Job Vacancy Doesn't Exist",
+  };
+}
+
+export async function candidateApplyJobVacancy(jobVacancyId) {
+  const session = await getUserSession('auth');
+
+  // console.info(session.candidate.id);
+
+  const decryptedJobVacancyId = await crypto.decryptData(jobVacancyId);
+
+  if (decryptedJobVacancyId) {
+    const validate = validateCandidateApply.safeParse({
+      candidateId: session?.candidate?.id,
+      jobVacancyId: decryptedJobVacancyId,
+    });
+
+    if (validate.success) {
+      const data = await applyJobVacancy(
+        validate?.data?.candidateId,
+        validate?.data?.jobVacancyId,
       );
 
-      if (data) {
+      if (!_.isEmpty(data)) {
         return {
           success: true,
-          message: 'Successfully Edit Job Vacancy',
+          message: 'Successfully Apply For A New Job',
         };
       } else {
         return {
@@ -663,81 +632,94 @@ export async function updateJobVacancy(taId, jobVacancyId, values) {
         };
       }
     } else {
-      console.log(validateSchema.error);
+      console.log(validate.error);
 
       return {
         success: false,
-        message: 'Error Editing Job Vacancy, Please Check Your Input',
+        message: 'Please Complete Your Personal Data',
       };
     }
-  } else {
-    console.log(validateId.error);
-
-    return {
-      success: false,
-      message: "Error Editing Job Vacancy, Job Vacancy Doesn't Exist",
-    };
   }
+
+  return {
+    success: false,
+    message: 'Please Complete Your Personal Data',
+  };
 }
 
-export async function candidateApplyJobVacancy(jobVacancyId) {
-  const session = await getUserSession('auth');
+export async function deleteJobVacancyData(jobVacancyId) {
+  const decryptedJobVacancyId = await crypto.decryptData(jobVacancyId);
 
-  // console.info(session.candidate.id);
+  if (decryptedJobVacancyId) {
+    const validate = validateJobVacancyId.safeParse({
+      jobVacancyId: decryptedJobVacancyId,
+    });
 
-  const decryptedJobVacancyId = (() => {
-    if (jobVacancyId) {
-      try {
-        const query = decodeURIComponent(jobVacancyId);
+    if (validate.success) {
+      const data = await deleteJobVacancy(validate?.data?.jobVacancyId);
 
-        const decryptedValue = CryptoJS.Rabbit.decrypt(
-          String(query),
-          process.env.NEXT_PUBLIC_SECRET_KEY,
-        );
-
-        const convertString = decryptedValue.toString(CryptoJS.enc.Utf8);
-
-        const originalValue = Number(convertString);
-
-        return originalValue;
-      } catch (e) {
-        console.log(e);
-
-        return false;
+      if (!_.isEmpty(data)) {
+        return {
+          success: true,
+          message: 'Successfully Delete A Job vacancy',
+        };
+      } else {
+        return {
+          success: false,
+          message: 'Please Try Again Later',
+        };
       }
-    }
-
-    return false;
-  })();
-
-  const validate = validateCandidateApply.safeParse({
-    candidateId: session?.candidate?.id,
-    jobVacancyId: decryptedJobVacancyId,
-  });
-
-  if (validate.success) {
-    const data = await applyJobVacancy(
-      validate?.data?.candidateId,
-      validate?.data?.jobVacancyId,
-    );
-
-    if (!_.isEmpty(data)) {
-      return {
-        success: true,
-        message: 'Successfully Apply A New Job',
-      };
     } else {
+      console.log(validate.error);
+
       return {
         success: false,
-        message: 'Please Try Again Later',
+        message: "Failed Delete Job Vacancy Data, Job Vacancy Doesn't Exist",
       };
     }
-  } else {
-    console.log(validate.error);
-
-    return {
-      success: false,
-      message: 'Please Complete Your Personal Data First',
-    };
   }
+
+  return {
+    success: false,
+    message: "Failed Delete Job Vacancy Data, Job Vacancy Doesn't Exist",
+  };
 }
+
+// export async function getAllApplicantsDataByJobVacancyId(jobVacancyId) {
+//   const validate = validateJobVacancyId.safeParse({ jobVacancyId });
+
+//   if (validate.success) {
+//     const data = await getAllApplicantsByJobVacancyId(
+//       validate?.data?.jobVacancyId,
+//     );
+
+//     return data;
+//   } else {
+//     console.log(validate.error);
+
+//     return [];
+//   }
+// }
+
+// export async function getAllApplicantsDataByJobVacancyIdAndStateName(
+//   jobVacancyId,
+//   stateName,
+// ) {
+//   const validate = validateJobVacancyIdAndStateName.safeParse({
+//     jobVacancyId,
+//     stateName,
+//   });
+
+//   if (validate.success) {
+//     const data = await getAllApplicantsByJobVacancyIdAndStateName(
+//       validate?.data?.jobVacancyId,
+//       validate?.data?.stateName,
+//     );
+
+//     return data;
+//   } else {
+//     console.log(validate.error);
+
+//     return [];
+//   }
+// }

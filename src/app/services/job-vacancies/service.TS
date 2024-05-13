@@ -869,6 +869,9 @@ export async function getAllJobVacancy(offset, perPage) {
       prisma.jobVacancies.findMany({
         skip: offset,
         take: perPage,
+        orderBy: {
+          createdAt: 'desc',
+        },
         select: {
           id: true,
           jobTitleCode: true,
@@ -1363,7 +1366,11 @@ export async function editJobVacancy(
   }
 }
 
-export async function applyJobVacancy(candidateId, jobVacancyId) {
+export async function applyJobVacancy(
+  candidateId,
+  jobVacancyId,
+  stateName = 'WAITING',
+) {
   try {
     // console.info(candidateId);
 
@@ -1373,7 +1380,7 @@ export async function applyJobVacancy(candidateId, jobVacancyId) {
       data: {
         candidateId: candidateId,
         jobVacancyId: jobVacancyId,
-        stateName: 'WAITING',
+        stateName: stateName,
       },
     });
 
@@ -1400,6 +1407,166 @@ export async function candidateAlreadyApplyJobVacancy(
             jobVacancyId: jobVacancyId,
           },
         ],
+      },
+    });
+
+    return total;
+  } catch (e) {
+    console.log(e);
+
+    return 0;
+  }
+}
+
+export async function deleteJobVacancy(jobVacancyId) {
+  try {
+    const data = await prisma.jobVacancies.delete({
+      where: {
+        id: jobVacancyId,
+      },
+    });
+
+    return data;
+  } catch (e) {
+    console.log(e);
+
+    return {};
+  }
+}
+
+export async function getAllApplicantByJobVacancyId(
+  jobVacancyId,
+  offset,
+  perPage,
+) {
+  try {
+    const [data, total] = await prisma.$transaction([
+      prisma.candidateStates.findMany({
+        skip: offset,
+        take: perPage,
+        where: {
+          jobVacancyId: jobVacancyId,
+        },
+        include: {
+          states: true,
+          candidates: {
+            include: {
+              users: true,
+              working_experiences: true,
+              educations: true,
+              candidateSkills: {
+                select: {
+                  skills: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+      prisma.candidateStates.count({
+        where: {
+          jobVacancyId: jobVacancyId,
+        },
+      }),
+    ]);
+
+    return {
+      data: data,
+      total: total,
+    };
+  } catch (e) {
+    console.log(e);
+
+    return {
+      data: [],
+      total: 0,
+    };
+  }
+}
+
+export async function getAllApplicantByJobVacancyIdAndStateName(
+  jobVacancyId,
+  stateName,
+  offset,
+  perPage,
+) {
+  try {
+    const [data, total] = await prisma.$transaction([
+      prisma.candidateStates.findMany({
+        skip: offset,
+        take: perPage,
+        where: {
+          AND: [{ jobVacancyId: jobVacancyId }, { stateName: stateName }],
+        },
+        include: {
+          states: true,
+          candidates: {
+            include: {
+              users: true,
+              working_experiences: true,
+              educations: true,
+              candidateSkills: {
+                select: {
+                  skills: {
+                    select: {
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+      prisma.candidateStates.count({
+        where: {
+          AND: [{ jobVacancyId: jobVacancyId }, { stateName: stateName }],
+        },
+      }),
+    ]);
+
+    return {
+      data: data,
+      total: total,
+    };
+  } catch (e) {
+    console.log(e);
+
+    return {
+      data: [],
+      total: 0,
+    };
+  }
+}
+
+export async function getAllApplicantTotalByJobVacancyId(jobVacancyId) {
+  try {
+    const total = await prisma.candidateStates.count({
+      where: {
+        jobVacancyId: jobVacancyId,
+      },
+    });
+
+    return total;
+  } catch (e) {
+    console.log(e);
+
+    return 0;
+  }
+}
+
+export async function getAllApplicantTotalByJobVacancyIdAndStateName(
+  jobVacancyId,
+  stateName,
+) {
+  try {
+    const total = await prisma.candidateStates.count({
+      where: {
+        AND: [{ jobVacancyId: jobVacancyId }, { stateName: stateName }],
       },
     });
 

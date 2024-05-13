@@ -518,6 +518,7 @@ const BackgroundExperienceForm = () => {
         <Form
           name="background-experience-form"
           variant="filled"
+          form={form}
           onFinish={handleSubmit}
           onFinishFailed={onFinishFailed}
         >

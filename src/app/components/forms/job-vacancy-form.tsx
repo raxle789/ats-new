@@ -141,6 +141,7 @@ const JobVacancyForm = ({
           >
             <Select
               className="select"
+              disabled={true}
               showSearch
               // size="large"
               allowClear
@@ -510,7 +511,7 @@ const JobVacancyForm = ({
                 <InputNumber
                   className="select d-flex align-items-center w-100"
                   disabled={!parameterState['ageParameterState']}
-                  min={17}
+                  min={18}
                   placeholder="Input Age!"
                   style={{ height: '32px' }}
                 />

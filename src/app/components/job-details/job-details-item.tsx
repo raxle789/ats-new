@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import * as messages from '@/ui/message';
+import * as messages from '@/utils/message';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useState } from 'react';
 import {
@@ -65,7 +65,7 @@ const JobDetailsItem = ({ jobVacancyData, candidateApplyJobVacancy }) => {
 
             resolve();
           }, 2000);
-        }).catch((e) => console.log('Error Apply Job Vacancy: ', e));
+        }).catch((e) => console.log('Failed To Apply Job Vacancy: ', e));
       },
       onCancel() {
         setLoading(false);

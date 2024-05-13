@@ -1,7 +1,10 @@
 'use server';
 
 import React from 'react';
-import { getAllJobVacancyData } from '@/lib/action/job-vacancies/action';
+import {
+  getAllJobVacancyData,
+  deleteJobVacancyData,
+} from '@/lib/action/job-vacancies/action';
 import Link from 'next/link';
 // import DashboardHeader from '../candidate/dashboard-header';
 import EmployJobItem from './job-item';
@@ -103,7 +106,8 @@ const EmployJobArea = async ({ searchParams }) => {
       };
     })
     .catch((e) => {
-      console.log('Error getting job vacancy data: ', e);
+      console.log('Failed Getting Job Vacancy Data: ', e);
+
       return {
         data: [],
         total: 0,
@@ -126,7 +130,11 @@ const EmployJobArea = async ({ searchParams }) => {
       </div> */}
 
       {/* <div className="bg-white card-box border-20"> */}
-      <EmployJobItem jobVacancyData={jobVacancyData} perPage={perPage} />
+      <EmployJobItem
+        jobVacancyData={jobVacancyData}
+        perPage={perPage}
+        deleteJobVacancyData={deleteJobVacancyData}
+      />
       {/* </div> */}
 
       {/* <div className="d-flex justify-content-center mt-30">

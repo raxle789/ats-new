@@ -22,34 +22,9 @@ const JobDetailsArea = async ({ params }) => {
   //   return false;
   // })();
 
-  const jobVacancyId = (() => {
-    if (params?.id) {
-      try {
-        const query = decodeURIComponent(params?.id);
-
-        const decryptedValue = CryptoJS.Rabbit.decrypt(
-          String(query),
-          process.env.NEXT_PUBLIC_SECRET_KEY,
-        );
-
-        const convertString = decryptedValue.toString(CryptoJS.enc.Utf8);
-
-        const originalValue = Number(convertString);
-
-        return originalValue;
-      } catch (e) {
-        console.log(e);
-
-        return false;
-      }
-    }
-
-    return false;
-  })();
-
   const jobVacancyData = await (async () => {
-    if (jobVacancyId && jobVacancyId !== 0) {
-      return await getJobVacancyData(jobVacancyId, true)
+    if (params?.id) {
+      return await getJobVacancyData(params?.id, true)
         .then((res) => {
           const data = res ?? {};
 
@@ -58,7 +33,7 @@ const JobDetailsArea = async ({ params }) => {
           return data;
         })
         .catch((e) => {
-          console.log('Error getting job vacancy data: ', e);
+          console.log('Failed Getting Job Vacancy Data: ', e);
 
           return {};
         });

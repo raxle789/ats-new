@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import * as messages from '@/ui/message';
+import * as confirmations from '@/utils/confirmation';
+import * as messages from '@/utils/message';
 import JobVacancyForm from '../../forms/job-vacancy-form';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import {
@@ -73,6 +74,7 @@ const _ = require('lodash');
 // };
 
 const SubmitJobItem = ({
+  mode,
   jobVacancyData,
   taId,
   efpkData,
@@ -239,15 +241,12 @@ const SubmitJobItem = ({
   function handleSubmitJobVacancy(values) {
     setLoading(true);
 
-    confirm({
-      title: 'Confirmation',
-      icon: <ExclamationCircleFilled />,
-      centered: true,
-      content: 'Do you want to submit this job vacancy?',
-      onOk() {
-        return new Promise<void>((resolve, reject) => {
-          setTimeout(async () => {
-            if (jobVacancyData && !_.isEmpty(jobVacancyData)) {
+    if (jobVacancyData && !_.isEmpty(jobVacancyData) && mode === 'update') {
+      confirm({
+        ...confirmations.submitConfirmation('jobVacancy', 'update'),
+        onOk() {
+          return new Promise<void>((resolve, reject) => {
+            setTimeout(async () => {
               const validate = await submitJobVacancy(
                 taId,
                 jobVacancyData?.jobId,
@@ -256,47 +255,157 @@ const SubmitJobItem = ({
 
               if (validate?.success) {
                 messages.success(api, validate?.message);
+
+                resolve(
+                  new Promise<void>((resolve) => {
+                    setTimeout(
+                      () => resolve(router.replace('/dashboard/ta/jobs')),
+                      1000,
+                    );
+                  }),
+                );
               } else {
                 messages.error(api, validate?.message);
+
+                setParameterState({});
+
+                form.resetFields();
+
+                router.refresh();
+
+                resolve(setLoading(false));
               }
+            }, 2000);
+          }).catch((e) => console.log('Failed Editing Job Vacancy: ', e));
+        },
+        onCancel() {
+          router.refresh();
 
-              setParameterState({});
-
-              form.resetFields();
-
-              router.refresh();
-            } else {
+          setLoading(false);
+        },
+      });
+    } else {
+      confirm({
+        ...confirmations.submitConfirmation('jobVacancy', 'create'),
+        onOk() {
+          return new Promise<void>((resolve, reject) => {
+            setTimeout(async () => {
               const validate = await submitJobVacancy(taId, values);
 
               if (validate?.success) {
                 messages.success(api, validate?.message);
+
+                resolve(
+                  new Promise<void>((resolve) => {
+                    setTimeout(
+                      () => resolve(router.replace('/dashboard/ta/jobs')),
+                      1000,
+                    );
+                  }),
+                );
               } else {
                 messages.error(api, validate?.message);
+
+                setParameterState({});
+
+                form.resetFields();
+
+                router.refresh();
+
+                resolve(setLoading(false));
               }
+            }, 2000);
+          }).catch((e) => console.log('Failed Creating Job Vacancy: ', e));
+        },
+        onCancel() {
+          router.refresh();
 
-              setParameterState({});
+          setLoading(false);
+        },
+      });
+    }
 
-              form.resetFields();
+    // confirm({
+    //   title: 'Confirmation',
+    //   icon: <ExclamationCircleFilled />,
+    //   centered: true,
+    //   content: 'Do you want to submit this job vacancy?',
+    //   onOk() {
+    //     return new Promise<void>((resolve, reject) => {
+    //       setTimeout(async () => {
+    //         if (
+    //           jobVacancyData &&
+    //           !_.isEmpty(jobVacancyData) &&
+    //           mode === 'update'
+    //         ) {
+    //           const validate = await submitJobVacancy(
+    //             taId,
+    //             jobVacancyData?.jobId,
+    //             values,
+    //           );
 
-              router.refresh();
-            }
-            resolve(
-              new Promise<void>((resolve) => {
-                setTimeout(
-                  () => resolve(router.replace('/dashboard/ta/jobs')),
-                  1000,
-                );
-              }),
-            );
-          }, 2000);
-        }).catch((e) => console.log('Error Submit Job Vacancy: ', e));
-      },
-      onCancel() {
-        setLoading(false);
+    //           if (validate?.success) {
+    //             messages.success(api, validate?.message);
 
-        router.refresh();
-      },
-    });
+    //             resolve(
+    //               new Promise<void>((resolve) => {
+    //                 setTimeout(
+    //                   () => resolve(router.replace('/dashboard/ta/jobs')),
+    //                   1000,
+    //                 );
+    //               }),
+    //             );
+    //           } else {
+    //             messages.error(api, validate?.message);
+
+    //             setParameterState({});
+
+    //             form.resetFields();
+
+    //             router.refresh();
+    //           }
+    //         } else {
+    //           const validate = await submitJobVacancy(taId, values);
+
+    //           if (validate?.success) {
+    //             messages.success(api, validate?.message);
+
+    //             resolve(
+    //               new Promise<void>((resolve) => {
+    //                 setTimeout(
+    //                   () => resolve(router.replace('/dashboard/ta/jobs')),
+    //                   1000,
+    //                 );
+    //               }),
+    //             );
+    //           } else {
+    //             messages.error(api, validate?.message);
+
+    //             setParameterState({});
+
+    //             form.resetFields();
+
+    //             router.refresh();
+    //           }
+    //         }
+
+    //         // resolve(
+    //         //   new Promise<void>((resolve) => {
+    //         //     setTimeout(
+    //         //       () => resolve(router.replace('/dashboard/ta/jobs')),
+    //         //       1000,
+    //         //     );
+    //         //   }),
+    //         // );
+    //       }, 2000);
+    //     }).catch((e) => console.log('Failed Submit Job Vacancy: ', e));
+    //   },
+    //   onCancel() {
+    //     setLoading(false);
+
+    //     router.refresh();
+    //   },
+    // });
   }
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -427,7 +536,7 @@ const SubmitJobItem = ({
       </Form> */}
 
       <h2 className="main-title">
-        {jobVacancyData && !_.isEmpty(jobVacancyData)
+        {jobVacancyData && !_.isEmpty(jobVacancyData) && mode === 'update'
           ? 'Edit Job'
           : 'Post a New Job'}
       </h2>

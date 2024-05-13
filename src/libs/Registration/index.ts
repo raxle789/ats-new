@@ -160,7 +160,9 @@ export async function updateCandidate(formData: any) {
   const regSession = await getUserSession('reg');
   console.info('reg-session-data', regSession);
   /* Guard place of birth */
-  const birthCity = Array.isArray(formData.placeOfBirth) ? formData.placeOfBirth[0] : formData.placeOfBirth;
+  const birthCity = Array.isArray(formData.placeOfBirth)
+    ? formData.placeOfBirth[0]
+    : formData.placeOfBirth;
   /* Updating candidate data */
   const candidate = await prisma.candidates.update({
     where: {
@@ -182,7 +184,7 @@ export async function updateCandidate(formData: any) {
       success: false,
       message: 'Failed to update candidate data, try again',
     };
-  };
+  }
   console.info('Update candidate data successfully', candidate);
 
   /* Close connection */
@@ -199,10 +201,7 @@ export async function updateCandidate(formData: any) {
  * @param formData State of candidate input-data Address
  * @param isCurrent Is the condition when the candidate current address same as the primary address.
  */
-export async function storingAddress(
-  formData: any,
-  isCurrent: boolean,
-) {
+export async function storingAddress(formData: any, isCurrent: boolean) {
   const regSession = await getUserSession('reg');
   console.info('reg-session-data', regSession);
   /**
@@ -251,7 +250,7 @@ export async function storingAddress(
       success: true,
       data: currentAddress,
     };
-  };
+  }
   console.info(
     'Candidate current address is different from the primary address...',
   );

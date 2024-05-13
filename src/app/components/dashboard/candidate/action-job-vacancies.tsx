@@ -3,8 +3,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import edit from '@/assets/dashboard/images/icon/icon_20.svg';
 import delete_icon from '@/assets/dashboard/images/icon/icon_21.svg';
+import JobDetails from '@/app/(pages)/main/jobs/[id]/page';
 
-const ActionJobVacancies = ({ jobId, setLoading }) => {
+const ActionJobVacancies = ({ jobId, setLoading, handleJobVacancy }) => {
   return (
     <ul className="dropdown-menu dropdown-menu-end">
       <li>
@@ -15,23 +16,31 @@ const ActionJobVacancies = ({ jobId, setLoading }) => {
       <li>
         <Link
           className="dropdown-item"
-          href={{
-            pathname: `/dashboard/ta/submit-job/${jobId}}`,
-          }}
-          onClick={() => setLoading(true)}
+          href="#"
+          onClick={() => handleJobVacancy('edit', jobId)}
         >
           <Image src={edit} alt="icon" className="lazy-img" /> Edit
         </Link>
       </li>
       <li>
-        <a className="dropdown-item" href="#">
+        <Link
+          className="dropdown-item"
+          href="#"
+          onClick={() => {
+            handleJobVacancy('duplicate', jobId);
+          }}
+        >
           <Image src={edit} alt="icon" className="lazy-img" /> Duplicate
-        </a>
+        </Link>
       </li>
       <li>
-        <a className="dropdown-item" href="#">
+        <Link
+          className="dropdown-item"
+          href="#"
+          onClick={() => handleJobVacancy('delete', jobId)}
+        >
           <Image src={delete_icon} alt="icon" className="lazy-img" /> Delete
-        </a>
+        </Link>
       </li>
     </ul>
   );

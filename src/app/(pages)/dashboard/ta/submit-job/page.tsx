@@ -5,7 +5,10 @@ export const revalidate = 0;
 const EmployDashboardCreateJobPage = ({ params, searchParams }) => {
   return (
     <>
-      <SubmitJobArea params={params} searchParams={searchParams} />
+      <SubmitJobArea
+        params={{ ...params, mode: 'create' }}
+        searchParams={searchParams}
+      />
     </>
   );
 };

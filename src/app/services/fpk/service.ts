@@ -381,7 +381,7 @@ export async function assignTaToFpk(efpkRequestNo, taId) {
     //   .input('taId', sql.Numeric, taId)
     //   .query('UPDATE efpk SET TaId = @taId WHERE RequestNo = @requestNo');
 
-    prisma.$transaction(async (tx) => {
+    const data = prisma.$transaction(async (tx) => {
       await tx.efpkTa.upsert({
         where: {
           efpkRequestNo: efpkRequestNo,
@@ -395,14 +395,20 @@ export async function assignTaToFpk(efpkRequestNo, taId) {
         },
       });
 
-      await tx.efpkTaTransactions.create({
+      const data = await tx.efpkTaTransactions.create({
         data: {
           taId: taId,
           efpkRequestNo: efpkRequestNo,
         },
       });
+
+      return data;
     });
+
+    return data;
   } catch (e) {
     console.log(e);
+
+    return {};
   }
 }

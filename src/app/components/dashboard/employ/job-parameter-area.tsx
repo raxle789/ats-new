@@ -86,7 +86,7 @@ const EmployParameterArea: React.FC<Props> = async ({ searchParams }) => {
           };
         })
         .catch((e) => {
-          console.log('Error searching position level requirements: ', e);
+          console.log("Error Searching Position Level's Requirements: ", e);
 
           return {
             data: [],
@@ -106,7 +106,7 @@ const EmployParameterArea: React.FC<Props> = async ({ searchParams }) => {
           };
         })
         .catch((e) => {
-          console.log('Error getting position level requirements: ', e);
+          console.log("Error Getting Position Level's Requirements: ", e);
 
           return {
             data: [],

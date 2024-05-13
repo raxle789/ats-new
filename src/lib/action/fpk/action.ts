@@ -9,6 +9,7 @@ import {
   getAllTa,
   assignTaToFpk,
 } from '../../../app/services/fpk/service';
+import _ from 'lodash';
 
 const moment = require('moment');
 
@@ -98,13 +99,28 @@ export async function getTaData() {
 }
 
 export async function assignTa({ efpkRequestNo, taId }) {
-  const validate = await validateEfpkSchema.safeParse({ efpkRequestNo, taId });
+  const validate = validateEfpkSchema.safeParse({ efpkRequestNo, taId });
 
   if (validate.success) {
-    await assignTaToFpk(efpkRequestNo, taId);
+    const data = await assignTaToFpk(efpkRequestNo, taId);
 
-    revalidatePath('/dashboard/ta/fpk');
+    if (!_.isEmpty(data)) {
+      return {
+        success: true,
+        message: 'Successfully Assign TA to FPK',
+      };
+    } else {
+      return {
+        success: false,
+        message: 'Please Try Again Later',
+      };
+    }
   } else {
     console.log(validate.error);
+
+    return {
+      success: false,
+      message: "Error Assigning TA to FPK, FPK Or TA Doesn't Exist",
+    };
   }
 }

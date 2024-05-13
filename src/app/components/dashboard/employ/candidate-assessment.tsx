@@ -237,47 +237,7 @@ const CandidateAssessment = () => {
         <div>
           <h4 className="sub-main-title">Assessment</h4>
         </div>
-        {/* <form
-          onSubmit={(e) => e.preventDefault()}
-          className="search-form form-fpk"
-        >
-          <input
-            type="text"
-            placeholder="Search here.."
-            onChange={(e) => handleJobFpkSearch(e.target.value)}
-            defaultValue={searchParams.get('query')?.toString()}
-          />
-          <button type="submit">
-            <Image src={search} alt="search" className="lazy-img m-auto" />
-          </button>
-        </form> */}
         <SearchBar />
-      </div>
-
-      <div className="card-checkbox">
-        <Popover
-          content={<ActionCheckboxPipeline />}
-          trigger="click"
-          open={popOverState}
-          placement="right"
-        >
-          <Checkbox
-            onChange={onChangeCheckboxAll}
-            checked={checkboxAllValue}
-          ></Checkbox>
-        </Popover>
-      </div>
-      <div className="wrapper">
-        {candidate_items.map((item) => (
-          <CandidateAssessmentItem
-            key={item.id}
-            item={item}
-            checkboxState={checkbox}
-            checkboxAllValue={checkboxAllValue}
-            setCheckbox={setCheckbox}
-            setCheckboxAllValue={setCheckboxAllValue}
-          />
-        ))}
       </div>
 
       {/* <div className="dash-pagination d-flex justify-content-end mt-30">

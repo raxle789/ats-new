@@ -3,15 +3,15 @@ import { z } from 'zod';
 export const validateEducationLevel = z.object({
   valueToParse: z.coerce
     .string({
-      required_error: 'Education level required!',
-      invalid_type_error: 'Education level id must be a string!',
+      required_error: 'Education Level Required!',
+      invalid_type_error: 'Education Level Id Must Be A String!',
     })
     .trim()
     .transform((val, ctx) => {
       if (isNaN(Number(val))) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Education level id cannot be parsed to number!',
+          message: 'Education Level Id Cannot Be Parsed To Number!',
         });
 
         return z.NEVER;
@@ -24,15 +24,15 @@ export const validateEducationLevel = z.object({
 export const validatePositionLevel = z.object({
   valueToParse: z.coerce
     .string({
-      required_error: 'Position level required!',
-      invalid_type_error: 'Position id must be a string!',
+      required_error: 'Position Level Required!',
+      invalid_type_error: 'Position Level Id Must Be A String!',
     })
     .trim()
     .transform((val, ctx) => {
       if (isNaN(Number(val))) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Position level id cannot be parsed to number!',
+          message: 'Position Level Id Cannot Be Parsed To Number!',
         });
 
         return z.NEVER;
@@ -45,15 +45,15 @@ export const validatePositionLevel = z.object({
 export const validateYearOfExperience = z.object({
   valueToParse: z.coerce
     .string({
-      required_error: 'Year of experience required!',
-      invalid_type_error: 'Year of experience must be a string!',
+      required_error: 'Year Of Experience Required!',
+      invalid_type_error: 'Year Of Experience Must Be A String!',
     })
     .trim()
     .transform((val, ctx) => {
       if (isNaN(Number(val))) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Year of experience cannot be parsed to number!',
+          message: 'Year Of Experience Cannot Be Parsed To Number!',
         });
 
         return z.NEVER;
@@ -66,15 +66,15 @@ export const validateYearOfExperience = z.object({
 export const validateGrade = z.object({
   valueToParse: z.coerce
     .string({
-      required_error: 'Grade required!',
-      invalid_type_error: 'Grade must be a string!',
+      required_error: 'Grade Required!',
+      invalid_type_error: 'Grade Must Be A String!',
     })
     .trim()
     .transform((val, ctx) => {
       if (isNaN(Number(val))) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Grade cannot be parsed to number!',
+          message: 'Grade Cannot Be Parsed To Number!',
         });
 
         return z.NEVER;
@@ -87,8 +87,8 @@ export const validateGrade = z.object({
 export const validateLineIndustry = z.object({
   valueToParse: z.coerce
     .string({
-      required_error: 'Line industry required!',
-      invalid_type_error: 'Line industry id must be a string!',
+      required_error: 'Line Industry Required!',
+      invalid_type_error: 'Line Industry Must Be A String!',
     })
     .trim()
     .transform((val, ctx) => {
@@ -108,11 +108,18 @@ export const validateLineIndustry = z.object({
       try {
         const parsedValue = JSON.parse(val);
 
+        if (!Array.isArray(parsedValue)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Line Industry Must Be An Array!',
+          });
+        }
+
         return parsedValue;
       } catch (e) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Invalid line industry format!',
+          message: 'Invalid Line Industry Format!',
         });
 
         return z.NEVER;
@@ -123,8 +130,8 @@ export const validateLineIndustry = z.object({
 export const validateSalary = z.object({
   valueToParse: z.coerce
     .string({
-      required_error: 'Salary required!',
-      invalid_type_error: 'Salary must be a string!',
+      required_error: 'Salary Required!',
+      invalid_type_error: 'Salary Must Be A String!',
     })
     .trim()
     .transform((val, ctx) => {
@@ -144,11 +151,18 @@ export const validateSalary = z.object({
       try {
         const parsedValue = JSON.parse(val);
 
+        if (!Array.isArray(parsedValue)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Salary Must Be An Array!',
+          });
+        }
+
         return parsedValue;
       } catch (e) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Invalid salary format!',
+          message: 'Invalid Salary Format!',
         });
 
         return z.NEVER;
@@ -159,8 +173,8 @@ export const validateSalary = z.object({
 export const validateArray = z.object({
   value: z.coerce
     .string({
-      required_error: 'Value required!',
-      invalid_type_error: 'Value must be a string!',
+      required_error: 'Value Required!',
+      invalid_type_error: 'Value Must Be A String!',
     })
     .trim()
     .transform((val, ctx) => {
@@ -170,7 +184,7 @@ export const validateArray = z.object({
         if (!Array.isArray(parsedValue)) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: 'Value must be an array!',
+            message: 'Value Must Be An Array!',
           });
 
           return z.NEVER;
@@ -180,7 +194,7 @@ export const validateArray = z.object({
       } catch (e) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Invalid value format!',
+          message: 'Invalid Value Format!',
         });
 
         return z.NEVER;
@@ -226,15 +240,15 @@ export const validateArray = z.object({
 export const validateNumber = z.object({
   value: z.coerce
     .string({
-      required_error: 'Value required!',
-      invalid_type_error: 'Value must be a string!',
+      required_error: 'Value Required!',
+      invalid_type_error: 'Value Must Be A String!s',
     })
     .trim()
     .transform((val, ctx) => {
       if (isNaN(Number(val))) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Value cannot be parsed to number!',
+          message: 'Value Cannot Be Parsed To Number!',
         });
 
         return z.NEVER;
@@ -247,15 +261,15 @@ export const validateNumber = z.object({
 export const validateAge = z.object({
   valueToParse: z.coerce
     .string({
-      required_error: 'Age required!',
-      invalid_type_error: 'Age must be a string!',
+      required_error: 'Age Required!',
+      invalid_type_error: 'Age Must Be A String!',
     })
     .trim()
     .transform((val, ctx) => {
       if (isNaN(Number(val))) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Age cannot be parsed to number!',
+          message: 'Age Cannot Be Parsed To Number!',
         });
 
         return z.NEVER;
@@ -268,15 +282,15 @@ export const validateAge = z.object({
 export const validateGender = z.object({
   valueToParse: z.coerce
     .string({
-      required_error: 'Gender required!',
-      invalid_type_error: 'Gender id must be a string!',
+      required_error: 'Gender Required!',
+      invalid_type_error: 'Gender Id Must Be A String!',
     })
     .trim()
     .transform((val, ctx) => {
       if (isNaN(Number(val))) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Gender cannot be parsed to number!',
+          message: 'Gender Id Cannot Be Parsed To Number!',
         });
 
         return z.NEVER;
@@ -289,19 +303,26 @@ export const validateGender = z.object({
 export const validateSkill = z.object({
   valueToParse: z.coerce
     .string({
-      required_error: 'Skill required!',
-      invalid_type_error: 'Skill id must be a string!',
+      required_error: 'Skill Required!',
+      invalid_type_error: 'Skill Id Must Be A String!',
     })
     .trim()
     .transform((val, ctx) => {
       try {
         const parsedValue = JSON.parse(val);
 
+        if (!Array.isArray(parsedValue)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Skill Must Be An Array!',
+          });
+        }
+
         return parsedValue;
       } catch (e) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Invalid skill format!',
+          message: 'Invalid Skill Format!',
         });
 
         return z.NEVER;
@@ -312,19 +333,26 @@ export const validateSkill = z.object({
 export const validateCertificate = z.object({
   valueToParse: z.coerce
     .string({
-      required_error: 'Certificate required!',
-      invalid_type_error: 'Certificate id must be a string!',
+      required_error: 'Certificate Required!',
+      invalid_type_error: 'Certificate Id Must Be A String!',
     })
     .trim()
     .transform((val, ctx) => {
       try {
         const parsedValue = JSON.parse(val);
 
+        if (!Array.isArray(parsedValue)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'Certificate Must Be An Array!',
+          });
+        }
+
         return parsedValue;
       } catch (e) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: 'Invalid certificate format!',
+          message: 'Invalid Certificate Format!',
         });
 
         return z.NEVER;
