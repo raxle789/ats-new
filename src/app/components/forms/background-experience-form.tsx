@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Input,
   Form,
@@ -97,7 +97,7 @@ const BackgroundExperienceForm = () => {
     setEditState(!editState);
   };
 
-  const [expValue, setExpValue] = useState<string>('you-choose');
+  const [expValue, setExpValue] = useState<string>('Professional');
   const onChangeExp = (e: RadioChangeEvent) => {
     setExpValue(e.target.value);
   };
@@ -150,7 +150,7 @@ const BackgroundExperienceForm = () => {
     <div key={expIdx} className="row">
       <div className="col-6">
         <div className="input-group-meta position-relative mb-15">
-          <label>Job Title*</label>
+          <label className="fw-bold">Job Title*</label>
           <Form.Item<FieldType>
             name={['experience', expIdx.toString(), 'jobTitle']}
             className="mb-0"
@@ -167,7 +167,7 @@ const BackgroundExperienceForm = () => {
       </div>
       <div className="col-6">
         <div className="input-group-meta position-relative mb-15">
-          <label>Job Function*</label>
+          <label className="fw-bold">Job Function*</label>
           <Form.Item<FieldType>
             name={['experience', expIdx.toString(), 'jobFunction']}
             className="mb-0"
@@ -199,7 +199,7 @@ const BackgroundExperienceForm = () => {
       </div>
       <div className="col-6">
         <div className="input-group-meta position-relative mb-15">
-          <label>Line Industry*</label>
+          <label className="fw-bold">Line Industry*</label>
           <Form.Item<FieldType>
             name={['experience', expIdx.toString(), 'lineIndustry']}
             className="mb-0"
@@ -231,7 +231,7 @@ const BackgroundExperienceForm = () => {
       </div>
       <div className="col-6">
         <div className="input-group-meta position-relative mb-15">
-          <label>Position Level*</label>
+          <label className="fw-bold">Position Level*</label>
           <Form.Item<FieldType>
             name={['experience', expIdx.toString(), 'positionLevel']}
             className="mb-0"
@@ -263,7 +263,7 @@ const BackgroundExperienceForm = () => {
       </div>
       <div className="col-6">
         <div className="input-group-meta position-relative mb-15">
-          <label>Company Name*</label>
+          <label className="fw-bold">Company Name*</label>
           <Form.Item<FieldType>
             name={['experience', expIdx.toString(), 'compName']}
             className="mb-0"
@@ -280,7 +280,7 @@ const BackgroundExperienceForm = () => {
       </div>
       <div className="col-6">
         <div className="input-group-meta position-relative mb-15">
-          <label>Job Description</label>
+          <label className="fw-bold">Job Description</label>
           <Form.Item<FieldType>
             name={['experience', expIdx.toString(), 'jobDesc']}
             className="mb-0"
@@ -296,7 +296,7 @@ const BackgroundExperienceForm = () => {
       </div>
       <div className="col-5">
         <div className="input-group-meta position-relative mb-15">
-          <label>Start Year*</label>
+          <label className="fw-bold">Start Year*</label>
           <Form.Item<FieldType>
             name={['experience', expIdx.toString(), 'startYear']}
             className="mb-0"
@@ -322,7 +322,7 @@ const BackgroundExperienceForm = () => {
       </div>
       <div className="col-5">
         <div className="input-group-meta position-relative mb-15">
-          <label>End Year*</label>
+          <label className="fw-bold">End Year*</label>
           <Form.Item<FieldType>
             name={['experience', expIdx.toString(), 'endYear']}
             className="mb-0"
@@ -372,7 +372,7 @@ const BackgroundExperienceForm = () => {
       </div>
       <div className="col-6">
         <div className="input-group-meta position-relative mb-15">
-          <label>Current Salary (gross Monthly)*</label>
+          <label className="fw-bold">Current Salary (gross Monthly)*</label>
           <Form.Item<FieldType>
             name={['experience', expIdx.toString(), 'currentSalary']}
             className="mb-0"
@@ -399,7 +399,7 @@ const BackgroundExperienceForm = () => {
       </div>
       <div className="col-6">
         <div className="input-group-meta position-relative mb-15">
-          <label>Expected Salary (gross Monthly)*</label>
+          <label className="fw-bold">Expected Salary (gross Monthly)*</label>
           <Form.Item<FieldType>
             name={['experience', 'expectedSalary']}
             className="mb-0"
@@ -427,9 +427,103 @@ const BackgroundExperienceForm = () => {
     </div>,
   ];
 
-  const initExpItems: any[] = [];
-  const [activeExpKey, setActiveExpKey] = useState('');
+  const displayedTabContent: JSX.Element[] = [
+    <div key={expIdx} className="row">
+      <div className="col-6">
+        <div className="input-group-meta position-relative mb-15">
+          <label className="fw-bold">Job Title*</label>
+          <p className="mb-0">Job titlenya apa</p>
+        </div>
+      </div>
+      <div className="col-6">
+        <div className="input-group-meta position-relative mb-15">
+          <label className="fw-bold">Job Function*</label>
+          <p className="mb-0">job functionnya</p>
+        </div>
+      </div>
+      <div className="col-6">
+        <div className="input-group-meta position-relative mb-15">
+          <label className="fw-bold">Line Industry*</label>
+          <p className="mb-0">line industrynya boy</p>
+        </div>
+      </div>
+      <div className="col-6">
+        <div className="input-group-meta position-relative mb-15">
+          <label className="fw-bold">Position Level*</label>
+          <p className="mb-0">position level bro</p>
+        </div>
+      </div>
+      <div className="col-6">
+        <div className="input-group-meta position-relative mb-15">
+          <label className="fw-bold">Company Name*</label>
+          <p className="mb-0">company name</p>
+        </div>
+      </div>
+      <div className="col-6">
+        <div className="input-group-meta position-relative mb-15">
+          <label className="fw-bold">Job Description</label>
+          <p className="mb-0">job description</p>
+        </div>
+      </div>
+      <div className="col-6">
+        <div className="input-group-meta position-relative mb-15">
+          <label className="fw-bold">Start Year*</label>
+          <p className="mb-0">start year</p>
+        </div>
+      </div>
+      <div className="col-4">
+        <div className="input-group-meta position-relative mb-15">
+          <label className="fw-bold">End Year*</label>
+          <p className="mb-0">end year</p>
+        </div>
+      </div>
+      <div className="col-2">
+        <div className="input-group-meta position-relative mb-15">
+          <Form.Item<FieldType>
+            name={['experience', expIdx.toString(), 'currentYear']}
+            className="pt-15"
+          >
+            <Checkbox
+              // onChange={(e) => handleCheckboxChange(e, expIdx)}
+              // checked={yearState[expIdx] || false}
+              onChange={(e) => handleCheckboxRef(e, expIdx)}
+              // data-id={expIdx}
+            >
+              Current
+            </Checkbox>
+          </Form.Item>
+        </div>
+      </div>
+      <div className="col-6">
+        <div className="input-group-meta position-relative mb-15">
+          <label className="fw-bold">Current Salary (gross Monthly)*</label>
+          <p className="mb-0">6.000.000</p>
+        </div>
+      </div>
+      <div className="col-6">
+        <div className="input-group-meta position-relative mb-15">
+          <label className="fw-bold">Expected Salary (gross Monthly)*</label>
+          <p className="mb-0">10.000.000</p>
+        </div>
+      </div>
+    </div>,
+  ];
+
+  const initExpItems = [
+    { label: 'Experience 1', children: expTabContent, key: '1' },
+  ];
+  const displayedInit = [
+    {
+      label: 'Experience 1',
+      children: displayedTabContent,
+      key: '1',
+      closable: false,
+    },
+  ];
+
+  const [activeExpKey, setActiveExpKey] = useState(initExpItems[0].key);
   const [expItems, setExpItems] = useState(initExpItems);
+  const [displayedItems, setDisplayedItems] = useState(displayedInit);
   const newExpTabIdx = useRef(0);
 
   const onChangeExpTabs = (newActiveKey: string) => {
@@ -444,7 +538,17 @@ const BackgroundExperienceForm = () => {
       children: expTabContent,
       key: newActiveKey,
     });
+
+    const newDisplayed = [...displayedItems];
+    newDisplayed.push({
+      label: `Experience ${expItems.length + 1}`,
+      children: displayedTabContent,
+      key: newActiveKey,
+      closable: false,
+    });
+
     setExpItems(newPanes);
+    setDisplayedItems(newDisplayed);
     setActiveExpKey(newActiveKey);
     setExpIdx(expIdx + 1);
     // setYearState((prevState) => ({
@@ -501,6 +605,10 @@ const BackgroundExperienceForm = () => {
       message.error(`Failed: ${errorMessage}`);
     }
   };
+
+  useEffect(() => {
+    setExpIdx(expIdx + 1);
+  }, []);
   return (
     <>
       {/* <h2 className="main-title">Background Experience</h2> */}
@@ -523,34 +631,42 @@ const BackgroundExperienceForm = () => {
           onFinishFailed={onFinishFailed}
         >
           <div className="row">
-            <label className="fw-bold mt-5 mb-2">Working Experience</label>
-            <div className="col-12">
-              <div className="input-group-meta position-relative mb-15">
-                <Form.Item<FieldType>
-                  name="expOption"
-                  className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please choose your working experience!',
-                  //   },
-                  // ]}
-                >
-                  <Radio.Group onChange={onChangeExp} value={expValue}>
-                    <Radio className="d-flex" value="Fresh Graduate">
-                      Fresh Graduate
-                    </Radio>
-                    <Radio className="d-flex" value="Professional">
-                      Professional
-                    </Radio>
-                  </Radio.Group>
-                </Form.Item>
+            <label className="fw-bold sub-section-profile">
+              Working Experience
+            </label>
+
+            {editState && (
+              <div className="col-12">
+                <div className="input-group-meta position-relative mb-15">
+                  <Form.Item<FieldType>
+                    name="expOption"
+                    className="mb-0"
+                    // rules={[
+                    //   {
+                    //     required: true,
+                    //     message: 'Please choose your working experience!',
+                    //   },
+                    // ]}
+                  >
+                    <Radio.Group onChange={onChangeExp} value={expValue}>
+                      <Radio className="d-flex" value="Fresh Graduate">
+                        Fresh Graduate
+                      </Radio>
+                      <Radio className="d-flex" value="Professional">
+                        Professional
+                      </Radio>
+                    </Radio.Group>
+                  </Form.Item>
+                </div>
               </div>
-            </div>
+            )}
+
             {expValue === 'Fresh Graduate' && (
               <div className="col-6">
                 <div className="input-group-meta position-relative mb-15">
-                  <label>Expected Salary (gross Monthly)*</label>
+                  <label className="fw-bold">
+                    Expected Salary (gross Monthly)*
+                  </label>
                   <Form.Item<FieldType>
                     name={['experience', 'expectedSalary']}
                     className="mb-0"
@@ -561,23 +677,26 @@ const BackgroundExperienceForm = () => {
                     //   },
                     // ]}
                   >
-                    <InputNumber
-                      className="w-100"
-                      min={0}
-                      placeholder="Input Expected Salary"
-                      formatter={(value) =>
-                        `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-                      }
-                      parser={(value: string | undefined): string | number =>
-                        value!.replace(/\Rp\s?|(\.*)/g, '')
-                      }
-                    />
+                    {editState && (
+                      <InputNumber
+                        className="w-100"
+                        min={0}
+                        placeholder="Input Expected Salary"
+                        formatter={(value) =>
+                          `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                        }
+                        parser={(value: string | undefined): string | number =>
+                          value!.replace(/\Rp\s?|(\.*)/g, '')
+                        }
+                      />
+                    )}
+                    {!editState && <p className="mb-0">3.000.000</p>}
                   </Form.Item>
                 </div>
               </div>
             )}
 
-            {expValue === 'Professional' && (
+            {editState && expValue === 'Professional' && (
               <Tabs
                 type="editable-card"
                 onChange={onChangeExpTabs}
@@ -586,12 +705,23 @@ const BackgroundExperienceForm = () => {
                 items={expItems}
               />
             )}
+            {!editState && (
+              <Tabs
+                type="editable-card"
+                hideAdd
+                onChange={onChangeExpTabs}
+                activeKey={activeExpKey}
+                items={displayedItems}
+              />
+            )}
 
-            <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
-              <button type="submit" className="dash-btn-two tran3s me-3">
-                Submit
-              </button>
-            </div>
+            {editState && (
+              <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
+                <button type="submit" className="dash-btn-two tran3s me-3">
+                  Submit
+                </button>
+              </div>
+            )}
           </div>
         </Form>
       </div>
