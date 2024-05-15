@@ -206,11 +206,11 @@ const BackgroundExperienceForm = () => {
     lineIndutries();
   }, []);
 
-  useEffect(() => {
-    if ('experiences' in experiences && experiences) {
-      setExpValue('Professional');
-    }
-  }, [experiences]);
+  // useEffect(() => {
+  //   if ('experiences' in experiences && experiences) {
+  //     setExpValue('Professional');
+  //   }
+  // }, [experiences]);
 
   const editOnChange = () => {
     setEditState(!editState);
