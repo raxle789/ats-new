@@ -2,6 +2,7 @@
 
 import prisma from "@/root/prisma";
 import { getUserSession } from "../Sessions";
+import { objectToArray } from "./helpers";
 
 export async function getAppliedJobs(): Promise<{ success: boolean; data: any; message?: string }> {
   try {
@@ -66,13 +67,19 @@ export async function getProfileNCandidate() {
       },
     });
     await prisma.$disconnect();
-    const { file_base, ...rest } = profileData;
+    // console.info('PROFILE PROFILE', profileData);
+    // const { file_base, ...rest } = profileData;
+    const documentPhotoProfile = profileData?.file_base.toString();
+    const profile = {
+      ...profileData?.candidate,
+      saved_name: profileData?.saved_name
+    };
     return {
       success: true,
       data: {
-        document: file_base.toString(),
-        profile: rest
-      }
+        document: documentPhotoProfile,
+        profile: profile
+      },
     };
   } catch (error) {
     console.info("Profile Data Error -> ", error);
@@ -95,7 +102,7 @@ export async function getAddress() {
         candidateId: id
       }
     });
-    console.info('Address -> ', addresses);
+    // console.info('Address -> ', addresses);
     await prisma.$disconnect();
     return {
       success: true,
@@ -122,7 +129,7 @@ export async function getFamilies() {
         candidateId: id
       }
     });
-    console.info('FAMILIES -> ', families);
+    // console.info('FAMILIES -> ', families);
     await prisma.$disconnect();
     return {
       success: true,
@@ -149,7 +156,7 @@ export async function getEducation() {
         candidateId: id
       },
     });
-    console.info('FETCHED EDUCATION -> ',education);
+    // console.info('FETCHED EDUCATION -> ',education);
     await prisma.$disconnect();
     return {
       success: true,
@@ -182,7 +189,7 @@ export async function getSkills() {
         }
       }
     });
-    console.info('FETCHED SKILLS -> ',skills);
+    // console.info('FETCHED SKILLS -> ',skills);
     await prisma.$disconnect();
     let filteredSkills: string[] = [];
     if(skills.length > 1) {
@@ -219,13 +226,13 @@ export async function getLanguages() {
         level: true
       }
     });
-    console.info('FETCHED LANGUAGES -> ',languages);
+    // console.info('FETCHED LANGUAGES -> ',languages);
     await prisma.$disconnect();
     let filteredLanguages: any = {};
     languages.forEach((value, index) => {
       filteredLanguages[`${index}`] = value;
     });
-    console.info('FILTERED LANGUAGES', filteredLanguages);
+    // console.info('FILTERED LANGUAGES', filteredLanguages);
     return {
       success: true,
       data: filteredLanguages
@@ -253,7 +260,7 @@ export async function getEmergency() {
         emergency_contacts: true
       }
     });
-    console.info('FETCHED EMERGENCY -> ', emergency);
+    // console.info('FETCHED EMERGENCY -> ', emergency);
     await prisma.$disconnect();
     return {
       success: true,
@@ -288,7 +295,7 @@ export async function getQuestions() {
     questions.forEach((value) => {
       filteredQuestion.push(value.answer);
     });
-    console.info('FILTERED QUESTIONS', filteredQuestion);
+    // console.info('FILTERED QUESTIONS', filteredQuestion);
     return {
       success: true,
       data: filteredQuestion
@@ -301,4 +308,157 @@ export async function getQuestions() {
       message: 'Error getting questions data!'
     };
   };
-}
+};
+
+export async function getExperiences() {
+  try {
+    const authUserSession = await getUserSession('auth');
+    if(!authUserSession) return { success: false, data: null, message: 'User session doesnt exist' };
+    const id = authUserSession.candidate.id;
+    const candidateExperience = await prisma.$transaction(async (tx) => {
+      /**
+       * If haven't experience returned expected salary
+       */
+      const expectedSalary = await tx.candidates.findUnique({
+        where: {
+          id: id
+        },
+        select: {
+          expected_salary: true
+        }
+      });
+      const experiencesData = await tx.working_experiences.findMany({
+        where:  {
+          candidateId: id
+        }
+      });
+      // console.log('All experiences data: ',  experiencesData);
+      /**
+       * If have an experience returned array of objects
+       */
+      if(experiencesData.length > 0) {
+        return {
+          success: true,
+          data: {
+            experiences: experiencesData,
+            expected_salary: expectedSalary?.expected_salary
+          },
+          message: 'candidate.have.experiences'
+        };
+      };
+
+      return {
+        success: true,
+        data: expectedSalary,
+        message: 'candidate.have.no.experiences'
+      };
+    });
+    /* Returned successfull data */
+    return {
+      success: true,
+      data: candidateExperience,
+      message: 'success getting experience'
+    };
+  } catch (error) {
+    console.info('error fetching experiences: ', error);
+    return {
+      success: false,
+      data: null,
+      message: 'Error getting experiences data!'
+    };
+  };
+};
+
+export async function getEducationNSkills() {
+  try {
+    const authUserSession = await getUserSession('auth');
+    if(!authUserSession) return { success: false, data: null, message: 'User session doesnt exist' };
+    const id = authUserSession.candidate.id;
+    const candidateEducationsAndSkills = await prisma.candidates.findUnique({
+      where: {
+        id: id
+      },
+      select: {
+        educations: true,
+        CandidateSkills: {
+          select: {
+            skills: {
+              select: {
+                name: true
+              }
+            }
+          }
+        },
+        Languages: {
+          select: {
+            name: true,
+            level: true
+          }
+        },
+        certifications: {
+          select: {
+            certificates: true
+          }
+        }
+      }
+    });
+    const transformedSkills = objectToArray(candidateEducationsAndSkills?.CandidateSkills as { skills: { name: string; }; }[]);
+    // console.log('education.skill.certification data: ', candidateEducationsAndSkills);
+    return {
+      success: true,
+      data: {
+        educations: candidateEducationsAndSkills?.educations,
+        skills: transformedSkills,
+        certifications: candidateEducationsAndSkills?.certifications,
+        languages: candidateEducationsAndSkills?.Languages
+      },
+      message: 'candidate.education.skill.certificate'
+    }
+  } catch (error) {
+    console.info('error getting candidate.education.skill.certificate', error);
+    return {
+      success: false,
+      data: null,
+      message: 'error getting candidate.education.skill.certificate'
+    }
+  }
+};
+
+export async function getAdditionalInformations() {
+  try {
+    const authUserSession = await getUserSession('auth');
+    if(!authUserSession) return { success: false, data: null, message: 'User session doesnt exist' };
+    const id = authUserSession.candidate.id;
+    const additionalInformationData = await prisma.candidates.findUnique({
+      where: {
+        id: id
+      },
+      select: {
+        families: true,
+        emergency_contacts: true,
+        candidate_questions: {
+          select: {
+            answer: true,
+            questions: {
+              select: {
+                question: true
+              }
+            }
+          }
+        }
+      }
+    });
+    return {
+      success: true,
+      data: additionalInformationData,
+      message: 'candidate.additional.information.data'
+    };
+  } catch (error) {
+    console.log('error getting additional information: ', error);
+    return {
+      success: false,
+      data: null,
+      message: 'error getting additional information!'
+    }
+  };
+};

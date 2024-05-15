@@ -34,28 +34,28 @@ export default async function Home() {
 
   // console.info(data);
 
-  const encryptedData = CryptoJS.Rabbit.encrypt(
-    String(2),
-    process.env.NEXT_PUBLIC_SECRET_KEY,
-  ).toString();
+  // const encryptedData = CryptoJS.Rabbit.encrypt(
+  //   String(2),
+  //   process.env.NEXT_PUBLIC_SECRET_KEY,
+  // ).toString();
 
-  const encryptedData2 = CryptoJS.Rabbit.encrypt(
-    String(2),
-    process.env.NEXT_PUBLIC_SECRET_KEY,
-  ).toString();
+  // const encryptedData2 = CryptoJS.Rabbit.encrypt(
+  //   String(2),
+  //   process.env.NEXT_PUBLIC_SECRET_KEY,
+  // ).toString();
 
-  const encryptedData3 = CryptoJS.Rabbit.encrypt(
-    String(2),
-    process.env.NEXT_PUBLIC_SECRET_KEY,
-  ).toString();
+  // const encryptedData3 = CryptoJS.Rabbit.encrypt(
+  //   String(2),
+  //   process.env.NEXT_PUBLIC_SECRET_KEY,
+  // ).toString();
 
-  const ayam = crypto.decryptData(encryptedData);
+  // const ayam = crypto.decryptData(encryptedData);
 
-  console.info(ayam);
+  // console.info(ayam);
 
-  console.info(encryptedData2);
+  // console.info(encryptedData2);
 
-  console.info(encryptedData3);
+  // console.info(encryptedData3);
 
   return (
     <Wrapper>

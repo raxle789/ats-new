@@ -173,6 +173,7 @@ export async function updateCandidate(formData: any) {
       ethnicity: formData.ethnicity,
       gender: formData.gender,
       maritalStatus: formData.maritalStatus,
+      // Domicile //
       /* Guard Birth City */
       birthCity: birthCity.toUpperCase(),
       religion: formData.religion,
@@ -436,19 +437,21 @@ export async function storeCertification(
   formData: any,
   month: number,
   year: number,
-  isCertificates: boolean | undefined,
+  isCertificates: string | undefined,
 ) {
   const regSession = await getUserSession('reg');
   console.info('reg-session-data', regSession);
   /* Storing  certification */
   console.info('Begin to maipulating certification data...');
-  if (isCertificates === true) {
+  if (isCertificates === 'on') {
     /**
      * New Certificates Schema
      * id, name, institution, issuedData, candidate-ID
      */
     /* Transform to array of object */
     const certificationList = transformToArrayOfObject(formData);
+    /* CHECK HERE */
+    console.info('List of certification:', certificationList);
     let manipulatedCertifications: any[] = [];
     certificationList.forEach((value) => {
       const certification = {

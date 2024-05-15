@@ -15,6 +15,7 @@ import {
 import type { FormProps, CheckboxProps, InputRef } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
+import { getEducationNSkills } from '@/libs/Candidate/retrieve-data';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 let languageIndex = 0;
@@ -81,6 +82,105 @@ const EducationSkillsForm = () => {
   const [form] = Form.useForm();
   const [masterData, setMasterData] = useState<MasterData | null>(null);
   const [editState, setEditState] = useState(false);
+  const [educationAndSkill, setEducationAndSkill] = useState<any>(null);
+  console.log('EDUCATION SKILLS: ', educationAndSkill);
+
+  /**
+   * @returns {
+   *  
+   * }
+   */
+  const fetchEducationSkillCertification = async () => {
+    const educationSkillCertificationData = await getEducationNSkills();
+    if(!educationSkillCertificationData.success) return message.error(educationSkillCertificationData.message);
+    setEducationAndSkill(educationSkillCertificationData.data);
+  };
+
+  /* Fetch Master Data */
+  const fetchEducationLevels = async () => {
+    const educationLevels = await fetch('/api/client-data/education/levels', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const educationLevelsData = await educationLevels.json();
+    setMasterData((prevState) => ({
+      ...prevState,
+      education_levels: educationLevelsData,
+    }));
+  };
+
+  const fetchEducatioMajors = async () => {
+    const educationMajors = await fetch('/api/client-data/education/majors', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const educationMajorsData = await educationMajors.json();
+    setMasterData((prevState) => ({
+      ...prevState,
+      education_majors: educationMajorsData,
+    }));
+  };
+
+  const fetchEducationInstitutios = async () => {
+    const institutions = await fetch(
+      '/api/client-data/education/institutions',
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
+    const institutionsData = await institutions.json();
+    setMasterData((prevState) => ({
+      ...prevState,
+      education_institutions: institutionsData,
+    }));
+  };
+
+  const fetchSkills = async () => {
+    const skills = await fetch('/api/client-data/skills', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const skillsData = await skills.json();
+    setMasterData((prevState) => ({
+      ...prevState,
+      skills: skillsData,
+    }));
+  };
+
+  const fetchCitys = async () => {
+    const citys = await fetch('/api/client-data/citys', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const citysData = await citys.json();
+    // console.log('City Data: ', citysData);
+    setMasterData((prevState) => ({
+      ...prevState,
+      citys: citysData,
+    }));
+  };
+
+  useEffect(() => {
+    fetchEducationSkillCertification();
+
+    /* Master Data */
+    fetchEducationLevels();
+    fetchEducatioMajors();
+    fetchEducationInstitutios();
+    fetchSkills();
+    fetchCitys();
+  }, []);
 
   const editOnChange = () => {
     setEditState(!editState);

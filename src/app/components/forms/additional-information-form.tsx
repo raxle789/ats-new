@@ -13,6 +13,8 @@ import {
 import type { FormProps, RadioChangeEvent } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
+import { success } from '../../../utils/message';
+import { getAdditionalInformations } from '@/libs/Candidate/retrieve-data';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
@@ -49,6 +51,19 @@ const AdditionalInformationForm = () => {
   const [form] = Form.useForm();
   const [masterData, setMasterData] = useState<MasterData | null>(null);
   const [editState, setEditState] = useState(false);
+  const [additionalInformation, setAdditionalInformation] = useState<any>(null);
+  
+  const fetchAdditionalInformations = async () => {
+    const additionalInformationsData = await getAdditionalInformations();
+    if(!additionalInformationsData.success) return message.error(additionalInformationsData.message)
+    console.log('additional informations data:', additionalInformationsData.data);
+    setAdditionalInformation(additionalInformationsData.data);
+  };
+
+  useEffect(() => {
+    fetchAdditionalInformations();
+  }, []);
+
   const editOnChange = () => {
     setEditState(!editState);
   };
