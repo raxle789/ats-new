@@ -89,41 +89,26 @@ const JobAssessmentResult = () => {
         <div className="row">
           <div className="col-lg-3">
             <b>
-              {/* <p>Full Name</p>
-              <p>Email</p>
-              <p>Phone</p>
-              <p>Domicile</p>
-              <p>Education</p>
-              <p>University / School</p>
-              <p>Education Major</p> */}
               <p>Position</p>
               <p>Level</p>
-              {/* <p>Source</p> */}
               <p>Start Test</p>
               <p>End Test</p>
               <p>Status</p>
               <p>Test Name</p>
-              {/* <p>Assessment</p>
-              <p>Recruiter</p> */}
             </b>
           </div>
           <div className="col-lg-6">
-            {/* <p>Fatkhur Rozak</p>
-            <p>oujakdev.rep@gmail.com</p>
-            <p>085784464441</p>
-            <p>-</p>
-            <p>D4</p>
-            <p>Jember State Polytechnic</p>
-            <p>TEKNIK INFORMATIKA</p> */}
             <p>Testing Purpose - Assessment and Interview</p>
             <p>1</p>
-            {/* <p>database</p> */}
             <p>22-02-2024 01:00:00</p>
             <p>26-02-2024 23:59:59</p>
             <p>Tidak direkomendasikan</p>
             <p>Psikotes Online - 1</p>
-            {/* <p>ATS</p>
-            <p>ATS</p> */}
+          </div>
+          <div className="col-lg-3">
+            <button className="request-btn tran3s" type="button">
+              Request result
+            </button>
           </div>
         </div>
         <div>

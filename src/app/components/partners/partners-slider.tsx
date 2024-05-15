@@ -77,7 +77,7 @@ const PartnersSlider = () => {
               <Image
                 src={logo}
                 alt="logo"
-                style={{ width: 'auto', height: '59px' }}
+                style={{ width: 'auto', height: '63px' }}
               />
             </div>
           </div>

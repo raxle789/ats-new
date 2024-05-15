@@ -1,10 +1,11 @@
-import React, { SetStateAction } from 'react';
+import React, { SetStateAction, useState } from 'react';
 import ActionApplicant from '../candidate/action-applicant';
 import { ICandidate } from '@/data/candidate-data';
 import Image from 'next/image';
 import { useAppDispatch } from '@/redux/hook';
 import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
 import { Checkbox } from 'antd';
+import AssessmentResultModal from '../../common/popup/assessment-result-modal';
 
 interface IProps {
   item: ICandidate;
