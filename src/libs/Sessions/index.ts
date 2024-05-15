@@ -82,12 +82,15 @@ export async function deleteSession(sessionName: 'auth' | 'reg' | 'otp') {
     case 'auth':
       console.info('Deleting auth-session...');
       cookies().delete(Utils.authSession);
+      break;
     case 'reg':
       console.info('Deleting reg-session...');
       cookies().delete(Utils.regSession);
+      break;
     case 'otp':
       console.info('Deleting otp-session...');
       cookies().delete(Utils.otpSession);
+      break;
   };
 };
 

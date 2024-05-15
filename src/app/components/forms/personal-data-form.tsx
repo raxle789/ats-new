@@ -132,7 +132,7 @@ const PersonalDataForm = () => {
 
   const fetchProfileData = async () => {
     const profileData = await getProfileNCandidate();
-    if (!profileData.success) return setError(profileData.message as string);
+    if (!profileData.success) return message.error(profileData.message as string);
     setPreviewImage(profileData.data?.document);
     return setProfileData(profileData.data?.profile);
   };
@@ -140,49 +140,49 @@ const PersonalDataForm = () => {
   const fetchAddress = async () => {
     const addressesData = await getAddress();
     if (!addressesData.success)
-      return setError(addressesData.message as string);
+      return message.error(addressesData.message as string);
     setAddresses(addressesData.data);
   };
 
-  const fetchFamilies = async () => {
-    const familiesData = await getFamilies();
-    if (!familiesData.success) return setError(familiesData.message as string);
-    return setFamilies(familiesData.data);
-  };
+  // const fetchFamilies = async () => {
+  //   const familiesData = await getFamilies();
+  //   if (!familiesData.success) return setError(familiesData.message as string);
+  //   return setFamilies(familiesData.data);
+  // };
 
-  const fetchEducation = async () => {
-    const educationData = await getEducation();
-    if (!educationData.success)
-      return message.error(educationData.message as string);
-    return setEducation(educationData.data);
-  };
+  // const fetchEducation = async () => {
+  //   const educationData = await getEducation();
+  //   if (!educationData.success)
+  //     return message.error(educationData.message as string);
+  //   return setEducation(educationData.data);
+  // };
 
-  const fetchSkills = async () => {
-    const skillsData = await getSkills();
-    if (!skillsData.success) return message.error(skillsData.message as string);
-    return setSkills(skillsData.data);
-  };
+  // const fetchSkills = async () => {
+  //   const skillsData = await getSkills();
+  //   if (!skillsData.success) return message.error(skillsData.message as string);
+  //   return setSkills(skillsData.data);
+  // };
 
-  const fetchLanguages = async () => {
-    const languagesData = await getLanguages();
-    if (!languagesData.success)
-      return message.error(languagesData.message as string);
-    return setLanguages(languagesData.data);
-  };
+  // const fetchLanguages = async () => {
+  //   const languagesData = await getLanguages();
+  //   if (!languagesData.success)
+  //     return message.error(languagesData.message as string);
+  //   return setLanguages(languagesData.data);
+  // };
 
-  const fetchEmergency = async () => {
-    const emergencyData = await getEmergency();
-    if (!emergencyData.success)
-      return message.error(emergencyData.message as string);
-    return setEmergency(emergencyData.data);
-  };
+  // const fetchEmergency = async () => {
+  //   const emergencyData = await getEmergency();
+  //   if (!emergencyData.success)
+  //     return message.error(emergencyData.message as string);
+  //   return setEmergency(emergencyData.data);
+  // };
 
-  const fetchQuestions = async () => {
-    const questionsData = await getQuestions();
-    if (!questionsData.success)
-      return message.error(questionsData.message as string);
-    return setQuestions(questionsData.data);
-  };
+  // const fetchQuestions = async () => {
+  //   const questionsData = await getQuestions();
+  //   if (!questionsData.success)
+  //     return message.error(questionsData.message as string);
+  //   return setQuestions(questionsData.data);
+  // };
 
   /* Fetching Master Data */
   const fetchCitys = async () => {
@@ -233,12 +233,12 @@ const PersonalDataForm = () => {
   useEffect(() => {
     fetchProfileData();
     fetchAddress();
-    fetchFamilies();
-    fetchEducation();
-    fetchSkills();
-    fetchLanguages();
-    fetchEmergency();
-    fetchQuestions();
+    // fetchFamilies();
+    // fetchEducation();
+    // fetchSkills();
+    // fetchLanguages();
+    // fetchEmergency();
+    // fetchQuestions();
 
     fetchCitys();
     fetchEthnicity();
