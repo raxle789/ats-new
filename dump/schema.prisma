@@ -44,12 +44,12 @@ model Candidates {
   ethnicity            String?               @db.NVarChar(64)
   blood_type           String?               @db.Char(1)
   phone_number         String                @unique(map: "UQ_e9aae9c8df7ce4bc2e356b57219") @db.NVarChar(14)
-  current_salary       Int?
+  expected_salary      Int?                  @db.Int
   source_referer       String?               @db.NVarChar(128)
   is_blacklisted       Boolean?              @default(false, map: "DF_49d807863236b10b9c236d5b5d8")
   created_at           DateTime              @default(now(), map: "DF_5638150fbb378cd6859db255f7b") @db.DateTime
   updated_at           DateTime?             @default(now(), map: "DF_ed9c7e1157bf98c5b2b80b1fd73") @db.DateTime
-  userId               Int?
+  userId               Int?                  @unique @db.Int
   bankId               Int?
   emengencyContactId   Int?
   birthCity            String?               @db.NVarChar(510)
@@ -65,12 +65,12 @@ model Candidates {
   identity_info        identity_info?        @relation(fields: [identityInfoId], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_bbd440878ce26abdc91d67a0af8")
   certifications       Certifications[]
   documents            documents[]
-  educations           Educations[]
+  educations           Educations?
   families             Families[]
   sims                 sims[]
   working_experiences  working_experiences[]
   addresses            Addresses[]
-  CandidateSkills      CandidateSkills[]
+  candidateSkills      CandidateSkills[]
   Languages            Languages[]
 
   @@map("candidates")
@@ -161,20 +161,21 @@ model documents {
 }
 
 model Educations {
-  id              Int        @id(map: "PK_09d2f29e7f6f31f5c01d79d2dbf") @default(autoincrement())
-  cityOfSchool    String     @map("city_of_school") @db.NVarChar(510)
-  start_year      Int        @db.SmallInt
-  end_year        Int        @db.SmallInt
-  university_name String     @db.NVarChar(256)
-  major           String     @db.NVarChar(128)
+  id              Int              @id(map: "PK_09d2f29e7f6f31f5c01d79d2dbf") @default(autoincrement())
+  cityOfSchool    String           @map("city_of_school") @db.NVarChar(510)
+  start_year      Int              @db.SmallInt
+  end_year        Int              @db.SmallInt
+  university_name String           @db.NVarChar(256)
+  major           String           @db.NVarChar(128)
   gpa             Float
   is_latest       Boolean
   is_graduate     Boolean
-  created_at      DateTime   @default(now(), map: "DF_9476acc97bf108991353a9af4b0") @db.DateTime
-  updated_at      DateTime?  @default(now(), map: "DF_11046a6c8f5e17e459700cc9a13") @db.DateTime
-  candidateId     Int
-  level           String     @db.NVarChar(32)
-  candidates      Candidates @relation(fields: [candidateId], references: [id], onUpdate: NoAction, map: "FK_da1ce5966e5d5a43a9e0797e0c0")
+  created_at      DateTime         @default(now(), map: "DF_9476acc97bf108991353a9af4b0") @db.DateTime
+  updated_at      DateTime?        @default(now(), map: "DF_11046a6c8f5e17e459700cc9a13") @db.DateTime
+  candidateId     Int              @unique @db.Int
+  level           String?          @db.NVarChar(510)
+  candidates      Candidates       @relation(fields: [candidateId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  educationLevels EducationLevels? @relation(fields: [level], references: [name])
 
   @@map("educations")
 }
@@ -201,7 +202,7 @@ model EfpkTaTransactions {
 model EfpkJobVacancies {
   jobVacancyId  Int          @map("job_vacancy_id")
   efpkRequestNo String       @map("efpk_request_no") @db.NVarChar(255)
-  jobVacancies  JobVacancies @relation(fields: [jobVacancyId], references: [id])
+  jobVacancies  JobVacancies @relation(fields: [jobVacancyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   @@id([efpkRequestNo, jobVacancyId])
   @@map("efpk_job_vacancies")
@@ -306,7 +307,7 @@ model Users {
   password                    String                        @db.NVarChar(512)
   created_at                  DateTime?                     @default(now(), map: "DF_c9b5b525a96ddc2c5647d7f7fa5") @db.DateTime
   updated_at                  DateTime?                     @default(now(), map: "DF_6d596d799f9cb9dac6f7bf7c23c") @db.DateTime
-  candidates                  Candidates[]
+  candidates                  Candidates?
   efpkTa                      EfpkTa[]
   efpkTaTransactions          EfpkTaTransactions[]
   userRoles                   UserRoles[]
@@ -346,11 +347,12 @@ model LineIndustries {
 }
 
 model EducationLevels {
-  id        Int       @id @default(autoincrement())
-  name      String    @db.NVarChar(510)
-  prointId  Int?      @map("proint_id")
-  createdAt DateTime? @default(now()) @map("created_at") @db.DateTime
-  updatedAt DateTime? @updatedAt @map("updated_at") @db.DateTime
+  id         Int          @id @default(autoincrement())
+  name       String       @unique @db.NVarChar(510)
+  prointId   Int?         @map("proint_id")
+  createdAt  DateTime?    @default(now()) @map("created_at") @db.DateTime
+  updatedAt  DateTime?    @updatedAt @map("updated_at") @db.DateTime
+  educations Educations[]
 
   @@map("education_levels")
 }
@@ -520,14 +522,15 @@ model States {
 }
 
 model CandidateStates {
-  id           Int          @id @default(autoincrement()) @db.Int
-  candidateId  Int          @map("candidate_id") @db.Int
-  jobVacancyId Int          @map("job_vacancy_id") @db.Int
-  stateName    String       @map("state_name") @db.NVarChar(255)
-  assignedAt   DateTime     @default(now()) @map("assigned_at") @db.DateTime
-  candidates   Candidates   @relation(fields: [candidateId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  jobVacancies JobVacancies @relation(fields: [jobVacancyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  states       States       @relation(fields: [stateName], references: [name], onDelete: Cascade, onUpdate: Cascade)
+  id                        Int                        @id @default(autoincrement()) @db.Int
+  candidateId               Int                        @map("candidate_id") @db.Int
+  jobVacancyId              Int                        @map("job_vacancy_id") @db.Int
+  stateName                 String                     @map("state_name") @db.NVarChar(255)
+  assignedAt                DateTime                   @default(now()) @map("assigned_at") @db.DateTime
+  candidates                Candidates                 @relation(fields: [candidateId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  jobVacancies              JobVacancies               @relation(fields: [jobVacancyId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  states                    States                     @relation(fields: [stateName], references: [name], onDelete: Cascade, onUpdate: Cascade)
+  candidateStateAssessments CandidateStateAssessments?
 
   @@map("candidate_states")
 }
@@ -546,7 +549,7 @@ model Skills {
   name            String            @db.NVarChar(510)
   createdAt       DateTime?         @default(now()) @map("created_at") @db.DateTime
   updatedAt       DateTime?         @updatedAt @map("updated_at") @db.DateTime
-  CandidateSkills CandidateSkills[]
+  candidateSkills CandidateSkills[]
 
   @@map("skills")
 }
@@ -610,4 +613,20 @@ model JobVacancyUserCollaborators {
 
   @@id([jobVacancyId, userId])
   @@map("job_vacancy_users")
+}
+
+model CandidateStateAssessments {
+  id               Int             @id @default(autoincrement()) @db.Int
+  remoteId         Int             @unique @map("remote_id") @db.Int
+  gti              String?         @db.NVarChar(510)
+  disc             String?         @db.NVarChar(510)
+  finalResult      String          @map("final_result") @db.NVarChar(510)
+  candidateStateId Int             @unique @map("candidate_state_id") @db.Int
+  candidateStates  CandidateStates @relation(fields: [candidateStateId], references: [id])
+  startedAt        DateTime?       @map("started_at") @db.DateTime
+  finishedAt       DateTime?       @map("finished_at") @db.DateTime
+  createdAt        DateTime?       @default(now()) @map("created_at") @db.DateTime
+  updatedAt        DateTime?       @updatedAt @map("updated_at") @db.DateTime
+
+  @@map("candidate_state_assessments")
 }

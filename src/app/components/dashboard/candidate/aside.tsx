@@ -65,27 +65,27 @@ const nav_data: {
     link: '/dashboard/user/applied-jobs',
     title: 'Applied Jobs',
   },
-  {
-    id: 5,
-    icon: nav_5,
-    icon_active: nav_5_active,
-    link: '/dashboard/candidate-dashboard/job-alert',
-    title: 'Job Alert',
-  },
-  {
-    id: 6,
-    icon: nav_6,
-    icon_active: nav_6_active,
-    link: '/dashboard/candidate-dashboard/saved-job',
-    title: 'Saved Job',
-  },
-  {
-    id: 7,
-    icon: nav_7,
-    icon_active: nav_7_active,
-    link: '/dashboard/user/ss',
-    title: 'Account Settings',
-  },
+  // {
+  //   id: 5,
+  //   icon: nav_5,
+  //   icon_active: nav_5_active,
+  //   link: '/dashboard/candidate-dashboard/job-alert',
+  //   title: 'Job Alert',
+  // },
+  // {
+  //   id: 6,
+  //   icon: nav_6,
+  //   icon_active: nav_6_active,
+  //   link: '/dashboard/candidate-dashboard/saved-job',
+  //   title: 'Saved Job',
+  // },
+  // {
+  //   id: 7,
+  //   icon: nav_7,
+  //   icon_active: nav_7_active,
+  //   link: '/dashboard/user/ss',
+  //   title: 'Account Settings',
+  // },
 ];
 
 const CandidateAside = () => {
@@ -213,7 +213,7 @@ const CandidateAside = () => {
                   </li>
                 );
               })}
-              <li>
+              {/* <li>
                 <a
                   href="#"
                   className="d-flex w-100 align-items-center"
@@ -223,10 +223,10 @@ const CandidateAside = () => {
                   <Image src={nav_8} alt="icon" className="lazy-img" />
                   <span>Delete Account</span>
                 </a>
-              </li>
+              </li> */}
             </ul>
           </nav>
-          <div className="profile-complete-status">
+          {/* <div className="profile-complete-status">
             <div className="progress-value fw-500">87%</div>
             <div className="progress-line position-relative">
               <div className="inner-line" style={{ width: '80%' }}></div>
@@ -237,7 +237,7 @@ const CandidateAside = () => {
           <a href="#" className="d-flex w-100 align-items-center logout-btn">
             <Image src={logout} alt="icon" className="lazy-img" />
             <span>Logout</span>
-          </a>
+          </a> */}
         </div>
       </aside>
       {/* LogoutModal star */}
