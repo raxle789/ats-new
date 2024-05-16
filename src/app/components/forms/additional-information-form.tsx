@@ -52,11 +52,16 @@ const AdditionalInformationForm = () => {
   const [masterData, setMasterData] = useState<MasterData | null>(null);
   const [editState, setEditState] = useState(false);
   const [additionalInformation, setAdditionalInformation] = useState<any>(null);
-  
+  console.log('additionalInformation: ', additionalInformation);
+
   const fetchAdditionalInformations = async () => {
     const additionalInformationsData = await getAdditionalInformations();
-    if(!additionalInformationsData.success) return message.error(additionalInformationsData.message)
-    console.log('additional informations data:', additionalInformationsData.data);
+    if (!additionalInformationsData.success)
+      return message.error(additionalInformationsData.message);
+    console.log(
+      'additional informations data:',
+      additionalInformationsData.data,
+    );
     setAdditionalInformation(additionalInformationsData.data);
   };
 
@@ -315,17 +320,53 @@ const AdditionalInformationForm = () => {
     }
   };
 
+  const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
+
+  useEffect(() => {
+    let everWorkedAnswer: string;
+    let medicalCondition: string;
+    let colleagueName: string;
+    if (additionalInformation) {
+      if (additionalInformation?.candidate_questions[1]?.answer === ',') {
+        everWorkedAnswer = 'No';
+      } else {
+        everWorkedAnswer = 'Yes';
+      }
+
+      if (additionalInformation?.candidate_questions[2]?.answer === ',') {
+        medicalCondition = 'No';
+      } else {
+        medicalCondition = 'Yes';
+      }
+
+      if (additionalInformation?.candidate_questions[3]?.answer === ',') {
+        colleagueName = 'No';
+      } else {
+        colleagueName = 'Yes';
+      }
+    }
+
+    setInitFieldsValue((prevState) => ({
+      ...prevState,
+      everWorkedOption: everWorkedAnswer,
+      diseaseOption: medicalCondition,
+      relationOption: colleagueName,
+      others: {
+        emergencyContactName: additionalInformation?.emergency_contacts?.name,
+        emergencyContactPhoneNumber:
+          additionalInformation?.emergency_contacs?.phoneNumber,
+        emergencyContactRelation:
+          additionalInformation?.emergency_contacs?.relationStatus,
+        noticePeriod: additionalInformation?.candidate_questions[0]?.answer,
+      },
+    }));
+    console.log('initFieldsValue: ', initFieldsValue);
+    form.setFieldsValue(initFieldsValue);
+  }, [additionalInformation]);
+
   useEffect(() => {
     setIndex((prevState) => prevState + 1);
   }, []);
-
-  // useEffect(() => {
-  //   if (families.length > 1) {
-  //     families.forEach((val) => {
-  //       add();
-  //     });
-  //   }
-  // }, [families]);
   return (
     <>
       <div>

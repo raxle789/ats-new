@@ -2,10 +2,11 @@
 
 import { useRouter } from 'next/navigation';
 import { createCandidate, createUser } from '@/libs/Registration';
-import { Input, Form, DatePicker, Spin } from 'antd';
+import { Input, Form, DatePicker, Spin, message } from 'antd';
 import type { DatePickerProps, FormProps } from 'antd';
 import { useState } from 'react';
 import { sendOTP } from '@/libs/Registration/verifications';
+import { CANDIDATE, REGISTER } from '@/libs/validations/Register';
 
 type FieldType = {
   fullname?: string;
@@ -35,25 +36,46 @@ const RegisterForm = () => {
       fullname: values.fullname,
       email: values.email,
       password: values.password,
+      confirm_password: values.confirmPassword
     };
-    const userStore = await createUser(userData);
-    if (userStore.success !== true) {
-      setErrors(userStore.message);
-    }
-    console.info('create user success, next...', userStore);
+    const validateUser = REGISTER.safeParse(userData);
+    if(!validateUser.success) {
+      const validationError = validateUser.error.flatten().fieldErrors;
+      console.log('field error:', validationError);
+      for(const [key, value] of Object.entries(validationError)) {
+        message.error(`field ${key}: ${value}`);
+      };
+      return setSpinning(false);
+    };
     const candidateData = {
       phoneNumber: values.phoneNumber,
-      dateOfBirth: values.dateOfBirth,
+      dateOfBirth: new Date(values.dateOfBirth),
     };
+    const validateAge = CANDIDATE.safeParse(candidateData);
+    if(!validateAge.success) {
+      const validationError = validateAge.error.flatten().fieldErrors;
+      console.info(validationError)
+      setSpinning(false);
+      return message.error(validationError?.dateOfBirth?.toString());
+    };
+    const userStore = await createUser(userData, candidateData.phoneNumber);
+    console.log(userStore);
+    if (userStore.success !== true) {
+      setSpinning(false);
+      return message.error(userStore?.message?.saveUser.toString());
+    };
+    console.info('create user success, next...', userStore);
     const candidateStore = await createCandidate(candidateData);
     if (candidateStore.success !== true) {
-      setErrors(candidateStore.message);
-    }
+      setSpinning(false)
+      return setErrors(candidateStore.message);
+    };
     console.info('create candidate successfully', candidateStore);
     /* Send OTP */
     const sendMailOTP = await sendOTP({ email: userData.email as string });
     console.info('Result sending OTP number...', sendOTP);
     if (sendMailOTP.success !== true) {
+      setSpinning(false);
       return {
         success: false,
         message: 'Failed to send OTP to email!',
