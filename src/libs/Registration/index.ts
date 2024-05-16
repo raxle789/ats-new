@@ -607,7 +607,7 @@ export async function storeExperiences(formData: any, isExperienced: string) {
         line_industry: value.lineIndustry,
         job_level: value.positionLevel,
         company_name: value.compName,
-        job_description: value.jobDesc,
+        job_description: value.jobDesc ?? '',
         salary: value.currentSalary,
         start_at: value.startYear,
         end_at: value.endYear,

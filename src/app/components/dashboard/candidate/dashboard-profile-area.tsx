@@ -1,5 +1,6 @@
 'use client';
-import React, { useState } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { Tabs } from 'antd';
 import type { TabsProps } from 'antd';
 import PersonalDataForm from '../../forms/personal-data-form';
@@ -7,6 +8,10 @@ import BackgroundExperienceForm from '../../forms/background-experience-form';
 import DocumentForm from '../../forms/doc-form';
 import EducationSkillsForm from '../../forms/education-skills-form';
 import AdditionalInformationForm from '../../forms/additional-information-form';
+/* PDF Reader */
+import { Document, Page, pdfjs } from 'react-pdf';
+import { View } from 'typeorm';
+import { latestCV } from '@/libs/Candidate/retrieve-data';
 
 const DashboardProfileArea = () => {
   const [keyState, setKeyState] = useState('1');
@@ -37,9 +42,32 @@ const DashboardProfileArea = () => {
       label: 'Documents',
     },
   ];
+
+  const [pdf, setPDF] = useState<string>('');
+  console.log('pdfbase64: ', pdf);
+  const gettingCV = async () => {
+    const cv = await latestCV();
+    if(cv) {
+      return setPDF(cv);
+    };
+  };
+
+  useEffect(() => {
+    pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+      'pdfjs-dist/build/pdf.worker.min.js',
+      import.meta.url
+    ).toString();
+
+    // gettingCV();
+  }, []);
+
   return (
     <>
       <h2 className="main-title">My Profile</h2>
+      <Document>
+        <Page>
+        </Page>
+      </Document>
 
       <div className="bg-white card-box border-20">
         <Tabs defaultActiveKey="1" items={items} onChange={onChange} />

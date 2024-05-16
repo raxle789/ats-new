@@ -68,17 +68,17 @@ export async function getProfileNCandidate() {
     });
     await prisma.$disconnect();
     // console.info('PROFILE PROFILE', profileData);
-    // const { file_base, ...rest } = profileData;
-    const documentPhotoProfile = profileData?.file_base.toString();
-    const profile = {
-      ...profileData?.candidate,
-      saved_name: profileData?.saved_name
-    };
+    const { file_base, ...rest } = profileData;
+    // const documentPhotoProfile = profileData?.file_base.toString();
+    // const profile = {
+    //   ...profileData?.candidate,
+    //   saved_name: profileData?.saved_name
+    // };
     return {
       success: true,
       data: {
-        document: documentPhotoProfile,
-        profile: profile
+        document: file_base.toString(),
+        profile: rest
       },
     };
   } catch (error) {
@@ -462,3 +462,21 @@ export async function getAdditionalInformations() {
     }
   };
 };
+
+/* DISPLAY DOCUMENT EXAMPLE */
+export async function latestCV() {
+  try {
+    const document = await prisma.documents.findFirst({
+      where: {
+        candidate_id: 2
+      },
+      select: {
+        file_base: true
+      }
+    });
+    return document?.file_base.toString();
+  } catch (error) {
+    console.info('error pdf');
+    return '';
+  }
+}

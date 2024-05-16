@@ -38,7 +38,8 @@ const RegisterForm = () => {
     };
     const userStore = await createUser(userData);
     if (userStore.success !== true) {
-      setErrors(userStore.message);
+      setSpinning(false);
+      return setErrors(userStore.message);
     }
     console.info('create user success, next...', userStore);
     const candidateData = {
@@ -47,13 +48,15 @@ const RegisterForm = () => {
     };
     const candidateStore = await createCandidate(candidateData);
     if (candidateStore.success !== true) {
-      setErrors(candidateStore.message);
+      setSpinning(false)
+      return setErrors(candidateStore.message);
     }
     console.info('create candidate successfully', candidateStore);
     /* Send OTP */
     const sendMailOTP = await sendOTP({ email: userData.email as string });
     console.info('Result sending OTP number...', sendOTP);
     if (sendMailOTP.success !== true) {
+      setSpinning(false);
       return {
         success: false,
         message: 'Failed to send OTP to email!',

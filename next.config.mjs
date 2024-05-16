@@ -32,11 +32,14 @@ const nextConfig = {
         ]
     },
     webpack(config) {
-    config.ignoreWarnings = [{
-      module: /typeorm/,
-      message: /Module not found|dependency is an expression/,
-    }];
-    return config;
+        // react-pdf configuration
+        config.resolve.alias.canvas = false;
+
+        config.ignoreWarnings = [{
+            module: /typeorm/,
+            message: /Module not found|dependency is an expression/,
+        }];
+        return config;
   }
 };
 
