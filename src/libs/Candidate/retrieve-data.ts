@@ -469,10 +469,11 @@ export async function getEducationNSkills() {
         skills: { name: string };
       }[],
     );
-    console.log(
-      'education.skill.certification data: ',
-      candidateEducationsAndSkills,
-    );
+    // console.log('TRANFORMED: ', transformedSkills);
+    // console.log(
+    //   'education.skill.certification data: ',
+    //   candidateEducationsAndSkills,
+    // );
     return {
       success: true,
       data: {

@@ -16,7 +16,7 @@ import type { FormProps, CheckboxProps, InputRef } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { getEducationNSkills } from '@/libs/Candidate/retrieve-data';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 let languageIndex = 0;
@@ -31,8 +31,8 @@ type FieldType = {
     schoolName?: string;
     gpa?: number;
     cityOfSchool?: string;
-    startEduYear?: string;
-    endEduYear?: string;
+    startEduYear?: string | Dayjs;
+    endEduYear?: string | Dayjs;
   };
   certification?: {
     [id: string]: {
@@ -189,115 +189,126 @@ const EducationSkillsForm = () => {
   };
 
   const [certificationIdx, setCertificationIdx] = useState<number>(0);
-  const certifTabContent: JSX.Element[] = [
-    <div key={certificationIdx} className="row">
-      <div className="col-12">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Name (Certification/Licence)</label>
-          <Form.Item<FieldType>
-            name={[
-              'certification',
-              certificationIdx.toString(),
-              'certificationName',
-            ]}
-            className="mb-0"
-          >
-            <Select
-              className="w-100"
-              placeholder="Your Certificate Name"
-              showSearch
-              mode="tags"
-              maxCount={1}
-              filterOption={(input, option) =>
-                (option?.label.toLowerCase() ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              /* Fetched Data */
-              options={masterData?.certificates_name}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Institution</label>
-          <Form.Item<FieldType>
-            name={['certification', certificationIdx.toString(), 'institution']}
-            className="mb-0"
-          >
-            <Input placeholder="Your Institution" />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Issue Date</label>
-          <div className="d-flex align-items-center">
+
+  type Tprops1 = {
+    certificationIdx: number;
+  };
+
+  const CertifTabContent: React.FC<Tprops1> = ({ certificationIdx }) => {
+    return (
+      <div key={certificationIdx} className="row">
+        <div className="col-12">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Name (Certification/Licence)</label>
             <Form.Item<FieldType>
               name={[
                 'certification',
                 certificationIdx.toString(),
-                'monthIssue',
+                'certificationName',
               ]}
-              className="mb-0 me-2"
-            >
-              <DatePicker placeholder="Select Month" picker="month" />
-            </Form.Item>
-            <Form.Item<FieldType>
-              name={['certification', certificationIdx.toString(), 'yearIssue']}
               className="mb-0"
             >
-              <DatePicker placeholder="Select Year" picker="year" />
+              <Select
+                className="w-100"
+                placeholder="Your Certificate Name"
+                showSearch
+                mode="tags"
+                maxCount={1}
+                filterOption={(input, option) =>
+                  (option?.label.toLowerCase() ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                /* Fetched Data */
+                options={masterData?.certificates_name}
+              />
             </Form.Item>
           </div>
         </div>
-      </div>
-    </div>,
-  ];
-  const displayedTabContent: JSX.Element[] = [
-    <div key={certificationIdx} className="row">
-      <div className="col-12">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Name (Certification/Licence)</label>
-          <p className="mb-0">nama sertifikat</p>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Institution</label>
+            <Form.Item<FieldType>
+              name={[
+                'certification',
+                certificationIdx.toString(),
+                'institution',
+              ]}
+              className="mb-0"
+            >
+              <Input placeholder="Your Institution" />
+            </Form.Item>
+          </div>
         </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Institution</label>
-          <p className="mb-0">Universitas ga jelas</p>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Issue Date</label>
-          <div className="d-flex align-items-center">
-            <p className="mb-0">tanggal mulai</p>
-            <p className="mb-0 ms-2">tanggal habis</p>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Issue Date</label>
+            <div className="d-flex align-items-center">
+              <Form.Item<FieldType>
+                name={[
+                  'certification',
+                  certificationIdx.toString(),
+                  'monthIssue',
+                ]}
+                className="mb-0 me-2"
+              >
+                <DatePicker placeholder="Select Month" picker="month" />
+              </Form.Item>
+              <Form.Item<FieldType>
+                name={[
+                  'certification',
+                  certificationIdx.toString(),
+                  'yearIssue',
+                ]}
+                className="mb-0"
+              >
+                <DatePicker placeholder="Select Year" picker="year" />
+              </Form.Item>
+            </div>
           </div>
         </div>
       </div>
-    </div>,
-  ];
+    );
+  };
 
-  const certifInitItems = [
-    { label: 'Certification 1', children: certifTabContent, key: '1' },
-  ];
-  const certifDisplayedInit = [
-    {
-      label: 'Certification 1',
-      children: displayedTabContent,
-      key: '1',
-      closable: false,
-    },
-  ];
-  const [activeCertifKey, setActiveCertifKey] = useState(
-    certifInitItems[0].key,
-  );
+  type Tprops2 = {
+    certificationIdx: number;
+  };
+
+  const DisplayedTabContent: React.FC<Tprops2> = ({ certificationIdx }) => {
+    return (
+      <div key={certificationIdx} className="row">
+        <div className="col-12">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Name (Certification/Licence)</label>
+            <p className="mb-0">nama sertifikat</p>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Institution</label>
+            <p className="mb-0">Universitas ga jelas</p>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Issue Date</label>
+            <div className="d-flex align-items-center">
+              <p className="mb-0">tanggal mulai</p>
+              <p className="mb-0 ms-2">tanggal habis</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const certifInitItems: any[] = [];
+  const certifDisplayedInit: any[] = [];
+  const [activeCertifKey, setActiveCertifKey] = useState('');
   const [certifItems, setCertifItems] = useState(certifInitItems);
   const [displayedItems, setDisplayedItems] = useState(certifDisplayedInit);
   const newCertifTabIndex = useRef(0);
@@ -311,14 +322,14 @@ const EducationSkillsForm = () => {
     const newPanes = [...certifItems];
     newPanes.push({
       label: `Certification ${certifItems.length + 1}`,
-      children: certifTabContent,
+      children: <CertifTabContent certificationIdx={certificationIdx} />,
       key: newActiveKey,
     });
 
     const newDisplayed = [...displayedItems];
     newDisplayed.push({
       label: `Certification ${certifItems.length + 1}`,
-      children: displayedTabContent,
+      children: <DisplayedTabContent certificationIdx={certificationIdx} />,
       key: newActiveKey,
       closable: false,
     });
@@ -422,8 +433,37 @@ const EducationSkillsForm = () => {
     }
   };
 
+  const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
+
   useEffect(() => {
-    form.setFieldsValue({
+    const skillsArray = educationAndSkill?.skills;
+    let skillsString: string;
+    if (skillsArray) {
+      skillsString = skillsArray.join('\n');
+    }
+
+    const languagesData = educationAndSkill?.languages;
+    type LanguageField = {
+      language: {
+        [key: string]: { name: string; level: string };
+      };
+    };
+    let languageField: LanguageField = {
+      language: {},
+    };
+    if (languagesData) {
+      languageField.language = languagesData.reduce(
+        (acc: any, language: any, index: number) => {
+          acc[index] = language;
+          return acc;
+        },
+        {},
+      );
+      setLangTotal(languagesData.length);
+    }
+
+    setInitFieldsValue((prevState) => ({
+      ...prevState,
       // formalOption?: string;
       // formalCheckbox?: boolean;
       // certificationCheckbox?: boolean;
@@ -433,14 +473,22 @@ const EducationSkillsForm = () => {
         schoolName: educationAndSkill?.educations?.university_name,
         gpa: educationAndSkill?.educations?.gpa,
         cityOfSchool: educationAndSkill?.educations?.cityOfSchool,
-        startEduYear: dayjs(educationAndSkill?.educations?.start_year).format(
-          'YYYY',
+        startEduYear: dayjs(
+          new Date(educationAndSkill?.educations?.start_year, 0),
         ),
-        endEduYear: dayjs(educationAndSkill?.educations?.end_year).format(
-          'YYYY',
-        ),
+        endEduYear: dayjs(new Date(educationAndSkill?.educations?.end_year, 0)),
       },
-    });
+      skills: skillsString,
+      language: languageField.language,
+    }));
+
+    if (educationAndSkill) {
+      addCertif();
+    }
+
+    console.log('initFieldsValue: ', initFieldsValue);
+
+    form.setFieldsValue(initFieldsValue);
   }, [educationAndSkill]);
 
   useEffect(() => {
@@ -489,7 +537,11 @@ const EducationSkillsForm = () => {
                       options={masterData?.education_levels}
                     />
                   )}
-                  {!editState && <p className="mb-0">S1</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {educationAndSkill?.educations?.level}
+                    </p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -528,7 +580,11 @@ const EducationSkillsForm = () => {
                       options={masterData?.education_majors}
                     />
                   )}
-                  {!editState && <p className="mb-0">Teknik Informatika</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {educationAndSkill?.educations?.major}
+                    </p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -553,7 +609,11 @@ const EducationSkillsForm = () => {
                       disabled={!editState}
                     />
                   )}
-                  {!editState && <p className="mb-0">2020</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {educationAndSkill?.educations?.start_year}
+                    </p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -578,7 +638,11 @@ const EducationSkillsForm = () => {
                       disabled={!editState}
                     />
                   )}
-                  {!editState && <p className="mb-0">2024</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {educationAndSkill?.educations?.end_year}
+                    </p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -617,7 +681,11 @@ const EducationSkillsForm = () => {
                       options={masterData?.education_institutions}
                     />
                   )}
-                  {!editState && <p className="mb-0">Universitas Ga Jelas</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {educationAndSkill?.educations?.university_name}
+                    </p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -652,7 +720,11 @@ const EducationSkillsForm = () => {
                       options={masterData?.citys}
                     />
                   )}
-                  {!editState && <p className="mb-0">Jakarta City</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {educationAndSkill?.educations?.cityOfSchool}
+                    </p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -679,7 +751,9 @@ const EducationSkillsForm = () => {
                       placeholder="Your GPA"
                     />
                   )}
-                  {!editState && <p className="mb-0">3.77</p>}
+                  {!editState && (
+                    <p className="mb-0">{educationAndSkill?.educations?.gpa}</p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -739,7 +813,7 @@ const EducationSkillsForm = () => {
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">bisa mengoperasikan forklift</p>
+                    <p className="mb-0">{initFieldsValue?.skills}</p>
                   )}
                 </Form.Item>
               </div>
@@ -801,8 +875,12 @@ const EducationSkillsForm = () => {
                         )}
                         {!editState && (
                           <>
-                            <p className="mb-0">English</p>
-                            <p className="mb-0">Mandarin</p>
+                            <p className="mb-0">
+                              {initFieldsValue &&
+                                initFieldsValue.language &&
+                                initFieldsValue.language[index.toString()]
+                                  ?.name}
+                            </p>
                           </>
                         )}
                       </Form.Item>
@@ -851,8 +929,12 @@ const EducationSkillsForm = () => {
                         )}
                         {!editState && (
                           <>
-                            <p className="mb-0">Limited working proficiency</p>
-                            <p className="mb-0">Limited working proficiency</p>
+                            <p className="mb-0">
+                              {initFieldsValue &&
+                                initFieldsValue.language &&
+                                initFieldsValue.language[index.toString()]
+                                  ?.level}
+                            </p>
                           </>
                         )}
                       </Form.Item>
