@@ -536,4 +536,31 @@ export async function getAdditionalInformations() {
       message: 'error getting additional information!',
     };
   }
-}
+};
+
+export async function getOnePDF() {
+  try {
+    const pdf = await prisma.documents.findFirst({
+      where: {
+        id: 17
+      },
+      select: {
+        file_base: true
+      }
+    });
+    await prisma.$disconnect();
+    console.log('base64: ', pdf);
+    return {
+      success: true,
+      data: pdf?.file_base.toString(),
+      message: 'success getting pdf'
+    };
+  } catch (error) {
+    console.log('error getting pdf:', error);
+    return {
+      success: false,
+      data: null,
+      message: 'Failed to get PDF'
+    };
+  };
+};

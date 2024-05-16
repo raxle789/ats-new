@@ -1170,13 +1170,12 @@ const Stage3Form = () => {
   const [spinning, setSpinning] = useState(false);
 
   const handleOk = async () => {
-    // const values = form.getFieldsValue();
-    // console.log('submitted values: ', values);
-    // console.info('is a string?:', typeof values.certificationCheckbox);
+
     setIsModalOpen(false);
-    setSpinning(true);
+    // setSpinning(true);
     const values = form.getFieldsValue();
     console.log('ok value form: ', values);
+    console.info('is a string?:', typeof values.certificationCheckbox);
     console.log('Manipulating profile-photo file...');
     const photoBase64 = await fileToBase64(profilePhoto[0].originFileObj);
     const photoFile = {
@@ -1189,6 +1188,7 @@ const Stage3Form = () => {
     const saveProfilePhoto = await storeProfilePhoto(photoFile);
     if (saveProfilePhoto.success !== true) {
       console.info('Failed to store profile photo...');
+      // setSpinning(false);
       return setErrors(saveProfilePhoto.message as string);
     }
     console.info('Storing profile-phhoto successfully...', saveProfilePhoto);
@@ -1206,6 +1206,7 @@ const Stage3Form = () => {
     const updateCandidateData = await updateCandidate(candidateUpdateData);
     if (updateCandidateData.success !== true) {
       console.info(updateCandidateData.message as string);
+      // setSpinning(false);
       return setErrors(updateCandidateData.message as string);
     }
     console.log('Updating candidate-data successfully...', updateCandidateData);
@@ -1240,6 +1241,7 @@ const Stage3Form = () => {
     );
     if (storeAddress.success !== true) {
       console.info(storeAddress.message as string);
+      // setSpinning(false);
       return setErrors(storeAddress.message as string);
     }
     console.info('Storing address data successfully...', storeAddress);
@@ -1249,6 +1251,7 @@ const Stage3Form = () => {
     const storeRelations = await storeFamilys(plainFamiliesObject);
     if (storeRelations.success !== true) {
       console.info(storeRelations.message as string);
+      // setSpinning(false);
       return setErrors(storeRelations.message as string);
     }
     console.info('Storing relations successfully...', storeRelations);
@@ -1265,6 +1268,7 @@ const Stage3Form = () => {
     );
     if (storeEducationData.success !== true) {
       console.info(storeEducationData.message as string);
+      // setSpinning(false);
       return setErrors(storeEducationData.message as string);
     }
     console.info('Store education data successfully...', storeEducationData);
@@ -1276,6 +1280,8 @@ const Stage3Form = () => {
       values.certification['1'].certificationName !== undefined
     ) {
       const plainCertificatesData = convertToPlainObject(values.certification);
+      console.info('Plain Certification: ', plainCertificatesData);
+      // debugger;
       const storeCertificatesData = await storeCertification(
         plainCertificatesData,
         values.certification['1']['monthIssue']['$M'],
@@ -1293,6 +1299,7 @@ const Stage3Form = () => {
     const storeSkillsData = await storeSkills(values.skills);
     if (storeSkillsData.success !== true) {
       console.info(storeSkillsData.message as string);
+      // setSpinning(false);
       return setErrors(storeSkillsData.message as string);
     }
     console.info('Store skills successfully...', storeSkillsData);
@@ -1304,6 +1311,7 @@ const Stage3Form = () => {
     const storeLanguageData = await storeLanguage(plainLanguagesData);
     if (storeLanguageData.success !== true) {
       console.info(storeLanguageData.message as string);
+      // setSpinning(false);
       return setErrors(storeLanguageData.message as string);
     }
     console.info('Storing language data successfully...', storeLanguageData);
@@ -1318,6 +1326,7 @@ const Stage3Form = () => {
     );
     if (storeExperienceData?.success !== true) {
       console.info(storeExperienceData.message as string);
+      // setSpinning(false);
       return setErrors(storeExperienceData.message as string);
     }
     console.info(
@@ -1340,6 +1349,7 @@ const Stage3Form = () => {
     );
     if (storeEmergencyContactData.success !== true) {
       console.info(storeEmergencyContactData.message as string);
+      // setSpinning(false);
       return setErrors(storeEmergencyContactData.message as string);
     }
     console.info(
@@ -1364,6 +1374,7 @@ const Stage3Form = () => {
     );
     if (storeCandidateQuestionsData.success !== true) {
       console.info(storeCandidateQuestionsData.message as string);
+      // setSpinning(false);
       return setErrors(storeCandidateQuestionsData.message as string);
     }
     console.info(
@@ -1383,6 +1394,7 @@ const Stage3Form = () => {
     const storeCV = await storeCurriculumVitae(manipulatedCurriculumVitae);
     if (storeCV.success !== true) {
       console.info(storeCV.message as string);
+      // setSpinning(false);
       return setErrors(storeCV.message as string);
     }
     console.info('Store cv document successfully', storeCV);
@@ -1395,7 +1407,7 @@ const Stage3Form = () => {
 
     dispatch(setRegisterStep(4));
     setTimeout(() => {
-      setSpinning(false);
+      // setSpinning(false);
     }, 1000);
     message.success('Your data successfully saved');
   };

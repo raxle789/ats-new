@@ -35,6 +35,7 @@ import {
   getEmergency,
   getFamilies,
   getLanguages,
+  getOnePDF,
   getProfileNCandidate,
   getQuestions,
   getSkills,
@@ -42,6 +43,7 @@ import {
 import dayjs from 'dayjs';
 import { convertToPlainObject, fileToBase64 } from '@/libs/Registration/utils';
 import { updateCandidateProfile } from '@/libs/Candidate/actions';
+import { Document, Page } from 'react-pdf';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
@@ -232,9 +234,26 @@ const PersonalDataForm = () => {
     }));
   };
 
+  
+  const [pdf, setPDF] = useState<string | File>('');
+  console.log('pdfbase64: ', pdf);
+
+  const fetchCVDocument = async () => {
+    const cv = await getOnePDF();
+    console.log('getting cv: ', cv);
+    if(cv) {
+      const pdfFile = await fetch(cv.data as string);
+      const blobFile = await pdfFile.blob();
+      const newFile = new File([blobFile], "pdf-cv", { type: "application/pdf" });
+      console.info('NEW FILE: ', newFile);
+      return setPDF(cv.data as string);
+    };
+  };
+
   useEffect(() => {
     fetchProfileData();
     fetchAddress();
+    // fetchCVDocument();
     // fetchFamilies();
     // fetchEducation();
     // fetchSkills();
@@ -405,6 +424,10 @@ const PersonalDataForm = () => {
   }, [profileData, addresses, families, education, skills]);
   return (
     <>
+      {/* <Document file={pdf}>
+        <Page>
+        </Page>
+      </Document> */}
       <div>
         <div className="mb-25">
           <button
