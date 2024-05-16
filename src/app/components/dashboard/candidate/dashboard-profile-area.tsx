@@ -11,7 +11,7 @@ import AdditionalInformationForm from '../../forms/additional-information-form';
 /* PDF Reader */
 import { Document, Page, pdfjs } from 'react-pdf';
 import { View } from 'typeorm';
-import { latestCV } from '@/libs/Candidate/retrieve-data';
+import { getOnePDF } from '@/libs/Candidate/retrieve-data';
 
 const DashboardProfileArea = () => {
   const [keyState, setKeyState] = useState('1');
@@ -43,31 +43,18 @@ const DashboardProfileArea = () => {
     },
   ];
 
-  const [pdf, setPDF] = useState<string>('');
-  console.log('pdfbase64: ', pdf);
-  const gettingCV = async () => {
-    const cv = await latestCV();
-    if(cv) {
-      return setPDF(cv);
-    };
-  };
-
   useEffect(() => {
     pdfjs.GlobalWorkerOptions.workerSrc = new URL(
       'pdfjs-dist/build/pdf.worker.min.js',
       import.meta.url
     ).toString();
 
-    // gettingCV();
+    // fetchCVDocument();
   }, []);
 
   return (
     <>
       <h2 className="main-title">My Profile</h2>
-      <Document>
-        <Page>
-        </Page>
-      </Document>
 
       <div className="bg-white card-box border-20">
         <Tabs defaultActiveKey="1" items={items} onChange={onChange} />

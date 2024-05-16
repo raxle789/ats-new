@@ -17,10 +17,38 @@ import { create } from 'domain';
  * @param formData Object that contains fields of user's table.
  * @returns {object} Property "success" always true if operation was successful. Property "data" contains object of user-session value.
  */
-export async function createUser(formData: any) {
+export async function createUser(formData: any, phoneNumber: any) {
   /* bycrypt hash with 10 salt-round */
   const hash = await bcrypt.hash(formData.password, 10);
   /* storing user-data */
+  const checkEmail = await prisma.users.findUnique({
+    where: {
+      email: formData.email
+    }
+  });
+  console.log('is email exist: ', checkEmail);
+  if(checkEmail !== null) {
+    return {
+      success: false,
+      message: {
+        saveUser: ['Email already exists, please use another email']
+      }
+    };
+  };
+  const checkPhoneNumber = await prisma.candidates.findUnique({
+    where: {
+      phone_number: phoneNumber
+    }
+  });
+  console.log('is number exist: ', checkPhoneNumber);
+  if(checkPhoneNumber !== null) {
+    return {
+      success: false,
+      message: {
+        saveUser: ['Phone number already exists, please use another number']
+      }
+    };
+  };
   const user = await prisma.users.create({
     data: {
       name: formData.fullname,
@@ -450,10 +478,12 @@ export async function storeCertification(
      */
     /* Transform to array of object */
     const certificationList = transformToArrayOfObject(formData);
+    // console.info('transformed certification: ', certificationList);
     /* CHECK HERE */
     console.info('List of certification:', certificationList);
     let manipulatedCertifications: any[] = [];
     certificationList.forEach((value) => {
+      console.info('value inside looping', value);
       const certification = {
         candidateId: regSession.candidate.id,
         certificateId: Number(value.certificationName[0]),
