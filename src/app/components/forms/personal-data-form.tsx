@@ -129,10 +129,12 @@ const PersonalDataForm = () => {
   const [emergency, setEmergency] = useState<any>({});
   const [questions, setQuestions] = useState<any>({});
   const [error, setError] = useState<string>('');
+  console.info('Profile Data: ', profileData);
 
   const fetchProfileData = async () => {
     const profileData = await getProfileNCandidate();
-    if (!profileData.success) return message.error(profileData.message as string);
+    if (!profileData.success)
+      return message.error(profileData.message as string);
     setPreviewImage(profileData.data?.document);
     return setProfileData(profileData.data?.profile);
   };
@@ -292,7 +294,7 @@ const PersonalDataForm = () => {
     setAddressCheck(e.target.checked);
   };
 
-  const handleSubmit: FormProps<FieldType>['onFinish'] =  async (values) => {
+  const handleSubmit: FormProps<FieldType>['onFinish'] = async (values) => {
     if (editState) {
       // jalankan simpan data
       console.log('submitted values: ', values);
@@ -301,24 +303,26 @@ const PersonalDataForm = () => {
       const plainValues = convertToPlainObject(values);
       const manipulatedSubmittedValues = {
         address: {
-          ...plainValues.address
+          ...plainValues.address,
         },
         profile: {
           ...plainValues.profile,
           uploadPhoto: {
             original_name: fileList[0].originFileObj?.name,
             byte_size: fileList[0].originFileObj?.size,
-            file_base: photoBase64
-          }
-        }
+            file_base: photoBase64,
+          },
+        },
       };
-      const updateProfile = await updateCandidateProfile(manipulatedSubmittedValues);
-      if(!updateProfile.success) {
+      const updateProfile = await updateCandidateProfile(
+        manipulatedSubmittedValues,
+      );
+      if (!updateProfile.success) {
         return message.error(updateProfile.message);
-      };
+      }
       setEditState(false);
       return message.success(updateProfile.message);
-    };
+    }
   };
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
@@ -329,7 +333,7 @@ const PersonalDataForm = () => {
         .map((field) => field.errors.join(', '))
         .join('; ');
       message.error(`Failed: ${errorMessage}`);
-    };
+    }
   };
   useEffect(() => {
     form.setFieldsValue({
@@ -502,7 +506,9 @@ const PersonalDataForm = () => {
                       // value={regSessionDecoded.user?.name ?? ''}
                     />
                   )}
-                  {!editState && <p className="mb-0">{profileData.candidate?.users?.name}</p>}
+                  {!editState && (
+                    <p className="mb-0">{profileData.candidate?.users?.name}</p>
+                  )}
                 </Form.Item>
               </div>
               <div className="input-group-meta position-relative mb-0">
@@ -519,7 +525,11 @@ const PersonalDataForm = () => {
                       // defaultValue={regSessionDecoded.user?.email ?? ''}
                     />
                   )}
-                  {!editState && <p className="mb-0">{profileData.candidate?.users?.email}</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {profileData.candidate?.users?.email}
+                    </p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -542,7 +552,11 @@ const PersonalDataForm = () => {
                       // defaultValue={regSessionDecoded.candidate?.phone_number ?? ''}
                     />
                   )}
-                  {!editState && <p className="mb-0">{profileData.candidate?.phone_number}</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {profileData.candidate?.phone_number}
+                    </p>
+                  )}
                 </Form.Item>
               </div>
               <div className="input-group-meta position-relative mb-0">
@@ -566,7 +580,13 @@ const PersonalDataForm = () => {
                       disabled={!editState}
                     />
                   )}
-                  {!editState && <p className="mb-0">{dayjs(profileData.candidate?.date_of_birth).format('YYYY-MM-DD')}</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {dayjs(profileData.candidate?.date_of_birth).format(
+                        'YYYY-MM-DD',
+                      )}
+                    </p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -603,7 +623,9 @@ const PersonalDataForm = () => {
                       options={masterData?.citys}
                     />
                   )}
-                  {!editState && <p className="mb-0">{profileData.candidate?.birthCity}</p>}
+                  {!editState && (
+                    <p className="mb-0">{profileData.candidate?.birthCity}</p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -631,7 +653,9 @@ const PersonalDataForm = () => {
                       disabled={!editState}
                     />
                   )}
-                  {!editState && <p className="mb-0">{profileData.candidate?.gender}</p>}
+                  {!editState && (
+                    <p className="mb-0">{profileData.candidate?.gender}</p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -691,7 +715,9 @@ const PersonalDataForm = () => {
                       ]}
                     />
                   )}
-                  {!editState && <p className="mb-0">{profileData.candidate?.religion}</p>}
+                  {!editState && (
+                    <p className="mb-0">{profileData.candidate?.religion}</p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -727,7 +753,9 @@ const PersonalDataForm = () => {
                       options={masterData?.ethnicity}
                     />
                   )}
-                  {!editState && <p className="mb-0">{profileData.candidate?.ethnicity}</p>}
+                  {!editState && (
+                    <p className="mb-0">{profileData.candidate?.ethnicity}</p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -751,7 +779,9 @@ const PersonalDataForm = () => {
                       disabled={!editState}
                     />
                   )}
-                  {!editState && <p className="mb-0">{profileData.candidate?.blood_type}</p>}
+                  {!editState && (
+                    <p className="mb-0">{profileData.candidate?.blood_type}</p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -804,7 +834,11 @@ const PersonalDataForm = () => {
                       ]}
                     />
                   )}
-                  {!editState && <p className="mb-0">{profileData.candidate?.maritalStatus}</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {profileData.candidate?.maritalStatus}
+                    </p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -831,9 +865,7 @@ const PersonalDataForm = () => {
                       disabled={!editState}
                     />
                   )}
-                  {!editState && (
-                    <p className="mb-0">{addresses[0]?.street}</p>
-                  )}
+                  {!editState && <p className="mb-0">{addresses[0]?.street}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -870,7 +902,9 @@ const PersonalDataForm = () => {
                       options={masterData?.countrys}
                     />
                   )}
-                  {!editState && <p className="mb-0">{addresses[0]?.country}</p>}
+                  {!editState && (
+                    <p className="mb-0">{addresses[0]?.country}</p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -926,7 +960,9 @@ const PersonalDataForm = () => {
                   {editState && (
                     <Input placeholder="Your Zip Code" disabled={!editState} />
                   )}
-                  {!editState && <p className="mb-0">{addresses[0]?.zipCode}</p>}
+                  {!editState && (
+                    <p className="mb-0">{addresses[0]?.zipCode}</p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -944,7 +980,12 @@ const PersonalDataForm = () => {
                   // ]}
                 >
                   {editState && (
-                    <Input placeholder="Your RT" disabled={!editState || addresses[0]?.country !== 'Indonesia'} />
+                    <Input
+                      placeholder="Your RT"
+                      disabled={
+                        !editState || addresses[0]?.country !== 'Indonesia'
+                      }
+                    />
                   )}
                   {!editState && <p className="mb-0">{addresses[0]?.rt}</p>}
                 </Form.Item>
@@ -964,7 +1005,12 @@ const PersonalDataForm = () => {
                   // ]}
                 >
                   {editState && (
-                    <Input placeholder="Your RW" disabled={!editState || addresses[0]?.country !== 'Indonesia'} />
+                    <Input
+                      placeholder="Your RW"
+                      disabled={
+                        !editState || addresses[0]?.country !== 'Indonesia'
+                      }
+                    />
                   )}
                   {!editState && <p className="mb-0">{addresses[0]?.rw}</p>}
                 </Form.Item>
@@ -986,10 +1032,14 @@ const PersonalDataForm = () => {
                   {editState && (
                     <Input
                       placeholder="Your Subdistrict"
-                      disabled={!editState || addresses[0]?.country !== 'Indonesia'}
+                      disabled={
+                        !editState || addresses[0]?.country !== 'Indonesia'
+                      }
                     />
                   )}
-                  {!editState && <p className="mb-0">{addresses[0]?.subdistrict}</p>}
+                  {!editState && (
+                    <p className="mb-0">{addresses[0]?.subdistrict}</p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -1007,9 +1057,16 @@ const PersonalDataForm = () => {
                   // ]}
                 >
                   {editState && (
-                    <Input placeholder="Your Village" disabled={!editState || addresses[0]?.country !== 'Indonesia'} />
+                    <Input
+                      placeholder="Your Village"
+                      disabled={
+                        !editState || addresses[0]?.country !== 'Indonesia'
+                      }
+                    />
                   )}
-                  {!editState && <p className="mb-0">{addresses[0]?.village}</p>}
+                  {!editState && (
+                    <p className="mb-0">{addresses[0]?.village}</p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -1043,9 +1100,13 @@ const PersonalDataForm = () => {
                       placeholder="Your Current Address"
                     />
                   )}
-                  {!editState && <p className="mb-0">{addresses.length === 2
-            ? addresses[1]?.currentAddress
-            : addresses[0]?.street}</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {addresses.length === 2
+                        ? addresses[1]?.currentAddress
+                        : addresses[0]?.street}
+                    </p>
+                  )}
                 </Form.Item>
               </div>
             </div>

@@ -1,15 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import AssessmentItems from '../dashboard/employ/assessment-item';
 import { Checkbox, Popover } from 'antd';
 import type { CheckboxProps } from 'antd';
-import ActionCheckboxPipeline from '../../common/popup/action-checkbox-pipeline';
-import ApplicantsItems from './applicant-item';
-import candidate_data from '@/data/candidate-data';
+import ActionCheckboxPipeline from '../common/popup/action-checkbox-pipeline';
 
-const ApplicantArea = () => {
-  const candidate_items = candidate_data.slice(0, 10);
-  const initialCheckboxState = candidate_data?.reduce(
+const AssessmentListItem = ({ status, applicantData }) => {
+  const initialCheckboxState = applicantData?.reduce(
     (acc: { [key: string]: boolean }, _: any, index: string) => {
       return {
         ...acc,
@@ -18,11 +16,15 @@ const ApplicantArea = () => {
     },
     {},
   );
+
   const [checkboxAllValue, setCheckboxAllValue] = useState(false);
+
   const [checkbox, setCheckbox] = useState<{ [key: string]: boolean }>(
     initialCheckboxState,
   );
+
   const [popOverState, setPopOverState] = useState(false);
+
   const onChangeCheckboxAll: CheckboxProps['onChange'] = (e) => {
     const checked = e.target.checked;
     const updatedCheckbox: { [key: string]: boolean } = {};
@@ -46,6 +48,7 @@ const ApplicantArea = () => {
       setPopOverState(false);
     }
   }, [checkbox]);
+
   return (
     <>
       <div className="card-checkbox">
@@ -62,10 +65,11 @@ const ApplicantArea = () => {
         </Popover>
       </div>
       <div className="wrapper">
-        {candidate_items.map((item) => (
-          <ApplicantsItems
-            key={item.id}
+        {applicantData?.map((item) => (
+          <AssessmentItems
+            key={item?.candidateId}
             item={item}
+            status={status}
             checkboxState={checkbox}
             checkboxAllValue={checkboxAllValue}
             setCheckbox={setCheckbox}
@@ -77,4 +81,4 @@ const ApplicantArea = () => {
   );
 };
 
-export default ApplicantArea;
+export default AssessmentListItem;

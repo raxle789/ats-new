@@ -1,6 +1,10 @@
 'use server';
 
+import { cache } from 'react';
+import { Status } from '@/status/applicant-status';
 import prisma from '../connection/db';
+import _ from 'lodash';
+import { transpileModule } from 'typescript';
 
 export async function getAllEfpkByTa(taId) {
   try {
@@ -708,6 +712,11 @@ export async function getJobVacancy(jobVacancyId) {
         efpkJobVacancies: {
           select: {
             efpkRequestNo: true,
+          },
+        },
+        ta: {
+          select: {
+            name: true,
           },
         },
         jobFunctions: {
@@ -1452,6 +1461,16 @@ export async function getAllApplicantByJobVacancyId(
           candidates: {
             include: {
               users: true,
+              documents: {
+                select: {
+                  file_base: true,
+                  document_types: {
+                    select: {
+                      document_name: true,
+                    },
+                  },
+                },
+              },
               working_experiences: true,
               educations: true,
               candidateSkills: {
@@ -1473,6 +1492,12 @@ export async function getAllApplicantByJobVacancyId(
         },
       }),
     ]);
+
+    // const documents = await prisma.documents.findMany({
+    //   where: {
+    //     candidate_id: 6,
+    //   },
+    // });
 
     return {
       data: data,
@@ -1507,8 +1532,17 @@ export async function getAllApplicantByJobVacancyIdAndStateName(
           candidates: {
             include: {
               users: true,
+              documents: {
+                select: {
+                  file_base: true,
+                  document_types: {
+                    select: {
+                      document_name: true,
+                    },
+                  },
+                },
+              },
               working_experiences: true,
-              educations: true,
               candidateSkills: {
                 select: {
                   skills: {
@@ -1520,6 +1554,7 @@ export async function getAllApplicantByJobVacancyIdAndStateName(
               },
             },
           },
+          candidateStateAssessments: true,
         },
       }),
       prisma.candidateStates.count({
@@ -1575,5 +1610,295 @@ export async function getAllApplicantTotalByJobVacancyIdAndStateName(
     console.log(e);
 
     return 0;
+  }
+}
+
+export async function assignApplicant(candidateId, jobVacancyId, stateName) {
+  try {
+    const data = prisma.$transaction(async (tx) => {
+      const candidate = await tx.candidateStates.findFirst({
+        where: {
+          AND: [
+            {
+              candidateId: candidateId,
+            },
+            {
+              jobVacancyId: jobVacancyId,
+            },
+          ],
+        },
+      });
+
+      if (candidate && !_.isEmpty(candidate)) {
+        const data = await tx.candidateStates.update({
+          where: {
+            id: candidate.id,
+          },
+          data: {
+            stateName: stateName,
+          },
+        });
+
+        return data;
+      }
+
+      return {};
+    });
+
+    return data;
+  } catch (e) {
+    console.log(e);
+
+    return {};
+  }
+}
+
+export async function getApplicantAndJobVacancyByCandidateIdAndJobVacancyId(
+  candidateId,
+  jobVacancyId,
+) {
+  try {
+    const data = prisma.$transaction(async (tx) => {
+      const candidate = await tx.candidates.findUnique({
+        where: {
+          id: candidateId,
+        },
+        include: {
+          users: true,
+          addresses: true,
+          educations: true,
+        },
+      });
+
+      const jobVacancy = await tx.jobVacancies.findUnique({
+        where: {
+          id: jobVacancyId,
+        },
+        include: {
+          jobFunctions: true,
+          positionLevels: true,
+        },
+      });
+
+      return {
+        candidate: candidate,
+        jobVacancy: jobVacancy,
+      };
+    });
+
+    return data;
+  } catch (e) {
+    console.log(e);
+
+    return {
+      candidate: {},
+      jobVacancy: {},
+    };
+  }
+}
+
+export async function getToken() {
+  const url = process.env.ASSESSMENT_ENDPOINT_URL;
+
+  const secretKey = process.env.ASSESSMENT_SECRET_KEY;
+
+  if (!url || !secretKey) {
+    return {};
+  }
+
+  try {
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        Authorization: secretKey,
+      },
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      return {};
+    }
+
+    const token = await res.json();
+
+    return token?.token;
+  } catch (e) {
+    console.log(e);
+
+    return '';
+  }
+}
+
+export async function requestAssessment(
+  handleType: 'register' | 'detail',
+  data = new FormData(),
+  parameter = '',
+) {
+  switch (handleType) {
+    case 'register':
+      return await (async () => {
+        const url = process.env.ASSESSMENT_ENDPOINT_URL;
+
+        const secretKey = process.env.ASSESSMENT_SECRET_KEY;
+
+        if (!url || !secretKey) {
+          return {};
+        }
+
+        try {
+          const res2 = await fetch(`${url}/register`, {
+            method: 'POST',
+            headers: {
+              Authorization: secretKey,
+            },
+            body: data,
+            cache: 'no-store',
+          });
+
+          // console.info(res2);
+
+          if (!res2.ok) {
+            return {};
+          }
+
+          const registerData = await res2.json();
+
+          return registerData;
+        } catch (e) {
+          console.log(e);
+
+          return {};
+        }
+      })();
+    case 'detail':
+      return await (async () => {
+        const url = process.env.ASSESSMENT_ENDPOINT_URL;
+
+        const secretKey = process.env.ASSESSMENT_SECRET_KEY;
+
+        if (!url || !secretKey || !parameter) {
+          return {};
+        }
+
+        try {
+          const res2 = await fetch(`${url}/candidates/${parameter}`, {
+            method: 'GET',
+            headers: {
+              Authorization: secretKey,
+            },
+            cache: 'no-store',
+          });
+
+          // console.info(res2);
+
+          if (!res2.ok) {
+            return {};
+          }
+
+          const candidateData = await res2.json();
+
+          return candidateData;
+        } catch (e) {
+          console.log(e);
+
+          return {};
+        }
+      })();
+    default:
+      return {};
+  }
+}
+
+export async function createAssessment(
+  candidateId,
+  jobVacancyId,
+  remoteId,
+  finalResult,
+  startDate,
+  finishDate,
+) {
+  try {
+    const data = prisma.$transaction(async (tx) => {
+      // const candidateStateAssessment = await tx.candidateStateAssessments.count(
+      //   {
+      //     where: {
+      //       remoteId: remoteId,
+      //     },
+      //   },
+      // );
+
+      // if (candidateStateAssessment) {
+      //   const data = await tx.candidateStateAssessments.update({
+      //     where: {
+      //       remoteId: remoteId,
+      //     },
+      //     data: {
+      //       finalResult: finalResult,
+      //       startedAt: startDate,
+      //       finishedAt: finishDate,
+      //     },
+      //   });
+
+      //   return data;
+      // }
+
+      const candidateState = await tx.candidateStates.findFirst({
+        where: {
+          AND: [
+            {
+              candidateId: candidateId,
+            },
+            {
+              jobVacancyId: jobVacancyId,
+            },
+          ],
+        },
+      });
+
+      if (candidateState && !_.isEmpty(candidateState)) {
+        const data = await tx.candidateStateAssessments.upsert({
+          where: {
+            candidateStateId: candidateState.id,
+          },
+          update: {
+            remoteId: remoteId,
+            finalResult: finalResult,
+            startedAt: startDate,
+            finishedAt: finishDate,
+          },
+          create: {
+            remoteId: remoteId,
+            finalResult: finalResult,
+            startedAt: startDate,
+            finishedAt: finishDate,
+            candidateStateId: candidateState.id,
+          },
+        });
+
+        if (data && !_.isEmpty(data)) {
+          const changeCandidateState = await assignApplicant(
+            candidateId,
+            jobVacancyId,
+            Status.ASSESSMENT,
+          );
+
+          if (changeCandidateState && !_.isEmpty(changeCandidateState)) {
+            return data;
+          }
+
+          return {};
+        }
+
+        return {};
+      }
+
+      return {};
+    });
+
+    return data;
+  } catch (e) {
+    console.log(e);
+
+    return {};
   }
 }

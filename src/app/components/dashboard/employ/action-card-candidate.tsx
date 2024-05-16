@@ -1,16 +1,21 @@
 'use client';
 import React, { useState } from 'react';
+import { Status } from '@/status/applicant-status';
 import { useAppSelector } from '@/redux/hook';
 import { useRouter } from 'next/navigation';
 import CreateInterviewModal from '../../common/popup/create-interview-modal';
 
-const ActionCandidate = () => {
+const ActionCandidate = ({ status, candidateId }) => {
   const currentStep = useAppSelector((state) => state.applicantStep.step);
+
   const router = useRouter();
+
   const [isModalOpen, setModalOpen] = useState(false);
+
   const showModal = () => {
     setModalOpen(true);
   };
+
   return (
     <>
       <ul className="dropdown-menu dropdown-menu-end">
@@ -18,7 +23,9 @@ const ActionCandidate = () => {
           <a className="applicant-action">View Details</a>
         </li>
         <li>
-          <a className="applicant-action">Assign to Job</a>
+          <button className="applicant-action" type="button" onClick={() => {}}>
+            Assign to Assessment
+          </button>
         </li>
         <li>
           <a className="applicant-action">Blacklist</a>

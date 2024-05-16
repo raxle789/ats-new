@@ -126,12 +126,12 @@ const BackgroundExperienceForm = () => {
    */
   const fetchExperiences = async () => {
     const experiencesData = await getExperiences();
-    if(!experiencesData.success) return message.error(experiencesData.message);
-    if(experiencesData.data?.message === 'candidate.have.no.experiences') {
+    if (!experiencesData.success) return message.error(experiencesData.message);
+    if (experiencesData.data?.message === 'candidate.have.no.experiences') {
       setExpValue('Fresh Graduate');
-    } else if(experiencesData.data?.message === 'candidate.have.experiences') {
+    } else if (experiencesData.data?.message === 'candidate.have.experiences') {
       setExpValue('Professional');
-    };
+    }
     setExperiences(experiencesData.data?.data);
   };
 
@@ -152,7 +152,7 @@ const BackgroundExperienceForm = () => {
       job_functions: jobFunctionsData,
     }));
   };
-  
+
   /**
    * Place the masterData.job_levels to the select for of job_levels
    */
@@ -189,6 +189,11 @@ const BackgroundExperienceForm = () => {
     }));
   };
 
+  const [expValue, setExpValue] = useState<string>('Fresh Graduate');
+  const onChangeExp = (e: RadioChangeEvent) => {
+    setExpValue(e.target.value);
+  };
+
   /**
    * Fetched data from databse here.
    */
@@ -201,438 +206,387 @@ const BackgroundExperienceForm = () => {
     lineIndutries();
   }, []);
 
+  // useEffect(() => {
+  //   if ('experiences' in experiences && experiences) {
+  //     setExpValue('Professional');
+  //   }
+  // }, [experiences]);
+
   const editOnChange = () => {
     setEditState(!editState);
   };
 
-  const [expValue, setExpValue] = useState<string>('Professional');
-  const onChangeExp = (e: RadioChangeEvent) => {
-    setExpValue(e.target.value);
-  };
-
-  const [jobDescValue, setJobDescValue] = useState<string>('');
   const [expIdx, setExpIdx] = useState<number>(0);
-  const [yearState, setYearState] = useState<{ [key: string]: boolean }>({});
-  const currentYear = useRef([]);
-  // const [expTabGroup, setExpTabGroup] = useState<JSX.Element[]>(expTabContent);
-  const handleCheckboxChange: CheckboxProps['onChange'] = (
-    e: any,
-    expIdx: number,
-  ) => {
-    console.log(e.target.checked);
-    // const state = ;
-    // const id = parseInt(e.target.dataset.id);
-    // console.log('id: ', id);
-    setYearState((prevState) => ({
-      ...prevState,
-      [expIdx]: true,
-    }));
+
+  type Tprops1 = {
+    expIdx: number;
   };
 
-  const handleCheckboxRef: CheckboxProps['onChange'] = (
-    e: any,
-    expIdx: number,
-  ) => {
-    console.log(e.target.checked);
-    console.log('expIdx: ', expIdx);
-    // currentYear.current[expIdx].disabled = e.target.checked;
-    // currentYear.current[expIdx + 1].disabled = e.target.checked;
-    // Memastikan bahwa currentYear.current telah diinisialisasi
-    if (currentYear.current) {
-      console.log('sudah cek currentYear ref');
-      // Memastikan bahwa currentYear.current[expIdx] dan currentYear.current[expIdx + 1] ada
-      if (currentYear.current[expIdx] && currentYear.current[expIdx + 1]) {
-        // Mengubah status disabled
-        currentYear.current[expIdx].disabled = e.target.checked;
-        currentYear.current[expIdx + 1].disabled = e.target.checked;
-      } else {
-        console.error(
-          'Index out of bounds or currentYear.current is not initialized properly.',
-        );
-      }
-    } else {
-      console.error('currentYear.current is not initialized.');
-    }
+  const ExpTabContent: React.FC<Tprops1> = ({ expIdx }) => {
+    const [yearState, setYearState] = useState<{ [key: string]: boolean }>({});
+    const handleCheckboxChange: any = (e: any, expIdx: number) => {
+      setYearState((prevState) => ({
+        ...prevState,
+        [expIdx.toString()]: e.target.checked,
+      }));
+    };
+
+    const [jobDescValue, setJobDescValue] = useState<string>('');
+    return (
+      <div key={expIdx} className="row">
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Job Title*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'jobTitle']}
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your job title!',
+                },
+              ]}
+            >
+              <Input placeholder="Your Job Title" />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Job Function*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'jobFunction']}
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your job function!',
+                },
+              ]}
+            >
+              <Select
+                className="w-100"
+                showSearch
+                placeholder="Your Job Function"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label.toLowerCase() ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                options={masterData?.job_functions}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Line Industry*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'lineIndustry']}
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your line industry!',
+                },
+              ]}
+            >
+              <Select
+                className="w-100"
+                showSearch
+                placeholder="Your Line Industry"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label.toLowerCase() ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                options={masterData?.line_industries}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Position Level*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'positionLevel']}
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your position level!',
+                },
+              ]}
+            >
+              <Select
+                className="w-100"
+                showSearch
+                placeholder="Your Position Level"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label.toLowerCase() ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                options={masterData?.job_levels}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Company Name*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'compName']}
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your company name!',
+                },
+              ]}
+            >
+              <Input placeholder="Your Company Name" />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Job Description</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'jobDesc']}
+              className="mb-0"
+            >
+              <TextArea
+                value={jobDescValue}
+                onChange={(e) => setJobDescValue(e.target.value)}
+                placeholder="Tell me about your job description"
+                autoSize={{ minRows: 3, maxRows: 5 }}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-5">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Start Year*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'startYear']}
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please choose start year!',
+                },
+              ]}
+            >
+              <DatePicker
+                className="w-100"
+                placeholder="Select Year"
+                picker="month"
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-5">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">End Year*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'endYear']}
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please choose end year!',
+                },
+              ]}
+            >
+              <DatePicker
+                className="w-100"
+                placeholder="Select Year"
+                picker="month"
+                disabled={yearState[expIdx.toString()]}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-2">
+          <div className="input-group-meta position-relative mb-15">
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'currentYear']}
+              className="pt-15"
+            >
+              <Checkbox onChange={(e) => handleCheckboxChange(e, expIdx)}>
+                Current
+              </Checkbox>
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Current Salary (gross Monthly)*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'currentSalary']}
+              className="mb-0"
+            >
+              <InputNumber
+                className="w-100"
+                min={0}
+                placeholder="Input Current Salary"
+                formatter={(value) =>
+                  `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                }
+                parser={(value: string | undefined): string | number =>
+                  value!.replace(/\Rp\s?|(\.*)/g, '')
+                }
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Expected Salary (gross Monthly)*</label>
+            <Form.Item<FieldType>
+              name={['experience', 'expectedSalary']}
+              className="mb-0"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input your expected salary!',
+                },
+              ]}
+            >
+              <InputNumber
+                className="w-100"
+                min={0}
+                placeholder="Input Expected Salary"
+                formatter={(value) =>
+                  `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                }
+                parser={(value: string | undefined): string | number =>
+                  value!.replace(/\Rp\s?|(\.*)/g, '')
+                }
+              />
+            </Form.Item>
+          </div>
+        </div>
+      </div>
+    );
   };
 
-  useEffect(() => {
-    form.setFieldsValue({
-      experience: {
-        expectedSalary: experiences?.expected_salary
-      }
-    });
-  }, [])
+  type Tprops2 = {
+    expIdx: number;
+  };
 
-  const expTabContent: JSX.Element[] = [
-    <div key={expIdx} className="row">
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Job Title*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'jobTitle']}
-            className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your job title!',
-              },
-            ]}
+  const DisplayedTabContent: React.FC<Tprops2> = ({ expIdx }) => {
+    // const [yearState, setYearState] = useState<{ [key: string]: boolean }>({});
+    // const handleCheckboxChange: any = (e: any, expIdx: number) => {
+    //   setYearState((prevState) => ({
+    //     ...prevState,
+    //     [expIdx.toString()]: e.target.checked,
+    //   }));
+    // };
+    return (
+      <div key={expIdx} className="row">
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Job Title*</label>
+            <p className="mb-0">Job titlenya apa</p>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Job Function*</label>
+            <p className="mb-0">job functionnya</p>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Line Industry*</label>
+            <p className="mb-0">line industrynya boy</p>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Position Level*</label>
+            <p className="mb-0">position level bro</p>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Company Name*</label>
+            <p className="mb-0">company name</p>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Job Description</label>
+            <p className="mb-0">job description</p>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Start Year*</label>
+            <p className="mb-0">start year</p>
+          </div>
+        </div>
+        <div className="col-4">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">End Year*</label>
+            <p className="mb-0">end year</p>
+          </div>
+        </div>
+        {/* <div className="col-2">
+      <div className="input-group-meta position-relative mb-15">
+        <Form.Item<FieldType>
+          name={['experience', expIdx.toString(), 'currentYear']}
+          className="pt-15"
+        >
+          <Checkbox
+            onChange={(e) => handleCheckboxChange(e, expIdx)}
           >
-            <Input placeholder="Your Job Title" />
-          </Form.Item>
+            Current
+          </Checkbox>
+        </Form.Item>
+      </div>
+    </div> */}
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Current Salary (gross Monthly)*</label>
+            <p className="mb-0">6.000.000</p>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Expected Salary (gross Monthly)*</label>
+            <p className="mb-0">10.000.000</p>
+          </div>
         </div>
       </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Job Function*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'jobFunction']}
-            className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your job function!',
-              },
-            ]}
-          >
-            <Select
-              className="w-100"
-              showSearch
-              placeholder="Your Job Function"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                (option?.label.toLowerCase() ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              /* Fetched Data */
-              options={masterData?.job_functions}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Line Industry*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'lineIndustry']}
-            className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your line industry!',
-              },
-            ]}
-          >
-            <Select
-              className="w-100"
-              showSearch
-              placeholder="Your Line Industry"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                (option?.label.toLowerCase() ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              /* Fetched Data */
-              options={masterData?.line_industries}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Position Level*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'positionLevel']}
-            className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your position level!',
-              },
-            ]}
-          >
-            <Select
-              className="w-100"
-              showSearch
-              placeholder="Your Position Level"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                (option?.label.toLowerCase() ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              /* Fetched Data */
-              options={masterData?.job_levels}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Company Name*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'compName']}
-            className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your company name!',
-              },
-            ]}
-          >
-            <Input placeholder="Your Company Name" />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Job Description</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'jobDesc']}
-            className="mb-0"
-          >
-            <TextArea
-              value={jobDescValue}
-              onChange={(e) => setJobDescValue(e.target.value)}
-              placeholder="Tell me about your job description"
-              autoSize={{ minRows: 3, maxRows: 5 }}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-5">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Start Year*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'startYear']}
-            className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please choose start year!',
-              },
-            ]}
-          >
-            <DatePicker
-              ref={(ref) =>
-                console.log('refstart: ', (currentYear.current[expIdx] = ref))
-              }
-              className="w-100"
-              placeholder="Select Year"
-              picker="month"
-              // disabled={yearState[expIdx]}
-              // disabled={yearState}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-5">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">End Year*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'endYear']}
-            className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please choose end year!',
-              },
-            ]}
-          >
-            <DatePicker
-              ref={(ref) => (currentYear.current[expIdx + 1] = ref)}
-              className="w-100"
-              placeholder="Select Year"
-              picker="month"
-              // rules={
-              //   !formalCheck
-              //     ? [
-              //         {
-              //           required: true,
-              //           message: 'Please choose your education!',
-              //         },
-              //       ]
-              //     : []
-              // }
-              // disabled={yearState[expIdx]}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-2">
-        <div className="input-group-meta position-relative mb-15">
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'currentYear']}
-            className="pt-15"
-          >
-            <Checkbox
-              // onChange={(e) => handleCheckboxChange(e, expIdx)}
-              // checked={yearState[expIdx] || false}
-              onChange={(e) => handleCheckboxRef(e, expIdx)}
-              // data-id={expIdx}
-            >
-              Current
-            </Checkbox>
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Current Salary (gross Monthly)*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'currentSalary']}
-            className="mb-0"
-            // rules={[
-            //   {
-            //     required: true,
-            //     message: 'Please input your current salary!',
-            //   },
-            // ]}
-          >
-            <InputNumber
-              className="w-100"
-              min={0}
-              placeholder="Input Current Salary"
-              formatter={(value) =>
-                `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-              }
-              parser={(value: string | undefined): string | number =>
-                value!.replace(/\Rp\s?|(\.*)/g, '')
-              }
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Expected Salary (gross Monthly)*</label>
-          <Form.Item<FieldType>
-            name={['experience', 'expectedSalary']}
-            className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your expected salary!',
-              },
-            ]}
-          >
-            <InputNumber
-              className="w-100"
-              min={0}
-              placeholder="Input Expected Salary"
-              formatter={(value) =>
-                `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-              }
-              parser={(value: string | undefined): string | number =>
-                value!.replace(/\Rp\s?|(\.*)/g, '')
-              }
-            />
-          </Form.Item>
-        </div>
-      </div>
-    </div>,
-  ];
-
-  const displayedTabContent: JSX.Element[] = [
-    <div key={expIdx} className="row">
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Job Title*</label>
-          <p className="mb-0">Job titlenya apa</p>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Job Function*</label>
-          <p className="mb-0">job functionnya</p>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Line Industry*</label>
-          <p className="mb-0">line industrynya boy</p>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Position Level*</label>
-          <p className="mb-0">position level bro</p>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Company Name*</label>
-          <p className="mb-0">company name</p>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Job Description</label>
-          <p className="mb-0">job description</p>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Start Year*</label>
-          <p className="mb-0">start year</p>
-        </div>
-      </div>
-      <div className="col-4">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">End Year*</label>
-          <p className="mb-0">end year</p>
-        </div>
-      </div>
-      <div className="col-2">
-        <div className="input-group-meta position-relative mb-15">
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'currentYear']}
-            className="pt-15"
-          >
-            <Checkbox
-              // onChange={(e) => handleCheckboxChange(e, expIdx)}
-              // checked={yearState[expIdx] || false}
-              onChange={(e) => handleCheckboxRef(e, expIdx)}
-              // data-id={expIdx}
-            >
-              Current
-            </Checkbox>
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Current Salary (gross Monthly)*</label>
-          <p className="mb-0">6.000.000</p>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Expected Salary (gross Monthly)*</label>
-          <p className="mb-0">{experiences?.expected_salary}</p>
-        </div>
-      </div>
-    </div>,
-  ];
+    );
+  };
 
   const initExpItems = [
-    { label: 'Experience 1', children: expTabContent, key: '1' },
+    {
+      label: 'Experience 1',
+      children: <ExpTabContent expIdx={expIdx} />,
+      key: '1',
+    },
   ];
   const displayedInit = [
     {
       label: 'Experience 1',
-      children: displayedTabContent,
+      children: <DisplayedTabContent expIdx={expIdx} />,
       key: '1',
       closable: false,
     },
@@ -652,14 +606,14 @@ const BackgroundExperienceForm = () => {
     const newPanes = [...expItems];
     newPanes.push({
       label: `Experience ${expItems.length + 1}`,
-      children: expTabContent,
+      children: <ExpTabContent expIdx={expIdx} />,
       key: newActiveKey,
     });
 
     const newDisplayed = [...displayedItems];
     newDisplayed.push({
       label: `Experience ${expItems.length + 1}`,
-      children: displayedTabContent,
+      children: <DisplayedTabContent expIdx={expIdx} />,
       key: newActiveKey,
       closable: false,
     });
@@ -668,11 +622,6 @@ const BackgroundExperienceForm = () => {
     setDisplayedItems(newDisplayed);
     setActiveExpKey(newActiveKey);
     setExpIdx(expIdx + 1);
-    // setYearState((prevState) => ({
-    //   ...prevState,
-    //   [expIdx]: false,
-    // }));
-    // setYearState(yearState[expIdx]);
   };
 
   const removeExp = (targetKey: TargetKey) => {
@@ -691,7 +640,12 @@ const BackgroundExperienceForm = () => {
         newActiveKey = newPanes[0].key;
       }
     }
+    const newDisplayedPanes = displayedItems.filter(
+      (item) => item.key !== targetKey,
+    );
+
     setExpItems(newPanes);
+    setDisplayedItems(newDisplayedPanes);
     setActiveExpKey(newActiveKey);
   };
 
@@ -728,9 +682,6 @@ const BackgroundExperienceForm = () => {
   }, []);
   return (
     <>
-      {/* <h2 className="main-title">Background Experience</h2> */}
-
-      {/* <div className="bg-white card-box border-20"> */}
       <div>
         <div className="mb-25">
           <button
@@ -821,7 +772,8 @@ const BackgroundExperienceForm = () => {
                 items={expItems}
               />
             )}
-            {!editState && expValue === 'Professional' && (
+
+            {!editState && (
               <Tabs
                 type="editable-card"
                 hideAdd

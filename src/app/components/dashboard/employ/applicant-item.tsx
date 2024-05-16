@@ -1,22 +1,16 @@
 'use client';
+
 import React, { SetStateAction } from 'react';
+import img_2 from '@/assets/images/candidates/img_02.jpg';
 import ActionCandidate from './action-card-candidate';
-import { ICandidate } from '@/data/candidate-data';
 import Image from 'next/image';
 import { useAppDispatch } from '@/redux/hook';
 import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
 import { Checkbox } from 'antd';
 
-interface IProps {
-  item: ICandidate;
-  checkboxState: { [key: string]: boolean };
-  checkboxAllValue: boolean;
-  setCheckbox: React.Dispatch<SetStateAction<{ [key: string]: boolean }>>;
-  setCheckboxAllValue: React.Dispatch<boolean>;
-}
-
-const ApplicantsItems: React.FC<IProps> = ({
+const ApplicantsItems = ({
   item,
+  status,
   checkboxState,
   checkboxAllValue,
   setCheckbox,
@@ -50,10 +44,12 @@ const ApplicantsItems: React.FC<IProps> = ({
           </div>
           <a href="#" className="rounded-circle">
             <Image
-              src={item.img}
+              src={item?.candidatePhoto ?? img_2}
               alt="image"
               className="lazy-img rounded-circle"
-              style={{ height: 'auto' }}
+              width="80"
+              height="80"
+              // style={{ width: '80', height: '80' }}
             />
           </a>
         </div>
@@ -67,21 +63,25 @@ const ApplicantsItems: React.FC<IProps> = ({
                     style={{ cursor: 'pointer' }}
                     onClick={showModal}
                   >
-                    {item.name}
+                    {item?.candidateName ?? '-'}
                   </a>
                 </h4>
                 <div className="candidate-info mt-2 mb-4">
                   <span>Last Position</span>
-                  <div>{item.latestPosition}</div>
+                  <div>{item?.candidateLastPosition ?? '-'}</div>
                 </div>
                 <div className="candidate-info mt-5">
                   <ul className="candidate-skills style-none d-flex align-items-center">
-                    {item.skills.slice(0, 4).map((s, i) => (
-                      <li key={i}>{s}</li>
-                    ))}
-                    {item.skills.length > 4 && (
+                    {item?.candidateSkills
+                      ? item?.candidateSkills
+                          .slice(0, 4)
+                          .map((s, i) => <li key={i}>{s}</li>)
+                      : null}
+                    {item?.candidateSkills?.length > 4 && (
                       <li className="more">
-                        {item.skills.length - item.skills.slice(0, 4).length}+
+                        {item?.candidateSkills?.length -
+                          item?.candidateSkills?.slice(0, 4).length}
+                        +
                       </li>
                     )}
                   </ul>
@@ -91,25 +91,25 @@ const ApplicantsItems: React.FC<IProps> = ({
             <div className="col-lg-4 col-md-4 col-sm-6">
               <div className="candidate-info">
                 <span>Last Education</span>
-                <div>{item.education}</div>
+                <div>{item?.candidateLastEducation ?? '-'}</div>
               </div>
               <div className="candidate-info mt-2">
                 <span>Expected Salary</span>
-                <div>{item.expectedSalary}</div>
+                <div>{item?.candidateExpectedSalary ?? '-'}</div>
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6">
               <div className="candidate-info">
                 <span>Year of Experience</span>
-                <div>{item.yearExperience}</div>
+                <div>{item?.candidateYearOfExperience ?? '-'}</div>
               </div>
               <div className="candidate-info mt-2">
                 <span>Status</span>
-                <div>{item.status}</div>
+                <div>{item?.candidateStatus ?? '-'}</div>
               </div>
               <div className="candidate-info mt-2">
                 <span>Score</span>
-                <div>{item.score}</div>
+                <div>{item?.candidateScore ?? '-'}</div>
               </div>
             </div>
             <div className="col-xl-1 col-md-4">
@@ -122,7 +122,10 @@ const ApplicantsItems: React.FC<IProps> = ({
                     aria-expanded="false"
                   >
                     <span>
-                      <ActionCandidate />
+                      <ActionCandidate
+                        status={status}
+                        candidateId={item?.candidateId}
+                      />
                     </span>
                   </button>
                 </div>

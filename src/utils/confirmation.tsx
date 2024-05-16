@@ -105,3 +105,29 @@ export function cancelConfirmation(
 
   return confirmation;
 }
+
+export function viewConfirmation(handleType: 'jobVacancy') {
+  const confirmation = (() => {
+    if (handleType === 'jobVacancy') {
+      return {
+        ...confirmationTemplate,
+        content: 'Do you want to view this job vacancy?',
+      };
+    }
+  })();
+
+  return confirmation;
+}
+
+export function assignConfirmation(handleType: 'assessment') {
+  const confirmation = (() => {
+    if (handleType === 'assessment') {
+      return {
+        ...confirmationTemplate,
+        content: 'Do you want to assign this candidate to assessment?',
+      };
+    }
+  })();
+
+  return confirmation;
+}

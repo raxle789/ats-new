@@ -1,22 +1,16 @@
-import React, { SetStateAction, useState } from 'react';
-import ActionApplicant from '../candidate/action-applicant';
-import { ICandidate } from '@/data/candidate-data';
+'use client';
+
+import React, { SetStateAction } from 'react';
+import img_2 from '@/assets/images/candidates/img_02.jpg';
+import ActionCandidate from './action-card-candidate';
 import Image from 'next/image';
 import { useAppDispatch } from '@/redux/hook';
 import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
 import { Checkbox } from 'antd';
-import AssessmentResultModal from '../../common/popup/assessment-result-modal';
 
-interface IProps {
-  item: ICandidate;
-  checkboxState: { [key: string]: boolean };
-  checkboxAllValue: boolean;
-  setCheckbox: React.Dispatch<SetStateAction<{ [key: string]: boolean }>>;
-  setCheckboxAllValue: React.Dispatch<boolean>;
-}
-
-const CandidateAssessmentItem: React.FC<IProps> = ({
+const AssessmentItems = ({
   item,
+  status,
   checkboxState,
   checkboxAllValue,
   setCheckbox,
@@ -50,10 +44,12 @@ const CandidateAssessmentItem: React.FC<IProps> = ({
           </div>
           <a href="#" className="rounded-circle">
             <Image
-              src={item.img}
+              src={item?.candidatePhoto ?? img_2}
               alt="image"
               className="lazy-img rounded-circle"
-              style={{ height: 'auto' }}
+              width="80"
+              height="80"
+              // style={{ width: '80', height: '80' }}
             />
           </a>
         </div>
@@ -67,21 +63,25 @@ const CandidateAssessmentItem: React.FC<IProps> = ({
                     style={{ cursor: 'pointer' }}
                     onClick={showModal}
                   >
-                    {item.name}
+                    {item?.candidateName ?? '-'}
                   </a>
                 </h4>
                 <div className="candidate-info mt-2 mb-4">
                   <span>Last Position</span>
-                  <div>{item.latestPosition}</div>
+                  <div>{item?.candidateLastPosition ?? '-'}</div>
                 </div>
                 <div className="candidate-info mt-5">
                   <ul className="candidate-skills style-none d-flex align-items-center">
-                    {item.skills.slice(0, 4).map((s, i) => (
-                      <li key={i}>{s}</li>
-                    ))}
-                    {item.skills.length > 4 && (
+                    {item?.candidateSkills
+                      ? item?.candidateSkills
+                          .slice(0, 4)
+                          .map((s, i) => <li key={i}>{s}</li>)
+                      : null}
+                    {item?.candidateSkills?.length > 4 && (
                       <li className="more">
-                        {item.skills.length - item.skills.slice(0, 4).length}+
+                        {item?.candidateSkills?.length -
+                          item?.candidateSkills?.slice(0, 4).length}
+                        +
                       </li>
                     )}
                   </ul>
@@ -91,22 +91,26 @@ const CandidateAssessmentItem: React.FC<IProps> = ({
             <div className="col-lg-4 col-md-4 col-sm-6">
               <div className="candidate-info">
                 <span>Start Test</span>
-                <div>22-02-2024 01:00:00</div>
+                <div>{item?.candidateAssessmentStartDate ?? '-'}</div>
               </div>
               <div className="candidate-info mt-2">
                 <span>End Test</span>
-                <div>26-02-2024 23:59:59</div>
+                <div>{item?.candidateAssessmentFinishedDate ?? '-'}</div>
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6">
               <div className="candidate-info">
                 <span>Test Name</span>
-                <div>Psikotes Online - 1</div>
+                <div>{item?.candidateAssessmentTestName ?? '-'}</div>
               </div>
-              <div className="candidate-info mt-2 mb-40">
+              <div className="candidate-info mt-2">
                 <span>Status</span>
-                <div>Tidak direkomendasikan</div>
+                <div>{item?.candidateAssessmentStatus ?? '-'}</div>
               </div>
+              {/* <div className="candidate-info mt-2">
+                <span>Score</span>
+                <div>{item?.candidateScore ?? '-'}</div>
+              </div> */}
             </div>
             <div className="col-xl-1 col-md-4">
               <div className="d-flex justify-content-md-end align-items-center">
@@ -118,7 +122,10 @@ const CandidateAssessmentItem: React.FC<IProps> = ({
                     aria-expanded="false"
                   >
                     <span>
-                      <ActionApplicant />
+                      <ActionCandidate
+                        status={status}
+                        candidateId={item?.candidateId}
+                      />
                     </span>
                   </button>
                 </div>
@@ -131,4 +138,4 @@ const CandidateAssessmentItem: React.FC<IProps> = ({
   );
 };
 
-export default CandidateAssessmentItem;
+export default AssessmentItems;

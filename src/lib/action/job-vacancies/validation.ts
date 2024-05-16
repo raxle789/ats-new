@@ -352,7 +352,7 @@ export const validateJobVacancyId = z.object({
     .int(),
 });
 
-export const validateCandidateApply = z.object({
+export const validateCandidateIdAndJobVacancyId = z.object({
   candidateId: z
     .number({
       required_error: 'Candidate Id Required!',

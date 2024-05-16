@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { registerAssessment } from '@/lib/action/job-vacancies/job-vacancy-details/job-vacancy-details-assessment/action';
 import * as crypto from '@/lib/utils/utils';
 import CryptoJS from 'crypto-js';
 import { getAllApplicantDataByJobVacancyId } from '@/lib/action/job-vacancies/job-vacancy-details/action';
@@ -35,12 +36,12 @@ export default async function Home() {
   // console.info(data);
 
   // const encryptedData = CryptoJS.Rabbit.encrypt(
-  //   String(2),
+  //   String(1),
   //   process.env.NEXT_PUBLIC_SECRET_KEY,
   // ).toString();
 
   // const encryptedData2 = CryptoJS.Rabbit.encrypt(
-  //   String(2),
+  //   String(1),
   //   process.env.NEXT_PUBLIC_SECRET_KEY,
   // ).toString();
 
@@ -48,14 +49,25 @@ export default async function Home() {
   //   String(2),
   //   process.env.NEXT_PUBLIC_SECRET_KEY,
   // ).toString();
+  // const encryptedData3 = CryptoJS.Rabbit.encrypt(
+  //   String(2),
+  //   process.env.NEXT_PUBLIC_SECRET_KEY,
+  // ).toString();
 
+  // const ayam = crypto.decryptData(encryptedData);
   // const ayam = crypto.decryptData(encryptedData);
 
   // console.info(ayam);
+  // console.info(ayam);
 
+  // console.info(encryptedData2);
   // console.info(encryptedData2);
 
   // console.info(encryptedData3);
+
+  // const data = await registerAssessment(encryptedData, encryptedData2);
+
+  // console.info(data);
 
   return (
     <Wrapper>

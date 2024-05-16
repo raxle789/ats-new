@@ -1,13 +1,12 @@
-'use client';
-
 import React, { useState, useEffect } from 'react';
-import { Checkbox, Popover } from 'antd';
+import { Popover, Checkbox } from 'antd';
 import type { CheckboxProps } from 'antd';
 import ActionCheckboxPipeline from '../../common/popup/action-checkbox-pipeline';
-import ApplicantsItems from './applicant-item';
+// import CandidateAssessmentItem from './candidate-assessment-item';
+import CandidateInterviewItem from './candidate-interview-item';
 import candidate_data from '@/data/candidate-data';
 
-const ApplicantArea = () => {
+const InterviewArea = () => {
   const candidate_items = candidate_data.slice(0, 10);
   const initialCheckboxState = candidate_data?.reduce(
     (acc: { [key: string]: boolean }, _: any, index: string) => {
@@ -63,7 +62,7 @@ const ApplicantArea = () => {
       </div>
       <div className="wrapper">
         {candidate_items.map((item) => (
-          <ApplicantsItems
+          <CandidateInterviewItem
             key={item.id}
             item={item}
             checkboxState={checkbox}
@@ -77,4 +76,4 @@ const ApplicantArea = () => {
   );
 };
 
-export default ApplicantArea;
+export default InterviewArea;

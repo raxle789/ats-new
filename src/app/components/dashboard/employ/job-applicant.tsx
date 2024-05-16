@@ -8,6 +8,8 @@ import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { setApplicantStep } from '@/redux/features/applicantStepSlice';
 import ApplicantArea from './applicant-area';
 import AssessmentArea from './assessment-area';
+import InterviewArea from './interview-area';
+import OfferingArea from './offering-area';
 
 const JobApplicantArea = () => {
   const dispatch = useAppDispatch();
@@ -140,13 +142,15 @@ const JobApplicantArea = () => {
           {partState === 1 && <h4 className="sub-main-title">Applicant</h4>}
           {partState === 4 && <h4 className="sub-main-title">Assessment</h4>}
           {partState === 5 && <h4 className="sub-main-title">Interview</h4>}
+          {partState === 7 && <h4 className="sub-main-title">Offering</h4>}
         </div>
         <SearchBar />
       </div>
 
       {partState === 1 && <ApplicantArea />}
       {partState === 4 && <AssessmentArea />}
-      {/* {partState === 5 && <ApplicantArea />} */}
+      {partState === 5 && <InterviewArea />}
+      {partState === 7 && <OfferingArea />}
     </>
   );
 };

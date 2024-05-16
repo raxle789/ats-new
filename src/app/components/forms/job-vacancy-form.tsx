@@ -79,6 +79,7 @@ const JobVacancyForm = ({
   handleVerticalChange,
   parameterState,
   setParameterState,
+  handleCancel,
   // ageParameterState,
   // setAgeParameterState,
   // genderParameterState,
@@ -856,7 +857,11 @@ const JobVacancyForm = ({
               Submit
             </Button>
           </Form.Item>
-          <button className="dash-cancel-btn tran3s" type="button">
+          <button
+            className="dash-cancel-btn tran3s"
+            type="button"
+            onClick={handleCancel}
+          >
             Cancel
           </button>
         </div>

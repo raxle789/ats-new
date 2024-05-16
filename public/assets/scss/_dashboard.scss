@@ -279,6 +279,10 @@
       color: $color-one;
     }
   }
+  .offering-btn {
+    padding: 0 25px;
+    font-family: var(--gorditas-font);
+  }
   .dash-cancel-btn {
     font-weight: 500;
     color: $color-five;
@@ -1870,6 +1874,12 @@
   }
 }
 
+.assessment-result-modal {
+  .ant-modal-body {
+    overflow-x: hidden;
+  }
+}
+
 .nav-btn-desktop {
   margin-left: 20px;
 }
@@ -1919,4 +1929,30 @@
 .sub-section-profile {
   font-size: 20px;
   margin-bottom: 15px;
+}
+
+.request-btn {
+  margin-left: 20%;
+  padding: 13px 26px;
+  background: $color-one;
+  color: white;
+  font-weight: 500;
+  border-radius: 50px;
+}
+
+.request-btn:hover {
+  background: $color-two;
+}
+
+.sub-section-title {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.dashboard-body {
+  .section-label {
+    font-family: var(--gorditas-font);
+    font-size: 13px;
+    color: black;
+  }
 }
