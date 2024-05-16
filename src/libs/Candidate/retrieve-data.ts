@@ -442,7 +442,7 @@ export async function getEducationNSkills() {
       },
       select: {
         educations: true,
-        CandidateSkills: {
+        candidateSkills: {
           select: {
             skills: {
               select: {
@@ -465,11 +465,14 @@ export async function getEducationNSkills() {
       },
     });
     const transformedSkills = objectToArray(
-      candidateEducationsAndSkills?.CandidateSkills as {
+      candidateEducationsAndSkills?.candidateSkills as {
         skills: { name: string };
       }[],
     );
-    // console.log('education.skill.certification data: ', candidateEducationsAndSkills);
+    console.log(
+      'education.skill.certification data: ',
+      candidateEducationsAndSkills,
+    );
     return {
       success: true,
       data: {

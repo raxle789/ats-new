@@ -16,6 +16,7 @@ import type { FormProps, CheckboxProps, InputRef } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { getEducationNSkills } from '@/libs/Candidate/retrieve-data';
+import dayjs from 'dayjs';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 let languageIndex = 0;
@@ -87,12 +88,13 @@ const EducationSkillsForm = () => {
 
   /**
    * @returns {
-   *  
+   *
    * }
    */
   const fetchEducationSkillCertification = async () => {
     const educationSkillCertificationData = await getEducationNSkills();
-    if(!educationSkillCertificationData.success) return message.error(educationSkillCertificationData.message);
+    if (!educationSkillCertificationData.success)
+      return message.error(educationSkillCertificationData.message);
     setEducationAndSkill(educationSkillCertificationData.data);
   };
 
@@ -419,6 +421,27 @@ const EducationSkillsForm = () => {
       message.error(`Failed: ${errorMessage}`);
     }
   };
+
+  useEffect(() => {
+    form.setFieldsValue({
+      // formalOption?: string;
+      // formalCheckbox?: boolean;
+      // certificationCheckbox?: boolean;
+      education: {
+        educationLevel: educationAndSkill?.educations?.level,
+        educationMajor: educationAndSkill?.educations?.major,
+        schoolName: educationAndSkill?.educations?.university_name,
+        gpa: educationAndSkill?.educations?.gpa,
+        cityOfSchool: educationAndSkill?.educations?.cityOfSchool,
+        startEduYear: dayjs(educationAndSkill?.educations?.start_year).format(
+          'YYYY',
+        ),
+        endEduYear: dayjs(educationAndSkill?.educations?.end_year).format(
+          'YYYY',
+        ),
+      },
+    });
+  }, [educationAndSkill]);
 
   useEffect(() => {
     setCertificationIdx((prevState) => prevState + 1);
