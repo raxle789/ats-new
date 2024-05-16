@@ -118,3 +118,16 @@ export function viewConfirmation(handleType: 'jobVacancy') {
 
   return confirmation;
 }
+
+export function assignConfirmation(handleType: 'assessment') {
+  const confirmation = (() => {
+    if (handleType === 'assessment') {
+      return {
+        ...confirmationTemplate,
+        content: 'Do you want to assign this candidate to assessment?',
+      };
+    }
+  })();
+
+  return confirmation;
+}

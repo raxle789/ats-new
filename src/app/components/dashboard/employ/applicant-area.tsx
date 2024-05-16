@@ -1,8 +1,10 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { Checkbox, Popover } from 'antd';
 import type { CheckboxProps } from 'antd';
 import ActionCheckboxPipeline from '../../common/popup/action-checkbox-pipeline';
-import ApplicantsItems from './applicants-item';
+import ApplicantsItems from './applicant-item';
 import candidate_data from '@/data/candidate-data';
 
 const ApplicantArea = () => {

@@ -32,8 +32,6 @@ import {
   applyJobVacancy,
   candidateAlreadyApplyJobVacancy,
   deleteJobVacancy,
-  getAllApplicantByJobVacancyId,
-  getAllApplicantByJobVacancyIdAndStateName,
 } from '../../../app/services/job-vacancies/service';
 import * as crypto from '@/lib/utils/utils';
 import { getUserSession } from '@/libs/Sessions';
@@ -46,7 +44,7 @@ import {
   validateVerticalCode,
   validateJobVacancySchema,
   validateJobVacancyId,
-  validateCandidateApply,
+  validateCandidateIdAndJobVacancyId,
 } from './validation';
 
 export async function getAllEfpkDataByTa(taId) {
@@ -613,7 +611,7 @@ export async function candidateApplyJobVacancy(jobVacancyId) {
   const decryptedJobVacancyId = await crypto.decryptData(jobVacancyId);
 
   if (decryptedJobVacancyId) {
-    const validate = validateCandidateApply.safeParse({
+    const validate = validateCandidateIdAndJobVacancyId.safeParse({
       candidateId: session?.candidate?.id,
       jobVacancyId: decryptedJobVacancyId,
     });

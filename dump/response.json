@@ -1,0 +1,501 @@
+{
+    "candidate": {
+        "id": "24236",
+        "nik": null,
+        "nama": "Agung prakosatama",
+        "emailpeserta": "prakosatamaagung@gmail.com",
+        "nomorhp": "082119850995",
+        "domisili": "-",
+        "pendidikan": "S1/Sarjana",
+        "institusi_pendidikan": "Universitas 17 Agustus 1945 Surabaya",
+        "jurusan": "Public Relations",
+        "direktorat": "Sales & Marketing",
+        "divisi": "EAL Channel Management",
+        "departemen": "EAL Channel Management",
+        "posisi": "Channel Management Assistant Manager",
+        "level": "3",
+        "source": "database",
+        "id_assessment": "11642",
+        "id_recruiter": "11642",
+        "id_pesertatest": "29993",
+        "mulai": "2024-05-10 01:00:00",
+        "selesai": "2024-05-14 23:59:59",
+        "tgl_buat": "2024-05-10 19:33:43",
+        "tgl_edit": "2024-05-10 19:33:43",
+        "status_test": "2",
+        "status": "2",
+        "ptest_id": "29993",
+        "ptest_id_test": "40",
+        "ptest_mulai": "2024-05-10 01:00:00",
+        "ptest_selesai": "2024-05-14 23:59:59",
+        "ptest_status": "2",
+        "nama_test": "Psikotes Online - 3",
+        "nama_assessment": "ATS",
+        "email_assessment": "ats@erajaya.com",
+        "nama_recruiter": "ATS",
+        "email_recruiter": "ats@erajaya.com",
+        "total_soal": "428",
+        "total_jawab": "226",
+        "status_label": "Tidak direkomendasikan"
+    },
+    "result": [
+        {
+            "category_id": "3",
+            "name": "DISC",
+            "type": "disc",
+            "result": {
+                "data": {
+                    "most": {
+                        "data": {
+                            "DM": 5,
+                            "IM": 9,
+                            "SM": 5,
+                            "CM": 9,
+                            "NM": 0
+                        },
+                        "count": 28,
+                        "data_graph": {
+                            "DM": 4,
+                            "IM": 6,
+                            "SM": 3,
+                            "CM": 6
+                        }
+                    },
+                    "least": {
+                        "data": {
+                            "DL": 12,
+                            "IL": 4,
+                            "SL": 6,
+                            "CL": 5,
+                            "NL": 1
+                        },
+                        "count": 28,
+                        "data_graph": {
+                            "DL": 3,
+                            "IL": 5,
+                            "SL": 3,
+                            "CL": 6
+                        }
+                    },
+                    "change": {
+                        "data": {
+                            "DC": -7,
+                            "IC": 5,
+                            "SC": -1,
+                            "CC": 4
+                        },
+                        "count": 1,
+                        "data_graph": {
+                            "DC": 4,
+                            "IC": 5,
+                            "SC": 2,
+                            "CC": 6
+                        }
+                    }
+                },
+                "segmen": {
+                    "number": "4526",
+                    "type": "Appraiser",
+                    "id_type": "C",
+                    "profile": "CI"
+                },
+                "keterangan": [
+                    {
+                        "id": "132",
+                        "nama_norma": "CA",
+                        "norma_alias": "CDI,CI,CID,DIC,I,IC,ICD,IDC",
+                        "skorstart": "0.00",
+                        "skorend": "0.00",
+                        "urutan": "127",
+                        "groupnorma": "Code Defination Disc",
+                        "keterangan": "Tipe Appraiser (Penilai) memiliki antusias yang meluap-luap dan kemampuan memberikan inspirasi pada orang lain untuk suatu tujuan/maksud. Dari pada sekedar memberikan perintah, mereka lebih senang mempengaruhi orang lain untuk mengikuti mereka. Tipe Appraiser tidak gentar oleh orang-orang yang agresif, tetapi mereka menyatakan kekaguman kepada mereka yang mempunyai gaya, kehangatan, dan pandai. Di bawah tekanan, tipe Appraiser sangat mudah terpengaruh godaan dan sering menggunakan ketegasan untuk memperoleh apa yang diinginkannya.            \r\n",
+                        "title": "Summary"
+                    },
+                    {
+                        "id": "153",
+                        "nama_norma": "CB",
+                        "norma_alias": "CDI,CI,CID,DIC,I,IC,ICD,IDC",
+                        "skorstart": "0.00",
+                        "skorend": "0.00",
+                        "urutan": "127",
+                        "groupnorma": "Code Defination Disc",
+                        "keterangan": "Berusaha keras untuk terlihat baik.",
+                        "title": "Emosi"
+                    },
+                    {
+                        "id": "154",
+                        "nama_norma": "CC",
+                        "norma_alias": "CDI,CI,CID,DIC,I,IC,ICD,IDC",
+                        "skorstart": "0.00",
+                        "skorend": "0.00",
+                        "urutan": "127",
+                        "groupnorma": "Code Defination Disc",
+                        "keterangan": "\"Menang\" karena kepandaiannya.",
+                        "title": "Tujuan"
+                    },
+                    {
+                        "id": "155",
+                        "nama_norma": "CD",
+                        "norma_alias": "CDI,CI,CID,DIC,I,IC,ICD,IDC",
+                        "skorstart": "0.00",
+                        "skorend": "0.00",
+                        "urutan": "127",
+                        "groupnorma": "Code Defination Disc",
+                        "keterangan": "Kemampuan untuk memulai suatu kegiatan.",
+                        "title": "Menilai orang lain dengan"
+                    },
+                    {
+                        "id": "156",
+                        "nama_norma": "CE",
+                        "norma_alias": "CDI,CI,CID,DIC,I,IC,ICD,IDC",
+                        "skorstart": "0.00",
+                        "skorend": "0.00",
+                        "urutan": "127",
+                        "groupnorma": "Code Defination Disc",
+                        "keterangan": "Penghargaan yang menonjol.",
+                        "title": "Mempengaruhi orang lain dengan"
+                    },
+                    {
+                        "id": "157",
+                        "nama_norma": "CF",
+                        "norma_alias": "CDI,CI,CID,DIC,I,IC,ICD,IDC",
+                        "skorstart": "0.00",
+                        "skorend": "0.00",
+                        "urutan": "127",
+                        "groupnorma": "Code Defination Disc",
+                        "keterangan": "Meraih tujuan-tujuan yang telah ditetapkan melalui orang-orang.",
+                        "title": "Nilai bagi organisasi"
+                    },
+                    {
+                        "id": "158",
+                        "nama_norma": "CG",
+                        "norma_alias": "CDI,CI,CID,DIC,I,IC,ICD,IDC",
+                        "skorstart": "0.00",
+                        "skorend": "0.00",
+                        "urutan": "127",
+                        "groupnorma": "Code Defination Disc",
+                        "keterangan": "Otoritas atau kecerdikan.",
+                        "title": "Sikap yang sering muncul"
+                    },
+                    {
+                        "id": "159",
+                        "nama_norma": "CH",
+                        "norma_alias": "CDI,CI,CID,DIC,I,IC,ICD,IDC",
+                        "skorstart": "0.00",
+                        "skorend": "0.00",
+                        "urutan": "127",
+                        "groupnorma": "Code Defination Disc",
+                        "keterangan": "Menjadi gelisah, pengkritik, tidak sabar.",
+                        "title": "Dibawah tekanan"
+                    },
+                    {
+                        "id": "160",
+                        "nama_norma": "CI",
+                        "norma_alias": "CDI,CI,CID,DIC,I,IC,ICD,IDC",
+                        "skorstart": "0.00",
+                        "skorend": "0.00",
+                        "urutan": "127",
+                        "groupnorma": "Code Defination Disc",
+                        "keterangan": "\"Kalah\", kelihatan buruk di hadapan orang lain.",
+                        "title": "Ketakutan akan"
+                    },
+                    {
+                        "id": "161",
+                        "nama_norma": "CJ",
+                        "norma_alias": "CDI,CI,CID,DIC,I,IC,ICD,IDC",
+                        "skorstart": "0.00",
+                        "skorend": "0.00",
+                        "urutan": "126",
+                        "groupnorma": "Code Defination Disc",
+                        "keterangan": "Tindak lanjut setiap individu, rasa empati ketika menyatakan ketidaksetujuan, mengatur / menyesuaikan diri sendiri.",
+                        "title": "Dapat meningkatkan efektivitas kerja dengan"
+                    }
+                ]
+            }
+        },
+        {
+            "category_id": "6",
+            "name": "PAPIKOSTIK",
+            "type": "papikostik",
+            "result": [
+                {
+                    "key": "N",
+                    "score": 9,
+                    "group": "Arah kerja",
+                    "title": "Penyelesaian Tugas",
+                    "description": "Memiliki komitmen yg sangat tinggi thd tugas, sangat ingin menyelesaikan tugas, tekun dan tuntas dlm menangani pekerjaan satu demi satu hingga   tuntas. Perhatian terpaku pada satu tugas, sulit utk menangani beberapa pekerjaan sekaligus, sulit di interupsi, tidak melihat masalah sampingan."
+                },
+                {
+                    "key": "L",
+                    "score": 5,
+                    "group": "Kepemimpinan",
+                    "title": "Kepercayaan Diri Dalam Mempimpin",
+                    "description": "Kurang percaya diri dan kurang berminat utk menjadi pemimpin"
+                },
+                {
+                    "key": "I",
+                    "score": 6,
+                    "group": "Kepemimpinan",
+                    "title": "Pengambilan Keputusan",
+                    "description": "Cukup percaya diri dlm pengambilan keputusan, mau mengambil resiko, dpt memutuskan dgn cepat, mengikuti alur logika."
+                },
+                {
+                    "key": "W",
+                    "score": 3,
+                    "group": "Ketaatan",
+                    "title": "Mengikuti Aturan dan Arahan",
+                    "description": "Hanya butuh gambaran ttg kerangka tugas scr garis besar, berpatokan pd tujuan, dpt bekerja dlm suasana yg kurang berstruktur, berinsiatif, mandiri. Tdk patuh, cenderung mengabaikan/tdk paham pentingnya peraturan/prosedur, suka membuat peraturan sendiri yg bisa bertentangan dg yg telah ada."
+                },
+                {
+                    "key": "G",
+                    "score": 6,
+                    "group": "Arah kerja",
+                    "title": "Bekerja Keras/Giat",
+                    "description": "Bekerja keras, tetapi  jelas tujuan yg ingin dicapainya."
+                },
+                {
+                    "key": "R",
+                    "score": 7,
+                    "group": "Gaya Kerja",
+                    "title": "Berpikir Teoritis",
+                    "description": "Suka memikirkan suatu problem secara mendalam, merujuk pada   teori dan konsep."
+                },
+                {
+                    "key": "X",
+                    "score": 4,
+                    "group": "Pergaulan",
+                    "title": "Kebutuhan untuk Diperhatikan",
+                    "description": "Mengharapkan pengakuan lingkungan dan tidak mau diabaikan tetapi tidak mencari-cari perhatian."
+                },
+                {
+                    "key": "O",
+                    "score": 5,
+                    "group": "Pergaulan",
+                    "title": "Kebutuhan akan Kedekatan & Keakraban",
+                    "description": "Tidak mencari atau menghindari hubungan antar pribadi di  lingkungan kerja, masih mampu menjaga jarak."
+                },
+                {
+                    "key": "T",
+                    "score": 6,
+                    "group": "Aktivitas",
+                    "title": "Tempo Kerja",
+                    "description": "Cukup aktif dalam segi mental, dapat menyesuaikan tempo kerjanya dengan tuntutan pekerjaan / lingkungan."
+                },
+                {
+                    "key": "Z",
+                    "score": 7,
+                    "group": "Tempramen",
+                    "title": "Kebutuhan untuk Perubahan",
+                    "description": "Antusias terhadap perubahan dan akan mencari hal-hal baru, tetapi masih selektif ( menilai kemanfaatannya )."
+                },
+                {
+                    "key": "A",
+                    "score": 6,
+                    "group": "Arah kerja",
+                    "title": "Dorongan Berprestasi",
+                    "description": "Tahu akan tujuan yang ingin dicapainya dan dapat merumuskannya, realistis akan kemampuan diri, dan berusaha untuk mencapai target."
+                },
+                {
+                    "key": "P",
+                    "score": 6,
+                    "group": "Kepemimpinan",
+                    "title": "Peran Mengendalikan Orang Lain",
+                    "description": "Dominan dan bertanggung jawab, akan melakukan fungsi pengarahan, pengendalian dan pengawasan."
+                },
+                {
+                    "key": "D",
+                    "score": 6,
+                    "group": "Gaya Kerja",
+                    "title": "Bekerja dengan Hal Detail",
+                    "description": "Tertarik untuk menangani sendiri detail."
+                },
+                {
+                    "key": "K",
+                    "score": 3,
+                    "group": "Tempramen",
+                    "title": "Agresivitas",
+                    "description": "Lebih suka menghindari konflik, akan mencari rasionalisasi untuk  dapat menerima situasi dan melihat permasalahan dari sudut pandang orang lain."
+                },
+                {
+                    "key": "F",
+                    "score": 3,
+                    "group": "Ketaatan",
+                    "title": "Dukungan Kepada Atasan",
+                    "description": "Otonom, dapat bekerja sendiri tanpa campur tangan orang lain, motivasi timbul krn pekerjaan itu sendiri bukan krn pujian dr otoritas. Mempertanyakan otoritas, cenderung tidak puas thdp atasan, loyalitas lebih didasari kepentingan pribadi."
+                },
+                {
+                    "key": "S",
+                    "score": 2,
+                    "group": "Pergaulan",
+                    "title": "Hubungan Sosial",
+                    "description": "Dpt. bekerja sendiri, tdk membutuhkan kehadiran org lain. Menarik diri, kaku dlm bergaul, canggung dlm situasi sosial, lebih memperhatikan hal - hal lain daripada manusia."
+                },
+                {
+                    "key": "E",
+                    "score": 3,
+                    "group": "Tempramen",
+                    "title": "Stabilitas Emosi",
+                    "description": "Terbuka, mudah mengungkap pendapat atau perasaannya mengenai suatu hal kepada org lain."
+                },
+                {
+                    "key": "V",
+                    "score": 3,
+                    "group": "Aktivitas",
+                    "title": "Keaktifan Fisik",
+                    "description": "Dapat bekerja di belakang meja dan senang jika sesekali harus terjun ke lapangan atau melaksanakan tugas-tugas yang bersifat mobile."
+                },
+                {
+                    "key": "C",
+                    "score": 1,
+                    "group": "Gaya Kerja",
+                    "title": "Keteraturan",
+                    "description": "Lebih mementingkan fleksibilitas daripada struktur, pendekatan kerja lebih ditentukan oleh situasi daripada oleh perencanaan sebelumnya, mudah beradaptasi.  Tidak mempedulikan keteraturan atau kerapihan, ceroboh."
+                }
+            ]
+        },
+        {
+            "category_id": "44",
+            "name": "I-Lead C",
+            "type": "i-lead c",
+            "result": {
+                "jumlah_soal": 8,
+                "nilai": "[sjt]",
+                "deskripsi_nilai": "N/A",
+                "nama_deskripsi": "N/A",
+                "nama_kategori": "I-Lead C"
+            }
+        },
+        {
+            "category_id": "8",
+            "name": "Letter Checking",
+            "type": "gti 1",
+            "result": {
+                "jumlah_soal": 60,
+                "nilai": 0.5,
+                "deskripsi_nilai": "69",
+                "nama_deskripsi": "Below Average",
+                "nama_kategori": "GTI 1"
+            }
+        },
+        {
+            "category_id": "9",
+            "name": "Reasoning",
+            "type": "gti 2",
+            "result": {
+                "jumlah_soal": 50,
+                "nilai": 12.5,
+                "deskripsi_nilai": "84",
+                "nama_deskripsi": "Low Average",
+                "nama_kategori": "GTI 2"
+            }
+        },
+        {
+            "category_id": "10",
+            "name": "Letter Distance",
+            "type": "gti 3",
+            "result": {
+                "jumlah_soal": 72,
+                "nilai": 0,
+                "deskripsi_nilai": "69",
+                "nama_deskripsi": "Below Average",
+                "nama_kategori": "GTI 3"
+            }
+        },
+        {
+            "category_id": "11",
+            "name": "Number Distance",
+            "type": "gti 4",
+            "result": {
+                "jumlah_soal": 60,
+                "nilai": 14.5,
+                "deskripsi_nilai": "74",
+                "nama_deskripsi": "Low Average",
+                "nama_kategori": "GTI 4"
+            }
+        },
+        {
+            "category_id": "12",
+            "name": "Spatial Orientation",
+            "type": "gti 5",
+            "result": {
+                "jumlah_soal": 60,
+                "nilai": 5,
+                "deskripsi_nilai": "74",
+                "nama_deskripsi": "Low Average",
+                "nama_kategori": "GTI 5"
+            }
+        },
+        {
+            "category_id": "18",
+            "name": "GTI",
+            "type": "gti",
+            "result": {
+                "induk": {
+                    "id_testkategori": "18",
+                    "jawaban_benar": null,
+                    "jumlah_soal": null,
+                    "nilai": 74,
+                    "deskripsi_nilai": "Low Average",
+                    "nama_kategori": "GTI"
+                },
+                "sub": [
+                    {
+                        "id_testkategori": 8,
+                        "jawaban_benar": 0,
+                        "jumlah_soal": 60,
+                        "nilai": "69",
+                        "deskripsi_nilai": "Below Average",
+                        "nama_kategori": "GTI 1",
+                        "deskripsi_kategori": "Speed & Accuracy"
+                    },
+                    {
+                        "id_testkategori": 9,
+                        "jawaban_benar": 0,
+                        "jumlah_soal": 50,
+                        "nilai": "84",
+                        "deskripsi_nilai": "Low Average",
+                        "nama_kategori": "GTI 2",
+                        "deskripsi_kategori": "Reasoning"
+                    },
+                    {
+                        "id_testkategori": 10,
+                        "jawaban_benar": 0,
+                        "jumlah_soal": 72,
+                        "nilai": "69",
+                        "deskripsi_nilai": "Below Average",
+                        "nama_kategori": "GTI 3",
+                        "deskripsi_kategori": "Focus & Attention"
+                    },
+                    {
+                        "id_testkategori": 11,
+                        "jawaban_benar": 0,
+                        "jumlah_soal": 60,
+                        "nilai": "74",
+                        "deskripsi_nilai": "Low Average",
+                        "nama_kategori": "GTI 4",
+                        "deskripsi_kategori": "Numerical Ability"
+                    },
+                    {
+                        "id_testkategori": 12,
+                        "jawaban_benar": 0,
+                        "jumlah_soal": 60,
+                        "nilai": "74",
+                        "deskripsi_nilai": "Low Average",
+                        "nama_kategori": "GTI 5",
+                        "deskripsi_kategori": "Technical Problem Solving"
+                    }
+                ],
+                "config": {
+                    "max_nilai": 131,
+                    "colors": {
+                        "Below Average": "#FF5d5d",
+                        "Low Average": "#FFb200",
+                        "Average": "#FFFF00",
+                        "High Average": "#88FF77",
+                        "Above Average": "#00da9f"
+                    }
+                }
+            }
+        }
+    ]
+}

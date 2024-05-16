@@ -1,16 +1,13 @@
 'use server';
 
-import * as crypto from '@/lib/utils/utils';
 import ApplicantListItem from './applicant-list-item';
 import { getAllApplicantDataByJobVacancyId } from '@/lib/action/job-vacancies/job-vacancy-details/action';
 
-const ApplicantListArea = async ({ jobVacancyId, perPage, offset }) => {
-  const decryptedJobVacancyId = await crypto.decryptData(jobVacancyId);
-
+const ApplicantListArea = async ({ jobVacancyId, status, perPage, offset }) => {
   const applicantData = await (async () => {
-    if (decryptedJobVacancyId) {
+    if (jobVacancyId) {
       return await getAllApplicantDataByJobVacancyId(
-        decryptedJobVacancyId,
+        jobVacancyId,
         offset,
         perPage,
       );
@@ -19,7 +16,9 @@ const ApplicantListArea = async ({ jobVacancyId, perPage, offset }) => {
     }
   })();
 
-  return <ApplicantListItem applicantData={applicantData} />;
+  return (
+    <ApplicantListItem status={status} applicantData={applicantData?.data} />
+  );
 };
 
 export default ApplicantListArea;

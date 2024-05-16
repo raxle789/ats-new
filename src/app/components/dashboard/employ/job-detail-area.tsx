@@ -23,34 +23,37 @@ const EmployJobDetailArea = async ({ params, searchParams }) => {
   })();
 
   return (
-    <EmployJobDetailItem
-      jobVacancyData={jobVacancyData}
-      perPage={Number(perPage)}
-      offset={Number(offset)}
-      listArea={[
-        {
-          id: Status.APPLICANT,
-          content: (
-            <ApplicantListArea
-              jobVacancyId={jobVacancyData?.jobId}
-              perPage={Number(perPage)}
-              offset={Number(offset)}
-            />
-          ),
-        },
-        {
-          id: Status.ASSESSMENT,
-          content: (
-            <AssessmentListArea
-              jobVacancyId={jobVacancyData?.jobId}
-              status={Status.ASSESSMENT}
-              perPage={Number(perPage)}
-              offset={Number(offset)}
-            />
-          ),
-        },
-      ]}
-    />
+    <>
+      <EmployJobDetailItem
+        jobVacancyData={jobVacancyData}
+        perPage={Number(perPage)}
+        offset={Number(offset)}
+        listArea={[
+          {
+            id: Status.APPLICANT,
+            content: (
+              <ApplicantListArea
+                jobVacancyId={jobVacancyData?.jobId}
+                status={Status.APPLICANT}
+                perPage={Number(perPage)}
+                offset={Number(offset)}
+              />
+            ),
+          },
+          {
+            id: Status.ASSESSMENT,
+            content: (
+              <AssessmentListArea
+                jobVacancyId={jobVacancyData?.jobId}
+                status={Status.ASSESSMENT}
+                perPage={Number(perPage)}
+                offset={Number(offset)}
+              />
+            ),
+          },
+        ]}
+      />
+    </>
   );
 };
 
