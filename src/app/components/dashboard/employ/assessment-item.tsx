@@ -15,6 +15,11 @@ const AssessmentItems = ({
   checkboxAllValue,
   setCheckbox,
   setCheckboxAllValue,
+  jobVacancyId,
+  api,
+  router,
+  setLoading,
+  handleApplicant,
 }) => {
   const dispatch = useAppDispatch();
   const showModal = () => {
@@ -125,6 +130,11 @@ const AssessmentItems = ({
                       <ActionCandidate
                         status={status}
                         candidateId={item?.candidateId}
+                        jobVacancyId={jobVacancyId}
+                        api={api}
+                        router={router}
+                        setLoading={setLoading}
+                        handleApplicant={handleApplicant}
                       />
                     </span>
                   </button>

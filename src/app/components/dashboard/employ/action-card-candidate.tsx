@@ -5,10 +5,16 @@ import { useAppSelector } from '@/redux/hook';
 import { useRouter } from 'next/navigation';
 import CreateInterviewModal from '../../common/popup/create-interview-modal';
 
-const ActionCandidate = ({ status, candidateId }) => {
+const ActionCandidate = ({
+  status,
+  candidateId,
+  jobVacancyId,
+  api,
+  router,
+  setLoading,
+  handleApplicant,
+}) => {
   const currentStep = useAppSelector((state) => state.applicantStep.step);
-
-  const router = useRouter();
 
   const [isModalOpen, setModalOpen] = useState(false);
 
@@ -23,7 +29,20 @@ const ActionCandidate = ({ status, candidateId }) => {
           <a className="applicant-action">View Details</a>
         </li>
         <li>
-          <button className="applicant-action" type="button" onClick={() => {}}>
+          <button
+            className="applicant-action"
+            type="button"
+            onClick={() => {
+              handleApplicant(
+                'assignAssessment',
+                candidateId,
+                jobVacancyId,
+                api,
+                router,
+                setLoading,
+              );
+            }}
+          >
             Assign to Assessment
           </button>
         </li>
