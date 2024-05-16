@@ -1,12 +1,28 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Checkbox, Popover } from 'antd';
+import { useRouter } from 'next/navigation';
+import * as messages from '@/utils/message';
+import * as confirmations from '@/utils/confirmation';
+import { Checkbox, Popover, Spin, Modal, message } from 'antd';
 import type { CheckboxProps } from 'antd';
 import ActionCheckboxPipeline from '../common/popup/action-checkbox-pipeline';
 import ApplicantsItems from '../dashboard/employ/applicant-item';
 
-const ApplicantListItem = ({ status, applicantData }) => {
+const { confirm } = Modal;
+
+const ApplicantListItem = ({
+  status,
+  applicantData,
+  jobVacancyId,
+  registerAssessment,
+}) => {
+  const router = useRouter();
+
+  const [api, contextHolder] = message.useMessage();
+
+  const [loading, setLoading] = useState(false);
+
   const initialCheckboxState = applicantData?.reduce(
     (acc: { [key: string]: boolean }, _: any, index: string) => {
       return {
@@ -49,8 +65,51 @@ const ApplicantListItem = ({ status, applicantData }) => {
     }
   }, [checkbox]);
 
+  function handleApplicant(handleType: 'assignAssessment', candidateId) {
+    switch (handleType) {
+      case 'assignAssessment': {
+        confirm({
+          ...confirmations?.assignConfirmation('assessment'),
+          onOk() {
+            return new Promise<void>((resolve, reject) => {
+              setTimeout(async () => {
+                const validate = await registerAssessment(
+                  candidateId,
+                  jobVacancyId,
+                );
+
+                if (validate?.success) {
+                  messages.success(api, validate?.message);
+
+                  router.refresh();
+                } else {
+                  messages.error(api, validate?.message);
+
+                  router.refresh();
+                }
+
+                resolve(setLoading(false));
+              }, 2000);
+            }).catch((e) =>
+              console.log('Failed Assign This Candidate to Assessment: ', e),
+            );
+          },
+          onCancel() {
+            router.refresh();
+
+            setLoading(false);
+          },
+        });
+      }
+    }
+  }
+
   return (
     <>
+      {contextHolder}
+
+      <Spin spinning={loading} fullscreen />
+
       <div className="card-checkbox">
         <Popover
           content={<ActionCheckboxPipeline />}
@@ -74,6 +133,11 @@ const ApplicantListItem = ({ status, applicantData }) => {
             checkboxAllValue={checkboxAllValue}
             setCheckbox={setCheckbox}
             setCheckboxAllValue={setCheckboxAllValue}
+            jobVacancyId={jobVacancyId}
+            api={api}
+            router={router}
+            setLoading={setLoading}
+            handleApplicant={handleApplicant}
           />
         ))}
       </div>

@@ -17,91 +17,16 @@ import ListArea from '../../applicants/list-area';
 
 const { confirm } = Modal;
 
-const EmployJobDetailItem = ({ jobVacancyData, perPage, offset, listArea }) => {
-  const router = useRouter();
-
+const EmployLayoutJobDetailItem: React.FC<Props> = ({
+  jobVacancyData,
+  children,
+}: {
+  children: JSX.Element;
+}) => {
   const [status, setStatus] = useState(Status.APPLICANT);
-
-  const [api, contextHolder] = message.useMessage();
-
-  const [loading, setLoading] = useState(false);
-
-  // const [list, setList] = useState(
-  //   listArea?.map((area) => {
-  //     if (area?.id === Status.APPLICANT) {
-  //       return <div key={status}>{area?.content}</div>;
-  //     }
-  //   }),
-  // );
-
-  // function handleApplicant(handleType: 'assignAssessment', candidateId) {
-  //   switch (handleType) {
-  //     case 'assignAssessment': {
-  //       confirm({
-  //         ...confirmations?.assignConfirmation('assessment'),
-  //         onOk() {
-  //           return new Promise<void>((resolve, reject) => {
-  //             setTimeout(async () => {
-  //               const validate = await registerAssessment(
-  //                 candidateId,
-  //                 jobVacancyData?.jobId,
-  //               );
-
-  //               if (validate?.success) {
-  //                 messages.success(api, validate?.message);
-
-  //                 router.refresh();
-  //               } else {
-  //                 messages.error(api, validate?.message);
-
-  //                 router.refresh();
-  //               }
-
-  //               resolve(setLoading(false));
-  //             }, 2000);
-  //           }).catch((e) =>
-  //             console.log('Failed Assign This Candidate to Assessment: ', e),
-  //           );
-  //         },
-  //         onCancel() {
-  //           router.refresh();
-
-  //           setLoading(false);
-  //         },
-  //       });
-  //     }
-  //   }
-  // }
-
-  const list = useMemo(() => {
-    switch (status) {
-      case Status.APPLICANT:
-        return listArea?.map((area) => {
-          if (area?.id === Status.APPLICANT && area.content) {
-            return <div key={status}>{area.content}</div>;
-          }
-        });
-      case Status.ASSESSMENT:
-        return listArea?.map((area) => {
-          if (area?.id === Status.ASSESSMENT && area.content) {
-            return <div key={status}>{area.content}</div>;
-          }
-        });
-      default:
-        return listArea?.map((area) => {
-          if (area?.id === Status.APPLICANT) {
-            return <div key={status}>{area.content}</div>;
-          }
-        });
-    }
-  }, [status, jobVacancyData, perPage, offset, listArea]);
 
   return (
     <>
-      {/* {contextHolder}
-
-      <Spin spinning={loading} fullscreen /> */}
-
       <div className="d-sm-flex align-items-start justify-content-between mb-10 lg-mb-30">
         <div>
           <h3 className="main-title m0">
@@ -206,9 +131,11 @@ const EmployJobDetailItem = ({ jobVacancyData, perPage, offset, listArea }) => {
         <SearchBar />
       </div>
 
-      {list}
+      {children}
+
+      {/* {list}  */}
     </>
   );
 };
 
-export default EmployJobDetailItem;
+export default EmployLayoutJobDetailItem;

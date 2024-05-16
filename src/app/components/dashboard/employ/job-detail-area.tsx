@@ -24,6 +24,21 @@ const EmployJobDetailArea = async ({ params, searchParams }) => {
 
   return (
     <>
+      {/* {status === Status.APPLICANT ? (
+        <ApplicantListArea
+          jobVacancyId={jobVacancyData?.jobId}
+          status={Status.APPLICANT}
+          perPage={Number(perPage)}
+          offset={Number(offset)}
+        />
+      ) : (
+        <AssessmentListArea
+          jobVacancyId={jobVacancyData?.jobId}
+          status={Status.ASSESSMENT}
+          perPage={Number(perPage)}
+          offset={Number(offset)}
+        />
+      )} */}
       <EmployJobDetailItem
         jobVacancyData={jobVacancyData}
         perPage={Number(perPage)}
