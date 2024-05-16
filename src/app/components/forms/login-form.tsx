@@ -63,7 +63,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
     }
 
     if (authorizing.success === false) {
-      return alert('Failed to authorize user');
+      alert('User not found');
+      return setSpinning(false);
     }
     console.info('user required data is completed...');
     /* Directing to job list */

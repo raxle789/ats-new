@@ -1170,6 +1170,9 @@ const Stage3Form = () => {
   const [spinning, setSpinning] = useState(false);
 
   const handleOk = async () => {
+    // const values = form.getFieldsValue();
+    // console.log('submitted values: ', values);
+    // console.info('is a string?:', typeof values.certificationCheckbox);
     setIsModalOpen(false);
     setSpinning(true);
     const values = form.getFieldsValue();
@@ -1198,6 +1201,7 @@ const Stage3Form = () => {
       maritalStatus: values.profile.maritalStatus,
       placeOfBirth: values.profile.placeOfBirth,
       religion: values.profile.religion,
+      // Domicile => No field data
     };
     const updateCandidateData = await updateCandidate(candidateUpdateData);
     if (updateCandidateData.success !== true) {
@@ -1283,7 +1287,7 @@ const Stage3Form = () => {
         return setErrors(storeCertificatesData.message as string);
       }
       console.info('Store certificates successfully...', storeCertificatesData);
-    }
+    };
 
     console.info('Begin to store skills...');
     const storeSkillsData = await storeSkills(values.skills);

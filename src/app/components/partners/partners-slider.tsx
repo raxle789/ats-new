@@ -4,19 +4,19 @@ import Slider from 'react-slick';
 import Image, { StaticImageData } from 'next/image';
 import logo_1 from '@/assets/images/home/partner-logo/ASICS.png';
 import logo_2 from '@/assets/images/home/partner-logo/Erafone.png';
-import logo_3 from '@/assets/images/home/partner-logo/Eraspace.png';
+import logo_3 from '@/assets/images/home/partner-logo/Eraspace2.png';
 import logo_4 from '@/assets/images/home/partner-logo/Garmin.png';
-import logo_5 from '@/assets/images/home/partner-logo/IT.png';
-import logo_6 from '@/assets/images/home/partner-logo/JD.png';
+import logo_5 from '@/assets/images/home/partner-logo/JD.png';
+import logo_6 from '@/assets/images/home/partner-logo/IT.png';
 import logo_7 from '@/assets/images/home/partner-logo/Nasa_Samsung.png';
+import logo_8 from '@/assets/images/home/partner-logo/Wellings.png';
+import logo_9 from '@/assets/images/home/partner-logo/erablue-logo.png';
+import logo_10 from '@/assets/images/home/partner-logo/UR.png';
+import logo_11 from '@/assets/images/home/partner-logo/ibox.png';
+import logo_12 from '@/assets/images/home/partner-logo/xiaomi.png';
+import logo_13 from '@/assets/images/home/partner-logo/paris_baguette.png';
+import logo_14 from '@/assets/images/home/partner-logo/dji.png';
 // import logo_8 from '@/assets/images/home/partner-logo/TFS.png';
-import logo_9 from '@/assets/images/home/partner-logo/UR.png';
-import logo_10 from '@/assets/images/home/partner-logo/Wellings.png';
-import logo_11 from '@/assets/images/home/partner-logo/dji.png';
-import logo_12 from '@/assets/images/home/partner-logo/erablue-logo.png';
-import logo_13 from '@/assets/images/home/partner-logo/ibox.png';
-import logo_14 from '@/assets/images/home/partner-logo/xiaomi.png';
-import logo_15 from '@/assets/images/home/partner-logo/paris_baguette.png';
 
 // slider setting
 const slider_setting = {
@@ -58,14 +58,13 @@ const logos: StaticImageData[] = [
   logo_5,
   logo_6,
   logo_7,
-  // logo_8,
+  logo_8,
   logo_9,
   logo_10,
   logo_11,
   logo_12,
   logo_13,
   logo_14,
-  logo_15,
 ];
 
 const PartnersSlider = () => {
@@ -78,7 +77,7 @@ const PartnersSlider = () => {
               <Image
                 src={logo}
                 alt="logo"
-                style={{ width: 'auto', height: '59px' }}
+                style={{ width: 'auto', height: '63px' }}
               />
             </div>
           </div>
