@@ -408,6 +408,28 @@ const SubmitJobItem = ({
     // });
   }
 
+  function handleCancel() {
+    setLoading(true);
+
+    confirm({
+      ...confirmations.cancelConfirmation('jobVacancy'),
+      onOk() {
+        return new Promise<void>((resolve, reject) => {
+          setTimeout(async () => {
+            resolve(router.push('/dashboard/ta/jobs'));
+          }, 2000);
+        }).catch((e) =>
+          console.log('Failed Cancel Submitting Job Vacancy: ', e),
+        );
+      },
+      onCancel() {
+        router.refresh();
+
+        setLoading(false);
+      },
+    });
+  }
+
   const [modalOpen, setModalOpen] = useState(false);
   useEffect(() => {
     setModalOpen(true);
@@ -563,6 +585,7 @@ const SubmitJobItem = ({
         handleVerticalChange={handleVerticalChange}
         parameterState={parameterState}
         setParameterState={setParameterState}
+        handleCancel={handleCancel}
         // ageParameterState={ageParameterState}
         // setAgeParameterState={setAgeParameterState}
         // genderParameterState={genderParameterState}
