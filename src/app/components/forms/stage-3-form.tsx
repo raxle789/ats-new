@@ -749,6 +749,7 @@ const Stage3Form = () => {
   const [formalCheck, setFormalCheck] = useState<boolean>(true);
   const handleFormalCheck: CheckboxProps['onChange'] = (e) => {
     setFormalCheck(e.target.checked);
+    console.log('formalCheck: ', formalCheck);
   };
   const [certificationCheck, setCertificationCheck] = useState<boolean>(true);
   const handleCertificationCheck: CheckboxProps['onChange'] = (e) => {

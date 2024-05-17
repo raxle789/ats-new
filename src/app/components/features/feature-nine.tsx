@@ -7,6 +7,7 @@ import img_1 from '@/assets/images/assets/img_37.jpg';
 import grey_bg from '@/assets/images/assets/grey-bg.jpg';
 import img_3 from '@/assets/images/assets/img_04.jpg';
 import logo_era from '@/assets/images/home/logo_era.png';
+import logo_era_hd from '@/assets/images/home/erajaya_logo_hd.png';
 // import img_4 from '@/assets/images/assets/img_42.png';
 // import screen_1 from '@/assets/images/assets/screen_01.png';
 // import screen_2 from '@/assets/images/assets/screen_02.png';
@@ -65,7 +66,7 @@ const FeatureNine = () => {
             <div className="img-data position-relative md-mt-50">
               <div className="row ms-3">
                 <Image
-                  src={logo_era}
+                  src={logo_era_hd}
                   alt="image"
                   className="lazy-img logo-img mb-4 wow fadeInRight"
                   style={imgStyle}

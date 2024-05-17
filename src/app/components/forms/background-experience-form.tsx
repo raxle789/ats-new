@@ -20,7 +20,7 @@ import type {
 // import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { getExperiences } from '@/libs/Candidate/retrieve-data';
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 const { TextArea } = Input;
@@ -36,8 +36,8 @@ type FieldType = {
       positionLevel?: string;
       compName?: string;
       jobDesc?: string;
-      startYear?: string;
-      endYear?: string;
+      startYear?: string | Dayjs;
+      endYear?: string | Dayjs;
       currentYear?: boolean;
       currentSalary?: number;
     };
@@ -737,7 +737,7 @@ const BackgroundExperienceForm = () => {
 
   useEffect(() => {
     if (expValue === 'Professional') {
-      const loopTotal = expTotal - displayedItems.length;
+      const loopTotal = expTotal - displayedItems.length + 1;
       // console.log('expTotal: ', expTotal);
       // console.log('panjang display item: ', displayedItems.length);
       // console.log('expIdx: ', expIdx);
@@ -829,7 +829,9 @@ const BackgroundExperienceForm = () => {
                         }
                       />
                     )}
-                    {!editState && <p className="mb-0">3.000.000</p>}
+                    {!editState && (
+                      <p className="mb-0">{experiences?.expected_salary}</p>
+                    )}
                   </Form.Item>
                 </div>
               </div>

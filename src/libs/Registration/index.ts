@@ -23,32 +23,32 @@ export async function createUser(formData: any, phoneNumber: any) {
   /* storing user-data */
   const checkEmail = await prisma.users.findUnique({
     where: {
-      email: formData.email
-    }
+      email: formData.email,
+    },
   });
   console.log('is email exist: ', checkEmail);
-  if(checkEmail !== null) {
+  if (checkEmail !== null) {
     return {
       success: false,
       message: {
-        saveUser: ['Email already exists, please use another email']
-      }
+        saveUser: ['Email already exists, please use another email'],
+      },
     };
-  };
+  }
   const checkPhoneNumber = await prisma.candidates.findUnique({
     where: {
-      phone_number: phoneNumber
-    }
+      phone_number: phoneNumber,
+    },
   });
   console.log('is number exist: ', checkPhoneNumber);
-  if(checkPhoneNumber !== null) {
+  if (checkPhoneNumber !== null) {
     return {
       success: false,
       message: {
-        saveUser: ['Phone number already exists, please use another number']
-      }
+        saveUser: ['Phone number already exists, please use another number'],
+      },
     };
-  };
+  }
   const user = await prisma.users.create({
     data: {
       name: formData.fullname,
@@ -412,6 +412,7 @@ export async function storeEducation(
 ) {
   const regSession = await getUserSession('reg');
   console.info('reg-session-data');
+  console.info('is formal education: ', isFormal);
   /* Storing Education */
   if (isFormal === true) {
     console.info('Begin storing education data...');
@@ -488,7 +489,8 @@ export async function storeCertification(
         candidateId: regSession.candidate.id,
         certificateId: Number(value.certificationName[0]),
         institutionName: value.institution,
-        issuedDate: new Date(month, year),
+        // certification issued date terbalik
+        issuedDate: new Date(year, month),
         created_at: new Date(Date.now()),
       };
       /* Store to defined empty array */

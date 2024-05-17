@@ -437,6 +437,7 @@ export async function getEducationNSkills() {
         message: 'User session doesnt exist',
       };
     const id = authUserSession.candidate.id;
+    console.log('candidate id: ', id);
     const candidateEducationsAndSkills = await prisma.candidates.findUnique({
       where: {
         id: id,
@@ -461,10 +462,16 @@ export async function getEducationNSkills() {
         certifications: {
           select: {
             certificates: true,
+            institutionName: true,
+            issuedDate: true,
           },
         },
       },
     });
+    console.log(
+      'candidate education and skills: ',
+      candidateEducationsAndSkills,
+    );
     const transformedSkills = objectToArray(
       candidateEducationsAndSkills?.candidateSkills as {
         skills: { name: string };
