@@ -7,6 +7,46 @@ import { deleteSession, setUserSession } from '../Sessions';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
+type GreCaptcha = {
+  secret: string;
+  response: string;
+  remoteip?: string;
+};
+
+type GreCaptchaResult = {
+  success: boolean;
+  score: number;
+  action: string;
+  challenge_ts: Date | string;
+  hostname: string;
+  ['error-codes']?: any[];
+};
+
+export async function GReCaptchaV2Check(token: string): Promise<GreCaptchaResult> {
+  const GreCaptchaRequestBody: GreCaptcha = {
+    secret: process.env.NEXT_PUBLIC_RECAPTCHA_SECRET_KEY as string,
+    response: token
+  };
+  const gCaptchaURLParams = new URLSearchParams();
+  for(const [prop, val] of Object.entries(GreCaptchaRequestBody)) {
+    gCaptchaURLParams.append(prop, val);
+  };
+  const gCaptchaHeader = new Headers({
+    "Content-Type": "application/x-www-form-urlencoded"
+  });
+  const gCaptchaRequest = new Request('https://www.google.com/recaptcha/api/siteverify', {
+    method: 'POST',
+    body: gCaptchaURLParams,
+    headers: gCaptchaHeader
+  });
+  const gCaptchaVerifyRequest = await fetch(gCaptchaRequest);
+  const response: GreCaptchaResult = await gCaptchaVerifyRequest.json();
+
+  console.info('GreCaptcha Result', response);
+
+  return response;
+}
+
 export async function userAuth(formData: any) {
   /* validation */
   /*
@@ -41,6 +81,7 @@ export async function userAuth(formData: any) {
   console.info('comparing password...');
   /* password-check */
   const match = await bcrypt.compare(formData.password, user.password);
+  console.info('value match: ', match);
 
   console.info('comparing result...', match);
   if(!match) {

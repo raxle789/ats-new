@@ -238,22 +238,30 @@ const PersonalDataForm = () => {
   const [pdf, setPDF] = useState<string | File>('');
   console.log('pdfbase64: ', pdf);
 
+  const [pageNumber, setPageNumber] = useState<number>(1);
+
+  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
+    setPageNumber(numPages);
+  };
+
   const fetchCVDocument = async () => {
+    console.log('Begin fetch documents...');
     const cv = await getOnePDF();
+    console.log('Got cv: ', cv);
     console.log('getting cv: ', cv);
     if(cv) {
       const pdfFile = await fetch(cv.data as string);
       const blobFile = await pdfFile.blob();
-      const newFile = new File([blobFile], "pdf-cv", { type: "application/pdf" });
+      const newFile = new File([blobFile], "pdf-cv or name from database", { type: "application/pdf" });
       console.info('NEW FILE: ', newFile);
-      return setPDF(cv.data as string);
+      return setPDF(newFile);
     };
   };
 
   useEffect(() => {
     fetchProfileData();
     fetchAddress();
-    // fetchCVDocument();
+    fetchCVDocument();
     // fetchFamilies();
     // fetchEducation();
     // fetchSkills();
@@ -424,10 +432,9 @@ const PersonalDataForm = () => {
   }, [profileData, addresses, families, education, skills]);
   return (
     <>
-      {/* <Document file={pdf}>
-        <Page>
-        </Page>
-      </Document> */}
+      <Document file={pdf} onLoadSuccess={onDocumentLoadSuccess}>
+        <Page pageNumber={pageNumber}/>
+      </Document>
       <div>
         <div className="mb-25">
           <button

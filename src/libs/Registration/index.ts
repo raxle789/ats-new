@@ -1,7 +1,7 @@
 'use server';
 
 import { deleteSession, getUserSession, setUserSession } from '../Sessions';
-import { userRegister1 } from '../validations/Register';
+// import { userRegister1 } from '../validations/Register';
 import bcrypt from 'bcrypt';
 import { fileToBase64, toDatetime, transformToArrayOfObject } from './utils';
 import { v4 as uuidV4 } from 'uuid';
@@ -437,7 +437,7 @@ export async function storeEducation(
         success: false,
         message: 'Failed to store education-data',
       };
-    }
+    };
     console.info('Storing education data successfully...', education);
 
     /* Close connection */
