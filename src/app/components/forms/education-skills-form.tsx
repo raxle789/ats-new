@@ -38,9 +38,9 @@ type FieldType = {
     [id: string]: {
       certificationName?: string;
       institution?: string;
-      issueDate?: string;
-      monthIssue?: string;
-      yearIssue?: string;
+      issueDate?: string | Dayjs;
+      monthIssue?: string | Dayjs;
+      yearIssue?: string | Dayjs;
     };
   };
   skills?: string;
@@ -257,7 +257,7 @@ const EducationSkillsForm = () => {
               >
                 <DatePicker placeholder="Select Month" picker="month" />
               </Form.Item>
-              <Form.Item<FieldType>
+              {/* <Form.Item<FieldType>
                 name={[
                   'certification',
                   certificationIdx.toString(),
@@ -266,7 +266,7 @@ const EducationSkillsForm = () => {
                 className="mb-0"
               >
                 <DatePicker placeholder="Select Year" picker="year" />
-              </Form.Item>
+              </Form.Item> */}
             </div>
           </div>
         </div>
@@ -284,21 +284,38 @@ const EducationSkillsForm = () => {
         <div className="col-12">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Name (Certification/Licence)</label>
-            <p className="mb-0">nama sertifikat</p>
+            <p className="mb-0">
+              {
+                educationAndSkill?.certifications[certificationIdx]
+                  ?.certificates?.name
+              }
+            </p>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Institution</label>
-            <p className="mb-0">Universitas ga jelas</p>
+            <p className="mb-0">
+              {
+                educationAndSkill?.certifications[certificationIdx]
+                  ?.institutionName
+              }
+            </p>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Issue Date</label>
             <div className="d-flex align-items-center">
-              <p className="mb-0">tanggal mulai</p>
-              <p className="mb-0 ms-2">tanggal habis</p>
+              <p className="mb-0">
+                {dayjs(
+                  new Date(
+                    educationAndSkill?.certifications[
+                      certificationIdx
+                    ]?.issuedDate,
+                  ),
+                ).format('YYYY-MM')}
+              </p>
             </div>
           </div>
         </div>
@@ -313,7 +330,7 @@ const EducationSkillsForm = () => {
   const [displayedItems, setDisplayedItems] = useState(certifDisplayedInit);
   const newCertifTabIndex = useRef(0);
 
-  const onChangeCertifTabs = (newActiveKey: any) => {
+  const onChangeCertifTabs = (newActiveKey: string) => {
     setActiveCertifKey(newActiveKey);
   };
 
@@ -338,6 +355,7 @@ const EducationSkillsForm = () => {
     setDisplayedItems(newDisplayed);
     setActiveCertifKey(newActiveKey);
     setCertificationIdx((prevState) => prevState + 1);
+    console.log('addCertif');
   };
 
   const removeCertif = (targetKey: TargetKey) => {
@@ -356,7 +374,12 @@ const EducationSkillsForm = () => {
         newActiveKey = newPanes[0].key;
       }
     }
+    const newDisplayedPanes = displayedItems.filter(
+      (item) => item.key !== targetKey,
+    );
+
     setCertifItems(newPanes);
+    setDisplayedItems(newDisplayedPanes);
     setActiveCertifKey(newActiveKey);
   };
 
@@ -433,7 +456,15 @@ const EducationSkillsForm = () => {
     }
   };
 
+  const [eduTotal, setEduTotal] = useState(0);
   const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
+
+  console.info(
+    'ERROR DATE: ',
+    educationAndSkill?.educations?.start_year
+      ? dayjs(new Date(educationAndSkill?.educations?.start_year, 0))
+      : dayjs('20240101', 'YYYYMMDD'),
+  );
 
   useEffect(() => {
     const skillsArray = educationAndSkill?.skills;
@@ -462,6 +493,29 @@ const EducationSkillsForm = () => {
       setLangTotal(languagesData.length);
     }
 
+    const certifications = educationAndSkill?.certifications;
+    type certiField = {
+      [key: string]: {
+        certificationName?: string;
+        institution?: string;
+        monthIssue?: string;
+      };
+    };
+    let certificationsField: certiField;
+    if (certifications) {
+      certificationsField = certifications.reduce(
+        (acc: any, item: any, index: number) => {
+          acc[index] = {
+            certificationName: item.certificates.name,
+            institution: item.institutionName,
+            monthIssue: dayjs(new Date(item.issuedDate)),
+          };
+          return acc;
+        },
+        {},
+      );
+    }
+
     setInitFieldsValue((prevState) => ({
       ...prevState,
       // formalOption?: string;
@@ -473,27 +527,43 @@ const EducationSkillsForm = () => {
         schoolName: educationAndSkill?.educations?.university_name,
         gpa: educationAndSkill?.educations?.gpa,
         cityOfSchool: educationAndSkill?.educations?.cityOfSchool,
-        startEduYear: dayjs(
-          new Date(educationAndSkill?.educations?.start_year, 0),
-        ),
-        endEduYear: dayjs(new Date(educationAndSkill?.educations?.end_year, 0)),
+        startEduYear: educationAndSkill?.educations?.start_year
+          ? dayjs(new Date(educationAndSkill?.educations?.start_year, 0))
+          : dayjs('20240101', 'YYYYMMDD'),
+        endEduYear: educationAndSkill?.educations?.start_year
+          ? dayjs(new Date(educationAndSkill?.educations?.end_year, 0))
+          : dayjs('20240101', 'YYYYMMDD'),
       },
       skills: skillsString,
       language: languageField.language,
+      certification: certificationsField,
     }));
 
     if (educationAndSkill) {
-      addCertif();
+      setEduTotal(educationAndSkill.certifications.length);
     }
 
     console.log('initFieldsValue: ', initFieldsValue);
-
     form.setFieldsValue(initFieldsValue);
   }, [educationAndSkill]);
 
   useEffect(() => {
-    setCertificationIdx((prevState) => prevState + 1);
-  }, []);
+    if (educationAndSkill) {
+      const loopTotal = eduTotal - displayedItems.length + 1;
+      // console.log('expTotal: ', expTotal);
+      // console.log('panjang display item: ', displayedItems.length);
+      // console.log('expIdx: ', expIdx);
+      console.log('loopTotal: ', loopTotal);
+      for (let i = 0; i < loopTotal; i++) {
+        console.log('i: ', i);
+        addCertif();
+      }
+    }
+  }, [eduTotal]);
+
+  // useEffect(() => {
+  //   setCertificationIdx((prevState) => prevState + 1);
+  // }, []);
   return (
     <>
       <div>
