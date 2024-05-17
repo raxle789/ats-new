@@ -1,6 +1,7 @@
 'use server';
 
 import prisma from '@/root/prisma';
+import * as crypto from '@/lib/utils/utils';
 import { getUserSession } from '../Sessions';
 import { objectToArray } from './helpers';
 
@@ -442,7 +443,7 @@ export async function getEducationNSkills() {
       },
       select: {
         educations: true,
-        CandidateSkills: {
+        candidateSkills: {
           select: {
             skills: {
               select: {
@@ -465,11 +466,15 @@ export async function getEducationNSkills() {
       },
     });
     const transformedSkills = objectToArray(
-      candidateEducationsAndSkills?.CandidateSkills as {
+      candidateEducationsAndSkills?.candidateSkills as {
         skills: { name: string };
       }[],
     );
-    // console.log('education.skill.certification data: ', candidateEducationsAndSkills);
+    // console.log('TRANFORMED: ', transformedSkills);
+    // console.log(
+    //   'education.skill.certification data: ',
+    //   candidateEducationsAndSkills,
+    // );
     return {
       success: true,
       data: {
@@ -532,31 +537,31 @@ export async function getAdditionalInformations() {
       message: 'error getting additional information!',
     };
   }
-};
+}
 
 export async function getOnePDF() {
   try {
     const pdf = await prisma.documents.findFirst({
       where: {
-        id: 17
+        id: 17,
       },
       select: {
-        file_base: true
-      }
+        file_base: true,
+      },
     });
     await prisma.$disconnect();
     console.log('base64: ', pdf);
     return {
       success: true,
       data: pdf?.file_base.toString(),
-      message: 'success getting pdf'
+      message: 'success getting pdf',
     };
   } catch (error) {
     console.log('error getting pdf:', error);
     return {
       success: false,
       data: null,
-      message: 'Failed to get PDF'
+      message: 'Failed to get PDF',
     };
-  };
-};
+  }
+}

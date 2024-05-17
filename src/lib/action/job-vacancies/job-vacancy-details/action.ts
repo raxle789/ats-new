@@ -106,12 +106,15 @@ export async function getAllApplicantDataByJobVacancyId(
             data?.data?.map(async (d) => {
               const data = {
                 candidateId: await crypto.encryptData(d?.candidateId),
-                candidatePhoto: d?.candidates?.documents
-                  .filter(
-                    (item) =>
-                      item?.document_types?.document_name === 'profile-photo',
-                  )[0]
-                  .file_base?.toString(),
+                candidatePhoto: d?.candidates?.documents?.length
+                  ? d?.candidates?.documents
+                      ?.filter(
+                        (item) =>
+                          item?.document_types?.document_name ===
+                          'profile-photo',
+                      )[0]
+                      .file_base?.toString()
+                  : null,
                 candidateName: d?.candidates?.users?.name,
                 candidateLastPosition:
                   (await getLastPosition(d?.candidates?.working_experiences)) ??
@@ -200,13 +203,15 @@ export async function getAllApplicantDataByJobVacancyIdAndStateName(
                   if (assessmentData && !_.isEmpty(assessmentData)) {
                     const data = {
                       candidateId: await crypto.encryptData(d?.candidateId),
-                      candidatePhoto: d?.candidates?.documents
-                        .filter(
-                          (item) =>
-                            item?.document_types?.document_name ===
-                            'profile-photo',
-                        )[0]
-                        .file_base?.toString(),
+                      candidatePhoto: d?.candidates?.documents?.length
+                        ? d?.candidates?.documents
+                            ?.filter(
+                              (item) =>
+                                item?.document_types?.document_name ===
+                                'profile-photo',
+                            )[0]
+                            .file_base?.toString()
+                        : null,
                       candidateName: d?.candidates?.users?.name,
                       candidateLastPosition:
                         (await getLastPosition(

@@ -1170,9 +1170,8 @@ const Stage3Form = () => {
   const [spinning, setSpinning] = useState(false);
 
   const handleOk = async () => {
-
     setIsModalOpen(false);
-    // setSpinning(true);
+    setSpinning(true);
     const values = form.getFieldsValue();
     console.log('ok value form: ', values);
     console.info('is a string?:', typeof values.certificationCheckbox);
@@ -1293,13 +1292,13 @@ const Stage3Form = () => {
         return setErrors(storeCertificatesData.message as string);
       }
       console.info('Store certificates successfully...', storeCertificatesData);
-    };
+    }
 
     console.info('Begin to store skills...');
     const storeSkillsData = await storeSkills(values.skills);
     if (storeSkillsData.success !== true) {
       console.info(storeSkillsData.message as string);
-      // setSpinning(false);
+      setSpinning(false);
       return setErrors(storeSkillsData.message as string);
     }
     console.info('Store skills successfully...', storeSkillsData);
@@ -1311,7 +1310,7 @@ const Stage3Form = () => {
     const storeLanguageData = await storeLanguage(plainLanguagesData);
     if (storeLanguageData.success !== true) {
       console.info(storeLanguageData.message as string);
-      // setSpinning(false);
+      setSpinning(false);
       return setErrors(storeLanguageData.message as string);
     }
     console.info('Storing language data successfully...', storeLanguageData);
@@ -1326,7 +1325,7 @@ const Stage3Form = () => {
     );
     if (storeExperienceData?.success !== true) {
       console.info(storeExperienceData.message as string);
-      // setSpinning(false);
+      setSpinning(false);
       return setErrors(storeExperienceData.message as string);
     }
     console.info(
@@ -1349,7 +1348,7 @@ const Stage3Form = () => {
     );
     if (storeEmergencyContactData.success !== true) {
       console.info(storeEmergencyContactData.message as string);
-      // setSpinning(false);
+      setSpinning(false);
       return setErrors(storeEmergencyContactData.message as string);
     }
     console.info(
@@ -1374,7 +1373,7 @@ const Stage3Form = () => {
     );
     if (storeCandidateQuestionsData.success !== true) {
       console.info(storeCandidateQuestionsData.message as string);
-      // setSpinning(false);
+      setSpinning(false);
       return setErrors(storeCandidateQuestionsData.message as string);
     }
     console.info(
@@ -1394,7 +1393,7 @@ const Stage3Form = () => {
     const storeCV = await storeCurriculumVitae(manipulatedCurriculumVitae);
     if (storeCV.success !== true) {
       console.info(storeCV.message as string);
-      // setSpinning(false);
+      setSpinning(false);
       return setErrors(storeCV.message as string);
     }
     console.info('Store cv document successfully', storeCV);
@@ -1407,7 +1406,7 @@ const Stage3Form = () => {
 
     dispatch(setRegisterStep(4));
     setTimeout(() => {
-      // setSpinning(false);
+      setSpinning(false);
     }, 1000);
     message.success('Your data successfully saved');
   };

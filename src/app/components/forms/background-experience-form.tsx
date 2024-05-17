@@ -20,6 +20,7 @@ import type {
 // import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { getExperiences } from '@/libs/Candidate/retrieve-data';
+import dayjs from 'dayjs';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 const { TextArea } = Input;
@@ -37,7 +38,7 @@ type FieldType = {
       jobDesc?: string;
       startYear?: string;
       endYear?: string;
-      currentYear?: string;
+      currentYear?: boolean;
       currentSalary?: number;
     };
   };
@@ -205,12 +206,6 @@ const BackgroundExperienceForm = () => {
     jobJobLevels();
     lineIndutries();
   }, []);
-
-  // useEffect(() => {
-  //   if ('experiences' in experiences && experiences) {
-  //     setExpValue('Professional');
-  //   }
-  // }, [experiences]);
 
   const editOnChange = () => {
     setEditState(!editState);
@@ -501,49 +496,69 @@ const BackgroundExperienceForm = () => {
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Job Title*</label>
-            <p className="mb-0">Job titlenya apa</p>
+            <p className="mb-0">
+              {experiences?.experiences[expIdx]?.job_title}
+            </p>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Job Function*</label>
-            <p className="mb-0">job functionnya</p>
+            <p className="mb-0">
+              {experiences?.experiences[expIdx]?.job_function}
+            </p>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Line Industry*</label>
-            <p className="mb-0">line industrynya boy</p>
+            <p className="mb-0">
+              {experiences?.experiences[expIdx]?.line_industry}
+            </p>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Position Level*</label>
-            <p className="mb-0">position level bro</p>
+            <p className="mb-0">
+              {experiences?.experiences[expIdx]?.job_level}
+            </p>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Company Name*</label>
-            <p className="mb-0">company name</p>
+            <p className="mb-0">
+              {experiences?.experiences[expIdx]?.company_name}
+            </p>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Job Description</label>
-            <p className="mb-0">job description</p>
+            <p className="mb-0">
+              {experiences?.experiences[expIdx]?.job_description}
+            </p>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Start Year*</label>
-            <p className="mb-0">start year</p>
+            <p className="mb-0">
+              {dayjs(experiences?.experiences[expIdx]?.start_at).format(
+                'MM/YYYY',
+              )}
+            </p>
           </div>
         </div>
         <div className="col-4">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">End Year*</label>
-            <p className="mb-0">end year</p>
+            <p className="mb-0">
+              {dayjs(experiences?.experiences[expIdx]?.end_at).format(
+                'MM/YYYY',
+              )}
+            </p>
           </div>
         </div>
         {/* <div className="col-2">
@@ -563,38 +578,41 @@ const BackgroundExperienceForm = () => {
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Current Salary (gross Monthly)*</label>
-            <p className="mb-0">6.000.000</p>
+            <p className="mb-0">{experiences?.experiences[expIdx]?.salary}</p>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Expected Salary (gross Monthly)*</label>
-            <p className="mb-0">10.000.000</p>
+            <p className="mb-0">{experiences?.expected_salary}</p>
           </div>
         </div>
       </div>
     );
   };
 
-  const initExpItems = [
-    {
-      label: 'Experience 1',
-      children: <ExpTabContent expIdx={expIdx} />,
-      key: '1',
-    },
-  ];
-  const displayedInit = [
-    {
-      label: 'Experience 1',
-      children: <DisplayedTabContent expIdx={expIdx} />,
-      key: '1',
-      closable: false,
-    },
-  ];
+  // const initExpItems = [
+  //   {
+  //     label: 'Experience 1',
+  //     children: <ExpTabContent expIdx={expIdx} />,
+  //     key: '1',
+  //   },
+  // ];
+  // const displayedInit = [
+  //   {
+  //     label: 'Experience 1',
+  //     children: <DisplayedTabContent expIdx={expIdx} />,
+  //     key: '1',
+  //     closable: false,
+  //   },
+  // ];
+  const initExpItems: any[] = [];
+  const displayedInit: any[] = [];
 
-  const [activeExpKey, setActiveExpKey] = useState(initExpItems[0].key);
+  const [activeExpKey, setActiveExpKey] = useState('');
   const [expItems, setExpItems] = useState(initExpItems);
   const [displayedItems, setDisplayedItems] = useState(displayedInit);
+  // const [displayedItems, setDisplayedItems] = useState(null);
   const newExpTabIdx = useRef(0);
 
   const onChangeExpTabs = (newActiveKey: string) => {
@@ -602,6 +620,7 @@ const BackgroundExperienceForm = () => {
   };
 
   const addExp = () => {
+    console.log('expIdx: ', expIdx);
     const newActiveKey = `newTab${newExpTabIdx.current++}`;
     const newPanes = [...expItems];
     newPanes.push({
@@ -622,6 +641,7 @@ const BackgroundExperienceForm = () => {
     setDisplayedItems(newDisplayed);
     setActiveExpKey(newActiveKey);
     setExpIdx(expIdx + 1);
+    console.log('addExp');
   };
 
   const removeExp = (targetKey: TargetKey) => {
@@ -677,9 +697,61 @@ const BackgroundExperienceForm = () => {
     }
   };
 
+  const [expTotal, setExpTotal] = useState(0);
+  const [initFieldsValue, setInitFieldsValue] = useState({});
+
   useEffect(() => {
-    setExpIdx(expIdx + 1);
-  }, []);
+    if (experiences) {
+      if ('experiences' in experiences) {
+        setInitFieldsValue((prevState) => ({
+          ...prevState,
+          expOption: expValue,
+          experience: {
+            expectedSalary: experiences?.expected_salary,
+            ...experiences?.experiences?.reduce(
+              (acc: any, exp: any, index: number) => {
+                acc[index] = {
+                  jobTitle: exp?.job_title,
+                  jobFunction: exp?.job_function,
+                  lineIndustry: exp?.line_industry,
+                  positionLevel: exp?.job_level,
+                  compName: exp?.company_name,
+                  jobDesc: exp?.job_description,
+                  startYear: dayjs(exp?.start_at),
+                  endYear: dayjs(exp?.end_at),
+                  currentYear: exp?.is_currently,
+                  currentSalary: exp?.salary,
+                };
+                return acc;
+              },
+              {},
+            ),
+          },
+        }));
+        // console.log('transformed experiences: ', initFieldsValue);
+        setExpValue('Professional');
+        setExpTotal(experiences.experiences.length);
+      }
+    }
+  }, [experiences]);
+
+  useEffect(() => {
+    if (expValue === 'Professional') {
+      const loopTotal = expTotal - displayedItems.length;
+      // console.log('expTotal: ', expTotal);
+      // console.log('panjang display item: ', displayedItems.length);
+      // console.log('expIdx: ', expIdx);
+      console.log('loopTotal: ', loopTotal);
+      for (let i = 0; i < loopTotal; i++) {
+        console.log('i: ', i);
+        addExp();
+      }
+    }
+  }, [expValue, expTotal]);
+
+  useEffect(() => {
+    form.setFieldsValue(initFieldsValue);
+  }, [experiences]);
   return (
     <>
       <div>
@@ -773,7 +845,7 @@ const BackgroundExperienceForm = () => {
               />
             )}
 
-            {!editState && (
+            {!editState && expValue === 'Professional' && (
               <Tabs
                 type="editable-card"
                 hideAdd

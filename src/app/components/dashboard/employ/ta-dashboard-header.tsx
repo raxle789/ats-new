@@ -100,10 +100,7 @@ const TaDashboardHeader = () => {
           </ul>
         </div>
         <div>
-          <Link
-            href="/dashboard/employ-dashboard/submit-job"
-            className="job-post-btn tran3s"
-          >
+          <Link href="/dashboard/ta/submit-job" className="job-post-btn tran3s">
             Post a Job
           </Link>
         </div>

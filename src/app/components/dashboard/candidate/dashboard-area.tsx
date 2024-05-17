@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import * as crypto from '@/lib/utils/utils';
 import Image, { StaticImageData } from 'next/image';
 import job_data from '@/data/job-data';
 import icon_1 from '@/assets/dashboard/images/icon/icon_12.svg';
@@ -209,7 +210,9 @@ const DashboardArea = () => {
                         <li>
                           <a
                             className="dropdown-item"
-                            href={`/main/jobs/${job.jobVacancyId}`}
+                            href={`/main/jobs/${crypto.encryptData(
+                              job.jobVacancyId,
+                            )}`}
                             style={{ color: 'rgba(0, 0, 0, 0.7)' }}
                           >
                             View Job

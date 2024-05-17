@@ -49,42 +49,42 @@ const nav_data: {
   subLink?: subLink[];
   title: string;
 }[] = [
-  {
-    id: 1,
-    icon: nav_1,
-    icon_active: nav_1_active,
-    link: '/dashboard/ta',
-    title: 'Dashboard',
-  },
-  {
-    id: 2,
-    icon: nav_2,
-    icon_active: nav_2_active,
-    link: '/dashboard/employ-dashboard/profile',
-    title: 'My Profile',
-  },
+  // {
+  //   id: 1,
+  //   icon: nav_1,
+  //   icon_active: nav_1_active,
+  //   link: '/dashboard/ta',
+  //   title: 'Dashboard',
+  // },
+  // {
+  //   id: 2,
+  //   icon: nav_2,
+  //   icon_active: nav_2_active,
+  //   link: '/dashboard/employ-dashboard/profile',
+  //   title: 'My Profile',
+  // },
   {
     id: 3,
     icon: nav_3,
     icon_active: nav_3_active,
     link: '/dashboard/ta/jobs',
-    title: 'My Jobs',
+    title: 'Job Vacancies',
   },
-  {
-    id: 4,
-    icon: nav_4,
-    icon_active: nav_4_active,
-    link: '/dashboard/employ-dashboard/messages',
-    title: 'Messages',
-  },
-  {
-    id: 5,
-    icon: nav_5,
-    icon_active: nav_5_active,
-    link: '/dashboard/ta/submit-job',
-    // subLink: [],
-    title: 'Submit Job',
-  },
+  // {
+  //   id: 4,
+  //   icon: nav_4,
+  //   icon_active: nav_4_active,
+  //   link: '/dashboard/employ-dashboard/messages',
+  //   title: 'Messages',
+  // },
+  // {
+  //   id: 5,
+  //   icon: nav_5,
+  //   icon_active: nav_5_active,
+  //   link: '/dashboard/ta/submit-job',
+  //   // subLink: [],
+  //   title: 'Submit Job',
+  // },
   {
     id: 6,
     icon: nav_6,
@@ -102,13 +102,13 @@ const nav_data: {
     link: '/dashboard/ta/fpk',
     title: 'FPK',
   },
-  {
-    id: 8,
-    icon: nav_7,
-    icon_active: nav_7_active,
-    link: '/dashboard/employ-dashboard/setting',
-    title: 'Account Settings',
-  },
+  // {
+  //   id: 8,
+  //   icon: nav_7,
+  //   icon_active: nav_7_active,
+  //   link: '/dashboard/employ-dashboard/setting',
+  //   title: 'Account Settings',
+  // },
 ];
 
 // props type
@@ -285,7 +285,7 @@ const EmployAside = () => {
                   </li>
                 );
               })}
-              <li>
+              {/* <li>
                 <a
                   href="#"
                   className="d-flex w-100 align-items-center"
@@ -295,10 +295,10 @@ const EmployAside = () => {
                   <Image src={nav_8} alt="icon" className="lazy-img" />
                   <span>Delete Account</span>
                 </a>
-              </li>
+              </li> */}
             </ul>
           </nav>
-          <div className="profile-complete-status">
+          {/* <div className="profile-complete-status">
             <div className="progress-value fw-500">87%</div>
             <div className="progress-line position-relative">
               <div className="inner-line" style={{ width: '80%' }}></div>
@@ -309,7 +309,7 @@ const EmployAside = () => {
           <a href="#" className="d-flex w-100 align-items-center logout-btn">
             <Image src={logout} alt="icon" className="lazy-img" />
             <span>Logout</span>
-          </a>
+          </a> */}
         </div>
       </aside>
       {/* LogoutModal star */}
