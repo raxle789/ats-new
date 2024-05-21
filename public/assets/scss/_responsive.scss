@@ -37,6 +37,63 @@
 }
 /*(max-width: 1399px)*/
 
+/* Dashboard Responsive */
+@media (max-width: 1399px) {
+  .dashboard-body .dash-card-one {
+    padding: 18px 20px 22px;
+  }
+  .dashboard-body .dash-card-one .icon {
+    width: 50px;
+    height: 50px;
+    padding: 15px;
+  }
+  .dashboard-body .dash-card-one .value {
+    font-size: 30px;
+  }
+  .dashboard-body .message-wrapper .message-sidebar .message_filter button {
+    font-size: 14px;
+  }
+  .dash-aside-navbar {
+    transform: translateX(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+  .dash-aside-navbar.show {
+    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+  }
+  .dashboard-body {
+    margin-left: 0px;
+    transition: all 0.3s ease;
+  }
+  .dashboard-body.show {
+    margin-left: 260px;
+  }
+  .dashboard-body .dashboard-header {
+    width: 100%;
+    padding: 20px 40px 20px 0px;
+    right: 0px;
+    left: 0px;
+    transition: all 0.3s ease;
+  }
+  .dashboard-header.show {
+    width: 76%;
+    padding: 20px 0px 20px 0px;
+    right: 55px;
+    left: 300px;
+  }
+  .dashboard-body .dashboard-header .nav-btn-desktop {
+    margin-left: 40px;
+    transition: all 0.3s ease;
+  }
+  .dashboard-body .dashboard-header .nav-btn-desktop.show {
+    margin-left: 0px;
+  }
+}
+// point
+
 /*Between Grid xl*/
 @media (min-width: 1200px) and (max-width: 1399px) {
   .theme-main-menu {
@@ -1304,61 +1361,6 @@
   }
   /*(max-width: 575px)*/
 
-  /* Dashboard Responsive */
-  @media (max-width: 1399px) {
-    .dashboard-body .dash-card-one {
-      padding: 18px 20px 22px;
-    }
-    .dashboard-body .dash-card-one .icon {
-      width: 50px;
-      height: 50px;
-      padding: 15px;
-    }
-    .dashboard-body .dash-card-one .value {
-      font-size: 30px;
-    }
-    .dashboard-body .message-wrapper .message-sidebar .message_filter button {
-      font-size: 14px;
-    }
-    .dash-aside-navbar {
-      transform: translateX(-100%);
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.3s ease;
-    }
-    .dash-aside-navbar.show {
-      transform: translateX(0);
-      opacity: 1;
-      visibility: visible;
-    }
-    .dashboard-body {
-      margin-left: 0px;
-      transition: all 0.3s ease;
-    }
-    .dashboard-body.show {
-      margin-left: 260px;
-    }
-    .dashboard-body .dashboard-header {
-      width: 100%;
-      padding: 20px 40px 20px 0px;
-      right: 0px;
-      left: 0px;
-      transition: all 0.3s ease;
-    }
-    .dashboard-header.show {
-      width: 76%;
-      padding: 20px 0px 20px 0px;
-      right: 55px;
-      left: 300px;
-    }
-    .dashboard-body .dashboard-header .nav-btn-desktop {
-      margin-left: 40px;
-      transition: all 0.3s ease;
-    }
-    .dashboard-body .dashboard-header .nav-btn-desktop.show {
-      margin-left: 0px;
-    }
-  }
   @media (min-width: 1200px) and (max-width: 1399px) {
     .dashboard-body {
       padding: 120px 40px 30px;
