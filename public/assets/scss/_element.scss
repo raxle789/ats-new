@@ -126,71 +126,76 @@
     box-shadow: none;
   }
 }
-// Job Search Two
-.job-search-two form {
-  height: 60px;
-  input {
-    width: calc(100% - 165px);
-    height: 100%;
-    background: #fff;
-    border: none;
-    border-radius: 50px;
-    padding: 0 25px;
-    font-size: 15px;
 
-    &.bg-grey {
-      background: #f2f2f2;
-    }
-  }
-}
-.filter-tags li {
-  position: relative;
-  margin-right: 4px;
-  &:after {
-    content: ',';
-    color: #000;
-  }
-  &:first-child:after,
-  &:last-child:after {
-    display: none;
-  }
-  a {
-    color: #000;
-    @include transition(0.2s);
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-}
+// Job Search Two
+// .job-search-two form {
+//   height: 60px;
+//   input {
+//     width: calc(100% - 165px);
+//     height: 100%;
+//     background: #fff;
+//     border: none;
+//     border-radius: 50px;
+//     padding: 0 25px;
+//     font-size: 15px;
+
+//     &.bg-grey {
+//       background: #f2f2f2;
+//     }
+//   }
+// }
+// .filter-tags li {
+//   position: relative;
+//   margin-right: 4px;
+//   &:after {
+//     content: ',';
+//     color: #000;
+//   }
+//   &:first-child:after,
+//   &:last-child:after {
+//     display: none;
+//   }
+//   a {
+//     color: #000;
+//     @include transition(0.2s);
+//     &:hover {
+//       text-decoration: underline;
+//     }
+//   }
+// }
+
 // List Style One
-.list-style-one li {
-  position: relative;
-  font-weight: 500;
-  font-size: 18px;
-  color: $color-one;
-  padding-left: 35px;
-  margin-top: 24px;
-  &:before {
-    content: url(../images/icon/icon_07.svg);
-    position: absolute;
-    left: 0;
-    top: 0;
-  }
-}
+// .list-style-one li {
+//   position: relative;
+//   font-weight: 500;
+//   font-size: 18px;
+//   color: $color-one;
+//   padding-left: 35px;
+//   margin-top: 24px;
+//   &:before {
+//     content: url(../images/icon/icon_07.svg);
+//     position: absolute;
+//     left: 0;
+//     top: 0;
+//   }
+// }
+
 // Counter Block One
-.counter-block-one .main-count {
-  font-size: 52px;
-  margin-bottom: 5px;
-}
-.counter-block-one h2.main-count {
-  font-size: 70px;
-  color: $color-one;
-}
+// .counter-block-one .main-count {
+//   font-size: 52px;
+//   margin-bottom: 5px;
+// }
+// .counter-block-one h2.main-count {
+//   font-size: 70px;
+//   color: $color-one;
+// }
+
 // Counter Block Two
-.counter-block-two .main-count {
-  font-size: 32px;
-  margin-bottom: 5px;
-}
+// .counter-block-two .main-count {
+//   font-size: 32px;
+//   margin-bottom: 5px;
+// }
+
 // Accordion One
 .accordion-style-one .accordion-item {
   border: none;
@@ -229,53 +234,54 @@
   border: none;
 }
 // Accordion Two
-.accordion-style-two .accordion-item {
-  border: none;
-  border-radius: 0;
-  background: transparent;
-  border-bottom: 1px solid rgba($color: #000000, $alpha: 0.08);
-  &:last-child {
-    border: none;
-  }
-}
-.accordion-style-two .accordion-button {
-  background: transparent;
-  padding: 36px 0;
-  border: none;
-  outline: none;
-  box-shadow: none;
-  font-size: 24px;
-  font-weight: 500;
-  color: #000;
-  &:not(.collapsed) {
-    padding-bottom: 20px;
-  }
-  &:not(.collapsed):after {
-    content: '-';
-    font-size: 24px;
-    background: $color-three;
-    color: #fff;
-  }
-}
-.accordion-style-two .accordion-button::after {
-  content: '+';
-  background-image: none;
-  width: 30px;
-  height: 30px;
-  background: #fff;
-  border-radius: 50%;
-  font-size: 20px;
-  color: #000;
-  text-align: center;
-  line-height: 30px;
-}
-.accordion-style-two .accordion-body {
-  padding: 0 0 20px;
-  width: 80%;
-  p {
-    font-size: 18px;
-  }
-}
+// .accordion-style-two .accordion-item {
+//   border: none;
+//   border-radius: 0;
+//   background: transparent;
+//   border-bottom: 1px solid rgba($color: #000000, $alpha: 0.08);
+//   &:last-child {
+//     border: none;
+//   }
+// }
+// .accordion-style-two .accordion-button {
+//   background: transparent;
+//   padding: 36px 0;
+//   border: none;
+//   outline: none;
+//   box-shadow: none;
+//   font-size: 24px;
+//   font-weight: 500;
+//   color: #000;
+//   &:not(.collapsed) {
+//     padding-bottom: 20px;
+//   }
+//   &:not(.collapsed):after {
+//     content: '-';
+//     font-size: 24px;
+//     background: $color-three;
+//     color: #fff;
+//   }
+// }
+// .accordion-style-two .accordion-button::after {
+//   content: '+';
+//   background-image: none;
+//   width: 30px;
+//   height: 30px;
+//   background: #fff;
+//   border-radius: 50%;
+//   font-size: 20px;
+//   color: #000;
+//   text-align: center;
+//   line-height: 30px;
+// }
+// .accordion-style-two .accordion-body {
+//   padding: 0 0 20px;
+//   width: 80%;
+//   p {
+//     font-size: 18px;
+//   }
+// }
+
 // Pagination One
 .pagination-one {
   margin: 0 -1px;
@@ -301,69 +307,72 @@
     }
   }
 }
+
 // Pagination Two
-.pagination-two {
-  border: 1px solid $color-five;
-  border-radius: 4px;
-  overflow: hidden;
-  a {
-    width: 35px;
-    height: 35px;
-    text-align: center;
-    line-height: 35px;
-    font-size: 15px;
-    font-weight: 500;
-    color: $color-five;
-    border-right: 1px solid $color-five;
-  }
-  .active a,
-  a:hover {
-    background: rgba($color: $color-five, $alpha: 0.1);
-  }
-  li:last-child a {
-    border: none;
-  }
-}
+// .pagination-two {
+//   border: 1px solid $color-five;
+//   border-radius: 4px;
+//   overflow: hidden;
+//   a {
+//     width: 35px;
+//     height: 35px;
+//     text-align: center;
+//     line-height: 35px;
+//     font-size: 15px;
+//     font-weight: 500;
+//     color: $color-five;
+//     border-right: 1px solid $color-five;
+//   }
+//   .active a,
+//   a:hover {
+//     background: rgba($color: $color-five, $alpha: 0.1);
+//   }
+//   li:last-child a {
+//     border: none;
+//   }
+// }
+
 // Contact Form
-.form-style-one {
-  .input-group-meta {
-    position: relative;
-    label {
-      font-size: 15px;
-      color: rgba($color: #000000, $alpha: 0.5);
-      margin-bottom: 5px;
-    }
-    input,
-    textarea {
-      width: 100%;
-      max-width: 100%;
-      border: none;
-      border-radius: 7px;
-      background: #f2f2f2;
-    }
-    input {
-      height: 60px;
-      padding: 0 20px;
-    }
-    textarea {
-      height: 165px;
-      padding: 15px 20px;
-    }
-  }
-}
-#contact-form {
-  .help-block {
-    position: absolute;
-    left: 0;
-    bottom: -18px;
-    font-size: 13px;
-    line-height: 20px;
-    color: #ff4d44;
-    ul {
-      margin: 0;
-    }
-  }
-}
+// .form-style-one {
+//   .input-group-meta {
+//     position: relative;
+//     label {
+//       font-size: 15px;
+//       color: rgba($color: #000000, $alpha: 0.5);
+//       margin-bottom: 5px;
+//     }
+//     input,
+//     textarea {
+//       width: 100%;
+//       max-width: 100%;
+//       border: none;
+//       border-radius: 7px;
+//       background: #f2f2f2;
+//     }
+//     input {
+//       height: 60px;
+//       padding: 0 20px;
+//     }
+//     textarea {
+//       height: 165px;
+//       padding: 15px 20px;
+//     }
+//   }
+// }
+// #contact-form {
+//   .help-block {
+//     position: absolute;
+//     left: 0;
+//     bottom: -18px;
+//     font-size: 13px;
+//     line-height: 20px;
+//     color: #ff4d44;
+//     ul {
+//       margin: 0;
+//     }
+//   }
+// }
+
 // Login Modal
 .registration-section {
   background: $light-bg;
