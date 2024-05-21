@@ -11,7 +11,7 @@ let transporter = nodemailer.createTransport({
   secure: true,
   auth: {
     user: 'intern-fatkhur.rozak@erajaya.com',
-    pass: 'Gudanggaram76#',
+    pass: 'Fatkhurrozak76#',
   },
 });
 
@@ -46,10 +46,11 @@ export async function sendOTP(payload: { email: string }) {
     from: 'intern-fatkhur.rozak@erajaya.com',
     to: String(payload.email),
     subject: 'Your OTP Number',
-    html: `<h3> ${OTP} </h3>`,
+    html: `<h3> ${OTP} </h3>
+          <p>One Time Password (OTP) will expire in 2 minutes</p>`,
   });
 
-  console.info('Result of sending OTP...', sendOTP);
+  // console.info('Result of sending OTP...', sendOTP);
   /* Guard Check */
   if (!sendOTP) {
     return {
@@ -60,7 +61,8 @@ export async function sendOTP(payload: { email: string }) {
 
   return {
     success: true,
-    data: sendOTP,
+    // data: sendOTP,
+    message: 'OTP code has been sent'
   };
 }
 
@@ -105,7 +107,7 @@ export async function compareOTP(clientOTP: string, email: string) {
     return {
       success: true,
       message: 'Your OTP verfication is valid',
-      data: updateEmailVerificationStatus,
+      // data: updateEmailVerificationStatus,
     };
   }
 

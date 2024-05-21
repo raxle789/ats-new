@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   createCandidate,
+  RegisterPhase2,
   storeCandidateQuestions,
   storeCertification,
   storeCurriculumVitae,
@@ -13,6 +14,7 @@ import {
   storeProfilePhoto,
   storeSkills,
   storingAddress,
+  TrialTestFunction,
   updateCandidate,
 } from '@/libs/Registration';
 import { userRegister2 } from '@/libs/validations/Register';
@@ -52,7 +54,7 @@ import dayjs from 'dayjs';
 import { useAppSessionContext } from '@/libs/Sessions/AppSession';
 import { authSession, regSession } from '@/libs/Sessions/utils';
 import { DecryptSession } from '@/libs/Sessions/jwt';
-import { convertToPlainObject, fileToBase64 } from '@/libs/Registration/utils';
+import { convertToPlainObject, fileToBase64, ManipulateDocuments } from '@/libs/Registration/utils';
 import { setUserSession } from '@/libs/Sessions';
 import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
 // import { type } from '../../../libs/Authentication/permissions';
@@ -71,7 +73,7 @@ type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 let languageIndex = 0;
 const { TextArea } = Input;
 
-type FieldType = {
+export type FieldType = {
   profile?: {
     uploadPhoto?: UploadFile;
     fullname?: string;
@@ -117,6 +119,15 @@ type FieldType = {
     startEduYear?: string;
     endEduYear?: string;
   };
+  // certifications?: [
+  //   {
+  //     certificationName?: string;
+  //     institution?: string;
+  //     issueDate?: string;
+  //     monthIssue?: string;
+  //     yearIssue?: string;
+  //   }
+  // ];
   certification?: {
     [id: string]: {
       certificationName?: string;
@@ -126,7 +137,7 @@ type FieldType = {
       yearIssue?: string;
     };
   };
-  skills?: string;
+  skills?: string[];
   language?: {
     [id: string]: {
       name?: string;
@@ -627,11 +638,7 @@ const Stage3Form = () => {
         <div className="input-group-meta position-relative mb-15">
           <label>Name (Certification/Licence)</label>
           <Form.Item<FieldType>
-            name={[
-              'certification',
-              certificationIdx.toString(),
-              'certificationName',
-            ]}
+            name={['certification', certificationIdx.toString(), 'certificationName']}
             className="mb-0"
           >
             <Select
@@ -1172,244 +1179,262 @@ const Stage3Form = () => {
 
   const handleOk = async () => {
     setIsModalOpen(false);
-    setSpinning(true);
+    // setSpinning(true);
     const values = form.getFieldsValue();
     console.log('ok value form: ', values);
-    console.info('is a string?:', typeof values.certificationCheckbox);
-    console.log('Manipulating profile-photo file...');
-    const photoBase64 = await fileToBase64(profilePhoto[0].originFileObj);
-    const photoFile = {
-      original_name: profilePhoto[0].originFileObj.name,
-      byte_size: profilePhoto[0].originFileObj.size,
-      file_base: photoBase64,
-    };
-    console.log('Manipulated profile-photo file result...', photoFile);
-    console.info('Storing profile-photo file...s');
-    const saveProfilePhoto = await storeProfilePhoto(photoFile);
-    if (saveProfilePhoto.success !== true) {
-      console.info('Failed to store profile photo...');
-      // setSpinning(false);
-      return setErrors(saveProfilePhoto.message as string);
-    }
-    console.info('Storing profile-phhoto successfully...', saveProfilePhoto);
-
-    console.info('Begin updating candidate-data...');
-    const candidateUpdateData = {
-      bloodType: values.profile.bloodType,
-      ethnicity: values.profile.ethnicity,
-      gender: values.profile.gender,
-      maritalStatus: values.profile.maritalStatus,
-      placeOfBirth: values.profile.placeOfBirth,
-      religion: values.profile.religion,
-      // Domicile => No field data
-    };
-    const updateCandidateData = await updateCandidate(candidateUpdateData);
-    if (updateCandidateData.success !== true) {
-      console.info(updateCandidateData.message as string);
-      // setSpinning(false);
-      return setErrors(updateCandidateData.message as string);
-    }
-    console.log('Updating candidate-data successfully...', updateCandidateData);
-
-    console.info('Begin to store address data...');
-    const manipulatedAddressData = {
-      permanentAddress: values.address.permanentAddress,
-      country: values.address.country,
-      city: values.address.city,
-      zipCode: values.address.zipCode,
-      rt:
-        values.address.country === 'Indonesia'
-          ? values.address.rt
-          : 'NotInIndonesia',
-      rw:
-        values.address.country === 'Indonesia'
-          ? values.address.rw
-          : 'NotInIndonesia',
-      subdistrict:
-        values.address.country === 'Indonesia'
-          ? values.address.subdistrict
-          : 'NotInIndonesia',
-      village:
-        values.address.country === 'Indonesia'
-          ? values.address.village
-          : 'NotInIndonesia',
-      currentAddress: values.address.currentAddress,
-    };
-    const storeAddress = await storingAddress(
-      manipulatedAddressData,
-      addressCheck,
-    );
-    if (storeAddress.success !== true) {
-      console.info(storeAddress.message as string);
-      // setSpinning(false);
-      return setErrors(storeAddress.message as string);
-    }
-    console.info('Storing address data successfully...', storeAddress);
-
-    const plainFamiliesObject = convertToPlainObject(values.families as object);
-    /* PLAIN OBJECT */
-    const storeRelations = await storeFamilys(plainFamiliesObject);
-    if (storeRelations.success !== true) {
-      console.info(storeRelations.message as string);
-      // setSpinning(false);
-      return setErrors(storeRelations.message as string);
-    }
-    console.info('Storing relations successfully...', storeRelations);
-
-    console.info('Begin to store education data...');
-
-    const plainEducationData = convertToPlainObject(values.education);
-
-    const storeEducationData = await storeEducation(
-      plainEducationData,
-      values.education?.startEduYear.$y as number,
-      values.education?.endEduYear.$y as number,
-      values.formalCheckbox,
-    );
-    if (storeEducationData.success !== true) {
-      console.info(storeEducationData.message as string);
-      // setSpinning(false);
-      return setErrors(storeEducationData.message as string);
-    }
-    console.info('Store education data successfully...', storeEducationData);
-
-    console.info('Begin to store certificates...');
-
-    if (
-      'certification' in values &&
-      values.certification['1'].certificationName !== undefined
-    ) {
-      const plainCertificatesData = convertToPlainObject(values.certification);
-      console.info('Plain Certification: ', plainCertificatesData);
-      // debugger;
-      const storeCertificatesData = await storeCertification(
-        plainCertificatesData,
-        values.certification['1']['monthIssue']['$M'],
-        values.certification['1']['monthIssue']['$y'],
-        values.certificationCheckbox,
-      );
-      if (storeCertificatesData.success !== true) {
-        console.info(storeCertificatesData.message as string);
-        return setErrors(storeCertificatesData.message as string);
-      }
-      console.info('Store certificates successfully...', storeCertificatesData);
-    }
-
-    console.info('Begin to store skills...');
-    const storeSkillsData = await storeSkills(values.skills);
-    if (storeSkillsData.success !== true) {
-      console.info(storeSkillsData.message as string);
-      setSpinning(false);
-      return setErrors(storeSkillsData.message as string);
-    }
-    console.info('Store skills successfully...', storeSkillsData);
-
-    console.info('Begin to store language...');
-
-    const plainLanguagesData = convertToPlainObject(values.language);
-
-    const storeLanguageData = await storeLanguage(plainLanguagesData);
-    if (storeLanguageData.success !== true) {
-      console.info(storeLanguageData.message as string);
-      setSpinning(false);
-      return setErrors(storeLanguageData.message as string);
-    }
-    console.info('Storing language data successfully...', storeLanguageData);
-
-    console.info('Begin storing experiences data...');
-
-    const plainExperiencesData = convertToPlainObject(values.experience);
-
-    const storeExperienceData = await storeExperiences(
-      plainExperiencesData,
-      values.expOption as string,
-    );
-    if (storeExperienceData?.success !== true) {
-      console.info(storeExperienceData.message as string);
-      setSpinning(false);
-      return setErrors(storeExperienceData.message as string);
-    }
-    console.info(
-      'Storing experience data successfully...',
-      storeExperienceData,
-    );
-
-    console.info('Storing emergency contact data...');
-
-    const plainOthersData = convertToPlainObject(values.others);
-    console.log(plainOthersData);
-
-    const emergencyContactDataConverted = {
-      emergencyContactPhoneNumber: plainOthersData.emergencyContactPhoneNumber,
-      emergencyContactName: plainOthersData.emergencyContactName,
-      emergencyContactRelation: plainOthersData.emergencyContactRelation,
-    };
-    const storeEmergencyContactData = await storeEmergencyContact(
-      emergencyContactDataConverted,
-    );
-    if (storeEmergencyContactData.success !== true) {
-      console.info(storeEmergencyContactData.message as string);
-      setSpinning(false);
-      return setErrors(storeEmergencyContactData.message as string);
-    }
-    console.info(
-      'Storing emergency contact data successfully...',
-      storeEmergencyContactData,
-    );
-
-    console.info('Storing candidate questions data...');
-
-    const candidateQuestionsData = {
-      noticePeriod: plainOthersData.noticePeriod,
-      everWorkedMonth: plainOthersData.everWorkedMonth,
-      everWorkedYear: plainOthersData.everWorkedYear,
-      diseaseName: plainOthersData.diseaseName,
-      diseaseYear: plainOthersData.diseaseYear,
-      relationName: plainOthersData.relationName,
-      relationPosition: plainOthersData.relationPosition,
-    };
-
-    const storeCandidateQuestionsData = await storeCandidateQuestions(
-      candidateQuestionsData,
-    );
-    if (storeCandidateQuestionsData.success !== true) {
-      console.info(storeCandidateQuestionsData.message as string);
-      setSpinning(false);
-      return setErrors(storeCandidateQuestionsData.message as string);
-    }
-    console.info(
-      'Storing candidate questions data successfully...',
-      storeCandidateQuestions,
-    );
-
-    console.info('Begin to store curriculum-vitae document...');
-    const curriculumVitaeDocument = await fileToBase64(
-      values.others?.uploadCV.file.originFileObj,
-    );
-    const manipulatedCurriculumVitae = {
-      original_name: values.others?.uploadCV.file.originFileObj.name,
-      byte_size: values.others?.uploadCV.file.originFileObj.size,
-      file_base: curriculumVitaeDocument,
-    };
-    const storeCV = await storeCurriculumVitae(manipulatedCurriculumVitae);
-    if (storeCV.success !== true) {
-      console.info(storeCV.message as string);
-      setSpinning(false);
-      return setErrors(storeCV.message as string);
-    }
-    console.info('Store cv document successfully', storeCV);
-
-    /* set auth-session */
-    await setUserSession('auth', {
-      user: { id: regSessionDecoded.user.id },
-      candidate: { id: regSessionDecoded.candidate.id },
+    /**
+     * convert profilePhoto, CV
+     */
+    const transformedDocuments = await ManipulateDocuments({
+      profilePhoto: profilePhoto[0].originFileObj,
+      curriculumVitae: values.others?.uploadCV.file.originFileObj
     });
+    console.info('Manipulated Documents: ', transformedDocuments);
+    const plainObjects = JSON.parse(JSON.stringify(values));
+    // await TrialTestFunction(plainObjects, transformedDocuments);
+    const doRegisterPhase2 = await RegisterPhase2(plainObjects, transformedDocuments);
+    console.info('do register phase 2: ', doRegisterPhase2);
+    if(!doRegisterPhase2.success) {
+      console.info(doRegisterPhase2);
+      return message.error(doRegisterPhase2.message);
+    };
+    message.success(doRegisterPhase2.message);
+    return dispatch(setRegisterStep(4));
+    // console.info('is a string?:', typeof values.certificationCheckbox);
+    // console.log('Manipulating profile-photo file...');
+    // const photoBase64 = await fileToBase64(profilePhoto[0].originFileObj);
+    // const photoFile = {
+    //   original_name: profilePhoto[0].originFileObj.name,
+    //   byte_size: profilePhoto[0].originFileObj.size,
+    //   file_base: photoBase64,
+    // };
+    // console.log('Manipulated profile-photo file result...', photoFile);
+    // console.info('Storing profile-photo file...s');
+    // const saveProfilePhoto = await storeProfilePhoto(photoFile);
+    // if (saveProfilePhoto.success !== true) {
+    //   console.info('Failed to store profile photo...');
+    //   // setSpinning(false);
+    //   return setErrors(saveProfilePhoto.message as string);
+    // }
+    // console.info('Storing profile-phhoto successfully...', saveProfilePhoto);
 
-    dispatch(setRegisterStep(4));
-    setTimeout(() => {
-      setSpinning(false);
-    }, 1000);
-    message.success('Your data successfully saved');
+    // console.info('Begin updating candidate-data...');
+    // const candidateUpdateData = {
+    //   bloodType: values.profile.bloodType,
+    //   ethnicity: values.profile.ethnicity,
+    //   gender: values.profile.gender,
+    //   maritalStatus: values.profile.maritalStatus,
+    //   placeOfBirth: values.profile.placeOfBirth,
+    //   religion: values.profile.religion,
+    //   // Domicile => No field data
+    // };
+    // const updateCandidateData = await updateCandidate(candidateUpdateData);
+    // if (updateCandidateData.success !== true) {
+    //   console.info(updateCandidateData.message as string);
+    //   // setSpinning(false);
+    //   return setErrors(updateCandidateData.message as string);
+    // }
+    // console.log('Updating candidate-data successfully...', updateCandidateData);
+
+    // console.info('Begin to store address data...');
+    // const manipulatedAddressData = {
+    //   permanentAddress: values.address.permanentAddress,
+    //   country: values.address.country,
+    //   city: values.address.city,
+    //   zipCode: values.address.zipCode,
+    //   rt:
+    //     values.address.country === 'Indonesia'
+    //       ? values.address.rt
+    //       : 'NotInIndonesia',
+    //   rw:
+    //     values.address.country === 'Indonesia'
+    //       ? values.address.rw
+    //       : 'NotInIndonesia',
+    //   subdistrict:
+    //     values.address.country === 'Indonesia'
+    //       ? values.address.subdistrict
+    //       : 'NotInIndonesia',
+    //   village:
+    //     values.address.country === 'Indonesia'
+    //       ? values.address.village
+    //       : 'NotInIndonesia',
+    //   currentAddress: values.address.currentAddress,
+    // };
+    // const storeAddress = await storingAddress(
+    //   manipulatedAddressData,
+    //   addressCheck,
+    // );
+    // if (storeAddress.success !== true) {
+    //   console.info(storeAddress.message as string);
+    //   // setSpinning(false);
+    //   return setErrors(storeAddress.message as string);
+    // }
+    // console.info('Storing address data successfully...', storeAddress);
+
+    // const plainFamiliesObject = convertToPlainObject(values.families as object);
+    // /* PLAIN OBJECT */
+    // const storeRelations = await storeFamilys(plainFamiliesObject);
+    // if (storeRelations.success !== true) {
+    //   console.info(storeRelations.message as string);
+    //   // setSpinning(false);
+    //   return setErrors(storeRelations.message as string);
+    // }
+    // console.info('Storing relations successfully...', storeRelations);
+
+    // console.info('Begin to store education data...');
+
+    // const plainEducationData = convertToPlainObject(values.education);
+
+    // const storeEducationData = await storeEducation(
+    //   plainEducationData,
+    //   values.education?.startEduYear.$y as number,
+    //   values.education?.endEduYear.$y as number,
+    //   values.formalCheckbox,
+    // );
+    // if (storeEducationData.success !== true) {
+    //   console.info(storeEducationData.message as string);
+    //   // setSpinning(false);
+    //   return setErrors(storeEducationData.message as string);
+    // }
+    // console.info('Store education data successfully...', storeEducationData);
+
+    // console.info('Begin to store certificates...');
+
+    // if (
+    //   'certification' in values &&
+    //   values.certification['1'].certificationName !== undefined
+    // ) {
+    //   const plainCertificatesData = convertToPlainObject(values.certification);
+    //   console.info('Plain Certification: ', plainCertificatesData);
+    //   // debugger;
+    //   const storeCertificatesData = await storeCertification(
+    //     plainCertificatesData,
+    //     values.certification['1']['monthIssue']['$M'],
+    //     values.certification['1']['monthIssue']['$y'],
+    //     values.certificationCheckbox,
+    //   );
+    //   if (storeCertificatesData.success !== true) {
+    //     console.info(storeCertificatesData.message as string);
+    //     return setErrors(storeCertificatesData.message as string);
+    //   }
+    //   console.info('Store certificates successfully...', storeCertificatesData);
+    // }
+
+    // console.info('Begin to store skills...');
+    // const storeSkillsData = await storeSkills(values.skills);
+    // if (storeSkillsData.success !== true) {
+    //   console.info(storeSkillsData.message as string);
+    //   setSpinning(false);
+    //   return setErrors(storeSkillsData.message as string);
+    // }
+    // console.info('Store skills successfully...', storeSkillsData);
+
+    // console.info('Begin to store language...');
+
+    // const plainLanguagesData = convertToPlainObject(values.language);
+
+    // const storeLanguageData = await storeLanguage(plainLanguagesData);
+    // if (storeLanguageData.success !== true) {
+    //   console.info(storeLanguageData.message as string);
+    //   setSpinning(false);
+    //   return setErrors(storeLanguageData.message as string);
+    // }
+    // console.info('Storing language data successfully...', storeLanguageData);
+
+    // console.info('Begin storing experiences data...');
+
+    // const plainExperiencesData = convertToPlainObject(values.experience);
+
+    // const storeExperienceData = await storeExperiences(
+    //   plainExperiencesData,
+    //   values.expOption as string,
+    // );
+    // if (storeExperienceData?.success !== true) {
+    //   console.info(storeExperienceData.message as string);
+    //   setSpinning(false);
+    //   return setErrors(storeExperienceData.message as string);
+    // }
+    // console.info(
+    //   'Storing experience data successfully...',
+    //   storeExperienceData,
+    // );
+
+    // console.info('Storing emergency contact data...');
+
+    // const plainOthersData = convertToPlainObject(values.others);
+    // console.log(plainOthersData);
+
+    // const emergencyContactDataConverted = {
+    //   emergencyContactPhoneNumber: plainOthersData.emergencyContactPhoneNumber,
+    //   emergencyContactName: plainOthersData.emergencyContactName,
+    //   emergencyContactRelation: plainOthersData.emergencyContactRelation,
+    // };
+    // const storeEmergencyContactData = await storeEmergencyContact(
+    //   emergencyContactDataConverted,
+    // );
+    // if (storeEmergencyContactData.success !== true) {
+    //   console.info(storeEmergencyContactData.message as string);
+    //   setSpinning(false);
+    //   return setErrors(storeEmergencyContactData.message as string);
+    // }
+    // console.info(
+    //   'Storing emergency contact data successfully...',
+    //   storeEmergencyContactData,
+    // );
+
+    // console.info('Storing candidate questions data...');
+
+    // const candidateQuestionsData = {
+    //   noticePeriod: plainOthersData.noticePeriod,
+    //   everWorkedMonth: plainOthersData.everWorkedMonth,
+    //   everWorkedYear: plainOthersData.everWorkedYear,
+    //   diseaseName: plainOthersData.diseaseName,
+    //   diseaseYear: plainOthersData.diseaseYear,
+    //   relationName: plainOthersData.relationName,
+    //   relationPosition: plainOthersData.relationPosition,
+    // };
+
+    // const storeCandidateQuestionsData = await storeCandidateQuestions(
+    //   candidateQuestionsData,
+    // );
+    // if (storeCandidateQuestionsData.success !== true) {
+    //   console.info(storeCandidateQuestionsData.message as string);
+    //   setSpinning(false);
+    //   return setErrors(storeCandidateQuestionsData.message as string);
+    // }
+    // console.info(
+    //   'Storing candidate questions data successfully...',
+    //   storeCandidateQuestions,
+    // );
+
+    // console.info('Begin to store curriculum-vitae document...');
+    // const curriculumVitaeDocument = await fileToBase64(
+    //   values.others?.uploadCV.file.originFileObj,
+    // );
+    // const manipulatedCurriculumVitae = {
+    //   original_name: values.others?.uploadCV.file.originFileObj.name,
+    //   byte_size: values.others?.uploadCV.file.originFileObj.size,
+    //   file_base: curriculumVitaeDocument,
+    // };
+    // const storeCV = await storeCurriculumVitae(manipulatedCurriculumVitae);
+    // if (storeCV.success !== true) {
+    //   console.info(storeCV.message as string);
+    //   setSpinning(false);
+    //   return setErrors(storeCV.message as string);
+    // }
+    // console.info('Store cv document successfully', storeCV);
+
+    // /* set auth-session */
+    // await setUserSession('auth', {
+    //   user: { id: regSessionDecoded.user.id },
+    //   candidate: { id: regSessionDecoded.candidate.id },
+    // });
+
+    // dispatch(setRegisterStep(4));
+    // setTimeout(() => {
+    //   setSpinning(false);
+    // }, 1000);
+    // message.success('Your data successfully saved');
   };
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -1477,12 +1502,12 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'uploadPhoto']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please upload your photo!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please upload your photo!',
+                //   },
+                // ]}
               >
                 <div>
                   <Upload
@@ -1529,9 +1554,9 @@ const Stage3Form = () => {
               <label>Full Name (as per ID/Passport)*</label>
               <Form.Item<FieldType>
                 name={['profile', 'fullname']}
-                rules={[
-                  { required: true, message: 'Please input your fullname!' },
-                ]}
+                // rules={[
+                //   { required: true, message: 'Please input your fullname!' },
+                // ]}
               >
                 <Input
                   placeholder="Your Full Name"
@@ -1559,12 +1584,12 @@ const Stage3Form = () => {
               <label>Phone Number*</label>
               <Form.Item<FieldType>
                 name={['profile', 'phoneNumber']}
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your phone number!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please input your phone number!',
+                //   },
+                // ]}
               >
                 <Input
                   placeholder="Your Phone Number"
@@ -1576,12 +1601,12 @@ const Stage3Form = () => {
               <label>Date of Birth*</label>
               <Form.Item<FieldType>
                 name={['profile', 'dateOfBirth']}
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your date of birth!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please input your date of birth!',
+                //   },
+                // ]}
               >
                 <DatePicker
                   className="w-100"
@@ -1599,12 +1624,12 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'placeOfBirth']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your place of birth!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please input your place of birth!',
+                //   },
+                // ]}
               >
                 <Select
                   className="w-100"
@@ -1632,12 +1657,12 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'gender']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your gender!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please input your gender!',
+                //   },
+                // ]}
               >
                 <Select
                   className="w-100"
@@ -1656,12 +1681,12 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'religion']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your religion!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please input your religion!',
+                //   },
+                // ]}
               >
                 <Select
                   className="w-100"
@@ -1712,12 +1737,12 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'ethnicity']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your ethnicity!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please input your ethnicity!',
+                //   },
+                // ]}
               >
                 <Select
                   className="w-100"
@@ -1764,12 +1789,12 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'maritalStatus']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your marital status!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please input your marital status!',
+                //   },
+                // ]}
               >
                 <Select
                   className="w-100"
@@ -1815,12 +1840,12 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'permanentAddress']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your permanent address!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please input your permanent address!',
+                //   },
+                // ]}
               >
                 <Input placeholder="Your Permanent Address" />
               </Form.Item>
@@ -1832,12 +1857,12 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'country']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your country!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please input your country!',
+                //   },
+                // ]}
               >
                 <Select
                   className="w-100"
@@ -1865,12 +1890,12 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'city']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your city!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please input your city!',
+                //   },
+                // ]}
               >
                 <Select
                   className="w-100"
@@ -1899,12 +1924,12 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'zipCode']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your zip code!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please input your zip code!',
+                //   },
+                // ]}
               >
                 <Input placeholder="Your Zip Code" />
               </Form.Item>
@@ -2039,16 +2064,16 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name="formalCheckbox"
                 className="mb-0"
-                rules={
-                  !formalCheck
-                    ? [
-                        {
-                          required: true,
-                          message: 'Please choose your education!',
-                        },
-                      ]
-                    : []
-                }
+                // rules={
+                //   !formalCheck
+                //     ? [
+                //         {
+                //           required: true,
+                //           message: 'Please choose your education!',
+                //         },
+                //       ]
+                //     : []
+                // }
               >
                 <div className="d-flex align-items-center">
                   <Checkbox onChange={handleFormalCheck} checked={formalCheck}>
@@ -2066,12 +2091,12 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'educationLevel']}
                     className="mb-0"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please input your education level!',
-                      },
-                    ]}
+                    // rules={[
+                    //   {
+                    //     required: true,
+                    //     message: 'Please input your education level!',
+                    //   },
+                    // ]}
                   >
                     <Select
                       className="w-100"
@@ -2089,12 +2114,12 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'educationMajor']}
                     className="mb-0"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please input your education major!',
-                      },
-                    ]}
+                    // rules={[
+                    //   {
+                    //     required: true,
+                    //     message: 'Please input your education major!',
+                    //   },
+                    // ]}
                   >
                     <Select
                       className="w-100"
@@ -2125,12 +2150,12 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'startEduYear']}
                     className="mb-0"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please select year!',
-                      },
-                    ]}
+                    // rules={[
+                    //   {
+                    //     required: true,
+                    //     message: 'Please select year!',
+                    //   },
+                    // ]}
                   >
                     <DatePicker
                       className="w-100"
@@ -2146,12 +2171,12 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'endEduYear']}
                     className="mb-0"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please select year!',
-                      },
-                    ]}
+                    // rules={[
+                    //   {
+                    //     required: true,
+                    //     message: 'Please select year!',
+                    //   },
+                    // ]}
                   >
                     <DatePicker
                       className="w-100"
@@ -2167,12 +2192,12 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'schoolName']}
                     className="mb-0"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please input your school name!',
-                      },
-                    ]}
+                    // rules={[
+                    //   {
+                    //     required: true,
+                    //     message: 'Please input your school name!',
+                    //   },
+                    // ]}
                   >
                     <Select
                       className="w-100"
@@ -2202,12 +2227,12 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'cityOfSchool']}
                     className="mb-0"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please input your city of school!',
-                      },
-                    ]}
+                    // rules={[
+                    //   {
+                    //     required: true,
+                    //     message: 'Please input your city of school!',
+                    //   },
+                    // ]}
                   >
                     <Select
                       className="w-100"
@@ -2235,12 +2260,12 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'gpa']}
                     className="mb-0"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please input your gpa!',
-                      },
-                    ]}
+                    // rules={[
+                    //   {
+                    //     required: true,
+                    //     message: 'Please input your gpa!',
+                    //   },
+                    // ]}
                   >
                     <InputNumber
                       className="w-100"
@@ -2290,12 +2315,12 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name="skills"
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your skills!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please input your skills!',
+                //   },
+                // ]}
               >
                 <Select
                   className="w-100"
@@ -2328,12 +2353,12 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['language', index.toString(), 'name']}
                       className="mb-0"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please choose your language!',
-                        },
-                      ]}
+                      // rules={[
+                      //   {
+                      //     required: true,
+                      //     message: 'Please choose your language!',
+                      //   },
+                      // ]}
                     >
                       <Select
                         className="w-100"
@@ -2378,12 +2403,12 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['language', index.toString(), 'level']}
                       className="mb-0"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please choose your level!',
-                        },
-                      ]}
+                      // rules={[
+                      //   {
+                      //     required: true,
+                      //     message: 'Please choose your level!',
+                      //   },
+                      // ]}
                     >
                       <Select
                         className="w-100"
@@ -2432,12 +2457,12 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name="expOption"
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please choose your working experience!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please choose your working experience!',
+                //   },
+                // ]}
               >
                 <Radio.Group onChange={onChangeExp} value={expValue}>
                   <Radio className="d-flex" value="Fresh Graduate">
@@ -2457,12 +2482,12 @@ const Stage3Form = () => {
                 <Form.Item<FieldType>
                   name={['experience', 'expectedSalary']}
                   className="mb-0"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please input your expected salary!',
-                    },
-                  ]}
+                  // rules={[
+                  //   {
+                  //     required: true,
+                  //     message: 'Please input your expected salary!',
+                  //   },
+                  // ]}
                 >
                   <InputNumber
                     className="w-100"
@@ -2540,12 +2565,12 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['others', 'noticePeriod']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your notice period!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please input your notice period!',
+                //   },
+                // ]}
               >
                 <Select
                   className="w-100"
@@ -2573,12 +2598,12 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name="everWorkedOption"
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please choose!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please choose!',
+                //   },
+                // ]}
               >
                 <Radio.Group onChange={everWorkedChange} value={everWorked}>
                   <Radio className="d-flex" value="No">
@@ -2595,12 +2620,12 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['others', 'everWorkedMonth']}
                       className="mb-0"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please input year!',
-                        },
-                      ]}
+                      // rules={[
+                      //   {
+                      //     required: true,
+                      //     message: 'Please input year!',
+                      //   },
+                      // ]}
                     >
                       <DatePicker
                         className="w-100"
@@ -2613,12 +2638,12 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['others', 'everWorkedYear']}
                       className="mb-0"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please input year!',
-                        },
-                      ]}
+                      // rules={[
+                      //   {
+                      //     required: true,
+                      //     message: 'Please input year!',
+                      //   },
+                      // ]}
                     >
                       <DatePicker
                         className="w-100"
@@ -2640,12 +2665,12 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name="diseaseOption"
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please choose!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please choose!',
+                //   },
+                // ]}
               >
                 <Radio.Group onChange={diseaseChange} value={disease}>
                   <Radio className="d-flex" value="No">
@@ -2662,12 +2687,12 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['others', 'diseaseName']}
                       className="mb-0"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please input medical condition!',
-                        },
-                      ]}
+                      // rules={[
+                      //   {
+                      //     required: true,
+                      //     message: 'Please input medical condition!',
+                      //   },
+                      // ]}
                     >
                       <Input placeholder="Medical Condition" />
                     </Form.Item>
@@ -2676,12 +2701,12 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['others', 'diseaseYear']}
                       className="mb-0"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please input year!',
-                        },
-                      ]}
+                      // rules={[
+                      //   {
+                      //     required: true,
+                      //     message: 'Please input year!',
+                      //   },
+                      // ]}
                     >
                       <DatePicker
                         className="w-100"
@@ -2703,12 +2728,12 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name="relationOption"
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please choose!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please choose!',
+                //   },
+                // ]}
               >
                 <Radio.Group onChange={haveRelationChange} value={haveRelation}>
                   <Radio className="d-flex" value="No">
@@ -2725,12 +2750,12 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['others', 'relationName']}
                       className="mb-0"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please input name!',
-                        },
-                      ]}
+                      // rules={[
+                      //   {
+                      //     required: true,
+                      //     message: 'Please input name!',
+                      //   },
+                      // ]}
                     >
                       <Input placeholder="Name" />
                     </Form.Item>
@@ -2739,12 +2764,12 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['others', 'relationPosition']}
                       className="mb-0"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please input position!',
-                        },
-                      ]}
+                      // rules={[
+                      //   {
+                      //     required: true,
+                      //     message: 'Please input position!',
+                      //   },
+                      // ]}
                     >
                       <Input placeholder="Position" />
                     </Form.Item>
@@ -2759,12 +2784,12 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['others', 'uploadCV']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please upload your cv!',
-                  },
-                ]}
+                // rules={[
+                //   {
+                //     required: true,
+                //     message: 'Please upload your cv!',
+                //   },
+                // ]}
               >
                 <Upload action="" listType="picture" maxCount={1} accept=".pdf">
                   <Button
