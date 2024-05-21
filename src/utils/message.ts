@@ -18,3 +18,11 @@ export function warning(api, message) {
     content: `${message}`,
   });
 }
+
+export function loading(api, message) {
+  api.open({
+    type: 'loading',
+    content: `${message}`,
+    duration: 0,
+  });
+}

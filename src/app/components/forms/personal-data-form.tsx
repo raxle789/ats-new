@@ -40,6 +40,7 @@ import {
   getQuestions,
   getSkills,
 } from '@/libs/Candidate/retrieve-data';
+import { loading, success } from '@/utils/message';
 import dayjs, { Dayjs } from 'dayjs';
 import { convertToPlainObject, fileToBase64 } from '@/libs/Registration/utils';
 import { updateCandidateProfile } from '@/libs/Candidate/actions';
@@ -113,6 +114,8 @@ type MasterData = {
 
 const PersonalDataForm = () => {
   const [form] = Form.useForm();
+  const [messageApi, contextHolder] = message.useMessage();
+  // success(messageApi, 'Fetching Data...');
   const [editState, setEditState] = useState(false);
   const editOnChange = () => {
     setEditState(!editState);
@@ -359,6 +362,7 @@ const PersonalDataForm = () => {
       message.error(`Failed: ${errorMessage}`);
     }
   };
+
   useEffect(() => {
     form.setFieldsValue({
       profile: {
@@ -388,47 +392,51 @@ const PersonalDataForm = () => {
             ? addresses[1]?.currentAddress
             : addresses[0]?.street,
       },
-      families: {
-        0: {
-          relation: families[0]?.relationStatus,
-          name: families[0]?.name,
-          gender: families[0]?.gender,
-          dateOfBirth: dayjs(families[0]?.dateOfBirth),
-        },
-        1: {
-          relation: families[1]?.relationStatus,
-          name: families[1]?.name,
-          gender: families[1]?.gender,
-          dateOfBirth: dayjs(families[1]?.dateOfBirth),
-        },
-      },
-      skills: skills,
-      education: {
-        educationLevel: education?.level,
-        educationMajor: education?.major,
-        schoolName: education?.university_name,
-        gpa: education?.gpa,
-        cityOfSchool: education?.cityOfSchool,
-        startEduYear: dayjs(education?.start_year),
-        endEduYear: dayjs(education?.end_year),
-      },
-      language: languages,
-      others: {
-        emergencyContactName: emergency?.name,
-        emergencyContactPhoneNumber: emergency?.phoneNumber,
-        emergencyContactRelation: emergency?.relationStatus,
-        noticePeriod: questions[0],
-        // everWorkedMonth: ,
-        // everWorkedYear: ,
-        diseaseName: questions[1],
-        diseaseYear: '2027',
-        relationName: 'Wika Salim',
-        relationPosition: 'Mantan Istri',
-      },
+      // families: {
+      //   0: {
+      //     relation: families[0]?.relationStatus,
+      //     name: families[0]?.name,
+      //     gender: families[0]?.gender,
+      //     dateOfBirth: dayjs(families[0]?.dateOfBirth),
+      //   },
+      //   1: {
+      //     relation: families[1]?.relationStatus,
+      //     name: families[1]?.name,
+      //     gender: families[1]?.gender,
+      //     dateOfBirth: dayjs(families[1]?.dateOfBirth),
+      //   },
+      // },
+      // skills: skills,
+      // education: {
+      //   educationLevel: education?.level,
+      //   educationMajor: education?.major,
+      //   schoolName: education?.university_name,
+      //   gpa: education?.gpa,
+      //   cityOfSchool: education?.cityOfSchool,
+      //   startEduYear: dayjs(education?.start_year),
+      //   endEduYear: dayjs(education?.end_year),
+      // },
+      // language: languages,
+      // others: {
+      //   emergencyContactName: emergency?.name,
+      //   emergencyContactPhoneNumber: emergency?.phoneNumber,
+      //   emergencyContactRelation: emergency?.relationStatus,
+      //   noticePeriod: questions[0],
+      //   diseaseName: questions[1],
+      //   diseaseYear: '2027',
+      //   relationName: 'Wika Salim',
+      //   relationPosition: 'Mantan Istri',
+      // },
     });
+    if (profileData === null) {
+      loading(messageApi, 'Fetching Data...');
+    } else {
+      messageApi.destroy;
+    }
   }, [profileData, addresses, families, education, skills]);
   return (
     <>
+      {contextHolder}
       {/* <Document file={pdf}>
         <Page>
         </Page>

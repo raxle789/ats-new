@@ -1172,7 +1172,7 @@ const Stage3Form = () => {
 
   const handleOk = async () => {
     setIsModalOpen(false);
-    setSpinning(true);
+    // setSpinning(true);
     const values = form.getFieldsValue();
     console.log('ok value form: ', values);
     console.info('is a string?:', typeof values.certificationCheckbox);
@@ -1610,6 +1610,7 @@ const Stage3Form = () => {
                   className="w-100"
                   showSearch
                   mode="tags"
+                  maxCount={1}
                   placeholder="Your place of birth"
                   optionFilterProp="children"
                   filterOption={(input, option) =>
