@@ -70,6 +70,7 @@ export async function setUserSession(sessionName: 'auth' | 'reg' | 'otp', payloa
       const encryptedOTPsession = Jwt.EncryptSession(payload);
       /* set otp-session */
       cookies().set(otpSessionName, encryptedOTPsession as string, { expires: otpExpires, httpOnly: true });
+      break;
 
     default:
       console.info("Invalid session name or payload!")

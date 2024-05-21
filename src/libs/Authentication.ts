@@ -1,11 +1,11 @@
 'use server';
-import LinkedIn from "./LinkedIn";
+// import LinkedIn from "./LinkedIn";
 import { cookies } from 'next/headers';
 import axios from "axios";
 import { users } from "@/static-data/User";
 import { redirect } from 'next/navigation';
 
-const linkedInOAuth = new LinkedIn(["openid","profile","email"]);
+// const linkedInOAuth = new LinkedIn(["openid","profile","email"]);
 // const createdLinkedInOAuth = linkedInOAuth.generateOAuthLink();
 
 const accessToken = cookies().get('accessToken')?.value;

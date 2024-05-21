@@ -1,30 +1,42 @@
 import { z } from 'zod';
 
 export const REGISTER = z.object({
-    fullname: z.string().min(3),
-    email: z.string().email(),
+    fullname: z.string().min(3, { message: 'Fullname must contains at least 3 characters' }),
+    email: z.string().email({ message: 'Please use a valid email format' }).refine(email => /^[a-z]*$/.test(email.replace(/[@.]/g, '')), { message: 'Email may only be written in lowercase' }),
     password: z.string().min(8),
-    confirm_password: z.string().min(8),
-}).refine((data) => data.password === data.confirm_password, {
-    message: 'Password doesn\'t match', path: ['confirm_password']
+    confirmPassword: z.string().min(8),
+    dateOfBirth: z.instanceof(Date).refine(date => 2024 - date.getFullYear() >= 18, { message: 'Minimun age is 18 years old' } ),
+    phoneNumber: z.string().max(16, { message: 'Phone number must not exceed 16 digits' })
+}).refine((data) => data.password === data.confirmPassword, {
+    message: 'Password doesn\'t match', path: ['confirmPassword']
 });
 
-export const CANDIDATE = z.object({
-    dateOfBirth: z.instanceof(Date).refine(date => 2024 - date.getFullYear() >= 18, { message: 'Minimun age is 18 years old' } )
+export const REGISTER_2 = z.object({
+    profile: z.object({
+        uploadPhoto: z.nullable(z.string()),
+        fullname: z.string().min(3, { message: 'Fullname must contains at least 3 characters' }),
+        email: z.string().email(),
+        phoneNumber: z.string().max(16, { message: 'Phone number must not exceed 16 digits' }),
+        dateOfBirth: z.instanceof(Date).refine(date => 2024 - date.getFullYear() >= 18, { message: 'Minimun age is 18 years old' } ),
+        placeOfBirth: z.string(),
+        gender: z.string(),
+        religion: z.string(),
+        ethnicity: z.string(),
+        bloodType: z.string().max(2),
+        maritalStatus: z.string()
+    }),
+    addressCheckbox: z.boolean(),
+    address: z.object({
+        permanentAddress: z.string(),
+        country: z.string(),
+        rt: z.string(),
+        rw: z.string(),
+        city: z.string(),
+        subdistrict: z.string(),
+        village: z.string(),
+        zipCode: z.string(),
+        currentAddress: z.string()
+    }),
+    // families
+    
 });
-
-// export const userRegister2 = z.object({
-//     gender: z.string().refine((data) => data !== 'default', { message: 'Please choose the right gender' }),
-//     phone_number: z.string().min(12),
-//     date_of_birth: z.string().min(1),
-//     source_referer: z.string().refine((data) => data !== 'default', { message: 'Please the right source' }),
-//     current_salary: z.string(),
-//     linkedin_profile_url: z.string()
-// });
-
-// export const registerStep2 = z.object({
-//     gender: z.string().min(6),
-//     phone_number: z.coerce.number().max(13),
-//     birth_city: z.coerce.number(),
-//     domicile: z.coerce.number()
-// });

@@ -241,8 +241,16 @@ const PersonalDataForm = () => {
   const [pdf, setPDF] = useState<string | File>('');
   console.log('pdfbase64: ', pdf);
 
+  const [pageNumber, setPageNumber] = useState<number>(1);
+
+  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
+    setPageNumber(numPages);
+  }
+
   const fetchCVDocument = async () => {
+    console.log('Begin fetch documents...');
     const cv = await getOnePDF();
+    console.log('Got cv: ', cv);
     console.log('getting cv: ', cv);
     if (cv) {
       const pdfFile = await fetch(cv.data as string);
@@ -258,7 +266,7 @@ const PersonalDataForm = () => {
   useEffect(() => {
     fetchProfileData();
     fetchAddress();
-    // fetchCVDocument();
+    fetchCVDocument();
     // fetchFamilies();
     // fetchEducation();
     // fetchSkills();

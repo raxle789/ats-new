@@ -1,16 +1,593 @@
 'use server';
 
 import { deleteSession, getUserSession, setUserSession } from '../Sessions';
-import { userRegister1 } from '../validations/Register';
+// import { userRegister1 } from '../validations/Register';
 import bcrypt from 'bcrypt';
-import { fileToBase64, toDatetime, transformToArrayOfObject } from './utils';
+import { transformToArrayOfObject, TypeTransformedDocument } from './utils';
 import { v4 as uuidV4 } from 'uuid';
-import { cookies } from 'next/headers';
-import * as Utils from '../Sessions/utils';
 import prisma from '@/root/prisma';
-import { message } from 'antd';
-import { info } from 'console';
-import { create } from 'domain';
+import { Dayjs } from 'dayjs';
+import { FieldType } from '@/app/components/forms/register-form';
+import { FieldType as TypeSubmittedValues2 } from '@/app/components/forms/stage-3-form';
+import { REGISTER } from '../validations/Register';
+import { sendOTP } from './verifications';
+
+/**
+ * Trial Test
+ */
+interface TypeSubmittedValues1 extends FieldType {
+  fullname: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  phoneNumber: string;
+  dateOfBirth: Dayjs | Date | string
+};
+
+export async function TrialTestFunction(submittedValues1: any, documemts: object[]) {
+  console.log('Submitted Values 2: ', submittedValues1);
+  // console.log('is number: ', Number(submittedValues1.certification['2'].certificationName.toString()));
+  // console.log('not a number: ', Number('axngh'));
+  // if(Number('Serawak')) {
+  //   console.log('YES')
+  // }
+  // console.info('Documents: ', documemts);
+  // console.log('is instance of Date: ', submittedValues1.families['0'].dateOfBirth, new Date(submittedValues1.families['0'].dateOfBirth));
+};
+
+/* ============================================================================== */
+interface TypeReturnedServerAction {
+  success: boolean;
+  data: any | null;
+  errors: any | null;
+  message: string | '';
+};
+
+export async function RegisterPhase1(submittedValues1: TypeSubmittedValues1): Promise<TypeReturnedServerAction> {
+  /* Validation Input */
+  console.info('validating input...');
+  const validateRegisterPhase1 = REGISTER.safeParse({
+    ...submittedValues1,
+    dateOfBirth: new Date(submittedValues1.dateOfBirth.toString())
+  });
+  if(!validateRegisterPhase1.success) {
+    const zodErrors = validateRegisterPhase1.error.flatten().fieldErrors;
+    return {
+      success: false,
+      data: null,
+      errors: zodErrors,
+      message: 'Fields Validation Error'
+    };
+  };
+  console.info('input validated:')
+  /* Begin Transactions */
+  console.info('storing register phase 1 data...');
+  const doRegisterPhase1 = await prisma.$transaction(async (tx) => {
+    /* Cheking Email */
+    console.info('checking email...')
+    const isEmailExist = await tx.users.findUnique({
+      where: {
+        email: submittedValues1.email
+      }
+    });
+    if(isEmailExist) return {
+      success: false,
+      data: null,
+      errors: {
+        email: ['This email already used by another candidate']
+      },
+      message: 'Email already used'
+    };
+    console.info('checking phone number...');
+    /*  Checking Phone Number */
+    const isPhoneNumberExist = await tx.candidates.findUnique({
+      where: {
+        phone_number: submittedValues1.phoneNumber
+      }
+    });
+    if(isPhoneNumberExist) return {
+      success: false,
+      data: null,
+      errors: {
+        phoneNumber: ['Phone number already used by another candidate']
+      },
+      message: 'Phone number already used'
+    };
+    /* Create Users */
+    console.info('creating user...');
+    console.info('hashing user password...');
+    const hashedPassword = await bcrypt.hash(submittedValues1.password, 10);
+    const createUser = await tx.users.create({
+      data: {
+        name: submittedValues1.fullname,
+        email: submittedValues1.email,
+        password: hashedPassword
+      }
+    });
+    if(!createUser) return {
+      success: false,
+      data: null,
+      errors: null,
+      message: 'Failed to create users'
+    };
+    console.info('creating candidate...');
+    const createCandidate = await tx.candidates.create({
+      data: {
+        userId: createUser.id,
+        phone_number: submittedValues1.phoneNumber,
+        date_of_birth: new Date(submittedValues1.dateOfBirth.toString())
+      }
+    });
+    if(!createCandidate) return {
+      success: false,
+      data: null,
+      errors: null,
+      message: 'Failed to create candidate'
+    };
+    console.info('set register session...');
+    await setUserSession('reg', {
+      user: {
+        id: createUser.id,
+        name: createUser.name,
+        email: createUser.email
+      },
+      candidate: {
+        id: createCandidate.id,
+        phone_number: createCandidate.phone_number,
+        date_of_birth: createCandidate.date_of_birth
+      }
+    }, undefined);
+    console.info('transaction completed');
+    return {
+      success: true,
+      data: {
+        user: createUser,
+        candidate: createCandidate
+      },
+      errors: null,
+      message: 'Register phase 1 success:'
+    };
+  }, {
+    timeout: 15000
+  });
+  await prisma.$disconnect();
+  console.info('sending otp...');
+  const sendingOTP = await sendOTP({ email: doRegisterPhase1.data?.user.email as string });
+  if(!sendingOTP.success) return {
+    success: false,
+    data: null,
+    errors: null,
+    message: 'Failed to send OTP, please try register again:'
+  };
+  console.info(sendingOTP);
+  /* Return the transaction value */
+  return doRegisterPhase1;
+};
+
+export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, documents: TypeTransformedDocument[]) {
+  /* validate input -> cannot be validated */
+  const regSession = await getUserSession('reg');
+  console.info('reg-session-data', regSession);
+  console.info('begin transaction register phase 2...');
+  const doRegisterPhase2 = await prisma.$transaction(async (tx) => {
+    /* PROFILE PHOTO */
+    console.info('storing photo...');
+    const storeProfilePhoto = await tx.documents.create({
+      data: {
+        saved_name: uuidV4(),
+        original_name: documents[0].original_name,
+        byte_size: documents[0].byte_size,
+        path: 'no-path',
+        file_base: Buffer.from(documents[0].file_base),
+        created_at: new Date(Date.now()),
+        updated_at: new Date(Date.now()),
+        documentTypeId: 1, // THE ID OF THE DOCUMENT TYPE
+        candidate_id: regSession.candidate.id,
+      }
+    });
+    if(!storeProfilePhoto) return {
+      success: false,
+      data: null,
+      errors: null,
+      message: 'Failed when trying store profile photo'
+    };
+    /* UPDATE CANDIDATE */
+    console.info('updating candidate data...');
+    const updateCandidate = await tx.candidates.update({
+      where: {
+        id: regSession.candidate.id
+      },
+      data: {
+        blood_type: submittedValues2.profile?.bloodType,
+        ethnicity: submittedValues2.profile?.ethnicity,
+        gender: submittedValues2.profile?.gender,
+        maritalStatus: submittedValues2.profile?.maritalStatus,
+        // Domicile doesnt exist on the form
+        birthCity: submittedValues2.profile?.placeOfBirth?.toString(),  // array of string (length 1)
+        religion: submittedValues2.profile?.religion,
+      }
+    });
+    if(!updateCandidate) return {
+      success: false,
+      data: null,
+      errors: null,
+      message: 'Failed when trying update candidate profile'
+    };
+    // if address checkbox true, store it mean current address same as permanent address
+    /* STORE ADDRESSES */
+    console.info('decision addresses...');
+    if(submittedValues2.address) {
+      console.info('storing addresses...');
+      const storeAddress = await tx.addresses.create({
+        data: {
+          candidateId: regSession.candidate.id,
+          street: submittedValues2.address.permanentAddress as string,
+          country: submittedValues2.address.country as string,
+          city: submittedValues2.address.city?.toString() as string,
+          zipCode: submittedValues2.address.zipCode as string,
+          rt: submittedValues2.address.country === 'Indonesia' ? submittedValues2.address.rt as string : ' ',
+          rw: submittedValues2.address.country === 'Indonesia' ? submittedValues2.address.rw as string : ' ',
+          subdistrict: submittedValues2.address.country === 'Indonesia' ? submittedValues2.address.subdistrict as string : ' ',
+          village: submittedValues2.address.country === 'Indonesia' ? submittedValues2.address.village as string : ' ',
+          isCurrent: submittedValues2.address.currentAddress ? 'true' : 'false',
+          currentAddress: submittedValues2.address.currentAddress ?? null,
+          createdAt: new Date(Date.now())
+        }
+      });
+      if(!storeAddress) return {
+        success: false,
+        data: null,
+        errors: null,
+        message: 'Failed when trying store address'
+      };
+    };
+    /* STORE FAMILIES */
+    const arrayOfFamilies = transformToArrayOfObject(submittedValues2.families);
+    console.info('transforming families to array of objects...');
+    const transformedFamilies = arrayOfFamilies.map(family => {
+      return {
+        candidateId: regSession.candidate.id,
+        name: family.name,
+        relationStatus: family.relation,
+        gender: family.gender,
+        dateOfBirth: new Date(family.dateOfBirth),
+        createdAt: new Date(Date.now())
+      }
+    });
+    console.info('storing families...');
+    const storeFamilies = await tx.families.createMany({
+      data: transformedFamilies
+    });
+    if(storeFamilies.count <= 0) {
+      return {
+        success: false,
+        data: null,
+        errors: null,
+        message: 'Failed when trying store families'
+      }
+    };
+    /* STORE EDUCATION */
+    console.info('storing education...');
+    const storeEducation = await tx.educations.create({
+      data: {
+        candidateId: regSession.candidate.id,
+        level: submittedValues2.education?.educationLevel,
+        major: submittedValues2.education?.educationMajor?.toString() as string,
+        start_year: new Date(submittedValues2.education?.startEduYear as string).getFullYear(),
+        end_year: new Date(submittedValues2.education?.endEduYear as string).getFullYear(),
+        university_name: submittedValues2.education?.schoolName?.toString() as string,
+        cityOfSchool: submittedValues2.education?.cityOfSchool?.toString() as string,
+        gpa: submittedValues2.education?.gpa as number,
+        is_latest: false,
+        is_graduate: false,
+        created_at: new Date(Date.now())
+      }
+    });
+    if(!storeEducation) return {
+      success: false,
+      data: null,
+      errors: null,
+      message: 'Failed when trying store education'
+    };
+    /* STORE CERTIFICATIONS */
+    if(submittedValues2.certification) {
+      console.info('transforming certifications to array of obbjects');
+      const arrayOfCertifications = transformToArrayOfObject(submittedValues2.certification);
+      const certificationsTransformFunction = async () => {
+        const transformedCertifications = arrayOfCertifications.map(async value => {
+          if(!Number(value.certificationName[0].toString())) {
+            const storeCertificate = await tx.certificates.create({
+              data: {
+                name: value.certificationName[0],
+                createdAt: new Date(Date.now())
+              }
+            });
+            // No-Guard Check
+            // if(!storeCertificate) return {
+            //   success: false,
+            //   data: null,
+            //   errors: null,
+            //   message: 'Failed when trying store certificate to get certificate ID'
+            // };
+            return {
+              candidateId: regSession.candidate.id,
+              certificateId: storeCertificate.id,
+              institutionName: value.institution,
+              issuedDate: new Date(value.monthIssue.toString()),
+              created_at: new Date(Date.now())
+            };
+          };
+          return {
+            candidateId: regSession.candidate.id,
+            certificateId: Number(value.certificationName[0].toString()),
+            institutionName: value.institution,
+            issuedDate: new Date(value.monthIssue.toString()),
+            created_at: new Date(Date.now())
+          }
+        });
+
+        const results = await Promise.all(transformedCertifications);
+        return results;
+      };
+      const certificationsData = await certificationsTransformFunction();
+      console.info('storing certifications...');
+      const storeCertifications = await tx.certifications.createMany({
+        data: certificationsData
+      });
+      if(!storeCertifications) return {
+        success: false,
+        data: null,
+        errors: null,
+        message: 'Failed when trying store certifications'
+      }
+    };
+    /* STORE SKILLS */
+    if(submittedValues2.skills) {
+      console.info('transforming skills to array of objects...');
+      const skillsDefined = submittedValues2.skills;
+      const skillsTransformFunction = async () => {
+        const transformedSkills = skillsDefined.map(async value => {
+          if(typeof value === 'string') {
+            const storeSkill = await tx.skills.create({
+              data: {
+                name: value,
+                createdAt: new Date(Date.now())
+              }
+            });
+            return {
+              candidateId: regSession.candidate.id,
+              skillId: storeSkill.id
+            }
+          };
+          return {
+            candidateId: regSession.candidate.id,
+            skillId: value
+          };
+        });
+
+        const result = await Promise.all(transformedSkills);
+        return result;
+      };
+      const skillsData = await skillsTransformFunction();
+      console.info('storing skills...');
+      const storeSkills = await tx.candidateSkills.createMany({
+        data: skillsData
+      });
+      if(!storeSkills) return {
+        success: false,
+        data: null,
+        errors: null,
+        message: 'Failed when trying store certifications'
+      };
+    };
+    /* STORE LANGUAGE */
+    console.info('transforming languages to array of objects...');
+    const arrayOfLanguages = transformToArrayOfObject(submittedValues2.language);
+    const transformedLanguages = arrayOfLanguages.map(language => {
+      return {
+        candidateId: regSession.candidate.id,
+        name: language.name,
+        level: language.level,
+        createdAt: new Date(Date.now())
+      }
+    });
+    console.info('storing languages...');
+    const storeLanguages = await tx.languages.createMany({
+      data: transformedLanguages
+    });
+    if(!storeLanguages) return {
+      success: false,
+      data: null,
+      errors: null,
+      message: 'Failed when trying store languages'
+    };
+    /* STORE WORKING EXPERIENCES AND UPDATE EXPECTED SALARY */
+    // let candidateExpectedSalary;
+    // let candidateRestOfExperiences;
+    if(submittedValues2.experience && Object.keys(submittedValues2.experience).length <= 1) {
+      console.info('candidate is fresh graduate...');
+      const { expectedSalary } = submittedValues2.experience;
+      console.info('updating candidate expected salaty as fresh graduate...');
+      const updateCandidateExpectedSalary = await tx.candidates.update({
+        where: {
+          id: regSession.candidate.id
+        },
+        data: {
+          expected_salary: expectedSalary
+        }
+      });
+      if(!updateCandidateExpectedSalary) return {
+        success: false,
+        data: null,
+        errors: null,
+        message: 'Failed when trying update candidate expected salary'
+      };
+    } else {
+      console.info('candidate experienced...');
+      const { expectedSalary, ...restOfExperiences } = submittedValues2.experience; // type error for expectedSalary
+      console.info('updating candidate expected salary as experienced...');
+      const updateCandidateExpectedSalary = await tx.candidates.update({
+        where: {
+          id: regSession.candidate.id
+        },
+        data: {
+          expected_salary: expectedSalary
+        }
+      });
+      if(!updateCandidateExpectedSalary) return {
+        success: false,
+        data: null,
+        errors: null,
+        message: 'Failed when trying update candidate expected salary'
+      };
+      console.info('transforming experiences into array of objects...');
+      const arrayOfExperiences = transformToArrayOfObject(restOfExperiences);
+      const transformedExperiences = arrayOfExperiences.map(value => {
+        return {
+          candidateId: regSession.candidate.id,
+          job_title: value.jobTitle,
+          job_function: value.jobFunction,
+          line_industry: value.lineIndustry,
+          job_level: value.positionLevel,
+          company_name: value.compName,
+          job_description: value.jobDesc ?? '',
+          salary: value.currentSalary,
+          start_at: new Date(value.startYear),
+          end_at: new Date(value.endYear),
+          // current checkbox doesn appear
+          is_currently: false
+        }
+      });
+      console.info('storing experiences...');
+      const storeExperiences = await tx.working_experiences.createMany({
+        data: transformedExperiences
+      });
+      if(!storeExperiences) return {
+        success: false,
+        data: null,
+        errors: null,
+        message: 'Failed when trying store experiences'
+      };
+    };
+    /* STORE EMERGENCY CONTACT */
+    console.info('store emergency contacts...');
+    const storeEmergencyContacts = await tx.emergencyContacts.create({
+      data: {
+        phoneNumber: submittedValues2.others?.emergencyContactPhoneNumber as string,
+        name: submittedValues2.others?.emergencyContactName as string,
+        relationStatus: submittedValues2.others?.emergencyContactRelation as string,
+      }
+    });
+    if(!storeEmergencyContacts) return {
+      success: false,
+      data: null,
+      errors: null,
+      message: 'Failed when trying store emergency contact'
+    };
+    /* UPDATE EMERGENCY CONTACT ID */
+    console.info('updating candidate emergency contact...');
+    const updateCandidateEmergencyContact = await tx.candidates.update({
+      where: {
+        id: regSession.candidate.id
+      },
+      data: {
+        emengencyContactId: storeEmergencyContacts.id
+      }
+    });
+    if(!updateCandidateEmergencyContact) return {
+      success: false,
+      data: null,
+      errors: null,
+      message: 'Failed when trying update candidate emergency contact'
+    };
+    /* STORE QUESTIONS */
+    console.info('storing candidate additional questions...');
+    const storeQuestions = await tx.candidateQuestions.createMany({
+      data: [
+        {
+          candidateId: regSession.candidate.id,
+          questionId: 1,
+          answer: submittedValues2.others?.noticePeriod ?? '',
+          created_at: new Date(Date.now())
+        },
+        {
+          candidateId: regSession.candidate.id,
+          questionId: 2,
+          answer: [submittedValues2.others?.everWorkedMonth, submittedValues2.others?.everWorkedYear].toString(),
+          created_at: new Date(Date.now())
+        },
+        {
+          candidateId: regSession.candidate.id,
+          questionId: 3,
+          answer: [submittedValues2.others?.diseaseName, submittedValues2.others?.diseaseYear].toString(),
+          created_at: new Date(Date.now())
+        },
+        {
+          candidateId: regSession.candidate.id,
+          questionId: 4,
+          answer: [submittedValues2.others?.relationName, submittedValues2.others?.relationPosition].toString(),
+          created_at: new Date(Date.now())
+        },
+      ]
+    });
+    if(!storeQuestions) return {
+      success: false,
+      data: null,
+      errors: null,
+      message: 'Failed when trying store questions'
+    };
+    /* Store Curriculum Vitae */
+    console.info('storing curriculum vitae...');
+    const storeCurriculumVitae = await tx.documents.create({
+      data: {
+        saved_name: uuidV4(),
+        original_name: documents[1].original_name,
+        byte_size: documents[1].byte_size,
+        path: 'no-path',
+        file_base: Buffer.from(documents[1].file_base),
+        created_at: new Date(Date.now()),
+        updated_at: new Date(Date.now()),
+        documentTypeId: 1, // THE ID OF THE DOCUMENT TYPE
+        candidate_id: regSession.candidate.id,
+      }
+    });
+    if(!storeCurriculumVitae) return {
+      success: false,
+      data: null,
+      errors: null,
+      message: 'Failed when trying store Curriculum Vitae'
+    };
+
+    /* Returned Transactions */
+    console.info('register phase 2 successfully');
+    return {
+      success: true,
+      data: null,
+      errors: null,
+      message: 'Register phase 2 successfully'
+    };
+  });
+  console.info('closing database connection...');
+  /* Close prisma.connection */
+  await prisma.$disconnect();
+  console.info('setting up auth session...');
+  /* Set Auth-Session */
+  await setUserSession('auth', {
+    user: {
+      id: regSession.user.id
+    },
+    candidate: {
+      id: regSession.candidate.id
+    }
+  });
+  console.info('deleting register session...');
+  /* Delete register session */
+  await deleteSession('reg');
+
+  console.log('do register results:', doRegisterPhase2);
+  console.info('finish');
+  return doRegisterPhase2;
+};
 
 /**
  * @description Use Try-Catch to maximize handling storing data errors.
@@ -90,7 +667,7 @@ export async function createUser(formData: any, phoneNumber: any) {
       user: registerPayloadSession.user,
     },
   };
-}
+};
 
 /**
  * @description Use Try-Catch to maximize handling storing data errors.
@@ -438,7 +1015,7 @@ export async function storeEducation(
         success: false,
         message: 'Failed to store education-data',
       };
-    }
+    };
     console.info('Storing education data successfully...', education);
 
     /* Close connection */
@@ -770,6 +1347,7 @@ export async function storeEmergencyContact(formData: any) {
     };
   }
   /* Updating emergency contact-ID */
+
 
   /* Close connection */
   await prisma.$disconnect();

@@ -16,6 +16,28 @@ const VerificationForm = () => {
   const dispatch = useAppDispatch();
   const [value, setValue] = useState<string[]>([]); // Since the value will be array of string, the default value of state is empty array.
   const [spinning, setSpinning] = useState(false);
+  
+  /* Resend OTP */
+  const [countdown, setCoundown] = useState<number>(120);
+  const [resend, setResend] = useState<boolean>(false);
+  const minutes = Math.floor(countdown / 60);
+  const seconds = countdown % 60;
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCoundown(prevState  => {
+        if(prevState > 0) {
+          return prevState - 1;
+        } else {
+          setResend(false);
+          clearInterval(timer);
+          return 0;
+        }
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [resend]);
 
   /* Session Context */
   const session = useAppSessionContext();
@@ -25,31 +47,24 @@ const VerificationForm = () => {
     decodedRegSession = DecryptSession(getRegSession);
   }
   const authSessionValue = session[`${authSession}`];
-  console.info('auth session value', authSessionValue);
+  // console.info('auth session value', authSessionValue);
   /* End Session Context */
 
   const handleFinish = async (otp: any) => {
     setSpinning(true);
     const convertedOTP = otp.otpCode.join('');
-    console.info(convertedOTP);
     const compareClientOTP = await compareOTP(
-      Number(convertedOTP),
+      convertedOTP,
       decodedRegSession.user.email,
     );
     /* Guard check */
     if (compareClientOTP.success !== true) {
-      console.info('OTP does not match...');
       /**
        * Set Error state here within that message
        */
+      setSpinning(false);
       return message.error('OTP does not match!');
-    }
-
-    console.info('OTP matches...');
-    /**
-     * Success message
-     */
-    message.success('OTP matches');
+    };
 
     /* Delay dispatch */
     setTimeout(() => {
@@ -63,7 +78,8 @@ const VerificationForm = () => {
    * Check user, is verified or not when the page refreshed.
    */
   const fetchCheckEmailVerifiedStatus = async () => {
-    console.info('reg-session -> ', decodedRegSession);
+    // console.info('reg-session -> ', decodedRegSession);
+    console.info('runned')
     if (getRegSession === undefined) return;
     if (
       'is_email_verified' in decodedRegSession.candidate &&
@@ -100,7 +116,7 @@ const VerificationForm = () => {
 
     /* Page check */
     completeFillFormCheck();
-  });
+  }, [resend]);
 
   return (
     <>
@@ -117,23 +133,38 @@ const VerificationForm = () => {
               </Form.Item>
             </div>
           </div>
+          <div>
+            <p>Resend button will available in: <span style={{ color: 'blue' }}>{minutes.toString().padStart(2, '0')} : {seconds.toString().padStart(2, '0')}</span>
+            </p>
+          </div>
           <div className="col-lg-5 m-auto d-flex align-items-center justify-content-center">
             <button type="submit" className="dash-btn-two tran3s me-3">
               Submit
             </button>
-            <button
-              type="button"
-              className="dash-btn-two tran3s"
-              onClick={async () =>
-                await sendOTP({ email: decodedRegSession.user.email })
-              }
-            >
-              Resend
-            </button>
+            {countdown === 0 &&
+              <button
+                type="button"
+                className="dash-btn-two tran3s"
+                onClick={async () => {
+                  setSpinning(true);
+                  const resend = await sendOTP({ email: decodedRegSession.user.email });
+                  if(!resend.success) {
+                    setSpinning(false);
+                    return message.error(resend.message);
+                  };
+                  setResend(true);
+                  setCoundown(60);
+                  message.success(resend.message);
+                  return setSpinning(false);
+                  }
+                }
+              >
+                Resend
+              </button>
+            }
           </div>
         </div>
       </Form>
-
       <Spin fullscreen spinning={spinning} />
     </>
   );
