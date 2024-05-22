@@ -115,6 +115,6 @@ export async function compareOTP(clientOTP: string, email: string) {
 
   return {
     success: false,
-    message: 'Wrong OTP verfication',
+    message: 'Wrong OTP verfication or invalid',
   };
 }

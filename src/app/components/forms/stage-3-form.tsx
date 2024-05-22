@@ -37,6 +37,7 @@ import {
   Image,
   Upload,
   message,
+  Alert,
 } from 'antd';
 import type {
   DatePickerProps,
@@ -238,7 +239,9 @@ const Stage3Form = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [profilePhoto, setProfilePhoto] = useState<any>();
   /* to catch every error while operation */
-  const [errors, setErrors] = useState<string>('');
+  const [errors, setErrors] = useState<{ [key: string]: string[] } | undefined | null>(
+    { ['']: [''] },
+  );
 
   const [masterData, setMasterData] = useState<MasterData | null>(null);
   const [citysName, setCitysName] = useState<
@@ -485,6 +488,8 @@ const Stage3Form = () => {
             //       ]
             //     : undefined
             // }
+            validateStatus={errors && errors.families ? 'error' : ''}
+            help={errors && errors.families ? 'Please select spouse option' : ''}
           >
             <Select
               className="w-100"
@@ -516,6 +521,9 @@ const Stage3Form = () => {
             //       ]
             //     : undefined
             // }
+            validateStatus={errors && errors.families ? 'error' : ''}
+            help={errors && errors.families ? 'Please input your spouse name' : ''}
+
           >
             <Input placeholder="Your Relation Name" />
           </Form.Item>
@@ -537,6 +545,8 @@ const Stage3Form = () => {
             //       ]
             //     : undefined
             // }
+            validateStatus={errors && errors.families ? 'error' : ''}
+            help={errors && errors.families ? 'Your spouse gender' : ''}
           >
             <Select
               className="w-100"
@@ -564,6 +574,8 @@ const Stage3Form = () => {
             //       ]
             //     : undefined
             // }
+            validateStatus={errors && errors.families ? 'error' : ''}
+            help={errors && errors.families ? 'Your spouse date of birth' : ''}
           >
             <DatePicker
               className="w-100"
@@ -1195,246 +1207,12 @@ const Stage3Form = () => {
     const doRegisterPhase2 = await RegisterPhase2(plainObjects, transformedDocuments);
     console.info('do register phase 2: ', doRegisterPhase2);
     if(!doRegisterPhase2.success) {
-      console.info(doRegisterPhase2);
+      console.info('register result client-side: ', doRegisterPhase2);
+      setErrors(doRegisterPhase2.errors);
       return message.error(doRegisterPhase2.message);
     };
     message.success(doRegisterPhase2.message);
     return dispatch(setRegisterStep(4));
-    // console.info('is a string?:', typeof values.certificationCheckbox);
-    // console.log('Manipulating profile-photo file...');
-    // const photoBase64 = await fileToBase64(profilePhoto[0].originFileObj);
-    // const photoFile = {
-    //   original_name: profilePhoto[0].originFileObj.name,
-    //   byte_size: profilePhoto[0].originFileObj.size,
-    //   file_base: photoBase64,
-    // };
-    // console.log('Manipulated profile-photo file result...', photoFile);
-    // console.info('Storing profile-photo file...s');
-    // const saveProfilePhoto = await storeProfilePhoto(photoFile);
-    // if (saveProfilePhoto.success !== true) {
-    //   console.info('Failed to store profile photo...');
-    //   // setSpinning(false);
-    //   return setErrors(saveProfilePhoto.message as string);
-    // }
-    // console.info('Storing profile-phhoto successfully...', saveProfilePhoto);
-
-    // console.info('Begin updating candidate-data...');
-    // const candidateUpdateData = {
-    //   bloodType: values.profile.bloodType,
-    //   ethnicity: values.profile.ethnicity,
-    //   gender: values.profile.gender,
-    //   maritalStatus: values.profile.maritalStatus,
-    //   placeOfBirth: values.profile.placeOfBirth,
-    //   religion: values.profile.religion,
-    //   // Domicile => No field data
-    // };
-    // const updateCandidateData = await updateCandidate(candidateUpdateData);
-    // if (updateCandidateData.success !== true) {
-    //   console.info(updateCandidateData.message as string);
-    //   // setSpinning(false);
-    //   return setErrors(updateCandidateData.message as string);
-    // }
-    // console.log('Updating candidate-data successfully...', updateCandidateData);
-
-    // console.info('Begin to store address data...');
-    // const manipulatedAddressData = {
-    //   permanentAddress: values.address.permanentAddress,
-    //   country: values.address.country,
-    //   city: values.address.city,
-    //   zipCode: values.address.zipCode,
-    //   rt:
-    //     values.address.country === 'Indonesia'
-    //       ? values.address.rt
-    //       : 'NotInIndonesia',
-    //   rw:
-    //     values.address.country === 'Indonesia'
-    //       ? values.address.rw
-    //       : 'NotInIndonesia',
-    //   subdistrict:
-    //     values.address.country === 'Indonesia'
-    //       ? values.address.subdistrict
-    //       : 'NotInIndonesia',
-    //   village:
-    //     values.address.country === 'Indonesia'
-    //       ? values.address.village
-    //       : 'NotInIndonesia',
-    //   currentAddress: values.address.currentAddress,
-    // };
-    // const storeAddress = await storingAddress(
-    //   manipulatedAddressData,
-    //   addressCheck,
-    // );
-    // if (storeAddress.success !== true) {
-    //   console.info(storeAddress.message as string);
-    //   // setSpinning(false);
-    //   return setErrors(storeAddress.message as string);
-    // }
-    // console.info('Storing address data successfully...', storeAddress);
-
-    // const plainFamiliesObject = convertToPlainObject(values.families as object);
-    // /* PLAIN OBJECT */
-    // const storeRelations = await storeFamilys(plainFamiliesObject);
-    // if (storeRelations.success !== true) {
-    //   console.info(storeRelations.message as string);
-    //   // setSpinning(false);
-    //   return setErrors(storeRelations.message as string);
-    // }
-    // console.info('Storing relations successfully...', storeRelations);
-
-    // console.info('Begin to store education data...');
-
-    // const plainEducationData = convertToPlainObject(values.education);
-
-    // const storeEducationData = await storeEducation(
-    //   plainEducationData,
-    //   values.education?.startEduYear.$y as number,
-    //   values.education?.endEduYear.$y as number,
-    //   values.formalCheckbox,
-    // );
-    // if (storeEducationData.success !== true) {
-    //   console.info(storeEducationData.message as string);
-    //   // setSpinning(false);
-    //   return setErrors(storeEducationData.message as string);
-    // }
-    // console.info('Store education data successfully...', storeEducationData);
-
-    // console.info('Begin to store certificates...');
-
-    // if (
-    //   'certification' in values &&
-    //   values.certification['1'].certificationName !== undefined
-    // ) {
-    //   const plainCertificatesData = convertToPlainObject(values.certification);
-    //   console.info('Plain Certification: ', plainCertificatesData);
-    //   // debugger;
-    //   const storeCertificatesData = await storeCertification(
-    //     plainCertificatesData,
-    //     values.certification['1']['monthIssue']['$M'],
-    //     values.certification['1']['monthIssue']['$y'],
-    //     values.certificationCheckbox,
-    //   );
-    //   if (storeCertificatesData.success !== true) {
-    //     console.info(storeCertificatesData.message as string);
-    //     return setErrors(storeCertificatesData.message as string);
-    //   }
-    //   console.info('Store certificates successfully...', storeCertificatesData);
-    // }
-
-    // console.info('Begin to store skills...');
-    // const storeSkillsData = await storeSkills(values.skills);
-    // if (storeSkillsData.success !== true) {
-    //   console.info(storeSkillsData.message as string);
-    //   setSpinning(false);
-    //   return setErrors(storeSkillsData.message as string);
-    // }
-    // console.info('Store skills successfully...', storeSkillsData);
-
-    // console.info('Begin to store language...');
-
-    // const plainLanguagesData = convertToPlainObject(values.language);
-
-    // const storeLanguageData = await storeLanguage(plainLanguagesData);
-    // if (storeLanguageData.success !== true) {
-    //   console.info(storeLanguageData.message as string);
-    //   setSpinning(false);
-    //   return setErrors(storeLanguageData.message as string);
-    // }
-    // console.info('Storing language data successfully...', storeLanguageData);
-
-    // console.info('Begin storing experiences data...');
-
-    // const plainExperiencesData = convertToPlainObject(values.experience);
-
-    // const storeExperienceData = await storeExperiences(
-    //   plainExperiencesData,
-    //   values.expOption as string,
-    // );
-    // if (storeExperienceData?.success !== true) {
-    //   console.info(storeExperienceData.message as string);
-    //   setSpinning(false);
-    //   return setErrors(storeExperienceData.message as string);
-    // }
-    // console.info(
-    //   'Storing experience data successfully...',
-    //   storeExperienceData,
-    // );
-
-    // console.info('Storing emergency contact data...');
-
-    // const plainOthersData = convertToPlainObject(values.others);
-    // console.log(plainOthersData);
-
-    // const emergencyContactDataConverted = {
-    //   emergencyContactPhoneNumber: plainOthersData.emergencyContactPhoneNumber,
-    //   emergencyContactName: plainOthersData.emergencyContactName,
-    //   emergencyContactRelation: plainOthersData.emergencyContactRelation,
-    // };
-    // const storeEmergencyContactData = await storeEmergencyContact(
-    //   emergencyContactDataConverted,
-    // );
-    // if (storeEmergencyContactData.success !== true) {
-    //   console.info(storeEmergencyContactData.message as string);
-    //   setSpinning(false);
-    //   return setErrors(storeEmergencyContactData.message as string);
-    // }
-    // console.info(
-    //   'Storing emergency contact data successfully...',
-    //   storeEmergencyContactData,
-    // );
-
-    // console.info('Storing candidate questions data...');
-
-    // const candidateQuestionsData = {
-    //   noticePeriod: plainOthersData.noticePeriod,
-    //   everWorkedMonth: plainOthersData.everWorkedMonth,
-    //   everWorkedYear: plainOthersData.everWorkedYear,
-    //   diseaseName: plainOthersData.diseaseName,
-    //   diseaseYear: plainOthersData.diseaseYear,
-    //   relationName: plainOthersData.relationName,
-    //   relationPosition: plainOthersData.relationPosition,
-    // };
-
-    // const storeCandidateQuestionsData = await storeCandidateQuestions(
-    //   candidateQuestionsData,
-    // );
-    // if (storeCandidateQuestionsData.success !== true) {
-    //   console.info(storeCandidateQuestionsData.message as string);
-    //   setSpinning(false);
-    //   return setErrors(storeCandidateQuestionsData.message as string);
-    // }
-    // console.info(
-    //   'Storing candidate questions data successfully...',
-    //   storeCandidateQuestions,
-    // );
-
-    // console.info('Begin to store curriculum-vitae document...');
-    // const curriculumVitaeDocument = await fileToBase64(
-    //   values.others?.uploadCV.file.originFileObj,
-    // );
-    // const manipulatedCurriculumVitae = {
-    //   original_name: values.others?.uploadCV.file.originFileObj.name,
-    //   byte_size: values.others?.uploadCV.file.originFileObj.size,
-    //   file_base: curriculumVitaeDocument,
-    // };
-    // const storeCV = await storeCurriculumVitae(manipulatedCurriculumVitae);
-    // if (storeCV.success !== true) {
-    //   console.info(storeCV.message as string);
-    //   setSpinning(false);
-    //   return setErrors(storeCV.message as string);
-    // }
-    // console.info('Store cv document successfully', storeCV);
-
-    // /* set auth-session */
-    // await setUserSession('auth', {
-    //   user: { id: regSessionDecoded.user.id },
-    //   candidate: { id: regSessionDecoded.candidate.id },
-    // });
-
-    // dispatch(setRegisterStep(4));
-    // setTimeout(() => {
-    //   setSpinning(false);
-    // }, 1000);
-    // message.success('Your data successfully saved');
   };
   const handleCancel = () => {
     setIsModalOpen(false);
@@ -1486,6 +1264,10 @@ const Stage3Form = () => {
 
   return (
     <>
+      {errors && errors.families ?
+        <Alert message="Please fill in your spouse's data" type="error" /> :
+        ''
+      }
       <Form
         name="candidate-register-form"
         form={form}

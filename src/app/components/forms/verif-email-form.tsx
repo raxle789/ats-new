@@ -46,6 +46,7 @@ const VerificationForm = () => {
   if (getRegSession !== undefined) {
     decodedRegSession = DecryptSession(getRegSession);
   }
+  console.info('decoded reg-session:', decodedRegSession);
   const authSessionValue = session[`${authSession}`];
   // console.info('auth session value', authSessionValue);
   /* End Session Context */
@@ -148,12 +149,13 @@ const VerificationForm = () => {
                 onClick={async () => {
                   setSpinning(true);
                   const resend = await sendOTP({ email: decodedRegSession.user.email });
+                  console.log(resend);
                   if(!resend.success) {
                     setSpinning(false);
                     return message.error(resend.message);
                   };
                   setResend(true);
-                  setCoundown(60);
+                  setCoundown(120);
                   message.success(resend.message);
                   return setSpinning(false);
                   }
