@@ -351,10 +351,11 @@ const EducationSkillsForm = () => {
       closable: false,
     });
 
+    console.log('certificationIdx', certificationIdx);
     setCertifItems(newPanes);
     setDisplayedItems(newDisplayed);
     setActiveCertifKey(newActiveKey);
-    setCertificationIdx((prevState) => prevState + 1);
+    setCertificationIdx(certificationIdx + 1);
     console.log('addCertif');
   };
 
@@ -387,6 +388,7 @@ const EducationSkillsForm = () => {
     targetKey: React.MouseEvent | React.KeyboardEvent | string,
     action: 'add' | 'remove',
   ) => {
+    // let index = certificationIdx;
     if (action === 'add') {
       addCertif();
     } else {
@@ -459,12 +461,12 @@ const EducationSkillsForm = () => {
   const [eduTotal, setEduTotal] = useState(0);
   const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
 
-  console.info(
-    'ERROR DATE: ',
-    educationAndSkill?.educations?.start_year
-      ? dayjs(new Date(educationAndSkill?.educations?.start_year, 0))
-      : dayjs('20240101', 'YYYYMMDD'),
-  );
+  // console.info(
+  //   'ERROR DATE: ',
+  //   educationAndSkill?.educations?.start_year
+  //     ? dayjs(new Date(educationAndSkill?.educations?.start_year, 0))
+  //     : dayjs('20240101', 'YYYYMMDD'),
+  // );
 
   useEffect(() => {
     const skillsArray = educationAndSkill?.skills;
@@ -516,54 +518,55 @@ const EducationSkillsForm = () => {
       );
     }
 
-    setInitFieldsValue((prevState) => ({
-      ...prevState,
-      // formalOption?: string;
-      // formalCheckbox?: boolean;
-      // certificationCheckbox?: boolean;
-      education: {
-        educationLevel: educationAndSkill?.educations?.level,
-        educationMajor: educationAndSkill?.educations?.major,
-        schoolName: educationAndSkill?.educations?.university_name,
-        gpa: educationAndSkill?.educations?.gpa,
-        cityOfSchool: educationAndSkill?.educations?.cityOfSchool,
-        startEduYear: educationAndSkill?.educations?.start_year
-          ? dayjs(new Date(educationAndSkill?.educations?.start_year, 0))
-          : dayjs('20240101', 'YYYYMMDD'),
-        endEduYear: educationAndSkill?.educations?.start_year
-          ? dayjs(new Date(educationAndSkill?.educations?.end_year, 0))
-          : dayjs('20240101', 'YYYYMMDD'),
-      },
-      skills: skillsString,
-      language: languageField.language,
-      certification: certificationsField,
-    }));
-
     if (educationAndSkill) {
-      setEduTotal(educationAndSkill.certifications.length);
-    }
+      setInitFieldsValue((prevState) => ({
+        ...prevState,
+        // formalOption?: string;
+        // formalCheckbox?: boolean;
+        // certificationCheckbox?: boolean;
+        education: {
+          educationLevel: educationAndSkill?.educations?.level,
+          educationMajor: educationAndSkill?.educations?.major,
+          schoolName: educationAndSkill?.educations?.university_name,
+          gpa: educationAndSkill?.educations?.gpa,
+          cityOfSchool: educationAndSkill?.educations?.cityOfSchool,
+          startEduYear: educationAndSkill?.educations?.start_year
+            ? dayjs(new Date(educationAndSkill?.educations?.start_year, 0))
+            : dayjs('20240101', 'YYYYMMDD'),
+          endEduYear: educationAndSkill?.educations?.start_year
+            ? dayjs(new Date(educationAndSkill?.educations?.end_year, 0))
+            : dayjs('20240101', 'YYYYMMDD'),
+        },
+        skills: skillsString,
+        language: languageField.language,
+        certification: certificationsField,
+      }));
 
-    console.log('initFieldsValue: ', initFieldsValue);
-    form.setFieldsValue(initFieldsValue);
+      setEduTotal(educationAndSkill.certifications.length);
+      console.log('initFieldsValue: ', initFieldsValue);
+      form.setFieldsValue(initFieldsValue);
+    }
   }, [educationAndSkill]);
 
   useEffect(() => {
     if (educationAndSkill) {
       const loopTotal = eduTotal - displayedItems.length + 1;
-      // console.log('expTotal: ', expTotal);
-      // console.log('panjang display item: ', displayedItems.length);
-      // console.log('expIdx: ', expIdx);
       console.log('loopTotal: ', loopTotal);
+      // let index = certificationIdx;
       for (let i = 0; i < loopTotal; i++) {
         console.log('i: ', i);
         addCertif();
+        // addCertif(index);
+        // index++;
       }
     }
   }, [eduTotal]);
 
-  // useEffect(() => {
-  //   setCertificationIdx((prevState) => prevState + 1);
-  // }, []);
+  useEffect(() => {
+    // setCertificationIdx((prevState) => prevState + 1);
+    console.log('certificationIdx useEffect: ', certificationIdx);
+    // addCertif();
+  }, [certificationIdx]);
   return (
     <>
       <div>
