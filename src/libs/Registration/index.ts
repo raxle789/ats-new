@@ -9,7 +9,7 @@ import prisma from '@/root/prisma';
 import { Dayjs } from 'dayjs';
 import { FieldType } from '@/app/components/forms/register-form';
 import { FieldType as TypeSubmittedValues2 } from '@/app/components/forms/stage-3-form';
-import { REGISTER } from '../validations/Register';
+import { REGISTER, REGISTER_2 } from '../validations/Register';
 import { sendOTP } from './verifications';
 
 /**
@@ -24,8 +24,23 @@ interface TypeSubmittedValues1 extends FieldType {
   dateOfBirth: Dayjs | Date | string
 };
 
-export async function TrialTestFunction(submittedValues1: any, documemts: object[]) {
+export async function TrialTestFunction(submittedValues1: TypeSubmittedValues2, documemts: object[]) {
   console.log('Submitted Values 2: ', submittedValues1);
+  const { expectedSalary, ...restOfExperiences } = submittedValues1.experience;
+  const transformedSubmittedValues = {
+    ...submittedValues1,
+    families: transformToArrayOfObject(submittedValues1.families),
+    certification: transformToArrayOfObject(submittedValues1.certification),
+    language: transformToArrayOfObject(submittedValues1.language),
+    experience: transformToArrayOfObject(restOfExperiences)
+  };
+  console.info('transformed submit values: ', transformedSubmittedValues);
+  const validating = REGISTER_2.safeParse(transformedSubmittedValues);
+  if(!validating.success) {
+    const zodErrors = validating.error.flatten().fieldErrors;
+    return console.info('zod errors: ', zodErrors);
+  };
+  console.info('validated: ', validating.data);
   // console.log('is number: ', Number(submittedValues1.certification['2'].certificationName.toString()));
   // console.log('not a number: ', Number('axngh'));
   // if(Number('Serawak')) {
@@ -78,8 +93,9 @@ export async function RegisterPhase1(submittedValues1: TypeSubmittedValues1): Pr
       },
       message: 'Email already used'
     };
-    console.info('checking phone number...');
+    console.info('checking phone number... - skipped');
     /*  Checking Phone Number */
+    /*
     const isPhoneNumberExist = await tx.candidates.findUnique({
       where: {
         phone_number: submittedValues1.phoneNumber
@@ -93,6 +109,7 @@ export async function RegisterPhase1(submittedValues1: TypeSubmittedValues1): Pr
       },
       message: 'Phone number already used'
     };
+    */
     /* Create Users */
     console.info('creating user...');
     console.info('hashing user password...');
@@ -100,7 +117,7 @@ export async function RegisterPhase1(submittedValues1: TypeSubmittedValues1): Pr
     const createUser = await tx.users.create({
       data: {
         name: submittedValues1.fullname,
-        email: submittedValues1.email,
+        email: submittedValues1.email.toLowerCase(),
         password: hashedPassword
       }
     });
@@ -138,6 +155,15 @@ export async function RegisterPhase1(submittedValues1: TypeSubmittedValues1): Pr
       }
     }, undefined);
     console.info('transaction completed');
+    console.info('sending otp...');
+    const sendingOTP = await sendOTP({ email: createUser.email });
+    if(!sendingOTP.success) return {
+      success: false,
+      data: null,
+      errors: null,
+      message: 'Failed to send OTP, please try register again:'
+    };
+    console.info(sendingOTP);
     return {
       success: true,
       data: {
@@ -148,24 +174,38 @@ export async function RegisterPhase1(submittedValues1: TypeSubmittedValues1): Pr
       message: 'Register phase 1 success:'
     };
   }, {
-    timeout: 15000
+    timeout: 600000
   });
+  /* close connection */
   await prisma.$disconnect();
-  console.info('sending otp...');
-  const sendingOTP = await sendOTP({ email: doRegisterPhase1.data?.user.email as string });
-  if(!sendingOTP.success) return {
-    success: false,
-    data: null,
-    errors: null,
-    message: 'Failed to send OTP, please try register again:'
-  };
-  console.info(sendingOTP);
   /* Return the transaction value */
   return doRegisterPhase1;
 };
 
 export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, documents: TypeTransformedDocument[]) {
   /* validate input -> cannot be validated */
+  const { expectedSalary, ...restOfExperiences } = submittedValues2.experience;
+  const transformedSubmittedValues2 = {
+    ...submittedValues2,
+    families: transformToArrayOfObject(submittedValues2.families),
+    certification: transformToArrayOfObject(submittedValues2.certification),
+    language: transformToArrayOfObject(submittedValues2.language),
+    experience: transformToArrayOfObject(restOfExperiences) // current experience should be included
+  };
+  console.info('transformed submit values: ', transformedSubmittedValues2);
+  const validateInput = REGISTER_2.safeParse(transformedSubmittedValues2);
+  if(!validateInput.success) {
+    const zodErrors = validateInput.error.flatten().fieldErrors;
+    console.info('errors from zod on server-side: ', zodErrors);
+    return {
+      success: false,
+      data: null,
+      errors: zodErrors,
+      message: 'Please fill in your spouse data'
+    };
+  };
+  console.log('validated data: ', validateInput.data);
+  /* end of validation */
   const regSession = await getUserSession('reg');
   console.info('reg-session-data', regSession);
   console.info('begin transaction register phase 2...');
@@ -392,6 +432,7 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
       }
     });
     console.info('storing languages...');
+    console.info('transformed languages...', transformedLanguages);
     const storeLanguages = await tx.languages.createMany({
       data: transformedLanguages
     });
@@ -402,8 +443,6 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
       message: 'Failed when trying store languages'
     };
     /* STORE WORKING EXPERIENCES AND UPDATE EXPECTED SALARY */
-    // let candidateExpectedSalary;
-    // let candidateRestOfExperiences;
     if(submittedValues2.experience && Object.keys(submittedValues2.experience).length <= 1) {
       console.info('candidate is fresh graduate...');
       const { expectedSalary } = submittedValues2.experience;
@@ -486,6 +525,7 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
     };
     /* UPDATE EMERGENCY CONTACT ID */
     console.info('updating candidate emergency contact...');
+    console.info('emergency contact ID: ', storeEmergencyContacts);
     const updateCandidateEmergencyContact = await tx.candidates.update({
       where: {
         id: regSession.candidate.id
@@ -566,6 +606,8 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
       errors: null,
       message: 'Register phase 2 successfully'
     };
+  }, {
+    timeout: 120000
   });
   console.info('closing database connection...');
   /* Close prisma.connection */
@@ -586,6 +628,7 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
 
   console.log('do register results:', doRegisterPhase2);
   console.info('finish');
+  /* Returned Value */
   return doRegisterPhase2;
 };
 

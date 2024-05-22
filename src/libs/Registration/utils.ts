@@ -50,6 +50,10 @@ export async function ManipulateDocuments(documents: TypeDocuments): Promise<Typ
 };
 
 export function transformToArrayOfObject(nestedObject: any) {
+    if (nestedObject == null) {
+      // Handle the case when nestedObject is undefined or null
+      return [];
+    }
     const arrayOfObject = Object.keys(nestedObject).map(key => nestedObject[key]);
 
     return arrayOfObject;

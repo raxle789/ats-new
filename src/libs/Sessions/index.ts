@@ -66,7 +66,7 @@ export async function setUserSession(sessionName: 'auth' | 'reg' | 'otp', payloa
       break;
     case 'otp':
       const otpSessionName = Utils.otpSession;
-      const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+      const otpExpires = new Date(Date.now() + 2 * 60 * 1000);
       const encryptedOTPsession = Jwt.EncryptSession(payload);
       /* set otp-session */
       cookies().set(otpSessionName, encryptedOTPsession as string, { expires: otpExpires, httpOnly: true });
