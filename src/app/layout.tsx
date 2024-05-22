@@ -33,22 +33,6 @@ const gordita = localFont({
   variable: '--gorditas-font',
 });
 
-const plusJakartaSans = localFont({
-  src: [
-    {
-      path: '../../public/assets/fonts/plus-jakarta-sans/plusjakartasans-variablefont_wght-webfont.woff2',
-      weight: '500',
-      style: 'normal',
-    },
-    {
-      path: '../../public/assets/fonts/plus-jakarta-sans/plusjakartasans-variablefont_wght-webfont.woff',
-      weight: '500',
-      style: 'normal',
-    },
-  ],
-  variable: '--plusJakartaSans-font',
-});
-
 const garamond = EB_Garamond({
   weight: ['400', '500', '600', '700', '800'],
   subsets: ['latin'],
@@ -79,11 +63,10 @@ export default function RootLayout({
       </head>
       <body
         suppressHydrationWarning={true}
-        className={`${gordita.variable} ${garamond.variable} ${plusJakartaSans.variable}`}>
+        className={`${gordita.variable} ${garamond.variable} `}
+      >
         <Providers>
-          <AppSession>
-            {children}
-          </AppSession>
+          <AppSession>{children}</AppSession>
         </Providers>
         <BackToTopCom />
 

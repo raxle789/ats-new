@@ -7,7 +7,7 @@ import banner_2 from '@/assets/images/home/banner2.png';
 import banner_3 from '@/assets/images/home/banner3.jpg';
 import useSearchFormSubmit from '@/hooks/use-search-form-submit';
 import JobCategorySelect from '../select/job-category';
-import CounterOne from '../counter/counter-one';
+// import CounterOne from '../counter/counter-one';
 
 const HeroBannerSix = () => {
   const { handleSubmit, setCategoryVal, setSearchText } = useSearchFormSubmit();

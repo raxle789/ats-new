@@ -1,7 +1,7 @@
-import React from "react";
-import NiceSelect from "@/ui/nice-select";
-import job_data from "@/data/job-data";
-import slugify from "slugify";
+import React from 'react';
+import NiceSelect from '@/ui/nice-select';
+import job_data from '@/data/job-data';
+import slugify from 'slugify';
 
 const JobCategorySelect = ({
   setCategoryVal,
@@ -14,7 +14,7 @@ const JobCategorySelect = ({
   // category_option
   const category_option = uniqueCategories.map((c) => {
     return {
-      value: slugify(c.split(",").join("-").toLowerCase(), "-"),
+      value: slugify(c.split(',').join('-').toLowerCase(), '-'),
       label: c,
     };
   });
