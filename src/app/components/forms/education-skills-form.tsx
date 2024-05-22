@@ -334,19 +334,19 @@ const EducationSkillsForm = () => {
     setActiveCertifKey(newActiveKey);
   };
 
-  const addCertif = () => {
+  const addCertif = (index: number) => {
     const newActiveKey = `newTab${newCertifTabIndex.current++}`;
     const newPanes = [...certifItems];
     newPanes.push({
       label: `Certification ${certifItems.length + 1}`,
-      children: <CertifTabContent certificationIdx={certificationIdx} />,
+      children: <CertifTabContent certificationIdx={index} />,
       key: newActiveKey,
     });
 
     const newDisplayed = [...displayedItems];
     newDisplayed.push({
       label: `Certification ${certifItems.length + 1}`,
-      children: <DisplayedTabContent certificationIdx={certificationIdx} />,
+      children: <DisplayedTabContent certificationIdx={index} />,
       key: newActiveKey,
       closable: false,
     });
@@ -355,7 +355,7 @@ const EducationSkillsForm = () => {
     setCertifItems(newPanes);
     setDisplayedItems(newDisplayed);
     setActiveCertifKey(newActiveKey);
-    setCertificationIdx(certificationIdx + 1);
+    // setCertificationIdx(certificationIdx + 1);
     console.log('addCertif');
   };
 
@@ -388,9 +388,11 @@ const EducationSkillsForm = () => {
     targetKey: React.MouseEvent | React.KeyboardEvent | string,
     action: 'add' | 'remove',
   ) => {
-    // let index = certificationIdx;
+    let currentIdx = certificationIdx;
     if (action === 'add') {
-      addCertif();
+      addCertif(currentIdx);
+      currentIdx++;
+      setCertificationIdx(currentIdx);
     } else {
       removeCertif(targetKey);
     }
@@ -458,15 +460,9 @@ const EducationSkillsForm = () => {
     }
   };
 
-  const [eduTotal, setEduTotal] = useState(0);
+  const [certifTotal, setCertifTotal] = useState(0);
+  const [certifState, setCertifState] = useState('not-certified');
   const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
-
-  // console.info(
-  //   'ERROR DATE: ',
-  //   educationAndSkill?.educations?.start_year
-  //     ? dayjs(new Date(educationAndSkill?.educations?.start_year, 0))
-  //     : dayjs('20240101', 'YYYYMMDD'),
-  // );
 
   useEffect(() => {
     const skillsArray = educationAndSkill?.skills;
@@ -521,9 +517,6 @@ const EducationSkillsForm = () => {
     if (educationAndSkill) {
       setInitFieldsValue((prevState) => ({
         ...prevState,
-        // formalOption?: string;
-        // formalCheckbox?: boolean;
-        // certificationCheckbox?: boolean;
         education: {
           educationLevel: educationAndSkill?.educations?.level,
           educationMajor: educationAndSkill?.educations?.major,
@@ -542,30 +535,38 @@ const EducationSkillsForm = () => {
         certification: certificationsField,
       }));
 
-      setEduTotal(educationAndSkill.certifications.length);
+      if (certifications.length > 0) {
+        setCertifState('certified');
+        setCertifTotal(educationAndSkill.certifications.length);
+      }
       console.log('initFieldsValue: ', initFieldsValue);
+      console.log('certifTotal: ', certifTotal);
+      console.log('certifState: ', certifState);
       form.setFieldsValue(initFieldsValue);
     }
   }, [educationAndSkill]);
 
   useEffect(() => {
-    if (educationAndSkill) {
-      const loopTotal = eduTotal - displayedItems.length + 1;
-      console.log('loopTotal: ', loopTotal);
-      // let index = certificationIdx;
-      for (let i = 0; i < loopTotal; i++) {
-        console.log('i: ', i);
-        addCertif();
-        // addCertif(index);
-        // index++;
+    // if (certifState === 'certified') {
+    //   const loopTotal = certifTotal - displayedItems.length + 1;
+    //   console.log('loopTotal: ', loopTotal);
+    //   for (let i = 0; i < loopTotal; i++) {
+    //     console.log('i: ', i);
+    //     addCertif();
+    //   }
+    // }
+    if (certifState === 'certified') {
+      let currentIdx = certificationIdx;
+      for (let i = 0; i < certifTotal - displayedItems.length + 1; i++) {
+        addCertif(currentIdx);
+        currentIdx++;
       }
+      setCertificationIdx(currentIdx);
     }
-  }, [eduTotal]);
+  }, [certifState, certifTotal]);
 
   useEffect(() => {
-    // setCertificationIdx((prevState) => prevState + 1);
     console.log('certificationIdx useEffect: ', certificationIdx);
-    // addCertif();
   }, [certificationIdx]);
   return (
     <>
@@ -831,7 +832,7 @@ const EducationSkillsForm = () => {
               </div>
             </div>
 
-            {editState && (
+            {editState && certifState === 'certified' && (
               <Tabs
                 type="editable-card"
                 onChange={onChangeCertifTabs}
@@ -840,7 +841,7 @@ const EducationSkillsForm = () => {
                 items={certifItems}
               />
             )}
-            {!editState && (
+            {!editState && certifState === 'certified' && (
               <Tabs
                 type="editable-card"
                 hideAdd
