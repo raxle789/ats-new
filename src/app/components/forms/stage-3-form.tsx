@@ -55,7 +55,7 @@ import dayjs from 'dayjs';
 import { useAppSessionContext } from '@/libs/Sessions/AppSession';
 import { authSession, regSession } from '@/libs/Sessions/utils';
 import { DecryptSession } from '@/libs/Sessions/jwt';
-import { convertToPlainObject, fileToBase64, ManipulateDocuments } from '@/libs/Registration/utils';
+import { convertToPlainObject, fileToBase64, ManipulateDocuments, zodErrors } from '@/libs/Registration/utils';
 import { setUserSession } from '@/libs/Sessions';
 import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
 // import { type } from '../../../libs/Authentication/permissions';
@@ -239,9 +239,7 @@ const Stage3Form = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [profilePhoto, setProfilePhoto] = useState<any>();
   /* to catch every error while operation */
-  const [errors, setErrors] = useState<{ [key: string]: string[] } | undefined | null>(
-    { ['']: [''] },
-  );
+  const [errors, setErrors] = useState<any | undefined | null>(null);
 
   const [masterData, setMasterData] = useState<MasterData | null>(null);
   const [citysName, setCitysName] = useState<
@@ -477,19 +475,8 @@ const Stage3Form = () => {
           <Form.Item<FieldType>
             name={['families', index.toString(), 'relation']}
             className="mb-0"
-            // rules={
-            //   marriedValue === 'Married'
-            //     ? [
-            //         {
-            //           required: true,
-            //           message:
-            //             'Please input your family relation especially spouse!',
-            //         },
-            //       ]
-            //     : undefined
-            // }
-            validateStatus={errors && errors.families ? 'error' : ''}
-            help={errors && errors.families ? 'Please select spouse option' : ''}
+            validateStatus={errors && errors.families && errors.families.relation ? 'error' : ''}
+            help={errors && errors.families && errors.families.relation?._errors.toString()}
           >
             <Select
               className="w-100"
@@ -511,18 +498,8 @@ const Stage3Form = () => {
           <Form.Item<FieldType>
             name={['families', index.toString(), 'name']}
             className="mb-0"
-            // rules={
-            //   marriedValue === 'Married'
-            //     ? [
-            //         {
-            //           required: true,
-            //           message: 'Please input your relation name!',
-            //         },
-            //       ]
-            //     : undefined
-            // }
-            validateStatus={errors && errors.families ? 'error' : ''}
-            help={errors && errors.families ? 'Please input your spouse name' : ''}
+            validateStatus={errors && errors.families && errors.families.name ? 'error' : ''}
+            help={errors && errors.families && errors.families.name?._errors.toString()}
 
           >
             <Input placeholder="Your Relation Name" />
@@ -535,18 +512,8 @@ const Stage3Form = () => {
           <Form.Item<FieldType>
             name={['families', index.toString(), 'gender']}
             className="mb-0"
-            // rules={
-            //   marriedValue === 'Married'
-            //     ? [
-            //         {
-            //           required: true,
-            //           message: 'Please input your family gender!',
-            //         },
-            //       ]
-            //     : undefined
-            // }
-            validateStatus={errors && errors.families ? 'error' : ''}
-            help={errors && errors.families ? 'Your spouse gender' : ''}
+            validateStatus={errors && errors.families && errors.families.gender ? 'error' : ''}
+            help={errors && errors.families && errors.families.gender?._errors.toString()}
           >
             <Select
               className="w-100"
@@ -564,18 +531,8 @@ const Stage3Form = () => {
           <label>Date of Birth</label>
           <Form.Item<FieldType>
             name={['families', index.toString(), 'dateOfBirth']}
-            // rules={
-            //   marriedValue === 'Married'
-            //     ? [
-            //         {
-            //           required: true,
-            //           message: 'Please input your relation date of birth!',
-            //         },
-            //       ]
-            //     : undefined
-            // }
-            validateStatus={errors && errors.families ? 'error' : ''}
-            help={errors && errors.families ? 'Your spouse date of birth' : ''}
+            validateStatus={errors && errors.families && errors.families.dateOfBirth ? 'error' : ''}
+            help={errors && errors.families && errors.families.dateOfBirth?._errors.toString()}
           >
             <DatePicker
               className="w-100"
@@ -842,12 +799,6 @@ const Stage3Form = () => {
           <Form.Item<FieldType>
             name={['experience', expIdx.toString(), 'jobTitle']}
             className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your job title!',
-              },
-            ]}
           >
             <Input placeholder="Your Job Title" />
           </Form.Item>
@@ -859,12 +810,6 @@ const Stage3Form = () => {
           <Form.Item<FieldType>
             name={['experience', expIdx.toString(), 'jobFunction']}
             className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your job function!',
-              },
-            ]}
           >
             <Select
               className="w-100"
@@ -891,12 +836,6 @@ const Stage3Form = () => {
           <Form.Item<FieldType>
             name={['experience', expIdx.toString(), 'lineIndustry']}
             className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your line industry!',
-              },
-            ]}
           >
             <Select
               className="w-100"
@@ -923,12 +862,6 @@ const Stage3Form = () => {
           <Form.Item<FieldType>
             name={['experience', expIdx.toString(), 'positionLevel']}
             className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your position level!',
-              },
-            ]}
           >
             <Select
               className="w-100"
@@ -955,12 +888,6 @@ const Stage3Form = () => {
           <Form.Item<FieldType>
             name={['experience', expIdx.toString(), 'compName']}
             className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your company name!',
-              },
-            ]}
           >
             <Input placeholder="Your Company Name" />
           </Form.Item>
@@ -988,12 +915,6 @@ const Stage3Form = () => {
           <Form.Item<FieldType>
             name={['experience', expIdx.toString(), 'startYear']}
             className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please choose start year!',
-              },
-            ]}
           >
             <DatePicker
               className="w-100"
@@ -1009,27 +930,11 @@ const Stage3Form = () => {
           <Form.Item<FieldType>
             name={['experience', expIdx.toString(), 'endYear']}
             className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please choose end year!',
-              },
-            ]}
           >
             <DatePicker
               className="w-100"
               placeholder="Select Year"
               picker="month"
-              // rules={
-              //   !formalCheck
-              //     ? [
-              //         {
-              //           required: true,
-              //           message: 'Please choose your education!',
-              //         },
-              //       ]
-              //     : []
-              // }
               disabled={yearState[expIdx]}
             />
           </Form.Item>
@@ -1058,12 +963,6 @@ const Stage3Form = () => {
           <Form.Item<FieldType>
             name={['experience', expIdx.toString(), 'currentSalary']}
             className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your current salary!',
-              },
-            ]}
           >
             <InputNumber
               className="w-100"
@@ -1085,12 +984,8 @@ const Stage3Form = () => {
           <Form.Item<FieldType>
             name={['experience', 'expectedSalary']}
             className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your expected salary!',
-              },
-            ]}
+            validateStatus={errors?.expectedSalary ? 'error' : ''}
+            help={errors?.expectedSalary?._errors.toString()}
           >
             <InputNumber
               className="w-100"
@@ -1189,31 +1084,39 @@ const Stage3Form = () => {
   };
   const [spinning, setSpinning] = useState(false);
 
+  /* ACTIONS */
   const handleOk = async () => {
     setIsModalOpen(false);
-    // setSpinning(true);
+    setSpinning(true);
     const values = form.getFieldsValue();
     console.log('ok value form: ', values);
     /**
-     * convert profilePhoto, CV
+     * Transform File object into ready to store file.
+     * @return transformed file base64 or zodErrors
      */
     const transformedDocuments = await ManipulateDocuments({
-      profilePhoto: profilePhoto[0].originFileObj,
-      curriculumVitae: values.others?.uploadCV.file.originFileObj
+      profilePhoto: profilePhoto ? profilePhoto[0].originFileObj : null,
+      curriculumVitae: values.others?.uploadCV ? values.others?.uploadCV.file.originFileObj : null
     });
-    console.info('Manipulated Documents: ', transformedDocuments);
+    if(!Array.isArray(transformedDocuments)) {
+      return setErrors(transformedDocuments as zodErrors);
+    };
     const plainObjects = JSON.parse(JSON.stringify(values));
+    /* JANGAN DI DELETE, TESTING PURPOSE */
     // await TrialTestFunction(plainObjects, transformedDocuments);
     const doRegisterPhase2 = await RegisterPhase2(plainObjects, transformedDocuments);
-    console.info('do register phase 2: ', doRegisterPhase2);
     if(!doRegisterPhase2.success) {
-      console.info('register result client-side: ', doRegisterPhase2);
+      console.info(doRegisterPhase2.errors);
       setErrors(doRegisterPhase2.errors);
+      setSpinning(false);
       return message.error(doRegisterPhase2.message);
     };
+    setSpinning(false);
     message.success(doRegisterPhase2.message);
     return dispatch(setRegisterStep(4));
   };
+  /* END OF ACTIONS */
+
   const handleCancel = () => {
     setIsModalOpen(false);
   };
@@ -1264,10 +1167,6 @@ const Stage3Form = () => {
 
   return (
     <>
-      {errors && errors.families ?
-        <Alert message="Please fill in your spouse's data" type="error" /> :
-        ''
-      }
       <Form
         name="candidate-register-form"
         form={form}
@@ -1284,12 +1183,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'uploadPhoto']}
                 className="mb-0"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please upload your photo!',
-                //   },
-                // ]}
+                validateStatus={errors && errors.profilePhoto ? 'error' : ''}
+                help={errors && errors.profilePhoto?.toString()}
               >
                 <div>
                   <Upload
@@ -1336,9 +1231,8 @@ const Stage3Form = () => {
               <label>Full Name (as per ID/Passport)*</label>
               <Form.Item<FieldType>
                 name={['profile', 'fullname']}
-                // rules={[
-                //   { required: true, message: 'Please input your fullname!' },
-                // ]}
+                // validateStatus={errors && errors.profile ? 'error' : ''}
+                // help={errors && errors.profile[0]}
               >
                 <Input
                   placeholder="Your Full Name"
@@ -1351,7 +1245,8 @@ const Stage3Form = () => {
               <label>Email*</label>
               <Form.Item<FieldType>
                 name={['profile', 'email']}
-                // rules={[{ required: true, message: 'Please input your email!' }]}
+                // validateStatus={errors && errors.email ? 'error' : ''}
+                // help={errors && errors.email}
               >
                 <Input
                   disabled
@@ -1366,12 +1261,8 @@ const Stage3Form = () => {
               <label>Phone Number*</label>
               <Form.Item<FieldType>
                 name={['profile', 'phoneNumber']}
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please input your phone number!',
-                //   },
-                // ]}
+                // validateStatus={errors && errors.phoneNumber ? 'error' : ''}
+                // help={errors && errors.phoneNumber}
               >
                 <Input
                   placeholder="Your Phone Number"
@@ -1383,12 +1274,8 @@ const Stage3Form = () => {
               <label>Date of Birth*</label>
               <Form.Item<FieldType>
                 name={['profile', 'dateOfBirth']}
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please input your date of birth!',
-                //   },
-                // ]}
+                // validateStatus={errors && errors.dateOfBirth ? 'error' : ''}
+                // help={errors && errors.dateOfBirth}
               >
                 <DatePicker
                   className="w-100"
@@ -1406,12 +1293,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'placeOfBirth']}
                 className="mb-0"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please input your place of birth!',
-                //   },
-                // ]}
+                validateStatus={errors && errors.profile && errors.profile.placeOfBirth ? 'error' : ''}
+                help={errors && errors.profile && errors.profile.placeOfBirth._errors.toString()}
               >
                 <Select
                   className="w-100"
@@ -1440,12 +1323,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'gender']}
                 className="mb-0"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please input your gender!',
-                //   },
-                // ]}
+                validateStatus={errors && errors.profile && errors.profile.gender ? 'error' : ''}
+                help={errors && errors.profile && errors.profile.gender._errors.toString()}
               >
                 <Select
                   className="w-100"
@@ -1464,12 +1343,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'religion']}
                 className="mb-0"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please input your religion!',
-                //   },
-                // ]}
+                validateStatus={errors && errors.profile && errors.profile.religion ? 'error' : ''}
+                help={errors && errors.profile && errors.profile.religion._errors.toString()}
               >
                 <Select
                   className="w-100"
@@ -1487,27 +1362,27 @@ const Stage3Form = () => {
                   options={[
                     {
                       value: 'Islam',
-                      label: 'ISLAM',
+                      label: 'Islam',
                     },
                     {
                       value: 'Buddha',
-                      label: 'BUDDHA',
+                      label: 'Buddha',
                     },
                     {
                       value: 'Hindu',
-                      label: 'HINDU',
+                      label: 'Hindu',
                     },
                     {
                       value: 'Kristen Katholik',
-                      label: 'KRISTEN KATHOLIK',
+                      label: 'Kristen Katholik',
                     },
                     {
                       value: 'Kristen Protestan',
-                      label: 'KRISTEN PROTESTAN',
+                      label: 'Kristen Protestan',
                     },
                     {
                       value: 'Konghucu',
-                      label: 'KONGHUCU',
+                      label: 'Konghucu',
                     },
                   ]}
                 />
@@ -1520,12 +1395,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'ethnicity']}
                 className="mb-0"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please input your ethnicity!',
-                //   },
-                // ]}
+                validateStatus={errors && errors.profile && errors.profile.ethnicity ? 'error' : ''}
+                help={errors && errors.profile && errors.profile.ethnicity._errors.toString()}
               >
                 <Select
                   className="w-100"
@@ -1552,6 +1423,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'bloodType']}
                 className="mb-0"
+                validateStatus={errors && errors.profile && errors.profile.bloodType ? 'error' : ''}
+                help={errors && errors.profile && errors.profile.bloodType._errors.toString()}
               >
                 <Select
                   className="w-100"
@@ -1572,12 +1445,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'maritalStatus']}
                 className="mb-0"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please input your marital status!',
-                //   },
-                // ]}
+                validateStatus={errors && errors.profile && errors.profile.maritalStatus ? 'error' : ''}
+                help={errors && errors.profile && errors.profile.maritalStatus._errors.toString()}
               >
                 <Select
                   className="w-100"
@@ -1623,12 +1492,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'permanentAddress']}
                 className="mb-0"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please input your permanent address!',
-                //   },
-                // ]}
+                validateStatus={errors && errors.address && errors.address.permanentAddress ? 'error' : ''}
+                help={errors && errors.address && errors.address.permanentAddress?._errors.toString()}
               >
                 <Input placeholder="Your Permanent Address" />
               </Form.Item>
@@ -1640,12 +1505,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'country']}
                 className="mb-0"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please input your country!',
-                //   },
-                // ]}
+                validateStatus={errors && errors.address && errors.address.country ? 'error' : ''}
+                help={errors && errors.address && errors.address.country?._errors.toString()}
               >
                 <Select
                   className="w-100"
@@ -1673,12 +1534,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'city']}
                 className="mb-0"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please input your city!',
-                //   },
-                // ]}
+                validateStatus={errors && errors.address && errors.address.city ? 'error' : ''}
+                help={errors && errors.address && errors.address.city?._errors.toString()}
               >
                 <Select
                   className="w-100"
@@ -1707,12 +1564,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'zipCode']}
                 className="mb-0"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please input your zip code!',
-                //   },
-                // ]}
+                validateStatus={errors && errors.address && errors.address.zipCode ? 'error' : ''}
+                help={errors && errors.address && errors.address.zipCode?._errors.toString()}
               >
                 <Input placeholder="Your Zip Code" />
               </Form.Item>
@@ -1725,12 +1578,8 @@ const Stage3Form = () => {
                 <Form.Item<FieldType>
                   name={['address', 'rt']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your RT!',
-                  //   },
-                  // ]}
+                  validateStatus={errors && errors.address && errors.address.rt ? 'error' : ''}
+                  help={errors && errors.address && errors.address.rt?._errors.toString()}
                 >
                   <Input placeholder="Your RT" />
                 </Form.Item>
@@ -1744,12 +1593,8 @@ const Stage3Form = () => {
                 <Form.Item<FieldType>
                   name={['address', 'rw']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your RW!',
-                  //   },
-                  // ]}
+                  validateStatus={errors && errors.address && errors.address.rw ? 'error' : ''}
+                  help={errors && errors.address && errors.address.rw?._errors.toString()}
                 >
                   <Input placeholder="Your RW" />
                 </Form.Item>
@@ -1763,12 +1608,8 @@ const Stage3Form = () => {
                 <Form.Item<FieldType>
                   name={['address', 'subdistrict']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your subdistrict!',
-                  //   },
-                  // ]}
+                  validateStatus={errors && errors.address && errors.address.subdistrict ? 'error' : ''}
+                  help={errors && errors.address && errors.address.subdistrict?._errors.toString()}
                 >
                   <Input placeholder="Your Subdistrict" />
                 </Form.Item>
@@ -1782,12 +1623,8 @@ const Stage3Form = () => {
                 <Form.Item<FieldType>
                   name={['address', 'village']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your village!',
-                  //   },
-                  // ]}
+                  validateStatus={errors && errors.address && errors.address.village ? 'error' : ''}
+                  help={errors && errors.address && errors.address.village?._errors.toString()}
                 >
                   <Input placeholder="Your Village" />
                 </Form.Item>
@@ -1815,14 +1652,6 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'currentAddress']}
                 className="mb-0"
-                /*
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your current address!',
-                  },
-                ]}
-                */
               >
                 <Input
                   disabled={addressCheck}
@@ -1833,6 +1662,10 @@ const Stage3Form = () => {
           </div>
 
           <label className="fw-bold mt-5 mb-2">Family Structure</label>
+          {errors?.families ?
+            <Alert message='If you have married, please fill in families structure with your spouse data' type='error' style={{ marginBottom: '1em' }} /> :
+            ''
+          }
           <Tabs
             type="editable-card"
             onChange={onChangeTabs}
@@ -1847,16 +1680,6 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name="formalCheckbox"
                 className="mb-0"
-                // rules={
-                //   !formalCheck
-                //     ? [
-                //         {
-                //           required: true,
-                //           message: 'Please choose your education!',
-                //         },
-                //       ]
-                //     : []
-                // }
               >
                 <div className="d-flex align-items-center">
                   <Checkbox onChange={handleFormalCheck} checked={formalCheck}>
@@ -1874,12 +1697,8 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'educationLevel']}
                     className="mb-0"
-                    // rules={[
-                    //   {
-                    //     required: true,
-                    //     message: 'Please input your education level!',
-                    //   },
-                    // ]}
+                    validateStatus={errors && errors.education && errors.education.educationLevel ? 'error' : ''}
+                    help={errors && errors.education && errors.education.educationLevel?._errors.toString()}
                   >
                     <Select
                       className="w-100"
@@ -1897,12 +1716,8 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'educationMajor']}
                     className="mb-0"
-                    // rules={[
-                    //   {
-                    //     required: true,
-                    //     message: 'Please input your education major!',
-                    //   },
-                    // ]}
+                    validateStatus={errors && errors.education && errors.education.educationMajor ? 'error' : ''}
+                    help={errors && errors.education && errors.education.educationMajor?._errors.toString()}
                   >
                     <Select
                       className="w-100"
@@ -1933,12 +1748,8 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'startEduYear']}
                     className="mb-0"
-                    // rules={[
-                    //   {
-                    //     required: true,
-                    //     message: 'Please select year!',
-                    //   },
-                    // ]}
+                    validateStatus={errors && errors.education && errors.education.startEduYear ? 'error' : ''}
+                    help={errors && errors.education && errors.education.startEduYear?._errors.toString()}
                   >
                     <DatePicker
                       className="w-100"
@@ -1954,12 +1765,8 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'endEduYear']}
                     className="mb-0"
-                    // rules={[
-                    //   {
-                    //     required: true,
-                    //     message: 'Please select year!',
-                    //   },
-                    // ]}
+                    validateStatus={errors && errors.education && errors.education.endEduYear ? 'error' : ''}
+                    help={errors && errors.education && errors.education.endEduYear?._errors.toString()}
                   >
                     <DatePicker
                       className="w-100"
@@ -1975,12 +1782,8 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'schoolName']}
                     className="mb-0"
-                    // rules={[
-                    //   {
-                    //     required: true,
-                    //     message: 'Please input your school name!',
-                    //   },
-                    // ]}
+                    validateStatus={errors && errors.education && errors.education.schoolName ? 'error' : ''}
+                    help={errors && errors.education && errors.education.schoolName?._errors.toString()}
                   >
                     <Select
                       className="w-100"
@@ -2010,12 +1813,8 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'cityOfSchool']}
                     className="mb-0"
-                    // rules={[
-                    //   {
-                    //     required: true,
-                    //     message: 'Please input your city of school!',
-                    //   },
-                    // ]}
+                    validateStatus={errors && errors.education && errors.education.cityOfSchool ? 'error' : ''}
+                    help={errors && errors.education && errors.education.cityOfSchool?._errors.toString()}
                   >
                     <Select
                       className="w-100"
@@ -2043,12 +1842,8 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'gpa']}
                     className="mb-0"
-                    // rules={[
-                    //   {
-                    //     required: true,
-                    //     message: 'Please input your gpa!',
-                    //   },
-                    // ]}
+                    validateStatus={errors && errors.education && errors.education.gpa ? 'error' : ''}
+                    help={errors && errors.education && errors.education.gpa?._errors.toString()}
                   >
                     <InputNumber
                       className="w-100"
@@ -2098,12 +1893,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name="skills"
                 className="mb-0"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please input your skills!',
-                //   },
-                // ]}
+                validateStatus={errors && errors.skills ? 'error' : ''}
+                help={errors && errors.skills?.skill?._errors.toString()}
               >
                 <Select
                   className="w-100"
@@ -2136,12 +1927,8 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['language', index.toString(), 'name']}
                       className="mb-0"
-                      // rules={[
-                      //   {
-                      //     required: true,
-                      //     message: 'Please choose your language!',
-                      //   },
-                      // ]}
+                      validateStatus={errors && errors.language && errors.language.name ? 'error' : ''}
+                      help={errors && errors.language && errors.language.name?._errors.toString()}
                     >
                       <Select
                         className="w-100"
@@ -2186,12 +1973,8 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['language', index.toString(), 'level']}
                       className="mb-0"
-                      // rules={[
-                      //   {
-                      //     required: true,
-                      //     message: 'Please choose your level!',
-                      //   },
-                      // ]}
+                      validateStatus={errors && errors.language && errors.language.name ? 'error' : ''}
+                      // help={errors && errors.language && errors.language[0].level?._errors.toString()}
                     >
                       <Select
                         className="w-100"
@@ -2235,17 +2018,20 @@ const Stage3Form = () => {
           </div>
 
           <label className="fw-bold mt-5 mb-2">Working Experience</label>
+          {/* Error Alert Experiences */}
+          {errors?.expOption ?
+            <Alert message={errors.expOption?._errors.toString()} type="error" style={{ marginBottom: '1em' }} /> :
+            errors?.experience ?
+            <Alert message={errors.experience?._errors.toString() + ', or click (+) button'} type='error' style={{ marginBottom: '1em' }} /> :
+            errors?.expectedSalary ?
+            <Alert message={'Please fill in all required working experience fields'} type='error' style={{ marginBottom: '1em' }} /> :
+            ''
+          }
           <div className="col-12">
             <div className="input-group-meta position-relative mb-15">
               <Form.Item<FieldType>
                 name="expOption"
                 className="mb-0"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please choose your working experience!',
-                //   },
-                // ]}
               >
                 <Radio.Group onChange={onChangeExp} value={expValue}>
                   <Radio className="d-flex" value="Fresh Graduate">
@@ -2265,12 +2051,8 @@ const Stage3Form = () => {
                 <Form.Item<FieldType>
                   name={['experience', 'expectedSalary']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your expected salary!',
-                  //   },
-                  // ]}
+                  validateStatus={errors?.expectedSalary ? 'error' : ''}
+                  help={errors?.expectedSalary?._errors?.toString()}
                 >
                   <InputNumber
                     className="w-100"
@@ -2348,12 +2130,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['others', 'noticePeriod']}
                 className="mb-0"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please input your notice period!',
-                //   },
-                // ]}
+                validateStatus={errors && errors?.others?.noticePeriod ? 'error' : ''}
+                help={errors?.others?.noticePeriod?._errors.toString()}
               >
                 <Select
                   className="w-100"
@@ -2381,12 +2159,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name="everWorkedOption"
                 className="mb-0"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please choose!',
-                //   },
-                // ]}
+                validateStatus={errors && errors.everWorkedOption ? 'error' : ''}
+                help={errors?.everWorkedOption?._errors.toString()}
               >
                 <Radio.Group onChange={everWorkedChange} value={everWorked}>
                   <Radio className="d-flex" value="No">
@@ -2403,12 +2177,6 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['others', 'everWorkedMonth']}
                       className="mb-0"
-                      // rules={[
-                      //   {
-                      //     required: true,
-                      //     message: 'Please input year!',
-                      //   },
-                      // ]}
                     >
                       <DatePicker
                         className="w-100"
@@ -2421,12 +2189,6 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['others', 'everWorkedYear']}
                       className="mb-0"
-                      // rules={[
-                      //   {
-                      //     required: true,
-                      //     message: 'Please input year!',
-                      //   },
-                      // ]}
                     >
                       <DatePicker
                         className="w-100"
@@ -2448,12 +2210,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name="diseaseOption"
                 className="mb-0"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please choose!',
-                //   },
-                // ]}
+                validateStatus={errors && errors.diseaseOption ? 'error' : ''}
+                help={errors?.diseaseOption?._errors.toString()}
               >
                 <Radio.Group onChange={diseaseChange} value={disease}>
                   <Radio className="d-flex" value="No">
@@ -2470,12 +2228,6 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['others', 'diseaseName']}
                       className="mb-0"
-                      // rules={[
-                      //   {
-                      //     required: true,
-                      //     message: 'Please input medical condition!',
-                      //   },
-                      // ]}
                     >
                       <Input placeholder="Medical Condition" />
                     </Form.Item>
@@ -2484,12 +2236,6 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['others', 'diseaseYear']}
                       className="mb-0"
-                      // rules={[
-                      //   {
-                      //     required: true,
-                      //     message: 'Please input year!',
-                      //   },
-                      // ]}
                     >
                       <DatePicker
                         className="w-100"
@@ -2511,12 +2257,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name="relationOption"
                 className="mb-0"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please choose!',
-                //   },
-                // ]}
+                validateStatus={errors && errors.relationOption ? 'error' : ''}
+                help={errors?.relationOption?._errors.toString()}
               >
                 <Radio.Group onChange={haveRelationChange} value={haveRelation}>
                   <Radio className="d-flex" value="No">
@@ -2533,12 +2275,6 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['others', 'relationName']}
                       className="mb-0"
-                      // rules={[
-                      //   {
-                      //     required: true,
-                      //     message: 'Please input name!',
-                      //   },
-                      // ]}
                     >
                       <Input placeholder="Name" />
                     </Form.Item>
@@ -2547,12 +2283,6 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['others', 'relationPosition']}
                       className="mb-0"
-                      // rules={[
-                      //   {
-                      //     required: true,
-                      //     message: 'Please input position!',
-                      //   },
-                      // ]}
                     >
                       <Input placeholder="Position" />
                     </Form.Item>
@@ -2567,12 +2297,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['others', 'uploadCV']}
                 className="mb-0"
-                // rules={[
-                //   {
-                //     required: true,
-                //     message: 'Please upload your cv!',
-                //   },
-                // ]}
+                validateStatus={errors && errors.curriculumVitae ? 'error' : ''}
+                help={errors && errors.curriculumVitae?.toString()}
               >
                 <Upload action="" listType="picture" maxCount={1} accept=".pdf">
                   <Button

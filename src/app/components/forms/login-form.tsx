@@ -82,10 +82,11 @@ const LoginForm: React.FC<LoginFormProps> = ({
     }
 
     if (authorizing.success === false) {
-      alert('User not found');
+      alert(authorizing.message);
       return setSpinning(false);
     }
     console.info('user required data is completed...');
+    message.success(authorizing.message);
     /* Directing to job list */
     router.push('/dashboard/user');
     setSpinning(false);

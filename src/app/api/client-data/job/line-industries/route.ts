@@ -6,7 +6,7 @@ export async function GET() {
     const lineIndustries: { value: string, label: string }[] = await prisma.$queryRaw`SELECT name as value, name as label FROM ATS_ERAJAYA.dbo.line_industries`;
     await prisma.$disconnect();
     /* Manipulated the property */
-    lineIndustries.forEach((value, index) => value.value = value.value + index);
+    // lineIndustries.forEach((value, index) => value.value = value.value + index);
     return NextResponse.json(lineIndustries);
   } catch (error) {
     /**

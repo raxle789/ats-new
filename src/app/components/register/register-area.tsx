@@ -30,7 +30,7 @@ const RegisterArea = () => {
                   <div className="col-sm-6">
                     {/* linkedin here */}
                     <Link
-                      href="https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=86spngwvycqa3c&redirect_uri=http://localhost:3000/api/authorization&state=wearetaeb&scope=openid%20profile%20email"
+                      href={process.env.NEXT_PUBLIC_LIKEDIN_AUTHORIZATION_REQUEST_URL as string}
                       className="social-use-btn d-flex align-items-center justify-content-center tran3s w-100 mt-10"
                     >
                       <Image src={linkedin} alt="linkedin-img" />
