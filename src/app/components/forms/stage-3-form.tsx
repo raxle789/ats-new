@@ -1152,17 +1152,11 @@ const Stage3Form = () => {
   const [spinning, setSpinning] = useState(false);
 
   /* ACTIONS */
-  /* ACTIONS */
   const handleOk = async () => {
     setIsModalOpen(false);
-    // setSpinning(true);
-    let values = form.getFieldsValue();
+    setSpinning(true);
+    const values = form.getFieldsValue();
     console.log('ok value form: ', values);
-    if (values.families[0].relation) {
-    } else {
-      values = { ...values, families: null };
-    }
-    // debugger;
     /**
      * Transform File object into ready to store file.
      * @return transformed file base64 or zodErrors

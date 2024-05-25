@@ -566,6 +566,11 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
         message: 'Register phase 2 successfully'
       }
     });
+
+    console.info('closing database connection...');
+    /* Close prisma.connection */
+    await prisma.$disconnect();
+
     console.info('setting up auth session...');
     /* Set Auth-Session */
     await setUserSession('auth', {
@@ -584,19 +589,32 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
     /* Returned Value */
     return doRegisterPhase2;
   } catch (error) {
+    console.info('closing database connection...');
+    /* Close prisma.connection */
+    await prisma.$disconnect();
+
+    console.info('database operatio errors...');
+
     if(error) {
       return {
         success: false,
         data: null,
-        error: 'unknown error',
-        message: 'There is a problem with the system, please try again later'
+        error: 'unknown error  on database operation',
+        message: 'There is a problem with our database operation, please try again later'
       };
     };
-  } finally {
-    console.info('closing database connection...');
-    /* Close prisma.connection */
-    await prisma.$disconnect();
-  }
+  };
+  // finally {
+  //   console.info('closing database connection...');
+  //   /* Close prisma.connection */
+  //   await prisma.$disconnect();
+  // };
+  return {
+    success: false,
+    data: null,
+    error: 'unknown error on system logic',
+    message: 'There is a problem with the system, please try again later'
+  };
 };
 
 /**
