@@ -21,10 +21,13 @@ interface TypeSubmittedValues1 extends FieldType {
   password: string;
   confirmPassword: string;
   phoneNumber: string;
-  dateOfBirth: Dayjs | Date | string
-};
+  dateOfBirth: Dayjs | Date | string;
+}
 
-export async function TrialTestFunction(submittedValues1: TypeSubmittedValues2, documemts: object[]) {
+export async function TrialTestFunction(
+  submittedValues1: TypeSubmittedValues2,
+  documemts: object[],
+) {
   console.log('Submitted Values 2: ', submittedValues1);
   const { expectedSalary, ...restOfExperiences } = submittedValues1.experience;
   const transformedSubmittedValues = {
@@ -32,14 +35,14 @@ export async function TrialTestFunction(submittedValues1: TypeSubmittedValues2, 
     families: transformToArrayOfObject(submittedValues1.families),
     certification: transformToArrayOfObject(submittedValues1.certification),
     language: transformToArrayOfObject(submittedValues1.language),
-    experience: transformToArrayOfObject(restOfExperiences)
+    experience: transformToArrayOfObject(restOfExperiences),
   };
   console.info('transformed submit values: ', transformedSubmittedValues);
   const validating = REGISTER_2.safeParse(transformedSubmittedValues);
-  if(!validating.success) {
+  if (!validating.success) {
     const zodErrors = validating.error.flatten().fieldErrors;
     return console.info('zod errors: ', zodErrors);
-  };
+  }
   console.info('validated: ', validating.data);
   // console.log('is number: ', Number(submittedValues1.certification['2'].certificationName.toString()));
   // console.log('not a number: ', Number('axngh'));
@@ -48,7 +51,7 @@ export async function TrialTestFunction(submittedValues1: TypeSubmittedValues2, 
   // }
   // console.info('Documents: ', documemts);
   // console.log('is instance of Date: ', submittedValues1.families['0'].dateOfBirth, new Date(submittedValues1.families['0'].dateOfBirth));
-};
+}
 
 /* ============================================================================== */
 interface TypeReturnedServerAction {
@@ -56,46 +59,50 @@ interface TypeReturnedServerAction {
   data: any | null;
   errors: any | null;
   message: string | '';
-};
+}
 
-export async function RegisterPhase1(submittedValues1: TypeSubmittedValues1): Promise<TypeReturnedServerAction> {
+export async function RegisterPhase1(
+  submittedValues1: TypeSubmittedValues1,
+): Promise<TypeReturnedServerAction> {
   /* Validation Input */
   console.info('validating input...');
   const validateRegisterPhase1 = REGISTER.safeParse({
     ...submittedValues1,
-    dateOfBirth: new Date(submittedValues1.dateOfBirth.toString())
+    dateOfBirth: new Date(submittedValues1.dateOfBirth.toString()),
   });
-  if(!validateRegisterPhase1.success) {
+  if (!validateRegisterPhase1.success) {
     const zodErrors = validateRegisterPhase1.error.flatten().fieldErrors;
     return {
       success: false,
       data: null,
       errors: zodErrors,
-      message: 'Fields Validation Error'
+      message: 'Fields Validation Error',
     };
-  };
-  console.info('input validated:')
+  }
+  console.info('INPUT VALIDATED:', validateRegisterPhase1.data);
   /* Begin Transactions */
   console.info('storing register phase 1 data...');
-  const doRegisterPhase1 = await prisma.$transaction(async (tx) => {
-    /* Cheking Email */
-    console.info('checking email...')
-    const isEmailExist = await tx.users.findUnique({
-      where: {
-        email: submittedValues1.email
-      }
-    });
-    if(isEmailExist) return {
-      success: false,
-      data: null,
-      errors: {
-        email: ['This email already used by another candidate']
-      },
-      message: 'Email already used'
-    };
-    console.info('checking phone number... - skipped');
-    /*  Checking Phone Number */
-    /*
+  const doRegisterPhase1 = await prisma.$transaction(
+    async (tx) => {
+      /* Cheking Email */
+      console.info('checking email...');
+      const isEmailExist = await tx.users.findUnique({
+        where: {
+          email: submittedValues1.email,
+        },
+      });
+      if (isEmailExist)
+        return {
+          success: false,
+          data: null,
+          errors: {
+            email: ['This email already used by another candidate'],
+          },
+          message: 'Email already used',
+        };
+      console.info('checking phone number... - skipped');
+      /*  Checking Phone Number */
+      /*
     const isPhoneNumberExist = await tx.candidates.findUnique({
       where: {
         phone_number: submittedValues1.phoneNumber
@@ -110,77 +117,86 @@ export async function RegisterPhase1(submittedValues1: TypeSubmittedValues1): Pr
       message: 'Phone number already used'
     };
     */
-    /* Create Users */
-    console.info('creating user...');
-    console.info('hashing user password...');
-    const hashedPassword = await bcrypt.hash(submittedValues1.password, 10);
-    const createUser = await tx.users.create({
-      data: {
-        name: submittedValues1.fullname,
-        email: submittedValues1.email.toLowerCase(),
-        password: hashedPassword
-      }
-    });
-    if(!createUser) return {
-      success: false,
-      data: null,
-      errors: null,
-      message: 'Failed to create users'
-    };
-    console.info('creating candidate...');
-    const createCandidate = await tx.candidates.create({
-      data: {
-        userId: createUser.id,
-        phone_number: submittedValues1.phoneNumber,
-        date_of_birth: new Date(submittedValues1.dateOfBirth.toString())
-      }
-    });
-    if(!createCandidate) return {
-      success: false,
-      data: null,
-      errors: null,
-      message: 'Failed to create candidate'
-    };
-    console.info('set register session...');
-    await setUserSession('reg', {
-      user: {
-        id: createUser.id,
-        name: createUser.name,
-        email: createUser.email
-      },
-      candidate: {
-        id: createCandidate.id,
-        phone_number: createCandidate.phone_number,
-        date_of_birth: createCandidate.date_of_birth
-      }
-    }, undefined);
-    console.info('transaction completed');
-    console.info('sending otp...');
-    const sendingOTP = await sendOTP({ email: createUser.email });
-    if(!sendingOTP.success) return {
-      success: false,
-      data: null,
-      errors: null,
-      message: 'Failed to send OTP, please try register again:'
-    };
-    console.info(sendingOTP);
-    return {
-      success: true,
-      data: {
-        user: createUser,
-        candidate: createCandidate
-      },
-      errors: null,
-      message: 'Register phase 1 success:'
-    };
-  }, {
-    timeout: 600000
-  });
+      /* Create Users */
+      console.info('creating user...');
+      console.info('hashing user password...');
+      const hashedPassword = await bcrypt.hash(submittedValues1.password, 10);
+      const createUser = await tx.users.create({
+        data: {
+          name: submittedValues1.fullname,
+          email: submittedValues1.email.toLowerCase(),
+          password: hashedPassword,
+        },
+      });
+      if (!createUser)
+        return {
+          success: false,
+          data: null,
+          errors: null,
+          message: 'Failed to create users',
+        };
+      console.info('creating candidate...');
+      const createCandidate = await tx.candidates.create({
+        data: {
+          userId: createUser.id,
+          phone_number: submittedValues1.phoneNumber,
+          date_of_birth: new Date(submittedValues1.dateOfBirth.toString()),
+        },
+      });
+      if (!createCandidate)
+        return {
+          success: false,
+          data: null,
+          errors: null,
+          message: 'Failed to create candidate',
+        };
+      console.info('set register session...');
+      await setUserSession(
+        'reg',
+        {
+          user: {
+            id: createUser.id,
+            name: createUser.name,
+            email: createUser.email,
+          },
+          candidate: {
+            id: createCandidate.id,
+            phone_number: createCandidate.phone_number,
+            date_of_birth: createCandidate.date_of_birth,
+          },
+        },
+        undefined,
+      );
+      console.info('transaction completed');
+      console.info('sending otp...');
+      const sendingOTP = await sendOTP({ email: createUser.email });
+      if (!sendingOTP.success)
+        return {
+          success: false,
+          data: null,
+          errors: null,
+          message: 'Failed to send OTP, please try register again:',
+        };
+      console.info(sendingOTP);
+      return {
+        success: true,
+        data: {
+          user: createUser,
+          candidate: createCandidate,
+        },
+        errors: null,
+        message: 'Register phase 1 success:',
+      };
+    },
+    {
+      timeout: 600000,
+    },
+  );
   /* close connection */
   await prisma.$disconnect();
   /* Return the transaction value */
   return doRegisterPhase1;
-};
+}
 
 export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, documents: TypeTransformedDocument[]) {
   /* Validate Final Registration */
@@ -661,7 +677,7 @@ export async function createUser(formData: any, phoneNumber: any) {
       user: registerPayloadSession.user,
     },
   };
-};
+}
 
 /**
  * @description Use Try-Catch to maximize handling storing data errors.
@@ -1009,7 +1025,7 @@ export async function storeEducation(
         success: false,
         message: 'Failed to store education-data',
       };
-    };
+    }
     console.info('Storing education data successfully...', education);
 
     /* Close connection */
@@ -1341,7 +1357,6 @@ export async function storeEmergencyContact(formData: any) {
     };
   }
   /* Updating emergency contact-ID */
-
 
   /* Close connection */
   await prisma.$disconnect();

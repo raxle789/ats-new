@@ -467,86 +467,92 @@ const Stage3Form = () => {
 
   const [index, setIndex] = useState<number>(0);
 
-  const tabContent: JSX.Element[] = [
-    <div key={index} className="row">
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Relation</label>
-          <Form.Item<FieldType>
-            name={['families', index.toString(), 'relation']}
-            className="mb-0"
-            validateStatus={errors && errors.families && errors.families.relation ? 'error' : ''}
-            help={errors && errors.families && errors.families.relation?._errors.toString()}
-          >
-            <Select
-              className="w-100"
-              placeholder="Your Family Relation"
-              options={[
-                { value: 'Father', label: 'Father' },
-                { value: 'Mother', label: 'Mother' },
-                { value: 'Sibling', label: 'Sibling' },
-                { value: 'Spouse', label: 'Spouse' },
-                { value: 'Children', label: 'Children' },
-              ]}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Name</label>
-          <Form.Item<FieldType>
-            name={['families', index.toString(), 'name']}
-            className="mb-0"
-            validateStatus={errors && errors.families && errors.families.name ? 'error' : ''}
-            help={errors && errors.families && errors.families.name?._errors.toString()}
+  type Tprops1 = {
+    index: number;
+  };
 
-          >
-            <Input placeholder="Your Relation Name" />
-          </Form.Item>
+  const TabContent: React.FC<Tprops1> = ({ index }) => {
+    return (
+      <div key={index} className="row">
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Relation</label>
+            <Form.Item<FieldType>
+              name={['families', index.toString(), 'relation']}
+              className="mb-0"
+              /* Example Error for families */
+              validateStatus={errors && errors.families && errors.families.relation ? 'error' : ''}
+              help={errors && errors.families && errors.families.relation?._errors.toString()}
+            >
+              <Select
+                className="w-100"
+                placeholder="Your Family Relation"
+                options={[
+                  { value: 'Father', label: 'Father' },
+                  { value: 'Mother', label: 'Mother' },
+                  { value: 'Sibling', label: 'Sibling' },
+                  { value: 'Spouse', label: 'Spouse' },
+                  { value: 'Children', label: 'Children' },
+                ]}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Name</label>
+            <Form.Item<FieldType>
+              name={['families', index.toString(), 'name']}
+              className="mb-0"
+              validateStatus={errors && errors.families && errors.families.name ? 'error' : ''}
+              help={errors && errors.families && errors.families.name?._errors.toString()}
+            >
+              <Input placeholder="Your Relation Name" />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Gender</label>
+            <Form.Item<FieldType>
+              name={['families', index.toString(), 'gender']}
+              className="mb-0"
+              validateStatus={errors && errors.families && errors.families.gender ? 'error' : ''}
+              help={errors && errors.families && errors.families.gender?._errors.toString()}
+            >
+              <Select
+                className="w-100"
+                placeholder="Your Family Gender"
+                options={[
+                  { value: 'Male', label: 'Male' },
+                  { value: 'Female', label: 'Female' },
+                ]}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Date of Birth</label>
+            <Form.Item<FieldType>
+              name={['families', index.toString(), 'dateOfBirth']}
+              validateStatus={errors && errors.families && errors.families.dateOfBirth ? 'error' : ''}
+              help={errors && errors.families && errors.families.dateOfBirth?._errors.toString()}
+            >
+              <DatePicker
+                className="w-100"
+                placeholder="Select Date"
+                onChange={onChangeDate}
+              />
+            </Form.Item>
+          </div>
         </div>
       </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Gender</label>
-          <Form.Item<FieldType>
-            name={['families', index.toString(), 'gender']}
-            className="mb-0"
-            validateStatus={errors && errors.families && errors.families.gender ? 'error' : ''}
-            help={errors && errors.families && errors.families.gender?._errors.toString()}
-          >
-            <Select
-              className="w-100"
-              placeholder="Your Family Gender"
-              options={[
-                { value: 'Male', label: 'Male' },
-                { value: 'Female', label: 'Female' },
-              ]}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Date of Birth</label>
-          <Form.Item<FieldType>
-            name={['families', index.toString(), 'dateOfBirth']}
-            validateStatus={errors && errors.families && errors.families.dateOfBirth ? 'error' : ''}
-            help={errors && errors.families && errors.families.dateOfBirth?._errors.toString()}
-          >
-            <DatePicker
-              className="w-100"
-              placeholder="Select Date"
-              onChange={onChangeDate}
-            />
-          </Form.Item>
-        </div>
-      </div>
-    </div>,
-  ];
+    );
+  };
 
-  const initialItems = [
-    { label: 'Relation 1', children: tabContent, key: '1' },
+  const initialItems: any[] = [
+    { label: 'Relation 1', children: <TabContent index={index} />, key: '1' },
   ];
   const [activeKey, setActiveKey] = useState(initialItems[0].key);
   const [items, setItems] = useState(initialItems);
@@ -561,7 +567,7 @@ const Stage3Form = () => {
     const newPanes = [...items];
     newPanes.push({
       label: `Relation ${items.length + 1}`,
-      children: tabContent,
+      children: <TabContent index={index} />,
       key: newActiveKey,
     });
     setItems(newPanes);
@@ -601,74 +607,96 @@ const Stage3Form = () => {
   };
 
   const [certificationIdx, setCertificationIdx] = useState<number>(0);
-  const certifTabContent: JSX.Element[] = [
-    <div key={certificationIdx} className="row">
-      <div className="col-12">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Name (Certification/Licence)</label>
-          <Form.Item<FieldType>
-            name={['certification', certificationIdx.toString(), 'certificationName']}
-            className="mb-0"
-          >
-            <Select
-              className="w-100"
-              placeholder="Your Certificate Name"
-              showSearch
-              mode="tags"
-              maxCount={1}
-              filterOption={(input, option) =>
-                (option?.label.toLowerCase() ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              /* Fetched Data */
-              options={masterData?.certificates_name}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Institution</label>
-          <Form.Item<FieldType>
-            name={['certification', certificationIdx.toString(), 'institution']}
-            className="mb-0"
-          >
-            <Input placeholder="Your Institution" />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Issue Date</label>
-          <div className="d-flex align-items-center">
+  type Tprops2 = {
+    certificationIdx: number;
+  };
+
+  const CertifTabContent: React.FC<Tprops2> = ({ certificationIdx }) => {
+    return (
+      <div key={certificationIdx} className="row">
+        <div className="col-12">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Name (Certification/Licence)</label>
             <Form.Item<FieldType>
               name={[
                 'certification',
                 certificationIdx.toString(),
-                'monthIssue',
+                'certificationName',
               ]}
-              className="mb-0 me-2"
-            >
-              <DatePicker placeholder="Select Month" picker="month" />
-            </Form.Item>
-            <Form.Item<FieldType>
-              name={['certification', certificationIdx.toString(), 'yearIssue']}
               className="mb-0"
             >
-              <DatePicker placeholder="Select Year" picker="year" />
+              <Select
+                className="w-100"
+                placeholder="Your Certificate Name"
+                showSearch
+                mode="tags"
+                maxCount={1}
+                filterOption={(input, option) =>
+                  (option?.label.toLowerCase() ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                /* Fetched Data */
+                options={masterData?.certificates_name}
+              />
             </Form.Item>
           </div>
         </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Institution</label>
+            <Form.Item<FieldType>
+              name={[
+                'certification',
+                certificationIdx.toString(),
+                'institution',
+              ]}
+              className="mb-0"
+            >
+              <Input placeholder="Your Institution" />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Issue Date</label>
+            <div className="d-flex align-items-center">
+              <Form.Item<FieldType>
+                name={[
+                  'certification',
+                  certificationIdx.toString(),
+                  'monthIssue',
+                ]}
+                className="mb-0 me-2"
+              >
+                <DatePicker placeholder="Select Month" picker="month" />
+              </Form.Item>
+              <Form.Item<FieldType>
+                name={[
+                  'certification',
+                  certificationIdx.toString(),
+                  'yearIssue',
+                ]}
+                className="mb-0"
+              >
+                <DatePicker placeholder="Select Year" picker="year" />
+              </Form.Item>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>,
-  ];
+    );
+  };
 
   const certifInitItems: any[] = [
-    // { label: 'Certification 1', children: certifTabContent, key: '1' },
+    // {
+    //   label: 'Certification 1',
+    //   children: <CertifTabContent certificationIdx={index} />,
+    //   key: '1',
+    // },
   ];
   const [activeCertifKey, setActiveCertifKey] = useState('');
   const [certifItems, setCertifItems] = useState(certifInitItems);
@@ -683,7 +711,7 @@ const Stage3Form = () => {
     const newPanes = [...certifItems];
     newPanes.push({
       label: `Certification ${certifItems.length + 1}`,
-      children: certifTabContent,
+      children: <CertifTabContent certificationIdx={index} />,
       key: newActiveKey,
     });
     setCertifItems(newPanes);
@@ -773,238 +801,282 @@ const Stage3Form = () => {
     setExpValue(e.target.value);
   };
 
-  const [jobDescValue, setJobDescValue] = useState<string>('');
   const [expIdx, setExpIdx] = useState<number>(0);
-  const [yearState, setYearState] = useState<{ [key: string]: boolean }>({});
-  const currentYear = useRef([]);
-  // const [expTabGroup, setExpTabGroup] = useState<JSX.Element[]>(expTabContent);
-  const handleCheckboxChange: CheckboxProps['onChange'] = (
-    e: any,
-    expIdx: number,
-  ) => {
-    console.log(e.target.checked);
-    // const state = ;
-    // const id = parseInt(e.target.dataset.id);
-    // console.log('id: ', id);
-    setYearState((prevState) => ({
-      ...prevState,
-      [expIdx]: true,
-    }));
+  type Tprops3 = {
+    expIdx: number;
   };
-  const expTabContent: JSX.Element[] = [
-    <div key={expIdx} className="row">
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Job Title*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'jobTitle']}
-            className="mb-0"
-          >
-            <Input placeholder="Your Job Title" />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Job Function*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'jobFunction']}
-            className="mb-0"
-          >
-            <Select
-              className="w-100"
-              showSearch
-              placeholder="Your Job Function"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                (option?.label.toLowerCase() ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              /* Fetched Data */
-              options={masterData?.job_functions}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Line Industry*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'lineIndustry']}
-            className="mb-0"
-          >
-            <Select
-              className="w-100"
-              showSearch
-              placeholder="Your Line Industry"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                (option?.label.toLowerCase() ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              /* Fetched Data */
-              options={masterData?.line_industries}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Position Level*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'positionLevel']}
-            className="mb-0"
-          >
-            <Select
-              className="w-100"
-              showSearch
-              placeholder="Your Position Level"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                (option?.label.toLowerCase() ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              /* Fetched Data */
-              options={masterData?.job_levels}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Company Name*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'compName']}
-            className="mb-0"
-          >
-            <Input placeholder="Your Company Name" />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Job Description</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'jobDesc']}
-            className="mb-0"
-          >
-            <TextArea
-              value={jobDescValue}
-              onChange={(e) => setJobDescValue(e.target.value)}
-              placeholder="Tell me about your job description"
-              autoSize={{ minRows: 3, maxRows: 5 }}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-5">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Start Year*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'startYear']}
-            className="mb-0"
-          >
-            <DatePicker
-              className="w-100"
-              placeholder="Select Year"
-              picker="month"
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-5">
-        <div className="input-group-meta position-relative mb-15">
-          <label>End Year*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'endYear']}
-            className="mb-0"
-          >
-            <DatePicker
-              className="w-100"
-              placeholder="Select Year"
-              picker="month"
-              disabled={yearState[expIdx]}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-2">
-        <div className="input-group-meta position-relative mb-15">
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'currentYear']}
-            className="pt-15"
-          >
-            <Checkbox
-              onChange={(e) => handleCheckboxChange(e, expIdx)}
-              // checked={yearState[expIdx] || false}
-              // onChange={(e) => handleCheckboxRef(e, expIdx)}
-              // data-id={expIdx}
-            >
-              Current
-            </Checkbox>
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Current Salary (gross Monthly)*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'currentSalary']}
-            className="mb-0"
-          >
-            <InputNumber
-              className="w-100"
-              min={0}
-              placeholder="Input Current Salary"
-              formatter={(value) =>
-                `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-              }
-              parser={(value: string | undefined): string | number =>
-                value!.replace(/\Rp\s?|(\.*)/g, '')
-              }
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Expected Salary (gross Monthly)*</label>
-          <Form.Item<FieldType>
-            name={['experience', 'expectedSalary']}
-            className="mb-0"
-            validateStatus={errors?.expectedSalary ? 'error' : ''}
-            help={errors?.expectedSalary?._errors.toString()}
-          >
-            <InputNumber
-              className="w-100"
-              min={0}
-              placeholder="Input Expected Salary"
-              formatter={(value) =>
-                `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-              }
-              parser={(value: string | undefined): string | number =>
-                value!.replace(/\Rp\s?|(\.*)/g, '')
-              }
-            />
-          </Form.Item>
-        </div>
-      </div>
-    </div>,
-  ];
 
-  const initExpItems: any[] = [];
+  const ExpTabContent: React.FC<Tprops3> = ({ expIdx }) => {
+    const [yearState, setYearState] = useState<{ [key: string]: boolean }>({});
+    const handleCheckboxChange: any = (e: any, expIdx: number) => {
+      setYearState((prevState) => ({
+        ...prevState,
+        [expIdx.toString()]: e.target.checked,
+      }));
+    };
+
+    const [jobDescValue, setJobDescValue] = useState<string>('');
+    return (
+      <div key={expIdx} className="row">
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Job Title*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'jobTitle']}
+              className="mb-0"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Please input your job title!',
+              //   },
+              // ]}
+            >
+              <Input placeholder="Your Job Title" />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Job Function*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'jobFunction']}
+              className="mb-0"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Please input your job function!',
+              //   },
+              // ]}
+            >
+              <Select
+                className="w-100"
+                showSearch
+                placeholder="Your Job Function"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label.toLowerCase() ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                options={masterData?.job_functions}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Line Industry*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'lineIndustry']}
+              className="mb-0"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Please input your line industry!',
+              //   },
+              // ]}
+            >
+              <Select
+                className="w-100"
+                showSearch
+                placeholder="Your Line Industry"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label.toLowerCase() ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                options={masterData?.line_industries}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Position Level*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'positionLevel']}
+              className="mb-0"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Please input your position level!',
+              //   },
+              // ]}
+            >
+              <Select
+                className="w-100"
+                showSearch
+                placeholder="Your Position Level"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label.toLowerCase() ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                options={masterData?.job_levels}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Company Name*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'compName']}
+              className="mb-0"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Please input your company name!',
+              //   },
+              // ]}
+            >
+              <Input placeholder="Your Company Name" />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Job Description</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'jobDesc']}
+              className="mb-0"
+            >
+              <TextArea
+                value={jobDescValue}
+                onChange={(e) => setJobDescValue(e.target.value)}
+                placeholder="Tell me about your job description"
+                autoSize={{ minRows: 3, maxRows: 5 }}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-5">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Start Year*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'startYear']}
+              className="mb-0"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Please choose start year!',
+              //   },
+              // ]}
+            >
+              <DatePicker
+                className="w-100"
+                placeholder="Select Year"
+                picker="month"
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-5">
+          <div className="input-group-meta position-relative mb-15">
+            <label>End Year*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'endYear']}
+              className="mb-0"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Please choose end year!',
+              //   },
+              // ]}
+            >
+              <DatePicker
+                className="w-100"
+                placeholder="Select Year"
+                picker="month"
+                disabled={yearState[expIdx.toString()]}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-2">
+          <div className="input-group-meta position-relative mb-15">
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'currentYear']}
+              className="pt-15"
+            >
+              <Checkbox onChange={(e) => handleCheckboxChange(e, expIdx)}>
+                Current
+              </Checkbox>
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Current Salary (gross Monthly)*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'currentSalary']}
+              className="mb-0"
+            >
+              <InputNumber
+                className="w-100"
+                min={0}
+                placeholder="Input Current Salary"
+                formatter={(value) =>
+                  `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                }
+                parser={(value: string | undefined): string | number =>
+                  value!.replace(/\Rp\s?|(\.*)/g, '')
+                }
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Expected Salary (gross Monthly)*</label>
+            <Form.Item<FieldType>
+              name={['experience', 'expectedSalary']}
+              className="mb-0"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Please input your expected salary!',
+              //   },
+              // ]}
+              validateStatus={errors?.expectedSalary ? 'error' : ''}
+              help={errors?.expectedSalary?._errors.toString()}
+            >
+              <InputNumber
+                className="w-100"
+                min={0}
+                placeholder="Input Expected Salary"
+                formatter={(value) =>
+                  `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                }
+                parser={(value: string | undefined): string | number =>
+                  value!.replace(/\Rp\s?|(\.*)/g, '')
+                }
+              />
+            </Form.Item>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const initExpItems: any[] = [
+    // {
+    //   label: 'Experience 1',
+    //   children: <ExpTabContent expIdx={expIdx} />,
+    //   key: '1',
+    // },
+  ];
   const [activeExpKey, setActiveExpKey] = useState('');
   const [expItems, setExpItems] = useState(initExpItems);
   const newExpTabIdx = useRef(0);
@@ -1018,17 +1090,12 @@ const Stage3Form = () => {
     const newPanes = [...expItems];
     newPanes.push({
       label: `Experience ${expItems.length + 1}`,
-      children: expTabContent,
+      children: <ExpTabContent expIdx={expIdx} />,
       key: newActiveKey,
     });
     setExpItems(newPanes);
     setActiveExpKey(newActiveKey);
     setExpIdx(expIdx + 1);
-    // setYearState((prevState) => ({
-    //   ...prevState,
-    //   [expIdx]: false,
-    // }));
-    // setYearState(yearState[expIdx]);
   };
 
   const removeExp = (targetKey: TargetKey) => {
@@ -1085,11 +1152,17 @@ const Stage3Form = () => {
   const [spinning, setSpinning] = useState(false);
 
   /* ACTIONS */
+  /* ACTIONS */
   const handleOk = async () => {
     setIsModalOpen(false);
-    setSpinning(true);
-    const values = form.getFieldsValue();
+    // setSpinning(true);
+    let values = form.getFieldsValue();
     console.log('ok value form: ', values);
+    if (values.families[0].relation) {
+    } else {
+      values = { ...values, families: null };
+    }
+    // debugger;
     /**
      * Transform File object into ready to store file.
      * @return transformed file base64 or zodErrors
@@ -1148,9 +1221,9 @@ const Stage3Form = () => {
       formalCheckbox: true,
       certificationCheckbox: false,
     });
+
     setIndex(index + 1);
-    setExpIdx(expIdx + 1);
-    setCertificationIdx(certificationIdx + 1);
+
     /* Fetch Master Data */
     fetchCitys();
     fetchEthnicity();
@@ -1165,6 +1238,17 @@ const Stage3Form = () => {
     lineIndutries();
   }, []);
 
+  /* SHOW FIRST CERTIF AND EXP TAB */
+  // const [tabAdditionState, setTabAdditionState] = useState(true);
+  // useEffect(() => {
+  //   if (masterData && masterData.certificates_name && masterData.job_levels) {
+  //     if (tabAdditionState) {
+  //       addCertif();
+  //       addExp();
+  //       setTabAdditionState(false);
+  //     }
+  //   }
+  // }, [masterData]);
   return (
     <>
       <Form
