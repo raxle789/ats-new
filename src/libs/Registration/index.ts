@@ -15,7 +15,7 @@ import { sendOTP } from './verifications';
 /**
  * Trial Test
  */
-interface TypeSubmittedValues1 extends FieldType {
+export interface TypeSubmittedValues1 extends FieldType {
   fullname: string;
   email: string;
   password: string;
@@ -44,17 +44,10 @@ export async function TrialTestFunction(
     return console.info('zod errors: ', zodErrors);
   }
   console.info('validated: ', validating.data);
-  // console.log('is number: ', Number(submittedValues1.certification['2'].certificationName.toString()));
-  // console.log('not a number: ', Number('axngh'));
-  // if(Number('Serawak')) {
-  //   console.log('YES')
-  // }
-  // console.info('Documents: ', documemts);
-  // console.log('is instance of Date: ', submittedValues1.families['0'].dateOfBirth, new Date(submittedValues1.families['0'].dateOfBirth));
-}
+};
 
 /* ============================================================================== */
-interface TypeReturnedServerAction {
+export interface TypeReturnedServerAction {
   success: boolean;
   data: any | null;
   errors: any | null;
@@ -198,535 +191,424 @@ export async function RegisterPhase1(
   return doRegisterPhase1;
 }
 
-export async function RegisterPhase2(
-  submittedValues2: TypeSubmittedValues2,
-  documents: TypeTransformedDocument[],
-) {
-  /* validate input -> cannot be validated */
-  console.info('SUBMITTED VALUE: ', submittedValues2);
-  let expectedSalaryExist;
-  let restOfExperiences;
-  if ('experience' in submittedValues2) {
-    const { expectedSalary, ...restOfExperiencesExist } =
-      submittedValues2.experience;
-    expectedSalaryExist = expectedSalary;
-    restOfExperiences = restOfExperiencesExist;
-  } else {
-    return {
-      success: false,
-      data: null,
-      errors: null,
-      message: 'Please fill all the field',
-    };
-  }
-
+export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, documents: TypeTransformedDocument[]) {
+  /* Validate Final Registration */
+  const { expectedSalary, ...restOfExperiences } = submittedValues2.experience ?? { expectedSalary: undefined };
   const transformedSubmittedValues2 = {
     ...submittedValues2,
-    families: transformToArrayOfObject(submittedValues2.families),
+    families: transformToArrayOfObject(submittedValues2.families).filter(family => family.relation !== undefined),
     certification: transformToArrayOfObject(submittedValues2.certification),
-    language: transformToArrayOfObject(submittedValues2.language),
-    experience: transformToArrayOfObject(restOfExperiences), // current experience should be included
+    language: transformToArrayOfObject(submittedValues2.language).filter(lang => lang.name  !== undefined),
+    expectedSalary: expectedSalary,
+    experience: transformToArrayOfObject(restOfExperiences).filter(experience => experience.jobTitle !== undefined) // current experience should be included
   };
-  console.info('transformed submit values: ', transformedSubmittedValues2);
+  console.info('TRANSFORMED SUBMIT VALUES2:', transformedSubmittedValues2);
   const validateInput = REGISTER_2.safeParse(transformedSubmittedValues2);
-  if (!validateInput.success) {
-    const zodErrors = validateInput.error.flatten().fieldErrors;
-    console.info('errors from zod on server-side: ', zodErrors);
+  if(!validateInput.success) {
+    const zodErrorsObject = validateInput.error.flatten().fieldErrors; // use this format on an object
+    const zodErrorsNestedObject = validateInput.error.format();
     return {
       success: false,
       data: null,
-      errors: zodErrors,
-      message: 'Please fill in your spouse data',
+      errors: zodErrorsNestedObject,
+      message: 'Please fill all the required data'
     };
-  }
-  console.log('VALIDATED : ', validateInput.data);
+  };
+  console.log('validated data: ', validateInput.data);
+  const validatedInputData = validateInput.data;
   /* end of validation */
   const regSession = await getUserSession('reg');
   console.info('reg-session-data', regSession);
   console.info('begin transaction register phase 2...');
-  const doRegisterPhase2 = await prisma.$transaction(
-    async (tx) => {
-      /* PROFILE PHOTO */
-      console.info('storing photo...');
-      const storeProfilePhoto = await tx.documents.create({
-        data: {
-          saved_name: uuidV4(),
-          original_name: documents[0].original_name,
-          byte_size: documents[0].byte_size,
-          path: 'no-path',
-          file_base: Buffer.from(documents[0].file_base),
-          created_at: new Date(Date.now()),
-          updated_at: new Date(Date.now()),
-          documentTypeId: 1, // THE ID OF THE DOCUMENT TYPE
-          candidate_id: regSession.candidate.id,
-        },
-      });
-      if (!storeProfilePhoto)
-        return {
-          success: false,
-          data: null,
-          errors: null,
-          message: 'Failed when trying store profile photo',
-        };
-      /* UPDATE CANDIDATE */
-      console.info('updating candidate data...');
-      const updateCandidate = await tx.candidates.update({
-        where: {
-          id: regSession.candidate.id,
-        },
-        data: {
-          blood_type: submittedValues2.profile?.bloodType,
-          ethnicity: submittedValues2.profile?.ethnicity,
-          gender: submittedValues2.profile?.gender,
-          maritalStatus: submittedValues2.profile?.maritalStatus,
-          // Domicile doesnt exist on the form
-          birthCity: submittedValues2.profile?.placeOfBirth?.toString(), // array of string (length 1)
-          religion: submittedValues2.profile?.religion,
-        },
-      });
-      if (!updateCandidate)
-        return {
-          success: false,
-          data: null,
-          errors: null,
-          message: 'Failed when trying update candidate profile',
-        };
-      // if address checkbox true, store it mean current address same as permanent address
-      /* STORE ADDRESSES */
-      console.info('decision addresses...');
-      if (submittedValues2.address) {
-        console.info('storing addresses...');
-        const storeAddress = await tx.addresses.create({
-          data: {
-            candidateId: regSession.candidate.id,
-            street: submittedValues2.address.permanentAddress as string,
-            country: submittedValues2.address.country as string,
-            city: submittedValues2.address.city?.toString() as string,
-            zipCode: submittedValues2.address.zipCode as string,
-            rt:
-              submittedValues2.address.country === 'Indonesia'
-                ? (submittedValues2.address.rt as string)
-                : ' ',
-            rw:
-              submittedValues2.address.country === 'Indonesia'
-                ? (submittedValues2.address.rw as string)
-                : ' ',
-            subdistrict:
-              submittedValues2.address.country === 'Indonesia'
-                ? (submittedValues2.address.subdistrict as string)
-                : ' ',
-            village:
-              submittedValues2.address.country === 'Indonesia'
-                ? (submittedValues2.address.village as string)
-                : ' ',
-            isCurrent: submittedValues2.address.currentAddress
-              ? 'true'
-              : 'false',
-            currentAddress: submittedValues2.address.currentAddress ?? null,
-            createdAt: new Date(Date.now()),
-          },
-        });
-        if (!storeAddress)
-          return {
-            success: false,
-            data: null,
-            errors: null,
-            message: 'Failed when trying store address',
-          };
-      }
-      /* STORE FAMILIES */
-      const arrayOfFamilies = transformToArrayOfObject(
-        submittedValues2.families,
-      );
-      console.info('transforming families to array of objects...');
-      const transformedFamilies = arrayOfFamilies.map((family) => {
-        return {
-          candidateId: regSession.candidate.id,
-          name: family.name,
-          relationStatus: family.relation,
-          gender: family.gender,
-          dateOfBirth: new Date(family.dateOfBirth),
-          createdAt: new Date(Date.now()),
-        };
-      });
-      console.info('storing families...');
-      const storeFamilies = await tx.families.createMany({
-        data: transformedFamilies,
-      });
-      if (storeFamilies.count <= 0) {
-        return {
-          success: false,
-          data: null,
-          errors: null,
-          message: 'Failed when trying store families',
-        };
-      }
-      /* STORE EDUCATION */
-      console.info('storing education...');
-      const storeEducation = await tx.educations.create({
-        data: {
-          candidateId: regSession.candidate.id,
-          level: submittedValues2.education?.educationLevel,
-          major:
-            submittedValues2.education?.educationMajor?.toString() as string,
-          start_year: new Date(
-            submittedValues2.education?.startEduYear as string,
-          ).getFullYear(),
-          end_year: new Date(
-            submittedValues2.education?.endEduYear as string,
-          ).getFullYear(),
-          university_name:
-            submittedValues2.education?.schoolName?.toString() as string,
-          cityOfSchool:
-            submittedValues2.education?.cityOfSchool?.toString() as string,
-          gpa: submittedValues2.education?.gpa as number,
-          is_latest: false,
-          is_graduate: false,
-          created_at: new Date(Date.now()),
-        },
-      });
-      if (!storeEducation)
-        return {
-          success: false,
-          data: null,
-          errors: null,
-          message: 'Failed when trying store education',
-        };
-      /* STORE CERTIFICATIONS */
-      if (submittedValues2.certification) {
-        console.info('transforming certifications to array of obbjects');
-        const arrayOfCertifications = transformToArrayOfObject(
-          submittedValues2.certification,
-        );
-        const certificationsTransformFunction = async () => {
-          const transformedCertifications = arrayOfCertifications.map(
-            async (value) => {
-              if (!Number(value.certificationName[0].toString())) {
-                const storeCertificate = await tx.certificates.create({
-                  data: {
-                    name: value.certificationName[0],
-                    createdAt: new Date(Date.now()),
-                  },
-                });
-                // No-Guard Check
-                // if(!storeCertificate) return {
-                //   success: false,
-                //   data: null,
-                //   errors: null,
-                //   message: 'Failed when trying store certificate to get certificate ID'
-                // };
-                return {
-                  candidateId: regSession.candidate.id,
-                  certificateId: storeCertificate.id,
-                  institutionName: value.institution,
-                  issuedDate: new Date(value.monthIssue.toString()),
-                  created_at: new Date(Date.now()),
-                };
-              }
-              return {
-                candidateId: regSession.candidate.id,
-                certificateId: Number(value.certificationName[0].toString()),
-                institutionName: value.institution,
-                issuedDate: new Date(value.monthIssue.toString()),
-                created_at: new Date(Date.now()),
-              };
-            },
-          );
-
-          const results = await Promise.all(transformedCertifications);
-          return results;
-        };
-        const certificationsData = await certificationsTransformFunction();
-        console.info('storing certifications...');
-        const storeCertifications = await tx.certifications.createMany({
-          data: certificationsData,
-        });
-        if (!storeCertifications)
-          return {
-            success: false,
-            data: null,
-            errors: null,
-            message: 'Failed when trying store certifications',
-          };
-      }
-      /* STORE SKILLS */
-      if (submittedValues2.skills) {
-        console.info('transforming skills to array of objects...');
-        const skillsDefined = submittedValues2.skills;
-        const skillsTransformFunction = async () => {
-          const transformedSkills = skillsDefined.map(async (value) => {
-            if (typeof value === 'string') {
-              const storeSkill = await tx.skills.create({
-                data: {
-                  name: value,
-                  createdAt: new Date(Date.now()),
-                },
-              });
-              return {
-                candidateId: regSession.candidate.id,
-                skillId: storeSkill.id,
-              };
-            }
-            return {
-              candidateId: regSession.candidate.id,
-              skillId: value,
-            };
-          });
-
-          const result = await Promise.all(transformedSkills);
-          return result;
-        };
-        const skillsData = await skillsTransformFunction();
-        console.info('storing skills...');
-        const storeSkills = await tx.candidateSkills.createMany({
-          data: skillsData,
-        });
-        if (!storeSkills)
-          return {
-            success: false,
-            data: null,
-            errors: null,
-            message: 'Failed when trying store certifications',
-          };
-      }
-      /* STORE LANGUAGE */
-      console.info('transforming languages to array of objects...');
-      const arrayOfLanguages = transformToArrayOfObject(
-        submittedValues2.language,
-      );
-      const transformedLanguages = arrayOfLanguages.map((language) => {
-        return {
-          candidateId: regSession.candidate.id,
-          name: language.name,
-          level: language.level,
-          createdAt: new Date(Date.now()),
-        };
-      });
-      console.info('storing languages...');
-      console.info('transformed languages...', transformedLanguages);
-      const storeLanguages = await tx.languages.createMany({
-        data: transformedLanguages,
-      });
-      if (!storeLanguages)
-        return {
-          success: false,
-          data: null,
-          errors: null,
-          message: 'Failed when trying store languages',
-        };
-      /* STORE WORKING EXPERIENCES AND UPDATE EXPECTED SALARY */
-      if (
-        submittedValues2.experience &&
-        Object.keys(submittedValues2.experience).length <= 1
-      ) {
-        console.info('candidate is fresh graduate...');
-        const { expectedSalary } = submittedValues2.experience;
-        console.info('updating candidate expected salaty as fresh graduate...');
-        const updateCandidateExpectedSalary = await tx.candidates.update({
-          where: {
-            id: regSession.candidate.id,
-          },
-          data: {
-            expected_salary: expectedSalary,
-          },
-        });
-        if (!updateCandidateExpectedSalary)
-          return {
-            success: false,
-            data: null,
-            errors: null,
-            message: 'Failed when trying update candidate expected salary',
-          };
-      } else {
-        console.info('candidate experienced...');
-        const { expectedSalary, ...restOfExperiences } =
-          submittedValues2.experience; // type error for expectedSalary
-        console.info('updating candidate expected salary as experienced...');
-        const updateCandidateExpectedSalary = await tx.candidates.update({
-          where: {
-            id: regSession.candidate.id,
-          },
-          data: {
-            expected_salary: expectedSalary,
-          },
-        });
-        if (!updateCandidateExpectedSalary)
-          return {
-            success: false,
-            data: null,
-            errors: null,
-            message: 'Failed when trying update candidate expected salary',
-          };
-        console.info('transforming experiences into array of objects...');
-        const arrayOfExperiences = transformToArrayOfObject(restOfExperiences);
-        const transformedExperiences = arrayOfExperiences.map((value) => {
-          return {
-            candidateId: regSession.candidate.id,
-            job_title: value.jobTitle,
-            job_function: value.jobFunction,
-            line_industry: value.lineIndustry,
-            job_level: value.positionLevel,
-            company_name: value.compName,
-            job_description: value.jobDesc ?? '',
-            salary: value.currentSalary,
-            start_at: new Date(value.startYear),
-            end_at: new Date(value.endYear),
-            // current checkbox doesn appear
-            is_currently: false,
-          };
-        });
-        console.info('storing experiences...');
-        const storeExperiences = await tx.working_experiences.createMany({
-          data: transformedExperiences,
-        });
-        if (!storeExperiences)
-          return {
-            success: false,
-            data: null,
-            errors: null,
-            message: 'Failed when trying store experiences',
-          };
-      }
-      /* STORE EMERGENCY CONTACT */
-      console.info('store emergency contacts...');
-      const storeEmergencyContacts = await tx.emergencyContacts.create({
-        data: {
-          phoneNumber: submittedValues2.others
-            ?.emergencyContactPhoneNumber as string,
-          name: submittedValues2.others?.emergencyContactName as string,
-          relationStatus: submittedValues2.others
-            ?.emergencyContactRelation as string,
-        },
-      });
-      if (!storeEmergencyContacts)
-        return {
-          success: false,
-          data: null,
-          errors: null,
-          message: 'Failed when trying store emergency contact',
-        };
-      /* UPDATE EMERGENCY CONTACT ID */
-      console.info('updating candidate emergency contact...');
-      console.info('emergency contact ID: ', storeEmergencyContacts);
-      const updateCandidateEmergencyContact = await tx.candidates.update({
-        where: {
-          id: regSession.candidate.id,
-        },
-        data: {
-          emengencyContactId: storeEmergencyContacts.id,
-        },
-      });
-      if (!updateCandidateEmergencyContact)
-        return {
-          success: false,
-          data: null,
-          errors: null,
-          message: 'Failed when trying update candidate emergency contact',
-        };
-      /* STORE QUESTIONS */
-      console.info('storing candidate additional questions...');
-      const storeQuestions = await tx.candidateQuestions.createMany({
+  try {
+    const doRegisterPhase2 = await prisma.$transaction(async (tx) => {
+      console.info('storing documents...');
+      await tx.documents.createMany({
         data: [
           {
-            candidateId: regSession.candidate.id,
-            questionId: 1,
-            answer: submittedValues2.others?.noticePeriod ?? '',
+            saved_name: uuidV4(),
+            original_name: documents[0].original_name,
+            byte_size: documents[0].byte_size,
+            path: 'no-path',
+            file_base: Buffer.from(documents[0].file_base),
             created_at: new Date(Date.now()),
+            documentTypeId: 1,
+            candidate_id: regSession.candidate.id
           },
           {
+            saved_name: uuidV4(),
+            original_name: documents[1].original_name,
+            byte_size: documents[1].byte_size,
+            path: 'no-path',
+            file_base: Buffer.from(documents[1].file_base),
+            created_at: new Date(Date.now()),
+            documentTypeId: 2,
+            candidate_id: regSession.candidate.id
+          }
+        ]
+      });
+      console.info('updating user...');
+      await tx.users.update({
+        where: {
+          id: regSession.user.id
+        },
+        data: {
+          name: validatedInputData.profile.fullname,
+          email: validatedInputData.profile.email,
+          updated_at: new Date(Date.now())
+        }
+      });
+      console.info('updating candidate...');
+      await tx.candidates.update({
+        where: {
+          id: regSession.candidate.id
+        },
+        data: {
+          phone_number: validatedInputData.profile.phoneNumber,
+          date_of_birth: validatedInputData.profile.dateOfBirth,
+          birthCity: validatedInputData.profile.placeOfBirth.toString(),
+          gender: validatedInputData.profile.gender,
+          religion: validatedInputData.profile.religion,
+          ethnicity: validatedInputData.profile.ethnicity,
+          blood_type: validatedInputData.profile.bloodType,
+          maritalStatus: validatedInputData.profile.maritalStatus
+        }
+      });
+      console.info('storing address...');
+      await tx.addresses.create({
+        data: {
+          candidateId: regSession.candidate.id,
+          city: validatedInputData.address.city.toString(),
+          country: validatedInputData.address.country,
+          rt: validatedInputData.address.rt,
+          rw: validatedInputData.address.rw,
+          street: validatedInputData.address.permanentAddress,
+          subdistrict: validatedInputData.address.subdistrict,
+          village: validatedInputData.address.village,
+          zipCode: validatedInputData.address.zipCode,
+          currentAddress: validatedInputData.address.currentAddress === '' ? null : validatedInputData.address.currentAddress,
+          isCurrent: validatedInputData.address.currentAddress === '' ? 'true' : 'false',
+          createdAt: new Date(Date.now()),
+        }
+      });
+      if(validatedInputData.families.length > 0) {
+        console.info('storing families...');
+        /* transform to array of object ready to store */
+        const familiesReadyToStore = validatedInputData.families.map(family => {
+          return {
+            candidateId: regSession.candidate.id,
+            name: family.name,
+            relationStatus: family.relation,
+            gender: family.gender,
+            dateOfBirth: family.dateOfBirth
+          }
+        });
+        await tx.families.createMany({
+          data: familiesReadyToStore
+        });
+      } else {
+        console.info('haven\'t families...');
+      };
+  
+      console.info('storing education...');
+      await tx.educations.create({
+        data: {
+          candidateId: regSession.candidate.id,
+          university_name: validatedInputData.education.schoolName.toString(),
+          level: validatedInputData.education.educationLevel,
+          major: validatedInputData.education.educationMajor.toString(),
+          cityOfSchool: validatedInputData.education.cityOfSchool.toString(),
+          gpa: validatedInputData.education.gpa,
+          start_year: new Date(validatedInputData.education.startEduYear).getFullYear(),
+          end_year: new Date(validatedInputData.education.endEduYear).getFullYear(),
+          is_latest: false,
+          is_graduate: false,
+          created_at: new Date(Date.now())
+        }
+      });
+  
+      if(validatedInputData.certification.length > 0) {
+        console.info('storing certificate...');
+        /* transform to array of object ready to store */
+        const certificationsTransformFunction = async () => {
+          const certificationsData = validatedInputData.certification.map(async certification => {
+            if(!Number(certification.certificationName.toString())) {
+              const storeCertificate = await tx.certificates.create({
+                data: {
+                  name: certification.certificationName,
+                  createdAt: new Date(Date.now())
+                }
+              });
+  
+              /* Return object with the new stored certificate */
+              return {
+                candidateId: regSession.candidate.id,
+                certificateId: storeCertificate.id,
+                institutionName: certification.institution,
+                issuedDate: certification.monthIssue,
+                created_at: new Date(Date.now())
+              }
+            };
+  
+            /* Return if the value already number */
+            return {
+              candidateId: regSession.candidate.id,
+              certificateId: Number(certification.certificationName.toString()), // it's should be a number
+              institutionName: certification.institution,
+              issuedDate: certification.monthIssue,
+              created_at: new Date(Date.now())
+            };
+          });
+  
+          const results = await Promise.all(certificationsData);
+          return results;
+        };
+  
+        const certificationsReadyToStore = await certificationsTransformFunction();
+        await tx.certifications.createMany({
+          data: certificationsReadyToStore
+        });
+      } else {
+        console.info('candidate haven\'t certifications...');
+      };
+  
+      if(validatedInputData.skills.length > 0) {
+        console.info('storing skills...');
+        const skillsTrasformFunction = async () => {
+          const skillsData  = validatedInputData.skills.map(async skill => {
+            if(!Number(skill)) {
+              const storeSkill = await tx.skills.create({
+                data: {
+                  name: skill,
+                  createdAt: new Date(Date.now()),
+                  updatedAt: new Date(Date.now()),
+                }
+              });
+  
+              /* Return object with the new stored skill */
+              return {
+                candidateId: regSession.candidate.id,
+                skillId: storeSkill.id
+              };
+            };
+  
+            /* Return if value already number */
+            return {
+              candidateId: regSession.candidate.id,
+              skillId: skill
+            };
+          });
+  
+          const results = await Promise.all(skillsData);
+          return results;
+        };
+  
+        const candidateSkillsReadyToStore = await skillsTrasformFunction();
+        await tx.candidateSkills.createMany({
+          data: candidateSkillsReadyToStore
+        });
+      } else {
+        console.info('candidate haven\'t skills...');
+      };
+  
+      console.info('storing languages...');
+      const languagesReadyToStore = validatedInputData.language.map(lang => {
+        return {
+          candidateId: regSession.candidate.id,
+          name: lang.name,
+          level: lang.level,
+          createdAt: new Date(Date.now())
+        };
+      });
+      await tx.languages.createMany({
+        data: languagesReadyToStore
+      });
+  
+      console.info('updating expected salary...');
+      await tx.candidates.update({
+        where: {
+          id: regSession.candidate.id
+        },
+        data: {
+          expected_salary: validatedInputData.expectedSalary
+        }
+      });
+  
+      if(validatedInputData.experience.length > 0) {
+        console.info('storing experiences...');
+        const experiencesReadyToStore = validatedInputData.experience.map(experience => {
+          return {
+            candidateId: regSession.candidate.id,
+            company_name: experience.compName,
+            line_industry: experience.lineIndustry,
+            job_title: experience.jobTitle,
+            job_level: experience.positionLevel,
+            job_function: experience.jobFunction,
+            job_description: experience.jobDesc,
+            salary: experience.currentSalary,
+            start_at: experience.startYear,
+            end_at: experience.endYear,
+            is_currently: false,
+            created_at: new Date(Date.now())
+          }
+        });
+        await tx.working_experiences.createMany({
+          data: experiencesReadyToStore
+        });
+      } else {
+        console.info('candidate haven\'t experiences...');
+      };
+  
+      if(validatedInputData.others.emergencyContactName !== '' &&
+      validatedInputData.others.emergencyContactRelation !== '' &&
+      validatedInputData.others.emergencyContactPhoneNumber !== '') {
+        console.info('storing emergency contact...');
+        const storeEmergencyContact = await tx.emergencyContacts.create({
+          data: {
+            name: validatedInputData.others.emergencyContactName,
+            relationStatus: validatedInputData.others.emergencyContactRelation,
+            phoneNumber: validatedInputData.others.emergencyContactPhoneNumber
+          }
+        });
+        await tx.candidates.update({
+          where: {
+            id: regSession.candidate.id
+          },
+          data: {
+            emengencyContactId: storeEmergencyContact.id
+          }
+        });
+      } else {
+        console.info('candidate haven\'t emergency contact filled...');
+      };
+  
+      console.info('storing notice period question...');
+      await tx.candidateQuestions.create({
+        data: {
+          candidateId: regSession.candidate.id,
+          questionId: 1,
+          answer: validatedInputData.others.noticePeriod
+        }
+      });
+  
+      if(validatedInputData.everWorkedOption === 'Yes') {
+        console.info('storing ever worked with yes...');
+        await tx.candidateQuestions.create({
+          data: {
             candidateId: regSession.candidate.id,
             questionId: 2,
-            answer: [
-              submittedValues2.others?.everWorkedMonth,
-              submittedValues2.others?.everWorkedYear,
-            ].toString(),
-            created_at: new Date(Date.now()),
-          },
-          {
+            answer: [validatedInputData.others.everWorkedMonth, validatedInputData.others.everWorkedYear].toString()
+          }
+        });
+      } else {
+        console.info('storing ever worked with no...');
+        await tx.candidateQuestions.create({
+          data: {
+            candidateId: regSession.candidate.id,
+            questionId: 2,
+            answer: 'no'
+          }
+        });
+      };
+  
+      if(validatedInputData.diseaseOption === 'Yes') {
+        console.info('storing disease with yes...');
+        await tx.candidateQuestions.create({
+          data: {
             candidateId: regSession.candidate.id,
             questionId: 3,
-            answer: [
-              submittedValues2.others?.diseaseName,
-              submittedValues2.others?.diseaseYear,
-            ].toString(),
-            created_at: new Date(Date.now()),
-          },
-          {
+            answer: [validatedInputData.others.diseaseName, validatedInputData.others.diseaseYear].toString()
+          }
+        });
+      } else {
+        console.info('storing disease with no...');
+        await tx.candidateQuestions.create({
+          data: {
+            candidateId: regSession.candidate.id,
+            questionId: 3,
+            answer: 'no'
+          }
+        });
+      };
+  
+      if(validatedInputData.relationOption === 'Yes') {
+        console.info('storing rerlation with yes...');
+        await tx.candidateQuestions.create({
+          data: {
             candidateId: regSession.candidate.id,
             questionId: 4,
-            answer: [
-              submittedValues2.others?.relationName,
-              submittedValues2.others?.relationPosition,
-            ].toString(),
-            created_at: new Date(Date.now()),
-          },
-        ],
-      });
-      if (!storeQuestions)
-        return {
-          success: false,
-          data: null,
-          errors: null,
-          message: 'Failed when trying store questions',
-        };
-      /* Store Curriculum Vitae */
-      console.info('storing curriculum vitae...');
-      const storeCurriculumVitae = await tx.documents.create({
-        data: {
-          saved_name: uuidV4(),
-          original_name: documents[1].original_name,
-          byte_size: documents[1].byte_size,
-          path: 'no-path',
-          file_base: Buffer.from(documents[1].file_base),
-          created_at: new Date(Date.now()),
-          updated_at: new Date(Date.now()),
-          documentTypeId: 1, // THE ID OF THE DOCUMENT TYPE
-          candidate_id: regSession.candidate.id,
-        },
-      });
-      if (!storeCurriculumVitae)
-        return {
-          success: false,
-          data: null,
-          errors: null,
-          message: 'Failed when trying store Curriculum Vitae',
-        };
-
-      /* Returned Transactions */
-      console.info('register phase 2 successfully');
+            answer: [validatedInputData.others.relationName, validatedInputData.others.relationPosition].toString()
+          }
+        });
+      } else {
+        console.info('storing relation with no...');
+        await tx.candidateQuestions.create({
+          data: {
+            candidateId: regSession.candidate.id,
+            questionId: 4,
+            answer: 'no'
+          }
+        });
+      };
+  
+      /* Final transaction return */
       return {
         success: true,
         data: null,
         errors: null,
-        message: 'Register phase 2 successfully',
-      };
-    },
-    {
-      timeout: 120000,
-    },
-  );
-  console.info('closing database connection...');
-  /* Close prisma.connection */
-  await prisma.$disconnect();
-  console.info('setting up auth session...');
-  /* Set Auth-Session */
-  await setUserSession('auth', {
-    user: {
-      id: regSession.user.id,
-    },
-    candidate: {
-      id: regSession.candidate.id,
-    },
-  });
-  console.info('deleting register session...');
-  /* Delete register session */
-  await deleteSession('reg');
+        message: 'Register phase 2 successfully'
+      }
+    });
 
-  console.log('do register results:', doRegisterPhase2);
-  console.info('finish');
-  /* Returned Value */
-  return doRegisterPhase2;
-}
+    console.info('closing database connection...');
+    /* Close prisma.connection */
+    await prisma.$disconnect();
+
+    console.info('setting up auth session...');
+    /* Set Auth-Session */
+    await setUserSession('auth', {
+      user: {
+        id: regSession.user.id
+      },
+      candidate: {
+        id: regSession.candidate.id
+      }
+    });
+    console.info('deleting register session...');
+    /* Delete register session */
+    await deleteSession('reg');
+
+    console.info('finish');
+    /* Returned Value */
+    return doRegisterPhase2;
+  } catch (error) {
+    console.info('closing database connection...');
+    /* Close prisma.connection */
+    await prisma.$disconnect();
+
+    console.info('database operatio errors...');
+
+    if(error) {
+      return {
+        success: false,
+        data: null,
+        error: 'unknown error  on database operation',
+        message: 'There is a problem with our database operation, please try again later'
+      };
+    };
+  };
+  // finally {
+  //   console.info('closing database connection...');
+  //   /* Close prisma.connection */
+  //   await prisma.$disconnect();
+  // };
+  return {
+    success: false,
+    data: null,
+    error: 'unknown error on system logic',
+    message: 'There is a problem with the system, please try again later'
+  };
+};
 
 /**
  * @description Use Try-Catch to maximize handling storing data errors.

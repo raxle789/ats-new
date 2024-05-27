@@ -72,9 +72,7 @@ export async function userAuth(formData: any) {
   if(!user) {
     return {
       success: false,
-      message: {
-        userNotFound: ['we cannot find your account, please use the correct email address or try to register an account instead.']
-      }
+      message: 'we cannot find your account, please use the correct email address or try to register an account instead.'
     }
   };
 
@@ -87,9 +85,7 @@ export async function userAuth(formData: any) {
   if(!match) {
     return {
       success: false,
-      message: {
-        invalidPassword: ['Your password is incorrect!']
-      }
+      message: 'Your password is incorrect!'
     };
   };
 
@@ -100,6 +96,13 @@ export async function userAuth(formData: any) {
     }
   });
   console.info('candidate data...', candidate);
+
+  if(!candidate) {
+    return {
+      success: false,
+      message: 'candidate data not found, but users exist. contact our administrator for help',
+    };
+  };
 
   /* Checking -> is email verified? */
   console.info('checking... is email verified?');
@@ -123,9 +126,7 @@ export async function userAuth(formData: any) {
 
     return {
       success: true,
-      message: {
-        emailVerified: ['Please verify your email address, click RESEND button']
-      },
+      message: 'Please verify your email address, click RESEND button',
       data: {
         stage: 2
       }
@@ -154,9 +155,7 @@ export async function userAuth(formData: any) {
 
     return {
       success: true,
-      message: {
-        requiredData: ['Please fill your required data...']
-      },
+      message: 'Please fill your required data...',
       data: {
         stage: 3
       }
@@ -185,11 +184,12 @@ export async function userAuth(formData: any) {
     }
    }, undefined);
 
+  /* close connection */
+  await prisma.$disconnect();
+
   return {
     success: true,
-    message: {
-      login: [`login successfully as ${user.name}, you will be redirected to the job vacancy page in 3 seconds.`]
-    }
+    message: `login successfully as ${user.name}, you will be redirected to the job vacancy page in 3 seconds.`
   };
 };
 

@@ -1,5 +1,5 @@
-import { documents } from '@prisma/client';
-import { File } from 'buffer';
+import { File } from "buffer";
+import { DOCUMENTS_REGISTER } from "../validations/Register";
 
 export function toDatetime(date: Date) {
   return date.toISOString().slice(0, 19).replace('T', ' ');
@@ -36,9 +36,13 @@ export type TypeTransformedDocument = {
   file_base: string;
 };
 
-export async function ManipulateDocuments(
-  documents: TypeDocuments,
-): Promise<TypeTransformedDocument[]> {
+export type zodErrors = { [key: string]: string[] }
+
+export async function ManipulateDocuments(documents: TypeDocuments): Promise<TypeTransformedDocument[] | zodErrors> {
+  const validateDocuments = DOCUMENTS_REGISTER.safeParse(documents);
+  if(!validateDocuments.success) {
+    return validateDocuments.error.flatten().fieldErrors;
+  };
   let transformedDocuments: TypeTransformedDocument[] = [];
   for (const key in documents) {
     const fileBase64 = await fileToBase64(
@@ -54,19 +58,14 @@ export async function ManipulateDocuments(
 }
 
 export function transformToArrayOfObject(nestedObject: any) {
-  if (nestedObject == null) {
-    // Handle the case when nestedObject is undefined or null
-    return [];
-  }
-  // if ('expectedSalary' in nestedObject) {
-  //   return [];
-  // }
-  const arrayOfObject = Object.keys(nestedObject).map(
-    (key) => nestedObject[key],
-  );
-
-  return arrayOfObject;
-}
+    if (nestedObject == null || Object.keys(nestedObject).length === 0) {
+      // Handle the case when nestedObject is undefined or null
+      return [];
+    }
+    const arrayOfObject = Object.keys(nestedObject).map(key => nestedObject[key]);
+    
+    return arrayOfObject;
+};
 
 export function transformStringToArray(stringArray: string) {
   const parseString = stringArray.replace(/'/g, '"');
