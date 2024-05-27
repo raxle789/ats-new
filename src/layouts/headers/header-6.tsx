@@ -2,25 +2,24 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import logo from '@/assets/images/logo/logo_06.png';
-import dark_logo from '@/assets/images/logo/logo_04.png';
+// import { useRouter } from 'next/navigation';
+// import logo from '@/assets/images/logo/logo_06.png';
+// import dark_logo from '@/assets/images/logo/logo_04.png';
 import Menus from './component/menus';
 import useSticky from '@/hooks/use-sticky';
 import LoginModal from '@/app/components/common/popup/login-modal';
 import { useAppSessionContext } from '@/libs/Sessions/AppSession';
-import { setAuthState } from '@/redux/features/authorizingSlice';
-import { useAppSelector, useAppDispatch } from '@/redux/hook';
+// import { setAuthState } from '@/redux/features/authorizingSlice';
+// import { useAppSelector, useAppDispatch } from '@/redux/hook';
 import logo_era_putih from '@/assets/images/home/logo_era_putih.png';
 import logo_era_career from '@/assets/images/home/logo_era_career.png';
 import { authSession } from '@/libs/Sessions/utils';
 import { userLoggedOut } from '@/libs/Login';
-import { message, Spin } from 'antd';
+import { Spin } from 'antd';
 /* server components */
 // import { getSession } from '@/lib/Authentication';
 
 const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
-  const dispatch = useAppDispatch();
   const { sticky } = useSticky();
   /**
    * Session Context
@@ -92,7 +91,11 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
                         </a>
                       </li>
                       <li className="d-none d-md-block ms-3">
-                        <Link href="/register" className="btn-five">
+                        <Link
+                          href="/register"
+                          className="btn-five"
+                          prefetch={true}
+                        >
                           Register
                         </Link>
                       </li>
@@ -136,16 +139,17 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
                           href="#"
                           className="btn-five w-100"
                           onClick={handleLogout}
-                          // onClick={() =>
-                          //   dispatch(setAuthState({ newAuthState: false }))
-                          // }
                         >
                           Logout
                         </Link>
                       </li>
                     )}
                     <li className="d-md-none mt-5">
-                      <Link href="/register" className="btn-five w-100">
+                      <Link
+                        href="/register"
+                        className="btn-five w-100"
+                        prefetch={true}
+                      >
                         Register
                       </Link>
                     </li>

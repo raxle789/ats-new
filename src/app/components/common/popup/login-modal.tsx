@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
+// import Image from 'next/image';
 import LoginForm from '../../forms/login-form';
-import linkedin from '@/assets/images/icon/linkedin.png';
+// import linkedin from '@/assets/images/icon/linkedin.png';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 

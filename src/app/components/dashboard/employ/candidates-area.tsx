@@ -3,10 +3,12 @@ import React, { useState } from 'react';
 import SearchBar from '@/ui/search-bar';
 import candidate_data from '@/data/candidate-data';
 import CandidatesItems from './candidates-items';
-import CandidatesFilter from './candidates-filter';
+// import CandidatesFilter from './candidates-filter';
 import { Button, Popover } from 'antd';
+import dynamic from 'next/dynamic';
 
 const CandidatesArea = () => {
+  const DynamicFilter = dynamic(() => import('./candidates-filter'));
   const candidate_items = candidate_data.slice(0, 10);
   const [popOverState, setPopOverState] = useState(false);
   const filterButtonClick = () => {
@@ -25,7 +27,7 @@ const CandidatesArea = () => {
             <Popover
               placement="bottom"
               // title={text}
-              content={<CandidatesFilter />}
+              content={<DynamicFilter />}
               open={popOverState}
               // style={{ width: '400px' }}
             >

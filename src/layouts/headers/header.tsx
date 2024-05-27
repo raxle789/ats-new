@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Menus from './component/menus';
@@ -10,6 +10,7 @@ import useSticky from '@/hooks/use-sticky';
 
 const Header = () => {
   const { sticky } = useSticky();
+  const [spinning, setSpinning] = useState(false);
   return (
     <>
       <header
@@ -105,7 +106,7 @@ const Header = () => {
       </header>
 
       {/* login modal start */}
-      <LoginModal />
+      <LoginModal setSpinning={setSpinning} />
       {/* login modal end */}
     </>
   );
