@@ -12,6 +12,7 @@ import {
 } from '@ant-design/icons';
 import { Steps } from 'antd';
 import { useAppSelector } from '@/redux/hook';
+import LinkedInRegisterPage from '../../forms/LinkedInRegister';
 
 const ProfileStagesArea = () => {
   const stepState = useAppSelector((state) => state.userRegisterStep.next);
@@ -72,6 +73,7 @@ const ProfileStagesArea = () => {
         {stepState === 2 && <VerificationForm />}
         {stepState === 3 && <Stage3Form />}
         {stepState === 4 && <DoneRegisterPage />}
+        {stepState === 5 && <LinkedInRegisterPage />}
       </div>
     </>
   );

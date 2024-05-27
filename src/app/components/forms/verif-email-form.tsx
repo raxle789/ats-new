@@ -7,7 +7,7 @@ import { useAppDispatch } from '@/redux/hook';
 import { setRegisterStep } from '@/redux/features/fatkhur/registerSlice';
 import { useAppSessionContext } from '@/libs/Sessions/AppSession';
 import { DecryptSession } from '@/libs/Sessions/jwt';
-import { authSession, regSession } from '@/libs/Sessions/utils';
+import { authSession, linkedinSession, regSession } from '@/libs/Sessions/utils';
 import { compareOTP, sendOTP } from '@/libs/Registration/verifications';
 
 const { Title } = Typography;
@@ -41,14 +41,18 @@ const VerificationForm = () => {
 
   /* Session Context */
   const session = useAppSessionContext();
+  /* reg-session */
   const getRegSession = session[`${regSession}`];
   let decodedRegSession: any;
   if (getRegSession !== undefined) {
     decodedRegSession = DecryptSession(getRegSession);
-  }
-  console.info('decoded reg-session:', decodedRegSession);
+  };
+  // console.info('decoded reg-session:', decodedRegSession);
+  /* auth-session */
   const authSessionValue = session[`${authSession}`];
   // console.info('auth session value', authSessionValue);
+  /* linkedin-session */
+  const linkedinSessionValue = session[`${linkedinSession}`];
   /* End Session Context */
 
   const handleFinish = async (otp: any) => {
@@ -79,10 +83,11 @@ const VerificationForm = () => {
    * Check user, is verified or not when the page refreshed.
    */
   const fetchCheckEmailVerifiedStatus = async () => {
-    // console.info('reg-session -> ', decodedRegSession);
-    console.info('runned')
-    if (getRegSession === undefined) return;
+    // if (getRegSession === undefined) return;
+    console.info('is email verified? checking on user session...');
     if (
+      decodedRegSession !== false &&
+      decodedRegSession !== undefined &&
       'is_email_verified' in decodedRegSession.candidate &&
       decodedRegSession.candidate.is_email_verified === true
     ) {
@@ -105,8 +110,12 @@ const VerificationForm = () => {
 
   const completeFillFormCheck = () => {
     if (authSessionValue !== undefined) {
+      console.info('auth-session exist, it\'s means user have filled the required data...');
       dispatch(setRegisterStep(4));
-    }
+    } else if(linkedinSessionValue !== undefined) {
+      console.info('user create account using linkedin...');
+      dispatch(setRegisterStep(5));
+    };
   };
 
   useEffect(() => {

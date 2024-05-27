@@ -15,7 +15,7 @@ import { sendOTP } from './verifications';
 /**
  * Trial Test
  */
-interface TypeSubmittedValues1 extends FieldType {
+export interface TypeSubmittedValues1 extends FieldType {
   fullname: string;
   email: string;
   password: string;
@@ -44,17 +44,10 @@ export async function TrialTestFunction(
     return console.info('zod errors: ', zodErrors);
   }
   console.info('validated: ', validating.data);
-  // console.log('is number: ', Number(submittedValues1.certification['2'].certificationName.toString()));
-  // console.log('not a number: ', Number('axngh'));
-  // if(Number('Serawak')) {
-  //   console.log('YES')
-  // }
-  // console.info('Documents: ', documemts);
-  // console.log('is instance of Date: ', submittedValues1.families['0'].dateOfBirth, new Date(submittedValues1.families['0'].dateOfBirth));
-}
+};
 
 /* ============================================================================== */
-interface TypeReturnedServerAction {
+export interface TypeReturnedServerAction {
   success: boolean;
   data: any | null;
   errors: any | null;

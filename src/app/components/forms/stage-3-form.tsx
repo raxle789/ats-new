@@ -58,6 +58,7 @@ import { DecryptSession } from '@/libs/Sessions/jwt';
 import { convertToPlainObject, fileToBase64, ManipulateDocuments, zodErrors } from '@/libs/Registration/utils';
 import { setUserSession } from '@/libs/Sessions';
 import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
+import { fetchCertificates, fetchCities, fetchCountries, fetchEducatioMajors, fetchEducationInstitutios, fetchEducationLevels, fetchEthnicity, fetchJobFunctions, fetchSkills, jobJobLevels, lineIndutries } from '@/libs/Fetch';
 // import { type } from '../../../libs/Authentication/permissions';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
@@ -179,7 +180,7 @@ export type FieldType = {
   };
 };
 
-type MasterData = {
+export type MasterData = {
   citys?: {
     value: string;
     label: string;
@@ -188,20 +189,20 @@ type MasterData = {
     value: string;
     label: string;
   }[];
-  countrys?: {
-    value: number;
+  countries?: {
+    value: string;
     label: string;
   }[];
   education_levels?: {
-    value: number;
+    value: string;
     label: string;
   }[];
   education_majors?: {
-    value: number;
+    value: string;
     label: string;
   }[];
   education_institutions?: {
-    value: number;
+    value: string;
     label: string;
   }[];
   certificates_name?: {
@@ -221,7 +222,7 @@ type MasterData = {
     label: string;
   }[];
   line_industries?: {
-    value: string;
+    value: number;
     label: string;
   }[];
 };
@@ -231,6 +232,7 @@ const Stage3Form = () => {
   const session = useAppSessionContext();
   const regSessionValue = session[`${regSession}`];
   const regSessionDecoded = DecryptSession(regSessionValue);
+  // console.info('reg-session value:', regSessionDecoded);
   /* Session-Context */
   const [form] = Form.useForm();
   const dispatch = useAppDispatch();
@@ -246,173 +248,26 @@ const Stage3Form = () => {
     { value: string; label: string }[] | null
   >(null);
 
-  /* Fetching Master Data */
-  const fetchCitys = async () => {
-    const citys = await fetch('/api/client-data/citys', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const citysData = await citys.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      citys: citysData,
-    }));
-    const citysNameOnly: { value: string; label: string }[] = citysData;
-    citysNameOnly.forEach((city) => (city.value = city.label));
-    setCitysName(citysNameOnly);
-  };
-
-  const fetchEthnicity = async () => {
-    const ethnicity = await fetch('/api/client-data/ethnicity', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const ethnicityData = await ethnicity.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      ethnicity: ethnicityData,
-    }));
-  };
-
-  const fetchCountrys = async () => {
-    const countrys = await fetch('/api/client-data/countrys', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const countrysData = await countrys.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      countrys: countrysData,
-    }));
-  };
-
-  const fetchEducationLevels = async () => {
-    const educationLevels = await fetch('/api/client-data/education/levels', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const educationLevelsData = await educationLevels.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      education_levels: educationLevelsData,
-    }));
-  };
-
-  const fetchEducatioMajors = async () => {
-    const educationMajors = await fetch('/api/client-data/education/majors', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const educationMajorsData = await educationMajors.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      education_majors: educationMajorsData,
-    }));
-  };
-
-  const fetchEducationInstitutios = async () => {
-    const institutions = await fetch(
-      '/api/client-data/education/institutions',
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-    );
-    const institutionsData = await institutions.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      education_institutions: institutionsData,
-    }));
-  };
-
-  const fetchCertificates = async () => {
-    const certifications = await fetch('/api/client-data/certifications', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const certificationsData = await certifications.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      certificates_name: certificationsData,
-    }));
-  };
-
-  const fetchSkills = async () => {
-    const skills = await fetch('/api/client-data/skills', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const skillsData = await skills.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      skills: skillsData,
-    }));
-  };
-
-  const fetchJobFunctions = async () => {
-    const jobFunctions = await fetch('/api/client-data/job/functions', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const jobFunctionsData = await jobFunctions.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      job_functions: jobFunctionsData,
-    }));
-  };
-
-  const jobJobLevels = async () => {
-    const levels = await fetch('/api/client-data/job/levels', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const jobLevelsData = await levels.json();
-    console.info('FETCHED JOB LEVEL -> ', jobLevelsData);
-    setMasterData((prevState) => ({
-      ...prevState,
-      job_levels: jobLevelsData,
-    }));
-  };
-
-  const lineIndutries = async () => {
-    const lineIndustries = await fetch('/api/client-data/job/line-industries', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const lineIndustriesData = await lineIndustries.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      line_industries: lineIndustriesData,
-    }));
-  };
-
-  /* Fetch-data */
   /**
-   * Fetch master data here
-   * CITY, COUNTRY, EDUCATION LEVEL, EDUCATION MAJOR, SCHOOL/UNIVERSITY, CERTIFICATION NAME, SKILLS, JOB TITLES, JOB FUNCTION, LINE INDUSTRY.
+   * ACTIONS
+   * @description List of all required data from master database.
    */
+  const fetchData = async () => {
+    await Promise.all([
+      fetchCities(setMasterData),
+      fetchEthnicity(setMasterData),
+      fetchCountries(setMasterData),
+      fetchEducationLevels(setMasterData),
+      fetchEducatioMajors(setMasterData),
+      fetchEducationInstitutios(setMasterData),
+      fetchCertificates(setMasterData),
+      fetchSkills(setMasterData),
+      fetchJobFunctions(setMasterData),
+      jobJobLevels(setMasterData),
+      lineIndutries(setMasterData)
+    ]);
+  };
+  /* END OF ACTIONS */
 
   const handleBeforeUpload = (file: FileType) => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -1166,6 +1021,7 @@ const Stage3Form = () => {
       curriculumVitae: values.others?.uploadCV ? values.others?.uploadCV.file.originFileObj : null
     });
     if(!Array.isArray(transformedDocuments)) {
+      setSpinning(false);
       return setErrors(transformedDocuments as zodErrors);
     };
     const plainObjects = JSON.parse(JSON.stringify(values));
@@ -1218,18 +1074,11 @@ const Stage3Form = () => {
 
     setIndex(index + 1);
 
-    /* Fetch Master Data */
-    fetchCitys();
-    fetchEthnicity();
-    fetchCountrys();
-    fetchEducationLevels();
-    fetchEducatioMajors();
-    fetchEducationInstitutios();
-    fetchCertificates();
-    fetchSkills();
-    fetchJobFunctions();
-    jobJobLevels();
-    lineIndutries();
+    /**
+     * ACTIONS
+     * @description Fetch all required data.
+     */
+    fetchData();
   }, []);
 
   /* SHOW FIRST CERTIF AND EXP TAB */
@@ -1372,7 +1221,7 @@ const Stage3Form = () => {
                 name={['profile', 'placeOfBirth']}
                 className="mb-0"
                 validateStatus={errors && errors.profile && errors.profile.placeOfBirth ? 'error' : ''}
-                help={errors && errors.profile && errors.profile.placeOfBirth._errors.toString()}
+                help={errors && errors.profile && errors.profile.placeOfBirth?._errors.toString()}
               >
                 <Select
                   className="w-100"
@@ -1390,7 +1239,8 @@ const Stage3Form = () => {
                       .localeCompare((optionB?.label ?? '').toLowerCase())
                   }
                   /* Feted Data */
-                  options={citysName as { value: string; label: string }[]}
+                  // options={citysName as { value: string; label: string }[]}
+                  options={masterData?.citys}
                 />
               </Form.Item>
             </div>
@@ -1402,7 +1252,7 @@ const Stage3Form = () => {
                 name={['profile', 'gender']}
                 className="mb-0"
                 validateStatus={errors && errors.profile && errors.profile.gender ? 'error' : ''}
-                help={errors && errors.profile && errors.profile.gender._errors.toString()}
+                help={errors && errors.profile && errors.profile.gender?._errors.toString()}
               >
                 <Select
                   className="w-100"
@@ -1422,7 +1272,7 @@ const Stage3Form = () => {
                 name={['profile', 'religion']}
                 className="mb-0"
                 validateStatus={errors && errors.profile && errors.profile.religion ? 'error' : ''}
-                help={errors && errors.profile && errors.profile.religion._errors.toString()}
+                help={errors && errors.profile && errors.profile.religion?._errors.toString()}
               >
                 <Select
                   className="w-100"
@@ -1474,7 +1324,7 @@ const Stage3Form = () => {
                 name={['profile', 'ethnicity']}
                 className="mb-0"
                 validateStatus={errors && errors.profile && errors.profile.ethnicity ? 'error' : ''}
-                help={errors && errors.profile && errors.profile.ethnicity._errors.toString()}
+                help={errors && errors.profile && errors.profile.ethnicity?._errors.toString()}
               >
                 <Select
                   className="w-100"
@@ -1502,7 +1352,7 @@ const Stage3Form = () => {
                 name={['profile', 'bloodType']}
                 className="mb-0"
                 validateStatus={errors && errors.profile && errors.profile.bloodType ? 'error' : ''}
-                help={errors && errors.profile && errors.profile.bloodType._errors.toString()}
+                help={errors && errors.profile && errors.profile.bloodType?._errors.toString()}
               >
                 <Select
                   className="w-100"
@@ -1524,7 +1374,7 @@ const Stage3Form = () => {
                 name={['profile', 'maritalStatus']}
                 className="mb-0"
                 validateStatus={errors && errors.profile && errors.profile.maritalStatus ? 'error' : ''}
-                help={errors && errors.profile && errors.profile.maritalStatus._errors.toString()}
+                help={errors && errors.profile && errors.profile.maritalStatus?._errors.toString()}
               >
                 <Select
                   className="w-100"
@@ -1601,7 +1451,7 @@ const Stage3Form = () => {
                       .localeCompare((optionB?.label ?? '').toLowerCase())
                   }
                   /* Fetched Data */
-                  options={masterData?.countrys}
+                  options={masterData?.countries}
                 />
               </Form.Item>
             </div>
@@ -1631,7 +1481,8 @@ const Stage3Form = () => {
                       .localeCompare((optionB?.label ?? '').toLowerCase())
                   }
                   /* Fetched Data */
-                  options={citysName as { value: string; label: string }[]}
+                  options={masterData?.citys}
+                  // options={citysName as { value: string; label: string }[]}
                 />
               </Form.Item>
             </div>

@@ -16,9 +16,8 @@ const PROFILE = z.object({
     fullname: z.string().min(3, { message: 'Fullname must contains at least 3 characters' }),
     email: z.string().email(),
     phoneNumber: z.string().max(16, { message: 'Phone number must not exceed 16 digits' }),
-    // dateOfBirth: z.string().datetime(),
     dateOfBirth: z.coerce.date(),
-    placeOfBirth: z.array(z.string(), { required_error: 'Please select your place of birth' }),
+    placeOfBirth: z.array(z.string(), { required_error: 'Please select your place of birth' }).refine(city => city.length > 0, { message: 'Please select your place of birth' }),
     gender: z.string({ required_error: 'Please select your gender' }),
     religion: z.string({ required_error: 'Please select your religion' }),
     ethnicity: z.string({ required_error: 'Please select your religion' }),
@@ -77,7 +76,37 @@ const EDUCATION = z.object({
     cityOfSchool: z.array(z.string()),
     startEduYear: z.string(),
     endEduYear: z.string()
-});
+}).superRefine((data, ctx) => {
+    const educationLevels = ['D3', 'D4', 'S1/Sarjana', 'S2/Magister', 'S3/Doktor'];
+    type TypeRequiredEducationFields = {
+        educationMajor: string[];
+        gpa: number;
+    };
+
+    const requiredEducationFields: TypeRequiredEducationFields = {
+        educationMajor: data.educationMajor,
+        gpa: data.gpa
+    };
+
+    if(educationLevels.includes(data.educationLevel)) {
+        for(const key in requiredEducationFields) {
+            const requiredProp = requiredEducationFields[key as keyof TypeRequiredEducationFields];
+            if(Array.isArray(requiredProp)) {
+                if(requiredProp.length === 0) ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: 'Required',
+                    path: [`${key}`]
+                });
+            } else {
+                if(requiredProp === 0) ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: 'Required',
+                    path: [`${key}`]
+                });
+            };
+        };
+    };
+}) ;
 
 const CERTIFICATIONS = z.array(z.object({
     certificationName: z.coerce.string(), // idk whether coerce to string or number and if value can't be parsed into a number, store to certificates table first
@@ -184,13 +213,8 @@ export const REGISTER_2 = z.object({
     };
 });
 
-const MANIPULATED_DOCUMENTS = {
-    original_name: z.string(),
-    byte_size: z.number(),
-    file_base: z.string(),
-};
-
 export const DOCUMENTS_REGISTER = z.object({
     profilePhoto: z.instanceof(File, { message: 'Profile photo shouldn\'t be empty' }),
-    curriculumVitae: z.instanceof(File, { message: 'Curriculum vitae shouldn\'t be empty' }).refine(file => file.size <= 1000000, {  message: 'File must be less than 1mb'})
+    curriculumVitae: z.instanceof(File, { message: 'Curriculum vitae shouldn\'t be empty' })
+                        .refine(file => file.size <= 1000000, {  message: 'File must be less than 1mb'})
 });

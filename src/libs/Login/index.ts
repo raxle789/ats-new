@@ -97,6 +97,13 @@ export async function userAuth(formData: any) {
   });
   console.info('candidate data...', candidate);
 
+  if(!candidate) {
+    return {
+      success: false,
+      message: 'candidate data not found, but users exist. contact our administrator for help',
+    };
+  };
+
   /* Checking -> is email verified? */
   console.info('checking... is email verified?');
   if(!user.is_email_verified) {
@@ -176,6 +183,9 @@ export async function userAuth(formData: any) {
       id: candidate?.id
     }
    }, undefined);
+
+  /* close connection */
+  await prisma.$disconnect();
 
   return {
     success: true,
