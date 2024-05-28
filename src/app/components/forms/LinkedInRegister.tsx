@@ -2,11 +2,10 @@
 
 import { useAppSessionContext } from '@/libs/Sessions/AppSession';
 import { Alert, Avatar, Button, DatePicker, Form, Input, message } from 'antd';
-// import type { GetProp, UploadProps, UploadFile } from 'antd';
 import { linkedinSession } from '@/libs/Sessions/utils';
 import { DecryptSession } from '@/libs/Sessions/jwt';
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { RegisterWithLinkedIn } from '@/libs/Registration/LinkedIn';
 import { useAppDispatch } from '@/redux/hook';
 import { setRegisterStep } from '@/redux/features/fatkhur/registerSlice';
@@ -55,7 +54,10 @@ export default function LinkedInRegisterPage() {
     }
 
     message.success(doRegisterPhase1.message);
-    return dispatch(setRegisterStep(3));
+    // return dispatch(setRegisterStep(3));
+    return setTimeout(() => {
+      dispatch(setRegisterStep(3));
+    }, 2000);
   };
   /* END OF ACTIONS */
 
@@ -64,17 +66,16 @@ export default function LinkedInRegisterPage() {
       fullname: decodedLinkedInSession.name,
       email: decodedLinkedInSession.email,
     });
-  });
+  }, []);
   return (
     <>
       {decodedLinkedInSession?.success && (
         <>
           <h3 className="section-page-title">Your LinkedIn Account</h3>
-
           <Form form={form} name="reg-with-linkedin" onFinish={onFinish}>
             <div className="row">
               <div className="col-4">
-                <Avatar src={`${decodedLinkedInSession.picture}`} size={80} />
+                <Avatar src={decodedLinkedInSession?.picture} size={80} />
               </div>
               <div className="col-4">
                 <div className="input-group-meta position-relative mb-15">
@@ -166,10 +167,26 @@ function AccountAlreadyExist({
 }: {
   searchParams: URLSearchParams;
 }) {
+  const router = useRouter();
+  const [countdown, setCountdown] = useState<number>(10);
+  console.info('countdown: ', countdown);
+  useEffect(() => {
+    if (countdown > 0) {
+      const interval = setInterval(() => {
+        setCountdown((prevCountdown) => prevCountdown - 1);
+      }, 1000);
+
+      return () => clearInterval(interval);
+    } else {
+      return router.replace('/');
+    }
+  });
   return (
     <>
       <h3 className="section-page-title">{searchParams.get('error')}</h3>
       <Alert message={searchParams.get('error_description')} type="error" />
+      <h5>You will be directed into homepage on {countdown} seconds</h5>
+      <p>OR</p>
       <Button
         href="/"
         type="primary"

@@ -28,6 +28,9 @@ import LogoutModal from '../../common/popup/logout-modal';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { setIsOpen } from '@/redux/features/sidebarSlice';
 import logo2 from '@/assets/images/logo/erajaya_logo4.jpg';
+import { useAppSessionContext } from '@/libs/Sessions/AppSession';
+import { authSession, linkedinSession, regSession } from '@/libs/Sessions/utils';
+import { DecryptSession } from '@/libs/Sessions/jwt';
 
 // nav data
 const nav_data: {
@@ -88,7 +91,29 @@ const nav_data: {
   // },
 ];
 
+export type TypeSessionValue = {
+  regSession: any;
+  authSession: any;
+  linkedinSession: any;
+};
+
 const CandidateAside = () => {
+  /**
+   * Session Context
+   */
+  // const session = useAppSessionContext();
+  // const sessionValue: TypeSessionValue = {
+  //   regSession: session[`${regSession}`],
+  //   authSession: session[`${authSession}`],
+  //   linkedinSession: session[`${linkedinSession}`]
+  // };
+  // for(const key in sessionValue) {
+  //   if(sessionValue[key as keyof TypeSessionValue]) {
+  //     sessionValue[key as keyof TypeSessionValue] = DecryptSession(sessionValue[key as keyof TypeSessionValue] as string);
+  //   };
+  // };
+  /* END SESSION */
+
   const pathname = usePathname();
   const isOpenSidebar = useAppSelector((state) => state.sidebar.isOpen);
   const dispatch = useAppDispatch();
@@ -137,7 +162,9 @@ const CandidateAside = () => {
                 data-bs-auto-close="outside"
                 aria-expanded="false"
               >
-                James Brower
+                {/* Only displaying reg-session and linkedin-session. Next -> auth-session */}
+                {/* {sessionValue?.regSession?.user?.name || sessionValue?.linkedinSession?.name} */}
+                Era
               </button>
               <ul className="dropdown-menu" aria-labelledby="profile-dropdown">
                 <li>

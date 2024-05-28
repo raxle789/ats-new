@@ -50,10 +50,8 @@ export async function GET(request: NextRequest) {
   console.info('is success response? ', isSuccessOAuth(searchParams));
   if (isSuccessOAuth(searchParams)) {
     try {
-      jwt.verify(
-        searchParams.get('state') as string,
-        process.env.JWT_SECRET_KEY as string,
-      );
+      console.info('verifying state token...');
+      jwt.verify(searchParams.get('state') as string, process.env.JWT_SECRET_KEY as string);
 
       const URLSearchParamsBody = new URLSearchParams({
         grant_type: 'authorization_code',
@@ -62,31 +60,28 @@ export async function GET(request: NextRequest) {
         client_secret: process.env.LINKEDIN_SECRET_KEY as string,
         redirect_uri: process.env.LINKEDIN_REDIRECT_URL as string,
       });
-      const requestAuthToken = await fetch(
-        process.env.LINKEDIN_EXCHANGE_AUTH_TOKEN as string,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-          body: URLSearchParamsBody,
+      console.info('request auth token...');
+      const requestAuthToken = await fetch(process.env.LINKEDIN_EXCHANGE_AUTH_TOKEN as string, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
         },
       );
       const response: TypeOpenIDToken = await requestAuthToken.json();
+      console.info('response of auth token...', response);
 
       /* Make Authenticated Request */
-      const getBasicLinkedInProfile = await fetch(
-        'https://api.linkedin.com/v2/userinfo',
-        {
-          method: 'GET',
-          headers: {
-            Authorization: 'Bearer ' + response.access_token,
-          },
+      console.info('request user information...');
+      const getBasicLinkedInProfile = await fetch('https://api.linkedin.com/v2/userinfo', {
+        method: 'GET',
+        headers: {
+          "Authorization": "Bearer " + response.access_token
         },
       );
 
-      const responseUserInfo: TypeUserInfo =
-        await getBasicLinkedInProfile.json();
+      const responseUserInfo: TypeUserInfo = await getBasicLinkedInProfile.json();
+      console.info('response user information', responseUserInfo);
+      console.info('checking users table with provided user linkedin email...');
       const isEmailRegistered = await prisma.users.findUnique({
         where: {
           email: responseUserInfo.email,
@@ -95,18 +90,9 @@ export async function GET(request: NextRequest) {
       /**
        * If user email already registered.
        */
-      if (isEmailRegistered) {
-        const failEmailRegistered = new URL(
-          '/dashboard/user/stages',
-          request.url,
-        );
-        /* linkedin session */
-        const payload = jwt.sign({ success: false }, 'sidokaredev24');
-        const expires = new Date(Date.now() + 30 * 1000);
-        cookies().set(linkedinSession, payload, {
-          expires: expires,
-          httpOnly: false,
-        });
+      if(isEmailRegistered) {
+        console.info('user email already registered...');
+        const failEmailRegistered = new URL('/dashboard/user/stages', request.url);
         const errorParams = new URLSearchParams({
           state: searchParams.get('state') as string,
           error: 'Email is already registered',
@@ -115,12 +101,24 @@ export async function GET(request: NextRequest) {
         });
         failEmailRegistered.search = errorParams.toString();
 
+        /**
+         * Set linkedin session with 10 seconds.
+         * { success: false }
+         */
+        console.info('creating fail linkedin session within 10 seconds...');
+        const failLinkedInExires = new Date(Date.now() + 15 * 1000);
+        const failLinkedInPayload = jwt.sign({ success: false }, 'sidokaredev24');
+        cookies().set(linkedinSession, failLinkedInPayload, { expires: failLinkedInExires, httpOnly: false });
+
         return NextResponse.redirect(failEmailRegistered);
       }
       /* Set-Cookie */
+      /**
+       * Spreads responseUserInfo, and add success: true.
+       */
       await setUserSession('linkedin', {
         ...responseUserInfo,
-        success: true,
+        success: true
       });
       /* Validate Error Code */
 
@@ -131,6 +129,8 @@ export async function GET(request: NextRequest) {
       /**
        * Error handling for JWT ERROR, FETCH TYPEERROR, PRISMA ERROR
        */
+
+      console.info('error deebug: ', error);
 
       return NextResponse.json({
         error: error,

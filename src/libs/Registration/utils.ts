@@ -39,6 +39,7 @@ export type TypeTransformedDocument = {
 export type zodErrors = { [key: string]: string[] }
 
 export async function ManipulateDocuments(documents: TypeDocuments): Promise<TypeTransformedDocument[] | zodErrors> {
+  console.log('list-documents:', documents);
   const validateDocuments = DOCUMENTS_REGISTER.safeParse(documents);
   if(!validateDocuments.success) {
     return validateDocuments.error.flatten().fieldErrors;
@@ -76,32 +77,32 @@ export function transformStringToArray(stringArray: string) {
 
 interface PlainObject {
   [key: string]: any;
-}
+};
 
 export function convertToPlainObject(obj: any): PlainObject {
   if (!obj || typeof obj !== 'object') {
     return obj;
-  }
+  };
 
   // If obj has a toJSON method, use it
   if (typeof obj.toJSON === 'function') {
     return obj.toJSON();
-  }
+  };
 
   // If obj is an array, map its elements
   if (Array.isArray(obj)) {
     return obj.map(convertToPlainObject);
-  }
+  };
 
   // If obj is a plain object, convert its properties
   if (Object.prototype.toString.call(obj) === '[object Object]') {
     const result: PlainObject = {};
     for (let key in obj) {
       result[key] = convertToPlainObject(obj[key]);
-    }
+    };
     return result;
-  }
+  };
 
   // If obj is neither an array nor a plain object, return it as is
   return obj;
-}
+};
