@@ -16,7 +16,6 @@ const RegisterPage = () => {
     <Wrapper>
       <div className="main-page-wrapper">
         {/* header start */}
-        {/* <Header /> */}
         <HeaderSix />
         {/* header end */}
 
@@ -25,22 +24,6 @@ const RegisterPage = () => {
           title="Register"
           subtitle="Create an account & find your dream job"
         />
-        {/* <div className="header-register">
-          <div className="container">
-            <div className="position-relative">
-              <div className="row">
-                <div className="col-xl-6 m-auto text-center">
-                  <div className="title-two">
-                    <h2 className="text-white">Register</h2>
-                  </div>
-                  <p className="text-lg text-white mt-30 lg-mt-20">
-                    Create an account & Start posting or hiring talents
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div> */}
         {/*breadcrumb end */}
 
         {/* register area start */}

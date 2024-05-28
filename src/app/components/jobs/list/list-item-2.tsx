@@ -4,29 +4,12 @@ import React from 'react';
 import { useState } from 'react';
 import * as messages from '@/utils/message';
 import { ExclamationCircleFilled } from '@ant-design/icons';
-import {
-  Cascader,
-  message,
-  Spin,
-  DatePicker,
-  Form,
-  Input,
-  InputNumber,
-  Mentions,
-  Select,
-  TimePicker,
-  TreeSelect,
-  Checkbox,
-  Col,
-  Row,
-  Slider,
-  Radio,
-  Button,
-  notification,
-  Modal,
-} from 'antd';
+import { message } from 'antd';
+import { Form } from 'antd';
+import { Modal } from 'antd';
+import { Button } from 'antd';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+// import Image from 'next/image';
 import ApplyModal from '../../common/popup/apply-modal';
 import Link from 'next/link';
 import { IJobType } from '@/types/job-data-type';
