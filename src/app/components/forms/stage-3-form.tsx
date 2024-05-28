@@ -1,23 +1,23 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  createCandidate,
+  // createCandidate,
   RegisterPhase2,
-  storeCandidateQuestions,
-  storeCertification,
-  storeCurriculumVitae,
-  storeEducation,
-  storeEmergencyContact,
-  storeExperiences,
-  storeFamilys,
-  storeLanguage,
-  storeProfilePhoto,
-  storeSkills,
-  storingAddress,
-  TrialTestFunction,
-  updateCandidate,
+  // storeCandidateQuestions,
+  // storeCertification,
+  // storeCurriculumVitae,
+  // storeEducation,
+  // storeEmergencyContact,
+  // storeExperiences,
+  // storeFamilys,
+  // storeLanguage,
+  // storeProfilePhoto,
+  // storeSkills,
+  // storingAddress,
+  // TrialTestFunction,
+  // updateCandidate,
 } from '@/libs/Registration';
-import { userRegister2 } from '@/libs/validations/Register';
+// import { userRegister2 } from '@/libs/validations/Register';
 import { setRegisterStep } from '@/redux/features/fatkhur/registerSlice';
 import { useAppDispatch } from '@/redux/hook';
 import {
@@ -49,16 +49,33 @@ import type {
   UploadProps,
   UploadFile,
 } from 'antd';
-import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 /* SESSION MANAGEMENT */
 import { useAppSessionContext } from '@/libs/Sessions/AppSession';
 import { authSession, regSession } from '@/libs/Sessions/utils';
 import { DecryptSession } from '@/libs/Sessions/jwt';
-import { convertToPlainObject, fileToBase64, ManipulateDocuments, zodErrors } from '@/libs/Registration/utils';
-import { setUserSession } from '@/libs/Sessions';
+import {
+  // convertToPlainObject,
+  // fileToBase64,
+  ManipulateDocuments,
+  zodErrors,
+} from '@/libs/Registration/utils';
+// import { setUserSession } from '@/libs/Sessions';
 import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
-import { fetchCertificates, fetchCities, fetchCountries, fetchEducatioMajors, fetchEducationInstitutios, fetchEducationLevels, fetchEthnicity, fetchJobFunctions, fetchSkills, jobJobLevels, lineIndutries } from '@/libs/Fetch';
+import {
+  fetchCertificates,
+  fetchCities,
+  fetchCountries,
+  fetchEducatioMajors,
+  fetchEducationInstitutios,
+  fetchEducationLevels,
+  fetchEthnicity,
+  fetchJobFunctions,
+  fetchSkills,
+  jobJobLevels,
+  lineIndutries,
+} from '@/libs/Fetch';
 // import { type } from '../../../libs/Authentication/permissions';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
@@ -264,7 +281,7 @@ const Stage3Form = () => {
       fetchSkills(setMasterData),
       fetchJobFunctions(setMasterData),
       jobJobLevels(setMasterData),
-      lineIndutries(setMasterData)
+      lineIndutries(setMasterData),
     ]);
   };
   /* END OF ACTIONS */
@@ -336,8 +353,16 @@ const Stage3Form = () => {
               name={['families', index.toString(), 'relation']}
               className="mb-0"
               /* Example Error for families */
-              validateStatus={errors && errors.families && errors.families.relation ? 'error' : ''}
-              help={errors && errors.families && errors.families.relation?._errors.toString()}
+              validateStatus={
+                errors && errors.families && errors.families.relation
+                  ? 'error'
+                  : ''
+              }
+              help={
+                errors &&
+                errors.families &&
+                errors.families.relation?._errors.toString()
+              }
             >
               <Select
                 className="w-100"
@@ -359,8 +384,14 @@ const Stage3Form = () => {
             <Form.Item<FieldType>
               name={['families', index.toString(), 'name']}
               className="mb-0"
-              validateStatus={errors && errors.families && errors.families.name ? 'error' : ''}
-              help={errors && errors.families && errors.families.name?._errors.toString()}
+              validateStatus={
+                errors && errors.families && errors.families.name ? 'error' : ''
+              }
+              help={
+                errors &&
+                errors.families &&
+                errors.families.name?._errors.toString()
+              }
             >
               <Input placeholder="Your Relation Name" />
             </Form.Item>
@@ -372,8 +403,16 @@ const Stage3Form = () => {
             <Form.Item<FieldType>
               name={['families', index.toString(), 'gender']}
               className="mb-0"
-              validateStatus={errors && errors.families && errors.families.gender ? 'error' : ''}
-              help={errors && errors.families && errors.families.gender?._errors.toString()}
+              validateStatus={
+                errors && errors.families && errors.families.gender
+                  ? 'error'
+                  : ''
+              }
+              help={
+                errors &&
+                errors.families &&
+                errors.families.gender?._errors.toString()
+              }
             >
               <Select
                 className="w-100"
@@ -391,8 +430,16 @@ const Stage3Form = () => {
             <label>Date of Birth</label>
             <Form.Item<FieldType>
               name={['families', index.toString(), 'dateOfBirth']}
-              validateStatus={errors && errors.families && errors.families.dateOfBirth ? 'error' : ''}
-              help={errors && errors.families && errors.families.dateOfBirth?._errors.toString()}
+              validateStatus={
+                errors && errors.families && errors.families.dateOfBirth
+                  ? 'error'
+                  : ''
+              }
+              help={
+                errors &&
+                errors.families &&
+                errors.families.dateOfBirth?._errors.toString()
+              }
             >
               <DatePicker
                 className="w-100"
@@ -566,7 +613,7 @@ const Stage3Form = () => {
     const newPanes = [...certifItems];
     newPanes.push({
       label: `Certification ${certifItems.length + 1}`,
-      children: <CertifTabContent certificationIdx={index} />,
+      children: <CertifTabContent certificationIdx={certificationIdx} />,
       key: newActiveKey,
     });
     setCertifItems(newPanes);
@@ -1018,22 +1065,27 @@ const Stage3Form = () => {
      */
     const transformedDocuments = await ManipulateDocuments({
       profilePhoto: profilePhoto ? profilePhoto[0].originFileObj : null,
-      curriculumVitae: values.others?.uploadCV ? values.others?.uploadCV.file.originFileObj : null
+      curriculumVitae: values.others?.uploadCV
+        ? values.others?.uploadCV.file.originFileObj
+        : null,
     });
-    if(!Array.isArray(transformedDocuments)) {
+    if (!Array.isArray(transformedDocuments)) {
       setSpinning(false);
       return setErrors(transformedDocuments as zodErrors);
-    };
+    }
     const plainObjects = JSON.parse(JSON.stringify(values));
     /* JANGAN DI DELETE, TESTING PURPOSE */
     // await TrialTestFunction(plainObjects, transformedDocuments);
-    const doRegisterPhase2 = await RegisterPhase2(plainObjects, transformedDocuments);
-    if(!doRegisterPhase2.success) {
+    const doRegisterPhase2 = await RegisterPhase2(
+      plainObjects,
+      transformedDocuments,
+    );
+    if (!doRegisterPhase2.success) {
       console.info(doRegisterPhase2.errors);
       setErrors(doRegisterPhase2.errors);
       setSpinning(false);
       return message.error(doRegisterPhase2.message);
-    };
+    }
     setSpinning(false);
     message.success(doRegisterPhase2.message);
     return dispatch(setRegisterStep(4));
@@ -1082,16 +1134,16 @@ const Stage3Form = () => {
   }, []);
 
   /* SHOW FIRST CERTIF AND EXP TAB */
-  // const [tabAdditionState, setTabAdditionState] = useState(true);
-  // useEffect(() => {
-  //   if (masterData && masterData.certificates_name && masterData.job_levels) {
-  //     if (tabAdditionState) {
-  //       addCertif();
-  //       addExp();
-  //       setTabAdditionState(false);
-  //     }
-  //   }
-  // }, [masterData]);
+  const [tabAdditionState, setTabAdditionState] = useState(true);
+  useEffect(() => {
+    if (masterData && masterData.certificates_name && masterData.job_levels) {
+      if (tabAdditionState) {
+        addCertif();
+        addExp();
+        setTabAdditionState(false);
+      }
+    }
+  }, [masterData]);
   return (
     <>
       <Form
@@ -1220,8 +1272,16 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'placeOfBirth']}
                 className="mb-0"
-                validateStatus={errors && errors.profile && errors.profile.placeOfBirth ? 'error' : ''}
-                help={errors && errors.profile && errors.profile.placeOfBirth?._errors.toString()}
+                validateStatus={
+                  errors && errors.profile && errors.profile.placeOfBirth
+                    ? 'error'
+                    : ''
+                }
+                help={
+                  errors &&
+                  errors.profile &&
+                  errors.profile.placeOfBirth?._errors.toString()
+                }
               >
                 <Select
                   className="w-100"
@@ -1251,8 +1311,16 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'gender']}
                 className="mb-0"
-                validateStatus={errors && errors.profile && errors.profile.gender ? 'error' : ''}
-                help={errors && errors.profile && errors.profile.gender?._errors.toString()}
+                validateStatus={
+                  errors && errors.profile && errors.profile.gender
+                    ? 'error'
+                    : ''
+                }
+                help={
+                  errors &&
+                  errors.profile &&
+                  errors.profile.gender?._errors.toString()
+                }
               >
                 <Select
                   className="w-100"
@@ -1271,8 +1339,16 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'religion']}
                 className="mb-0"
-                validateStatus={errors && errors.profile && errors.profile.religion ? 'error' : ''}
-                help={errors && errors.profile && errors.profile.religion?._errors.toString()}
+                validateStatus={
+                  errors && errors.profile && errors.profile.religion
+                    ? 'error'
+                    : ''
+                }
+                help={
+                  errors &&
+                  errors.profile &&
+                  errors.profile.religion?._errors.toString()
+                }
               >
                 <Select
                   className="w-100"
@@ -1323,8 +1399,16 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'ethnicity']}
                 className="mb-0"
-                validateStatus={errors && errors.profile && errors.profile.ethnicity ? 'error' : ''}
-                help={errors && errors.profile && errors.profile.ethnicity?._errors.toString()}
+                validateStatus={
+                  errors && errors.profile && errors.profile.ethnicity
+                    ? 'error'
+                    : ''
+                }
+                help={
+                  errors &&
+                  errors.profile &&
+                  errors.profile.ethnicity?._errors.toString()
+                }
               >
                 <Select
                   className="w-100"
@@ -1351,8 +1435,16 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'bloodType']}
                 className="mb-0"
-                validateStatus={errors && errors.profile && errors.profile.bloodType ? 'error' : ''}
-                help={errors && errors.profile && errors.profile.bloodType?._errors.toString()}
+                validateStatus={
+                  errors && errors.profile && errors.profile.bloodType
+                    ? 'error'
+                    : ''
+                }
+                help={
+                  errors &&
+                  errors.profile &&
+                  errors.profile.bloodType?._errors.toString()
+                }
               >
                 <Select
                   className="w-100"
@@ -1373,8 +1465,16 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'maritalStatus']}
                 className="mb-0"
-                validateStatus={errors && errors.profile && errors.profile.maritalStatus ? 'error' : ''}
-                help={errors && errors.profile && errors.profile.maritalStatus?._errors.toString()}
+                validateStatus={
+                  errors && errors.profile && errors.profile.maritalStatus
+                    ? 'error'
+                    : ''
+                }
+                help={
+                  errors &&
+                  errors.profile &&
+                  errors.profile.maritalStatus?._errors.toString()
+                }
               >
                 <Select
                   className="w-100"
@@ -1420,8 +1520,16 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'permanentAddress']}
                 className="mb-0"
-                validateStatus={errors && errors.address && errors.address.permanentAddress ? 'error' : ''}
-                help={errors && errors.address && errors.address.permanentAddress?._errors.toString()}
+                validateStatus={
+                  errors && errors.address && errors.address.permanentAddress
+                    ? 'error'
+                    : ''
+                }
+                help={
+                  errors &&
+                  errors.address &&
+                  errors.address.permanentAddress?._errors.toString()
+                }
               >
                 <Input placeholder="Your Permanent Address" />
               </Form.Item>
@@ -1433,8 +1541,16 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'country']}
                 className="mb-0"
-                validateStatus={errors && errors.address && errors.address.country ? 'error' : ''}
-                help={errors && errors.address && errors.address.country?._errors.toString()}
+                validateStatus={
+                  errors && errors.address && errors.address.country
+                    ? 'error'
+                    : ''
+                }
+                help={
+                  errors &&
+                  errors.address &&
+                  errors.address.country?._errors.toString()
+                }
               >
                 <Select
                   className="w-100"
@@ -1462,8 +1578,14 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'city']}
                 className="mb-0"
-                validateStatus={errors && errors.address && errors.address.city ? 'error' : ''}
-                help={errors && errors.address && errors.address.city?._errors.toString()}
+                validateStatus={
+                  errors && errors.address && errors.address.city ? 'error' : ''
+                }
+                help={
+                  errors &&
+                  errors.address &&
+                  errors.address.city?._errors.toString()
+                }
               >
                 <Select
                   className="w-100"
@@ -1493,8 +1615,16 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'zipCode']}
                 className="mb-0"
-                validateStatus={errors && errors.address && errors.address.zipCode ? 'error' : ''}
-                help={errors && errors.address && errors.address.zipCode?._errors.toString()}
+                validateStatus={
+                  errors && errors.address && errors.address.zipCode
+                    ? 'error'
+                    : ''
+                }
+                help={
+                  errors &&
+                  errors.address &&
+                  errors.address.zipCode?._errors.toString()
+                }
               >
                 <Input placeholder="Your Zip Code" />
               </Form.Item>
@@ -1507,8 +1637,14 @@ const Stage3Form = () => {
                 <Form.Item<FieldType>
                   name={['address', 'rt']}
                   className="mb-0"
-                  validateStatus={errors && errors.address && errors.address.rt ? 'error' : ''}
-                  help={errors && errors.address && errors.address.rt?._errors.toString()}
+                  validateStatus={
+                    errors && errors.address && errors.address.rt ? 'error' : ''
+                  }
+                  help={
+                    errors &&
+                    errors.address &&
+                    errors.address.rt?._errors.toString()
+                  }
                 >
                   <Input placeholder="Your RT" />
                 </Form.Item>
@@ -1522,8 +1658,14 @@ const Stage3Form = () => {
                 <Form.Item<FieldType>
                   name={['address', 'rw']}
                   className="mb-0"
-                  validateStatus={errors && errors.address && errors.address.rw ? 'error' : ''}
-                  help={errors && errors.address && errors.address.rw?._errors.toString()}
+                  validateStatus={
+                    errors && errors.address && errors.address.rw ? 'error' : ''
+                  }
+                  help={
+                    errors &&
+                    errors.address &&
+                    errors.address.rw?._errors.toString()
+                  }
                 >
                   <Input placeholder="Your RW" />
                 </Form.Item>
@@ -1537,8 +1679,16 @@ const Stage3Form = () => {
                 <Form.Item<FieldType>
                   name={['address', 'subdistrict']}
                   className="mb-0"
-                  validateStatus={errors && errors.address && errors.address.subdistrict ? 'error' : ''}
-                  help={errors && errors.address && errors.address.subdistrict?._errors.toString()}
+                  validateStatus={
+                    errors && errors.address && errors.address.subdistrict
+                      ? 'error'
+                      : ''
+                  }
+                  help={
+                    errors &&
+                    errors.address &&
+                    errors.address.subdistrict?._errors.toString()
+                  }
                 >
                   <Input placeholder="Your Subdistrict" />
                 </Form.Item>
@@ -1552,8 +1702,16 @@ const Stage3Form = () => {
                 <Form.Item<FieldType>
                   name={['address', 'village']}
                   className="mb-0"
-                  validateStatus={errors && errors.address && errors.address.village ? 'error' : ''}
-                  help={errors && errors.address && errors.address.village?._errors.toString()}
+                  validateStatus={
+                    errors && errors.address && errors.address.village
+                      ? 'error'
+                      : ''
+                  }
+                  help={
+                    errors &&
+                    errors.address &&
+                    errors.address.village?._errors.toString()
+                  }
                 >
                   <Input placeholder="Your Village" />
                 </Form.Item>
@@ -1591,10 +1749,15 @@ const Stage3Form = () => {
           </div>
 
           <label className="fw-bold mt-5 mb-2">Family Structure</label>
-          {errors?.families ?
-            <Alert message='If you have married, please fill in families structure with your spouse data' type='error' style={{ marginBottom: '1em' }} /> :
+          {errors?.families ? (
+            <Alert
+              message="If you have married, please fill in families structure with your spouse data"
+              type="error"
+              style={{ marginBottom: '1em' }}
+            />
+          ) : (
             ''
-          }
+          )}
           <Tabs
             type="editable-card"
             onChange={onChangeTabs}
@@ -1606,10 +1769,7 @@ const Stage3Form = () => {
           <label className="fw-bold mt-5">Education</label>
           <div className="col-12">
             <div className="input-group-meta position-relative mb-0">
-              <Form.Item<FieldType>
-                name="formalCheckbox"
-                className="mb-0"
-              >
+              <Form.Item<FieldType> name="formalCheckbox" className="mb-0">
                 <div className="d-flex align-items-center">
                   <Checkbox onChange={handleFormalCheck} checked={formalCheck}>
                     Formal
@@ -1626,8 +1786,18 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'educationLevel']}
                     className="mb-0"
-                    validateStatus={errors && errors.education && errors.education.educationLevel ? 'error' : ''}
-                    help={errors && errors.education && errors.education.educationLevel?._errors.toString()}
+                    validateStatus={
+                      errors &&
+                      errors.education &&
+                      errors.education.educationLevel
+                        ? 'error'
+                        : ''
+                    }
+                    help={
+                      errors &&
+                      errors.education &&
+                      errors.education.educationLevel?._errors.toString()
+                    }
                   >
                     <Select
                       className="w-100"
@@ -1645,8 +1815,18 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'educationMajor']}
                     className="mb-0"
-                    validateStatus={errors && errors.education && errors.education.educationMajor ? 'error' : ''}
-                    help={errors && errors.education && errors.education.educationMajor?._errors.toString()}
+                    validateStatus={
+                      errors &&
+                      errors.education &&
+                      errors.education.educationMajor
+                        ? 'error'
+                        : ''
+                    }
+                    help={
+                      errors &&
+                      errors.education &&
+                      errors.education.educationMajor?._errors.toString()
+                    }
                   >
                     <Select
                       className="w-100"
@@ -1677,8 +1857,18 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'startEduYear']}
                     className="mb-0"
-                    validateStatus={errors && errors.education && errors.education.startEduYear ? 'error' : ''}
-                    help={errors && errors.education && errors.education.startEduYear?._errors.toString()}
+                    validateStatus={
+                      errors &&
+                      errors.education &&
+                      errors.education.startEduYear
+                        ? 'error'
+                        : ''
+                    }
+                    help={
+                      errors &&
+                      errors.education &&
+                      errors.education.startEduYear?._errors.toString()
+                    }
                   >
                     <DatePicker
                       className="w-100"
@@ -1694,8 +1884,16 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'endEduYear']}
                     className="mb-0"
-                    validateStatus={errors && errors.education && errors.education.endEduYear ? 'error' : ''}
-                    help={errors && errors.education && errors.education.endEduYear?._errors.toString()}
+                    validateStatus={
+                      errors && errors.education && errors.education.endEduYear
+                        ? 'error'
+                        : ''
+                    }
+                    help={
+                      errors &&
+                      errors.education &&
+                      errors.education.endEduYear?._errors.toString()
+                    }
                   >
                     <DatePicker
                       className="w-100"
@@ -1711,8 +1909,16 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'schoolName']}
                     className="mb-0"
-                    validateStatus={errors && errors.education && errors.education.schoolName ? 'error' : ''}
-                    help={errors && errors.education && errors.education.schoolName?._errors.toString()}
+                    validateStatus={
+                      errors && errors.education && errors.education.schoolName
+                        ? 'error'
+                        : ''
+                    }
+                    help={
+                      errors &&
+                      errors.education &&
+                      errors.education.schoolName?._errors.toString()
+                    }
                   >
                     <Select
                       className="w-100"
@@ -1742,8 +1948,18 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'cityOfSchool']}
                     className="mb-0"
-                    validateStatus={errors && errors.education && errors.education.cityOfSchool ? 'error' : ''}
-                    help={errors && errors.education && errors.education.cityOfSchool?._errors.toString()}
+                    validateStatus={
+                      errors &&
+                      errors.education &&
+                      errors.education.cityOfSchool
+                        ? 'error'
+                        : ''
+                    }
+                    help={
+                      errors &&
+                      errors.education &&
+                      errors.education.cityOfSchool?._errors.toString()
+                    }
                   >
                     <Select
                       className="w-100"
@@ -1771,8 +1987,16 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'gpa']}
                     className="mb-0"
-                    validateStatus={errors && errors.education && errors.education.gpa ? 'error' : ''}
-                    help={errors && errors.education && errors.education.gpa?._errors.toString()}
+                    validateStatus={
+                      errors && errors.education && errors.education.gpa
+                        ? 'error'
+                        : ''
+                    }
+                    help={
+                      errors &&
+                      errors.education &&
+                      errors.education.gpa?._errors.toString()
+                    }
                   >
                     <InputNumber
                       className="w-100"
@@ -1856,8 +2080,16 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['language', index.toString(), 'name']}
                       className="mb-0"
-                      validateStatus={errors && errors.language && errors.language.name ? 'error' : ''}
-                      help={errors && errors.language && errors.language.name?._errors.toString()}
+                      validateStatus={
+                        errors && errors.language && errors.language.name
+                          ? 'error'
+                          : ''
+                      }
+                      help={
+                        errors &&
+                        errors.language &&
+                        errors.language.name?._errors.toString()
+                      }
                     >
                       <Select
                         className="w-100"
@@ -1902,7 +2134,11 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['language', index.toString(), 'level']}
                       className="mb-0"
-                      validateStatus={errors && errors.language && errors.language.name ? 'error' : ''}
+                      validateStatus={
+                        errors && errors.language && errors.language.name
+                          ? 'error'
+                          : ''
+                      }
                       // help={errors && errors.language && errors.language[0].level?._errors.toString()}
                     >
                       <Select
@@ -1948,20 +2184,32 @@ const Stage3Form = () => {
 
           <label className="fw-bold mt-5 mb-2">Working Experience</label>
           {/* Error Alert Experiences */}
-          {errors?.expOption ?
-            <Alert message={errors.expOption?._errors.toString()} type="error" style={{ marginBottom: '1em' }} /> :
-            errors?.experience ?
-            <Alert message={errors.experience?._errors.toString() + ', or click (+) button'} type='error' style={{ marginBottom: '1em' }} /> :
-            errors?.expectedSalary ?
-            <Alert message={'Please fill in all required working experience fields'} type='error' style={{ marginBottom: '1em' }} /> :
+          {errors?.expOption ? (
+            <Alert
+              message={errors.expOption?._errors.toString()}
+              type="error"
+              style={{ marginBottom: '1em' }}
+            />
+          ) : errors?.experience ? (
+            <Alert
+              message={
+                errors.experience?._errors.toString() + ', or click (+) button'
+              }
+              type="error"
+              style={{ marginBottom: '1em' }}
+            />
+          ) : errors?.expectedSalary ? (
+            <Alert
+              message={'Please fill in all required working experience fields'}
+              type="error"
+              style={{ marginBottom: '1em' }}
+            />
+          ) : (
             ''
-          }
+          )}
           <div className="col-12">
             <div className="input-group-meta position-relative mb-15">
-              <Form.Item<FieldType>
-                name="expOption"
-                className="mb-0"
-              >
+              <Form.Item<FieldType> name="expOption" className="mb-0">
                 <Radio.Group onChange={onChangeExp} value={expValue}>
                   <Radio className="d-flex" value="Fresh Graduate">
                     Fresh Graduate
@@ -2059,7 +2307,9 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['others', 'noticePeriod']}
                 className="mb-0"
-                validateStatus={errors && errors?.others?.noticePeriod ? 'error' : ''}
+                validateStatus={
+                  errors && errors?.others?.noticePeriod ? 'error' : ''
+                }
                 help={errors?.others?.noticePeriod?._errors.toString()}
               >
                 <Select
@@ -2088,7 +2338,9 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name="everWorkedOption"
                 className="mb-0"
-                validateStatus={errors && errors.everWorkedOption ? 'error' : ''}
+                validateStatus={
+                  errors && errors.everWorkedOption ? 'error' : ''
+                }
                 help={errors?.everWorkedOption?._errors.toString()}
               >
                 <Radio.Group onChange={everWorkedChange} value={everWorked}>

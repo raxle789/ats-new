@@ -214,11 +214,27 @@
     color: $color-one;
     margin-bottom: 40px;
   }
+  // Custom Styles
   .sub-main-title {
     font-family: var(--gorditas-font);
     // font-size: 36px;
     color: $color-one;
     // margin-bottom: 40px;
+  }
+  .section-page-title {
+    font-family: var(--gorditas-font);
+    font-size: 26px;
+    color: $color-one;
+    margin-bottom: 20px;
+  }
+  .label-group-custom {
+    font-size: 16px;
+    margin-left: 3px;
+    margin-right: 28px;
+  }
+  .radio-custom {
+    transform: scale(1.4);
+    margin-right: 22px;
   }
   .dash-title-two {
     font-family: var(--gorditas-font);
