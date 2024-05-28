@@ -6,6 +6,47 @@ import prisma from '@/root/prisma';
 import { deleteSession, setUserSession } from '../Sessions';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { sendOTP } from '../Registration/verifications';
+
+type GreCaptcha = {
+  secret: string;
+  response: string;
+  remoteip?: string;
+};
+
+type GreCaptchaResult = {
+  success: boolean;
+  score: number;
+  action: string;
+  challenge_ts: Date | string;
+  hostname: string;
+  ['error-codes']?: any[];
+};
+
+export async function GReCaptchaV2Check(token: string): Promise<GreCaptchaResult> {
+  const GreCaptchaRequestBody: GreCaptcha = {
+    secret: process.env.NEXT_PUBLIC_RECAPTCHA_SECRET_KEY as string,
+    response: token
+  };
+  const gCaptchaURLParams = new URLSearchParams();
+  for(const [prop, val] of Object.entries(GreCaptchaRequestBody)) {
+    gCaptchaURLParams.append(prop, val);
+  };
+  const gCaptchaHeader = new Headers({
+    "Content-Type": "application/x-www-form-urlencoded"
+  });
+  const gCaptchaRequest = new Request('https://www.google.com/recaptcha/api/siteverify', {
+    method: 'POST',
+    body: gCaptchaURLParams,
+    headers: gCaptchaHeader
+  });
+  const gCaptchaVerifyRequest = await fetch(gCaptchaRequest);
+  const response: GreCaptchaResult = await gCaptchaVerifyRequest.json();
+
+  console.info('GreCaptcha Result', response);
+
+  return response;
+}
 
 export async function userAuth(formData: any) {
   /* validation */
@@ -32,23 +73,20 @@ export async function userAuth(formData: any) {
   if(!user) {
     return {
       success: false,
-      message: {
-        userNotFound: ['we cannot find your account, please use the correct email address or try to register an account instead.']
-      }
+      message: 'we cannot find your account, please use the correct email address or try to register an account instead.'
     }
   };
 
   console.info('comparing password...');
   /* password-check */
   const match = await bcrypt.compare(formData.password, user.password);
+  console.info('value match: ', match);
 
   console.info('comparing result...', match);
   if(!match) {
     return {
       success: false,
-      message: {
-        invalidPassword: ['Your password is incorrect!']
-      }
+      message: 'Your password is incorrect!'
     };
   };
 
@@ -59,6 +97,13 @@ export async function userAuth(formData: any) {
     }
   });
   console.info('candidate data...', candidate);
+
+  if(!candidate) {
+    return {
+      success: false,
+      message: 'candidate data not found, but users exist. contact our administrator for help',
+    };
+  };
 
   /* Checking -> is email verified? */
   console.info('checking... is email verified?');
@@ -80,11 +125,22 @@ export async function userAuth(formData: any) {
       }
     }, undefined);
 
+    /**
+     * Send OTP
+     * code here...
+     */
+    const sendingOTP = await sendOTP({ email: user.email });
+    console.info('sending otp...');
+    if(!sendingOTP.success) {
+      return {
+        success: false,
+        message: 'Error while sending OTP, please try login again'
+      };
+    };
+
     return {
       success: true,
-      message: {
-        emailVerified: ['Please verify your email address, click RESEND button']
-      },
+      message: 'Please verify your email address, click RESEND button',
       data: {
         stage: 2
       }
@@ -113,9 +169,7 @@ export async function userAuth(formData: any) {
 
     return {
       success: true,
-      message: {
-        requiredData: ['Please fill your required data...']
-      },
+      message: 'Please fill your required data...',
       data: {
         stage: 3
       }
@@ -144,11 +198,12 @@ export async function userAuth(formData: any) {
     }
    }, undefined);
 
+  /* close connection */
+  await prisma.$disconnect();
+
   return {
     success: true,
-    message: {
-      login: [`login successfully as ${user.name}, you will be redirected to the job vacancy page in 3 seconds.`]
-    }
+    message: `login successfully as ${user.name}, you will be redirected to the job vacancy page in 3 seconds.`
   };
 };
 

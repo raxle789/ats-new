@@ -1,17 +1,14 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
-import * as Yup from 'yup';
-import { Resolver, useForm, SubmitHandler } from 'react-hook-form';
-import ErrorMsg from '../common/error-msg';
-import icon from '@/assets/images/icon/icon_60.svg';
-import { userAuth } from '@/libs/Login';
+import React, { useState, useEffect, createRef } from 'react';
+import { GReCaptchaV2Check, userAuth } from '@/libs/Login';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '@/redux/hook';
-import { setAuthState } from '@/redux/features/authorizingSlice';
-import { Input, Form, Checkbox, Spin } from 'antd';
+// import { setAuthState } from '@/redux/features/authorizingSlice';
+import { Input, Form, Checkbox, message } from 'antd';
 import type { FormProps, CheckboxProps } from 'antd';
 import { setRegisterStep } from '@/redux/features/fatkhur/registerSlice';
+/* Google ReCaptcha */
+import ReCAPTCHA from 'react-google-recaptcha';
 
 type FieldType = {
   email?: string;
@@ -43,17 +40,29 @@ const LoginForm: React.FC<LoginFormProps> = ({
   const onChangeCheckbox: CheckboxProps['onChange'] = (e) => {
     setCheckedState(e.target.checked);
   };
-  // const [spinning, setSpinning] = useState<boolean>(false);
+  /* Captcha Verify */
+  const recaptchaRef = createRef();
+  const [token, setToken] = useState<any>('');
 
-  // const showLoader = () => {
-  //   setSpinning(false);
-  //   // setTimeout(() => {
-  //   // }, 3000);
-  // };
+  const captchaOnChange = (value: string | null) => {
+    // console.log('callback token: ', value);
+    setToken(value);
+  };
+
+  /* ACTIONS */
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     setSpinning(true);
     console.log('Suubmitted data:', values);
     console.info('authorizing user...');
+    /**
+     * Verify captcha
+     */
+    const checkingCaptcha = await GReCaptchaV2Check(token);
+    console.log('result checking captcha: ', checkingCaptcha);
+    if(!checkingCaptcha.success) {
+      setSpinning(false);
+      return message.error('Please verify that captcha!');
+    }
     const authorizing = await userAuth(values);
     /* check and directing user stage */
     if (authorizing.success && 'data' in authorizing) {
@@ -63,14 +72,16 @@ const LoginForm: React.FC<LoginFormProps> = ({
     }
 
     if (authorizing.success === false) {
-      alert('User not found');
+      alert(authorizing.message);
       return setSpinning(false);
     }
     console.info('user required data is completed...');
+    message.success(authorizing.message);
     /* Directing to job list */
     router.push('/dashboard/user');
     setSpinning(false);
   };
+  /* END OF ACTIONS */
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
     errorInfo,
@@ -79,7 +90,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
   };
 
   const [showPass, setShowPass] = useState<boolean>(false);
-  const clientKey = process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY;
+  const clientKey = process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY as string;
 
   useEffect(() => {
     form.setFieldsValue({ is_rememberOn: false });
@@ -137,11 +148,27 @@ const LoginForm: React.FC<LoginFormProps> = ({
           )}
           {!checkedEmployee && (
             <div className="col-12 mt-10 mb-10">
-              <div
+              {/* ReCaptcha */}
+              <ReCAPTCHA
+                ref={recaptchaRef as React.RefObject<ReCAPTCHA>}
+                sitekey={clientKey}
+                onChange={captchaOnChange}
+              />
+              {/* <form action="" method="POST">
+                <div
+                  className="g-recaptcha"
+                  data-sitekey="6Lcjj6spAAAAAGhud3xFvVh6XVw8RgavGgyD_y4K"
+                  data-callback='gCaptchaOnSubmit'>
+                
+                </div>
+                <br/>
+                <input type="hidden" value={'submit'} />
+            </form> */}
+              {/* <div
                 className="g-recaptcha"
                 data-sitekey={clientKey}
                 data-action="LOGIN"
-              ></div>
+              ></div> */}
             </div>
           )}
 

@@ -20,6 +20,7 @@ const Menus = () => {
             className={`nav-link ${scrollDistance2 > 100 ? 'nav-link-scrolled' : '.nav-link-not-scrolled'}`}
             href={menu.link}
             role="button"
+            prefetch={true}
           >
             {menu.title}
           </Link>

@@ -1,21 +1,23 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  createCandidate,
-  storeCandidateQuestions,
-  storeCertification,
-  storeCurriculumVitae,
-  storeEducation,
-  storeEmergencyContact,
-  storeExperiences,
-  storeFamilys,
-  storeLanguage,
-  storeProfilePhoto,
-  storeSkills,
-  storingAddress,
-  updateCandidate,
+  // createCandidate,
+  RegisterPhase2,
+  // storeCandidateQuestions,
+  // storeCertification,
+  // storeCurriculumVitae,
+  // storeEducation,
+  // storeEmergencyContact,
+  // storeExperiences,
+  // storeFamilys,
+  // storeLanguage,
+  // storeProfilePhoto,
+  // storeSkills,
+  // storingAddress,
+  // TrialTestFunction,
+  // updateCandidate,
 } from '@/libs/Registration';
-import { userRegister2 } from '@/libs/validations/Register';
+// import { userRegister2 } from '@/libs/validations/Register';
 import { setRegisterStep } from '@/redux/features/fatkhur/registerSlice';
 import { useAppDispatch } from '@/redux/hook';
 import {
@@ -35,6 +37,7 @@ import {
   Image,
   Upload,
   message,
+  Alert,
 } from 'antd';
 import type {
   DatePickerProps,
@@ -46,15 +49,33 @@ import type {
   UploadProps,
   UploadFile,
 } from 'antd';
-import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 /* SESSION MANAGEMENT */
 import { useAppSessionContext } from '@/libs/Sessions/AppSession';
 import { authSession, regSession } from '@/libs/Sessions/utils';
 import { DecryptSession } from '@/libs/Sessions/jwt';
-import { convertToPlainObject, fileToBase64 } from '@/libs/Registration/utils';
-import { setUserSession } from '@/libs/Sessions';
+import {
+  // convertToPlainObject,
+  // fileToBase64,
+  ManipulateDocuments,
+  zodErrors,
+} from '@/libs/Registration/utils';
+// import { setUserSession } from '@/libs/Sessions';
 import { AiOutlinePlus, AiOutlineUpload } from 'react-icons/ai';
+import {
+  fetchCertificates,
+  fetchCities,
+  fetchCountries,
+  fetchEducatioMajors,
+  fetchEducationInstitutios,
+  fetchEducationLevels,
+  fetchEthnicity,
+  fetchJobFunctions,
+  fetchSkills,
+  jobJobLevels,
+  lineIndutries,
+} from '@/libs/Fetch';
 // import { type } from '../../../libs/Authentication/permissions';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
@@ -71,7 +92,7 @@ type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 let languageIndex = 0;
 const { TextArea } = Input;
 
-type FieldType = {
+export type FieldType = {
   profile?: {
     uploadPhoto?: UploadFile;
     fullname?: string;
@@ -117,6 +138,15 @@ type FieldType = {
     startEduYear?: string;
     endEduYear?: string;
   };
+  // certifications?: [
+  //   {
+  //     certificationName?: string;
+  //     institution?: string;
+  //     issueDate?: string;
+  //     monthIssue?: string;
+  //     yearIssue?: string;
+  //   }
+  // ];
   certification?: {
     [id: string]: {
       certificationName?: string;
@@ -126,7 +156,7 @@ type FieldType = {
       yearIssue?: string;
     };
   };
-  skills?: string;
+  skills?: string[];
   language?: {
     [id: string]: {
       name?: string;
@@ -167,7 +197,7 @@ type FieldType = {
   };
 };
 
-type MasterData = {
+export type MasterData = {
   citys?: {
     value: string;
     label: string;
@@ -176,20 +206,20 @@ type MasterData = {
     value: string;
     label: string;
   }[];
-  countrys?: {
-    value: number;
+  countries?: {
+    value: string;
     label: string;
   }[];
   education_levels?: {
-    value: number;
+    value: string;
     label: string;
   }[];
   education_majors?: {
-    value: number;
+    value: string;
     label: string;
   }[];
   education_institutions?: {
-    value: number;
+    value: string;
     label: string;
   }[];
   certificates_name?: {
@@ -209,7 +239,7 @@ type MasterData = {
     label: string;
   }[];
   line_industries?: {
-    value: string;
+    value: number;
     label: string;
   }[];
 };
@@ -218,7 +248,8 @@ const Stage3Form = () => {
   /* Calling Session-Context */
   const session = useAppSessionContext();
   const regSessionValue = session[`${regSession}`];
-  const regSessionDecoded = DecryptSession(regSessionValue);
+  let regSessionDecoded = DecryptSession(regSessionValue);
+  const [sessionExist, isSessionExist] = useState(false);
   /* Session-Context */
   const [form] = Form.useForm();
   const dispatch = useAppDispatch();
@@ -227,180 +258,30 @@ const Stage3Form = () => {
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [profilePhoto, setProfilePhoto] = useState<any>();
   /* to catch every error while operation */
-  const [errors, setErrors] = useState<string>('');
+  const [errors, setErrors] = useState<any | undefined | null>(null);
 
   const [masterData, setMasterData] = useState<MasterData | null>(null);
-  const [citysName, setCitysName] = useState<
-    { value: string; label: string }[] | null
-  >(null);
 
-  /* Fetching Master Data */
-  const fetchCitys = async () => {
-    const citys = await fetch('/api/client-data/citys', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const citysData = await citys.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      citys: citysData,
-    }));
-    const citysNameOnly: { value: string; label: string }[] = citysData;
-    citysNameOnly.forEach((city) => (city.value = city.label));
-    setCitysName(citysNameOnly);
-  };
-
-  const fetchEthnicity = async () => {
-    const ethnicity = await fetch('/api/client-data/ethnicity', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const ethnicityData = await ethnicity.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      ethnicity: ethnicityData,
-    }));
-  };
-
-  const fetchCountrys = async () => {
-    const countrys = await fetch('/api/client-data/countrys', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const countrysData = await countrys.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      countrys: countrysData,
-    }));
-  };
-
-  const fetchEducationLevels = async () => {
-    const educationLevels = await fetch('/api/client-data/education/levels', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const educationLevelsData = await educationLevels.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      education_levels: educationLevelsData,
-    }));
-  };
-
-  const fetchEducatioMajors = async () => {
-    const educationMajors = await fetch('/api/client-data/education/majors', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const educationMajorsData = await educationMajors.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      education_majors: educationMajorsData,
-    }));
-  };
-
-  const fetchEducationInstitutios = async () => {
-    const institutions = await fetch(
-      '/api/client-data/education/institutions',
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-    );
-    const institutionsData = await institutions.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      education_institutions: institutionsData,
-    }));
-  };
-
-  const fetchCertificates = async () => {
-    const certifications = await fetch('/api/client-data/certifications', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const certificationsData = await certifications.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      certificates_name: certificationsData,
-    }));
-  };
-
-  const fetchSkills = async () => {
-    const skills = await fetch('/api/client-data/skills', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const skillsData = await skills.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      skills: skillsData,
-    }));
-  };
-
-  const fetchJobFunctions = async () => {
-    const jobFunctions = await fetch('/api/client-data/job/functions', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const jobFunctionsData = await jobFunctions.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      job_functions: jobFunctionsData,
-    }));
-  };
-
-  const jobJobLevels = async () => {
-    const levels = await fetch('/api/client-data/job/levels', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const jobLevelsData = await levels.json();
-    console.info('FETCHED JOB LEVEL -> ', jobLevelsData);
-    setMasterData((prevState) => ({
-      ...prevState,
-      job_levels: jobLevelsData,
-    }));
-  };
-
-  const lineIndutries = async () => {
-    const lineIndustries = await fetch('/api/client-data/job/line-industries', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const lineIndustriesData = await lineIndustries.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      line_industries: lineIndustriesData,
-    }));
-  };
-
-  /* Fetch-data */
   /**
-   * Fetch master data here
-   * CITY, COUNTRY, EDUCATION LEVEL, EDUCATION MAJOR, SCHOOL/UNIVERSITY, CERTIFICATION NAME, SKILLS, JOB TITLES, JOB FUNCTION, LINE INDUSTRY.
+   * ACTIONS
+   * @description List of all required data from master database.
    */
+  const fetchData = async () => {
+    await Promise.all([
+      fetchCities(setMasterData),
+      fetchEthnicity(setMasterData),
+      fetchCountries(setMasterData),
+      fetchEducationLevels(setMasterData),
+      fetchEducatioMajors(setMasterData),
+      fetchEducationInstitutios(setMasterData),
+      fetchCertificates(setMasterData),
+      fetchSkills(setMasterData),
+      fetchJobFunctions(setMasterData),
+      jobJobLevels(setMasterData),
+      lineIndutries(setMasterData),
+    ]);
+  };
+  /* END OF ACTIONS */
 
   const handleBeforeUpload = (file: FileType) => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -455,118 +336,122 @@ const Stage3Form = () => {
 
   const [index, setIndex] = useState<number>(0);
 
-  const tabContent: JSX.Element[] = [
-    <div key={index} className="row">
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Relation</label>
-          <Form.Item<FieldType>
-            name={['families', index.toString(), 'relation']}
-            className="mb-0"
-            // rules={
-            //   marriedValue === 'Married'
-            //     ? [
-            //         {
-            //           required: true,
-            //           message:
-            //             'Please input your family relation especially spouse!',
-            //         },
-            //       ]
-            //     : undefined
-            // }
-          >
-            <Select
-              className="w-100"
-              placeholder="Your Family Relation"
-              options={[
-                { value: 'Father', label: 'Father' },
-                { value: 'Mother', label: 'Mother' },
-                { value: 'Sibling', label: 'Sibling' },
-                { value: 'Spouse', label: 'Spouse' },
-                { value: 'Children', label: 'Children' },
-              ]}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Name</label>
-          <Form.Item<FieldType>
-            name={['families', index.toString(), 'name']}
-            className="mb-0"
-            // rules={
-            //   marriedValue === 'Married'
-            //     ? [
-            //         {
-            //           required: true,
-            //           message: 'Please input your relation name!',
-            //         },
-            //       ]
-            //     : undefined
-            // }
-          >
-            <Input placeholder="Your Relation Name" />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Gender</label>
-          <Form.Item<FieldType>
-            name={['families', index.toString(), 'gender']}
-            className="mb-0"
-            // rules={
-            //   marriedValue === 'Married'
-            //     ? [
-            //         {
-            //           required: true,
-            //           message: 'Please input your family gender!',
-            //         },
-            //       ]
-            //     : undefined
-            // }
-          >
-            <Select
-              className="w-100"
-              placeholder="Your Family Gender"
-              options={[
-                { value: 'Male', label: 'Male' },
-                { value: 'Female', label: 'Female' },
-              ]}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Date of Birth</label>
-          <Form.Item<FieldType>
-            name={['families', index.toString(), 'dateOfBirth']}
-            // rules={
-            //   marriedValue === 'Married'
-            //     ? [
-            //         {
-            //           required: true,
-            //           message: 'Please input your relation date of birth!',
-            //         },
-            //       ]
-            //     : undefined
-            // }
-          >
-            <DatePicker
-              className="w-100"
-              placeholder="Select Date"
-              onChange={onChangeDate}
-            />
-          </Form.Item>
-        </div>
-      </div>
-    </div>,
-  ];
+  type Tprops1 = {
+    index: number;
+  };
 
-  const initialItems = [
-    { label: 'Relation 1', children: tabContent, key: '1' },
+  const TabContent: React.FC<Tprops1> = ({ index }) => {
+    return (
+      <div key={index} className="row">
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Relation</label>
+            <Form.Item<FieldType>
+              name={['families', index.toString(), 'relation']}
+              className="mb-0"
+              /* Example Error for families */
+              validateStatus={
+                errors && errors.families && errors.families.relation
+                  ? 'error'
+                  : ''
+              }
+              help={
+                errors &&
+                errors.families &&
+                errors.families.relation?._errors.toString()
+              }
+            >
+              <Select
+                className="w-100"
+                placeholder="Your Family Relation"
+                options={[
+                  { value: 'Father', label: 'Father' },
+                  { value: 'Mother', label: 'Mother' },
+                  { value: 'Sibling', label: 'Sibling' },
+                  { value: 'Spouse', label: 'Spouse' },
+                  { value: 'Children', label: 'Children' },
+                ]}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Name</label>
+            <Form.Item<FieldType>
+              name={['families', index.toString(), 'name']}
+              className="mb-0"
+              validateStatus={
+                errors && errors.families && errors.families.name ? 'error' : ''
+              }
+              help={
+                errors &&
+                errors.families &&
+                errors.families.name?._errors.toString()
+              }
+            >
+              <Input placeholder="Your Relation Name" />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Gender</label>
+            <Form.Item<FieldType>
+              name={['families', index.toString(), 'gender']}
+              className="mb-0"
+              validateStatus={
+                errors && errors.families && errors.families.gender
+                  ? 'error'
+                  : ''
+              }
+              help={
+                errors &&
+                errors.families &&
+                errors.families.gender?._errors.toString()
+              }
+            >
+              <Select
+                className="w-100"
+                placeholder="Your Family Gender"
+                options={[
+                  { value: 'Male', label: 'Male' },
+                  { value: 'Female', label: 'Female' },
+                ]}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Date of Birth</label>
+            <Form.Item<FieldType>
+              name={['families', index.toString(), 'dateOfBirth']}
+              validateStatus={
+                errors && errors.families && errors.families.dateOfBirth
+                  ? 'error'
+                  : ''
+              }
+              help={
+                errors &&
+                errors.families &&
+                errors.families.dateOfBirth?._errors.toString()
+              }
+            >
+              <DatePicker
+                className="w-100"
+                placeholder="Select Date"
+                onChange={onChangeDate}
+              />
+            </Form.Item>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const initialItems: any[] = [
+    { label: 'Relation 1', children: <TabContent index={index} />, key: '1' },
   ];
   const [activeKey, setActiveKey] = useState(initialItems[0].key);
   const [items, setItems] = useState(initialItems);
@@ -581,7 +466,7 @@ const Stage3Form = () => {
     const newPanes = [...items];
     newPanes.push({
       label: `Relation ${items.length + 1}`,
-      children: tabContent,
+      children: <TabContent index={index} />,
       key: newActiveKey,
     });
     setItems(newPanes);
@@ -621,78 +506,96 @@ const Stage3Form = () => {
   };
 
   const [certificationIdx, setCertificationIdx] = useState<number>(0);
-  const certifTabContent: JSX.Element[] = [
-    <div key={certificationIdx} className="row">
-      <div className="col-12">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Name (Certification/Licence)</label>
-          <Form.Item<FieldType>
-            name={[
-              'certification',
-              certificationIdx.toString(),
-              'certificationName',
-            ]}
-            className="mb-0"
-          >
-            <Select
-              className="w-100"
-              placeholder="Your Certificate Name"
-              showSearch
-              mode="tags"
-              maxCount={1}
-              filterOption={(input, option) =>
-                (option?.label.toLowerCase() ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              /* Fetched Data */
-              options={masterData?.certificates_name}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Institution</label>
-          <Form.Item<FieldType>
-            name={['certification', certificationIdx.toString(), 'institution']}
-            className="mb-0"
-          >
-            <Input placeholder="Your Institution" />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Issue Date</label>
-          <div className="d-flex align-items-center">
+  type Tprops2 = {
+    certificationIdx: number;
+  };
+
+  const CertifTabContent: React.FC<Tprops2> = ({ certificationIdx }) => {
+    return (
+      <div key={certificationIdx} className="row">
+        <div className="col-12">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Name (Certification/Licence)</label>
             <Form.Item<FieldType>
               name={[
                 'certification',
                 certificationIdx.toString(),
-                'monthIssue',
+                'certificationName',
               ]}
-              className="mb-0 me-2"
-            >
-              <DatePicker placeholder="Select Month" picker="month" />
-            </Form.Item>
-            <Form.Item<FieldType>
-              name={['certification', certificationIdx.toString(), 'yearIssue']}
               className="mb-0"
             >
-              <DatePicker placeholder="Select Year" picker="year" />
+              <Select
+                className="w-100"
+                placeholder="Your Certificate Name"
+                showSearch
+                mode="tags"
+                maxCount={1}
+                filterOption={(input, option) =>
+                  (option?.label.toLowerCase() ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                /* Fetched Data */
+                options={masterData?.certificates_name}
+              />
             </Form.Item>
           </div>
         </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Institution</label>
+            <Form.Item<FieldType>
+              name={[
+                'certification',
+                certificationIdx.toString(),
+                'institution',
+              ]}
+              className="mb-0"
+            >
+              <Input placeholder="Your Institution" />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Issue Date</label>
+            <div className="d-flex align-items-center">
+              <Form.Item<FieldType>
+                name={[
+                  'certification',
+                  certificationIdx.toString(),
+                  'monthIssue',
+                ]}
+                className="mb-0 me-2"
+              >
+                <DatePicker placeholder="Select Month" picker="month" />
+              </Form.Item>
+              <Form.Item<FieldType>
+                name={[
+                  'certification',
+                  certificationIdx.toString(),
+                  'yearIssue',
+                ]}
+                className="mb-0"
+              >
+                <DatePicker placeholder="Select Year" picker="year" />
+              </Form.Item>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>,
-  ];
+    );
+  };
 
   const certifInitItems: any[] = [
-    // { label: 'Certification 1', children: certifTabContent, key: '1' },
+    // {
+    //   label: 'Certification 1',
+    //   children: <CertifTabContent certificationIdx={index} />,
+    //   key: '1',
+    // },
   ];
   const [activeCertifKey, setActiveCertifKey] = useState('');
   const [certifItems, setCertifItems] = useState(certifInitItems);
@@ -707,7 +610,7 @@ const Stage3Form = () => {
     const newPanes = [...certifItems];
     newPanes.push({
       label: `Certification ${certifItems.length + 1}`,
-      children: certifTabContent,
+      children: <CertifTabContent certificationIdx={certificationIdx} />,
       key: newActiveKey,
     });
     setCertifItems(newPanes);
@@ -749,6 +652,7 @@ const Stage3Form = () => {
   const [formalCheck, setFormalCheck] = useState<boolean>(true);
   const handleFormalCheck: CheckboxProps['onChange'] = (e) => {
     setFormalCheck(e.target.checked);
+    console.log('formalCheck: ', formalCheck);
   };
   const [certificationCheck, setCertificationCheck] = useState<boolean>(true);
   const handleCertificationCheck: CheckboxProps['onChange'] = (e) => {
@@ -796,300 +700,282 @@ const Stage3Form = () => {
     setExpValue(e.target.value);
   };
 
-  const [jobDescValue, setJobDescValue] = useState<string>('');
   const [expIdx, setExpIdx] = useState<number>(0);
-  const [yearState, setYearState] = useState<{ [key: string]: boolean }>({});
-  const currentYear = useRef([]);
-  // const [expTabGroup, setExpTabGroup] = useState<JSX.Element[]>(expTabContent);
-  const handleCheckboxChange: CheckboxProps['onChange'] = (
-    e: any,
-    expIdx: number,
-  ) => {
-    console.log(e.target.checked);
-    // const state = ;
-    // const id = parseInt(e.target.dataset.id);
-    // console.log('id: ', id);
-    setYearState((prevState) => ({
-      ...prevState,
-      [expIdx]: true,
-    }));
+  type Tprops3 = {
+    expIdx: number;
   };
-  const expTabContent: JSX.Element[] = [
-    <div key={expIdx} className="row">
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Job Title*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'jobTitle']}
-            className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your job title!',
-              },
-            ]}
-          >
-            <Input placeholder="Your Job Title" />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Job Function*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'jobFunction']}
-            className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your job function!',
-              },
-            ]}
-          >
-            <Select
-              className="w-100"
-              showSearch
-              placeholder="Your Job Function"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                (option?.label.toLowerCase() ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              /* Fetched Data */
-              options={masterData?.job_functions}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Line Industry*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'lineIndustry']}
-            className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your line industry!',
-              },
-            ]}
-          >
-            <Select
-              className="w-100"
-              showSearch
-              placeholder="Your Line Industry"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                (option?.label.toLowerCase() ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              /* Fetched Data */
-              options={masterData?.line_industries}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Position Level*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'positionLevel']}
-            className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your position level!',
-              },
-            ]}
-          >
-            <Select
-              className="w-100"
-              showSearch
-              placeholder="Your Position Level"
-              optionFilterProp="children"
-              filterOption={(input, option) =>
-                (option?.label.toLowerCase() ?? '').includes(input)
-              }
-              filterSort={(optionA, optionB) =>
-                (optionA?.label ?? '')
-                  .toLowerCase()
-                  .localeCompare((optionB?.label ?? '').toLowerCase())
-              }
-              /* Fetched Data */
-              options={masterData?.job_levels}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Company Name*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'compName']}
-            className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your company name!',
-              },
-            ]}
-          >
-            <Input placeholder="Your Company Name" />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Job Description</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'jobDesc']}
-            className="mb-0"
-          >
-            <TextArea
-              value={jobDescValue}
-              onChange={(e) => setJobDescValue(e.target.value)}
-              placeholder="Tell me about your job description"
-              autoSize={{ minRows: 3, maxRows: 5 }}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-5">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Start Year*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'startYear']}
-            className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please choose start year!',
-              },
-            ]}
-          >
-            <DatePicker
-              className="w-100"
-              placeholder="Select Year"
-              picker="month"
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-5">
-        <div className="input-group-meta position-relative mb-15">
-          <label>End Year*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'endYear']}
-            className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please choose end year!',
-              },
-            ]}
-          >
-            <DatePicker
-              className="w-100"
-              placeholder="Select Year"
-              picker="month"
-              // rules={
-              //   !formalCheck
-              //     ? [
-              //         {
-              //           required: true,
-              //           message: 'Please choose your education!',
-              //         },
-              //       ]
-              //     : []
-              // }
-              disabled={yearState[expIdx]}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-2">
-        <div className="input-group-meta position-relative mb-15">
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'currentYear']}
-            className="pt-15"
-          >
-            <Checkbox
-              onChange={(e) => handleCheckboxChange(e, expIdx)}
-              // checked={yearState[expIdx] || false}
-              // onChange={(e) => handleCheckboxRef(e, expIdx)}
-              // data-id={expIdx}
-            >
-              Current
-            </Checkbox>
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Current Salary (gross Monthly)*</label>
-          <Form.Item<FieldType>
-            name={['experience', expIdx.toString(), 'currentSalary']}
-            className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your current salary!',
-              },
-            ]}
-          >
-            <InputNumber
-              className="w-100"
-              min={0}
-              placeholder="Input Current Salary"
-              formatter={(value) =>
-                `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-              }
-              parser={(value: string | undefined): string | number =>
-                value!.replace(/\Rp\s?|(\.*)/g, '')
-              }
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label>Expected Salary (gross Monthly)*</label>
-          <Form.Item<FieldType>
-            name={['experience', 'expectedSalary']}
-            className="mb-0"
-            rules={[
-              {
-                required: true,
-                message: 'Please input your expected salary!',
-              },
-            ]}
-          >
-            <InputNumber
-              className="w-100"
-              min={0}
-              placeholder="Input Expected Salary"
-              formatter={(value) =>
-                `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-              }
-              parser={(value: string | undefined): string | number =>
-                value!.replace(/\Rp\s?|(\.*)/g, '')
-              }
-            />
-          </Form.Item>
-        </div>
-      </div>
-    </div>,
-  ];
 
-  const initExpItems: any[] = [];
+  const ExpTabContent: React.FC<Tprops3> = ({ expIdx }) => {
+    const [yearState, setYearState] = useState<{ [key: string]: boolean }>({});
+    const handleCheckboxChange: any = (e: any, expIdx: number) => {
+      setYearState((prevState) => ({
+        ...prevState,
+        [expIdx.toString()]: e.target.checked,
+      }));
+    };
+
+    const [jobDescValue, setJobDescValue] = useState<string>('');
+    return (
+      <div key={expIdx} className="row">
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Job Title*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'jobTitle']}
+              className="mb-0"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Please input your job title!',
+              //   },
+              // ]}
+            >
+              <Input placeholder="Your Job Title" />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Job Function*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'jobFunction']}
+              className="mb-0"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Please input your job function!',
+              //   },
+              // ]}
+            >
+              <Select
+                className="w-100"
+                showSearch
+                placeholder="Your Job Function"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label.toLowerCase() ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                options={masterData?.job_functions}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Line Industry*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'lineIndustry']}
+              className="mb-0"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Please input your line industry!',
+              //   },
+              // ]}
+            >
+              <Select
+                className="w-100"
+                showSearch
+                placeholder="Your Line Industry"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label.toLowerCase() ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                options={masterData?.line_industries}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Position Level*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'positionLevel']}
+              className="mb-0"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Please input your position level!',
+              //   },
+              // ]}
+            >
+              <Select
+                className="w-100"
+                showSearch
+                placeholder="Your Position Level"
+                optionFilterProp="children"
+                filterOption={(input, option) =>
+                  (option?.label.toLowerCase() ?? '').includes(input)
+                }
+                filterSort={(optionA, optionB) =>
+                  (optionA?.label ?? '')
+                    .toLowerCase()
+                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                }
+                options={masterData?.job_levels}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Company Name*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'compName']}
+              className="mb-0"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Please input your company name!',
+              //   },
+              // ]}
+            >
+              <Input placeholder="Your Company Name" />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Job Description</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'jobDesc']}
+              className="mb-0"
+            >
+              <TextArea
+                value={jobDescValue}
+                onChange={(e) => setJobDescValue(e.target.value)}
+                placeholder="Tell me about your job description"
+                autoSize={{ minRows: 3, maxRows: 5 }}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-5">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Start Year*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'startYear']}
+              className="mb-0"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Please choose start year!',
+              //   },
+              // ]}
+            >
+              <DatePicker
+                className="w-100"
+                placeholder="Select Year"
+                picker="month"
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-5">
+          <div className="input-group-meta position-relative mb-15">
+            <label>End Year*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'endYear']}
+              className="mb-0"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Please choose end year!',
+              //   },
+              // ]}
+            >
+              <DatePicker
+                className="w-100"
+                placeholder="Select Year"
+                picker="month"
+                disabled={yearState[expIdx.toString()]}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-2">
+          <div className="input-group-meta position-relative mb-15">
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'currentYear']}
+              className="pt-15"
+            >
+              <Checkbox onChange={(e) => handleCheckboxChange(e, expIdx)}>
+                Current
+              </Checkbox>
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Current Salary (gross Monthly)*</label>
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'currentSalary']}
+              className="mb-0"
+            >
+              <InputNumber
+                className="w-100"
+                min={0}
+                placeholder="Input Current Salary"
+                formatter={(value) =>
+                  `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                }
+                parser={(value: string | undefined): string | number =>
+                  value!.replace(/\Rp\s?|(\.*)/g, '')
+                }
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label>Expected Salary (gross Monthly)*</label>
+            <Form.Item<FieldType>
+              name={['experience', 'expectedSalary']}
+              className="mb-0"
+              // rules={[
+              //   {
+              //     required: true,
+              //     message: 'Please input your expected salary!',
+              //   },
+              // ]}
+              validateStatus={errors?.expectedSalary ? 'error' : ''}
+              help={errors?.expectedSalary?._errors.toString()}
+            >
+              <InputNumber
+                className="w-100"
+                min={0}
+                placeholder="Input Expected Salary"
+                formatter={(value) =>
+                  `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                }
+                parser={(value: string | undefined): string | number =>
+                  value!.replace(/\Rp\s?|(\.*)/g, '')
+                }
+              />
+            </Form.Item>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const initExpItems: any[] = [
+    // {
+    //   label: 'Experience 1',
+    //   children: <ExpTabContent expIdx={expIdx} />,
+    //   key: '1',
+    // },
+  ];
   const [activeExpKey, setActiveExpKey] = useState('');
   const [expItems, setExpItems] = useState(initExpItems);
   const newExpTabIdx = useRef(0);
@@ -1103,17 +989,12 @@ const Stage3Form = () => {
     const newPanes = [...expItems];
     newPanes.push({
       label: `Experience ${expItems.length + 1}`,
-      children: expTabContent,
+      children: <ExpTabContent expIdx={expIdx} />,
       key: newActiveKey,
     });
     setExpItems(newPanes);
     setActiveExpKey(newActiveKey);
     setExpIdx(expIdx + 1);
-    // setYearState((prevState) => ({
-    //   ...prevState,
-    //   [expIdx]: false,
-    // }));
-    // setYearState(yearState[expIdx]);
   };
 
   const removeExp = (targetKey: TargetKey) => {
@@ -1169,247 +1050,45 @@ const Stage3Form = () => {
   };
   const [spinning, setSpinning] = useState(false);
 
+  /* ACTIONS */
   const handleOk = async () => {
     setIsModalOpen(false);
     setSpinning(true);
     const values = form.getFieldsValue();
     console.log('ok value form: ', values);
-    console.info('is a string?:', typeof values.certificationCheckbox);
-    console.log('Manipulating profile-photo file...');
-    const photoBase64 = await fileToBase64(profilePhoto[0].originFileObj);
-    const photoFile = {
-      original_name: profilePhoto[0].originFileObj.name,
-      byte_size: profilePhoto[0].originFileObj.size,
-      file_base: photoBase64,
-    };
-    console.log('Manipulated profile-photo file result...', photoFile);
-    console.info('Storing profile-photo file...s');
-    const saveProfilePhoto = await storeProfilePhoto(photoFile);
-    if (saveProfilePhoto.success !== true) {
-      console.info('Failed to store profile photo...');
-      // setSpinning(false);
-      return setErrors(saveProfilePhoto.message as string);
-    }
-    console.info('Storing profile-phhoto successfully...', saveProfilePhoto);
-
-    console.info('Begin updating candidate-data...');
-    const candidateUpdateData = {
-      bloodType: values.profile.bloodType,
-      ethnicity: values.profile.ethnicity,
-      gender: values.profile.gender,
-      maritalStatus: values.profile.maritalStatus,
-      placeOfBirth: values.profile.placeOfBirth,
-      religion: values.profile.religion,
-      // Domicile => No field data
-    };
-    const updateCandidateData = await updateCandidate(candidateUpdateData);
-    if (updateCandidateData.success !== true) {
-      console.info(updateCandidateData.message as string);
-      // setSpinning(false);
-      return setErrors(updateCandidateData.message as string);
-    }
-    console.log('Updating candidate-data successfully...', updateCandidateData);
-
-    console.info('Begin to store address data...');
-    const manipulatedAddressData = {
-      permanentAddress: values.address.permanentAddress,
-      country: values.address.country,
-      city: values.address.city,
-      zipCode: values.address.zipCode,
-      rt:
-        values.address.country === 'Indonesia'
-          ? values.address.rt
-          : 'NotInIndonesia',
-      rw:
-        values.address.country === 'Indonesia'
-          ? values.address.rw
-          : 'NotInIndonesia',
-      subdistrict:
-        values.address.country === 'Indonesia'
-          ? values.address.subdistrict
-          : 'NotInIndonesia',
-      village:
-        values.address.country === 'Indonesia'
-          ? values.address.village
-          : 'NotInIndonesia',
-      currentAddress: values.address.currentAddress,
-    };
-    const storeAddress = await storingAddress(
-      manipulatedAddressData,
-      addressCheck,
-    );
-    if (storeAddress.success !== true) {
-      console.info(storeAddress.message as string);
-      // setSpinning(false);
-      return setErrors(storeAddress.message as string);
-    }
-    console.info('Storing address data successfully...', storeAddress);
-
-    const plainFamiliesObject = convertToPlainObject(values.families as object);
-    /* PLAIN OBJECT */
-    const storeRelations = await storeFamilys(plainFamiliesObject);
-    if (storeRelations.success !== true) {
-      console.info(storeRelations.message as string);
-      // setSpinning(false);
-      return setErrors(storeRelations.message as string);
-    }
-    console.info('Storing relations successfully...', storeRelations);
-
-    console.info('Begin to store education data...');
-
-    const plainEducationData = convertToPlainObject(values.education);
-
-    const storeEducationData = await storeEducation(
-      plainEducationData,
-      values.education?.startEduYear.$y as number,
-      values.education?.endEduYear.$y as number,
-      values.formalCheckbox,
-    );
-    if (storeEducationData.success !== true) {
-      console.info(storeEducationData.message as string);
-      // setSpinning(false);
-      return setErrors(storeEducationData.message as string);
-    }
-    console.info('Store education data successfully...', storeEducationData);
-
-    console.info('Begin to store certificates...');
-
-    if (
-      'certification' in values &&
-      values.certification['1'].certificationName !== undefined
-    ) {
-      const plainCertificatesData = convertToPlainObject(values.certification);
-      console.info('Plain Certification: ', plainCertificatesData);
-      // debugger;
-      const storeCertificatesData = await storeCertification(
-        plainCertificatesData,
-        values.certification['1']['monthIssue']['$M'],
-        values.certification['1']['monthIssue']['$y'],
-        values.certificationCheckbox,
-      );
-      if (storeCertificatesData.success !== true) {
-        console.info(storeCertificatesData.message as string);
-        return setErrors(storeCertificatesData.message as string);
-      }
-      console.info('Store certificates successfully...', storeCertificatesData);
-    }
-
-    console.info('Begin to store skills...');
-    const storeSkillsData = await storeSkills(values.skills);
-    if (storeSkillsData.success !== true) {
-      console.info(storeSkillsData.message as string);
-      setSpinning(false);
-      return setErrors(storeSkillsData.message as string);
-    }
-    console.info('Store skills successfully...', storeSkillsData);
-
-    console.info('Begin to store language...');
-
-    const plainLanguagesData = convertToPlainObject(values.language);
-
-    const storeLanguageData = await storeLanguage(plainLanguagesData);
-    if (storeLanguageData.success !== true) {
-      console.info(storeLanguageData.message as string);
-      setSpinning(false);
-      return setErrors(storeLanguageData.message as string);
-    }
-    console.info('Storing language data successfully...', storeLanguageData);
-
-    console.info('Begin storing experiences data...');
-
-    const plainExperiencesData = convertToPlainObject(values.experience);
-
-    const storeExperienceData = await storeExperiences(
-      plainExperiencesData,
-      values.expOption as string,
-    );
-    if (storeExperienceData?.success !== true) {
-      console.info(storeExperienceData.message as string);
-      setSpinning(false);
-      return setErrors(storeExperienceData.message as string);
-    }
-    console.info(
-      'Storing experience data successfully...',
-      storeExperienceData,
-    );
-
-    console.info('Storing emergency contact data...');
-
-    const plainOthersData = convertToPlainObject(values.others);
-    console.log(plainOthersData);
-
-    const emergencyContactDataConverted = {
-      emergencyContactPhoneNumber: plainOthersData.emergencyContactPhoneNumber,
-      emergencyContactName: plainOthersData.emergencyContactName,
-      emergencyContactRelation: plainOthersData.emergencyContactRelation,
-    };
-    const storeEmergencyContactData = await storeEmergencyContact(
-      emergencyContactDataConverted,
-    );
-    if (storeEmergencyContactData.success !== true) {
-      console.info(storeEmergencyContactData.message as string);
-      setSpinning(false);
-      return setErrors(storeEmergencyContactData.message as string);
-    }
-    console.info(
-      'Storing emergency contact data successfully...',
-      storeEmergencyContactData,
-    );
-
-    console.info('Storing candidate questions data...');
-
-    const candidateQuestionsData = {
-      noticePeriod: plainOthersData.noticePeriod,
-      everWorkedMonth: plainOthersData.everWorkedMonth,
-      everWorkedYear: plainOthersData.everWorkedYear,
-      diseaseName: plainOthersData.diseaseName,
-      diseaseYear: plainOthersData.diseaseYear,
-      relationName: plainOthersData.relationName,
-      relationPosition: plainOthersData.relationPosition,
-    };
-
-    const storeCandidateQuestionsData = await storeCandidateQuestions(
-      candidateQuestionsData,
-    );
-    if (storeCandidateQuestionsData.success !== true) {
-      console.info(storeCandidateQuestionsData.message as string);
-      setSpinning(false);
-      return setErrors(storeCandidateQuestionsData.message as string);
-    }
-    console.info(
-      'Storing candidate questions data successfully...',
-      storeCandidateQuestions,
-    );
-
-    console.info('Begin to store curriculum-vitae document...');
-    const curriculumVitaeDocument = await fileToBase64(
-      values.others?.uploadCV.file.originFileObj,
-    );
-    const manipulatedCurriculumVitae = {
-      original_name: values.others?.uploadCV.file.originFileObj.name,
-      byte_size: values.others?.uploadCV.file.originFileObj.size,
-      file_base: curriculumVitaeDocument,
-    };
-    const storeCV = await storeCurriculumVitae(manipulatedCurriculumVitae);
-    if (storeCV.success !== true) {
-      console.info(storeCV.message as string);
-      setSpinning(false);
-      return setErrors(storeCV.message as string);
-    }
-    console.info('Store cv document successfully', storeCV);
-
-    /* set auth-session */
-    await setUserSession('auth', {
-      user: { id: regSessionDecoded.user.id },
-      candidate: { id: regSessionDecoded.candidate.id },
+    /**
+     * Transform File object into ready to store file.
+     * @return transformed file base64 or zodErrors
+     */
+    const transformedDocuments = await ManipulateDocuments({
+      profilePhoto: profilePhoto ? profilePhoto[0].originFileObj : null,
+      curriculumVitae: values.others?.uploadCV
+        ? values.others?.uploadCV.file.originFileObj
+        : null,
     });
-
-    dispatch(setRegisterStep(4));
-    setTimeout(() => {
+    if (!Array.isArray(transformedDocuments)) {
       setSpinning(false);
-    }, 1000);
-    message.success('Your data successfully saved');
+      return setErrors(transformedDocuments as zodErrors);
+    }
+    const plainObjects = JSON.parse(JSON.stringify(values));
+    /* JANGAN DI DELETE, TESTING PURPOSE */
+    // await TrialTestFunction(plainObjects, transformedDocuments);
+    const doRegisterPhase2 = await RegisterPhase2(
+      plainObjects,
+      transformedDocuments,
+    );
+    if (!doRegisterPhase2.success) {
+      console.info(doRegisterPhase2.errors);
+      setErrors(doRegisterPhase2.errors);
+      setSpinning(false);
+      return message.error(doRegisterPhase2.message);
+    }
+    setSpinning(false);
+    message.success(doRegisterPhase2.message);
+    return dispatch(setRegisterStep(4));
   };
+  /* END OF ACTIONS */
+
   const handleCancel = () => {
     setIsModalOpen(false);
   };
@@ -1441,23 +1120,35 @@ const Stage3Form = () => {
       formalCheckbox: true,
       certificationCheckbox: false,
     });
+
     setIndex(index + 1);
-    setExpIdx(expIdx + 1);
-    setCertificationIdx(certificationIdx + 1);
-    /* Fetch Master Data */
-    fetchCitys();
-    fetchEthnicity();
-    fetchCountrys();
-    fetchEducationLevels();
-    fetchEducatioMajors();
-    fetchEducationInstitutios();
-    fetchCertificates();
-    fetchSkills();
-    fetchJobFunctions();
-    jobJobLevels();
-    lineIndutries();
+
+    if (regSessionDecoded === false) {
+      console.info('SAMA DENGAN FALSE...');
+      isSessionExist((prevState) => !prevState);
+      regSessionDecoded = DecryptSession(regSessionValue);
+    }
+  }, [sessionExist]);
+
+  useEffect(() => {
+    /**
+     * ACTIONS
+     * @description Fetch all required data.
+     */
+    fetchData();
   }, []);
 
+  /* SHOW FIRST CERTIF AND EXP TAB */
+  const [tabAdditionState, setTabAdditionState] = useState(true);
+  useEffect(() => {
+    if (masterData && masterData.certificates_name && masterData.job_levels) {
+      if (tabAdditionState) {
+        addCertif();
+        addExp();
+        setTabAdditionState(false);
+      }
+    }
+  }, [masterData]);
   return (
     <>
       <Form
@@ -1476,12 +1167,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'uploadPhoto']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please upload your photo!',
-                  },
-                ]}
+                validateStatus={errors && errors.profilePhoto ? 'error' : ''}
+                help={errors && errors.profilePhoto?.toString()}
               >
                 <div>
                   <Upload
@@ -1528,9 +1215,8 @@ const Stage3Form = () => {
               <label>Full Name (as per ID/Passport)*</label>
               <Form.Item<FieldType>
                 name={['profile', 'fullname']}
-                rules={[
-                  { required: true, message: 'Please input your fullname!' },
-                ]}
+                // validateStatus={errors && errors.profile ? 'error' : ''}
+                // help={errors && errors.profile[0]}
               >
                 <Input
                   placeholder="Your Full Name"
@@ -1543,7 +1229,8 @@ const Stage3Form = () => {
               <label>Email*</label>
               <Form.Item<FieldType>
                 name={['profile', 'email']}
-                // rules={[{ required: true, message: 'Please input your email!' }]}
+                // validateStatus={errors && errors.email ? 'error' : ''}
+                // help={errors && errors.email}
               >
                 <Input
                   disabled
@@ -1558,12 +1245,8 @@ const Stage3Form = () => {
               <label>Phone Number*</label>
               <Form.Item<FieldType>
                 name={['profile', 'phoneNumber']}
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your phone number!',
-                  },
-                ]}
+                // validateStatus={errors && errors.phoneNumber ? 'error' : ''}
+                // help={errors && errors.phoneNumber}
               >
                 <Input
                   placeholder="Your Phone Number"
@@ -1575,12 +1258,8 @@ const Stage3Form = () => {
               <label>Date of Birth*</label>
               <Form.Item<FieldType>
                 name={['profile', 'dateOfBirth']}
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your date of birth!',
-                  },
-                ]}
+                // validateStatus={errors && errors.dateOfBirth ? 'error' : ''}
+                // help={errors && errors.dateOfBirth}
               >
                 <DatePicker
                   className="w-100"
@@ -1598,17 +1277,22 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'placeOfBirth']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your place of birth!',
-                  },
-                ]}
+                validateStatus={
+                  errors && errors.profile && errors.profile.placeOfBirth
+                    ? 'error'
+                    : ''
+                }
+                help={
+                  errors &&
+                  errors.profile &&
+                  errors.profile.placeOfBirth?._errors.toString()
+                }
               >
                 <Select
                   className="w-100"
                   showSearch
                   mode="tags"
+                  maxCount={1}
                   placeholder="Your place of birth"
                   optionFilterProp="children"
                   filterOption={(input, option) =>
@@ -1620,7 +1304,8 @@ const Stage3Form = () => {
                       .localeCompare((optionB?.label ?? '').toLowerCase())
                   }
                   /* Feted Data */
-                  options={citysName as { value: string; label: string }[]}
+                  // options={citysName as { value: string; label: string }[]}
+                  options={masterData?.citys}
                 />
               </Form.Item>
             </div>
@@ -1631,12 +1316,16 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'gender']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your gender!',
-                  },
-                ]}
+                validateStatus={
+                  errors && errors.profile && errors.profile.gender
+                    ? 'error'
+                    : ''
+                }
+                help={
+                  errors &&
+                  errors.profile &&
+                  errors.profile.gender?._errors.toString()
+                }
               >
                 <Select
                   className="w-100"
@@ -1655,12 +1344,16 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'religion']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your religion!',
-                  },
-                ]}
+                validateStatus={
+                  errors && errors.profile && errors.profile.religion
+                    ? 'error'
+                    : ''
+                }
+                help={
+                  errors &&
+                  errors.profile &&
+                  errors.profile.religion?._errors.toString()
+                }
               >
                 <Select
                   className="w-100"
@@ -1678,27 +1371,27 @@ const Stage3Form = () => {
                   options={[
                     {
                       value: 'Islam',
-                      label: 'ISLAM',
+                      label: 'Islam',
                     },
                     {
                       value: 'Buddha',
-                      label: 'BUDDHA',
+                      label: 'Buddha',
                     },
                     {
                       value: 'Hindu',
-                      label: 'HINDU',
+                      label: 'Hindu',
                     },
                     {
                       value: 'Kristen Katholik',
-                      label: 'KRISTEN KATHOLIK',
+                      label: 'Kristen Katholik',
                     },
                     {
                       value: 'Kristen Protestan',
-                      label: 'KRISTEN PROTESTAN',
+                      label: 'Kristen Protestan',
                     },
                     {
                       value: 'Konghucu',
-                      label: 'KONGHUCU',
+                      label: 'Konghucu',
                     },
                   ]}
                 />
@@ -1711,12 +1404,16 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'ethnicity']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your ethnicity!',
-                  },
-                ]}
+                validateStatus={
+                  errors && errors.profile && errors.profile.ethnicity
+                    ? 'error'
+                    : ''
+                }
+                help={
+                  errors &&
+                  errors.profile &&
+                  errors.profile.ethnicity?._errors.toString()
+                }
               >
                 <Select
                   className="w-100"
@@ -1743,6 +1440,16 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'bloodType']}
                 className="mb-0"
+                validateStatus={
+                  errors && errors.profile && errors.profile.bloodType
+                    ? 'error'
+                    : ''
+                }
+                help={
+                  errors &&
+                  errors.profile &&
+                  errors.profile.bloodType?._errors.toString()
+                }
               >
                 <Select
                   className="w-100"
@@ -1763,12 +1470,16 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['profile', 'maritalStatus']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your marital status!',
-                  },
-                ]}
+                validateStatus={
+                  errors && errors.profile && errors.profile.maritalStatus
+                    ? 'error'
+                    : ''
+                }
+                help={
+                  errors &&
+                  errors.profile &&
+                  errors.profile.maritalStatus?._errors.toString()
+                }
               >
                 <Select
                   className="w-100"
@@ -1814,12 +1525,16 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'permanentAddress']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your permanent address!',
-                  },
-                ]}
+                validateStatus={
+                  errors && errors.address && errors.address.permanentAddress
+                    ? 'error'
+                    : ''
+                }
+                help={
+                  errors &&
+                  errors.address &&
+                  errors.address.permanentAddress?._errors.toString()
+                }
               >
                 <Input placeholder="Your Permanent Address" />
               </Form.Item>
@@ -1831,12 +1546,16 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'country']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your country!',
-                  },
-                ]}
+                validateStatus={
+                  errors && errors.address && errors.address.country
+                    ? 'error'
+                    : ''
+                }
+                help={
+                  errors &&
+                  errors.address &&
+                  errors.address.country?._errors.toString()
+                }
               >
                 <Select
                   className="w-100"
@@ -1853,7 +1572,7 @@ const Stage3Form = () => {
                       .localeCompare((optionB?.label ?? '').toLowerCase())
                   }
                   /* Fetched Data */
-                  options={masterData?.countrys}
+                  options={masterData?.countries}
                 />
               </Form.Item>
             </div>
@@ -1864,12 +1583,14 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'city']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your city!',
-                  },
-                ]}
+                validateStatus={
+                  errors && errors.address && errors.address.city ? 'error' : ''
+                }
+                help={
+                  errors &&
+                  errors.address &&
+                  errors.address.city?._errors.toString()
+                }
               >
                 <Select
                   className="w-100"
@@ -1887,7 +1608,8 @@ const Stage3Form = () => {
                       .localeCompare((optionB?.label ?? '').toLowerCase())
                   }
                   /* Fetched Data */
-                  options={citysName as { value: string; label: string }[]}
+                  options={masterData?.citys}
+                  // options={citysName as { value: string; label: string }[]}
                 />
               </Form.Item>
             </div>
@@ -1898,12 +1620,16 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'zipCode']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your zip code!',
-                  },
-                ]}
+                validateStatus={
+                  errors && errors.address && errors.address.zipCode
+                    ? 'error'
+                    : ''
+                }
+                help={
+                  errors &&
+                  errors.address &&
+                  errors.address.zipCode?._errors.toString()
+                }
               >
                 <Input placeholder="Your Zip Code" />
               </Form.Item>
@@ -1916,12 +1642,14 @@ const Stage3Form = () => {
                 <Form.Item<FieldType>
                   name={['address', 'rt']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your RT!',
-                  //   },
-                  // ]}
+                  validateStatus={
+                    errors && errors.address && errors.address.rt ? 'error' : ''
+                  }
+                  help={
+                    errors &&
+                    errors.address &&
+                    errors.address.rt?._errors.toString()
+                  }
                 >
                   <Input placeholder="Your RT" />
                 </Form.Item>
@@ -1935,12 +1663,14 @@ const Stage3Form = () => {
                 <Form.Item<FieldType>
                   name={['address', 'rw']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your RW!',
-                  //   },
-                  // ]}
+                  validateStatus={
+                    errors && errors.address && errors.address.rw ? 'error' : ''
+                  }
+                  help={
+                    errors &&
+                    errors.address &&
+                    errors.address.rw?._errors.toString()
+                  }
                 >
                   <Input placeholder="Your RW" />
                 </Form.Item>
@@ -1954,12 +1684,16 @@ const Stage3Form = () => {
                 <Form.Item<FieldType>
                   name={['address', 'subdistrict']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your subdistrict!',
-                  //   },
-                  // ]}
+                  validateStatus={
+                    errors && errors.address && errors.address.subdistrict
+                      ? 'error'
+                      : ''
+                  }
+                  help={
+                    errors &&
+                    errors.address &&
+                    errors.address.subdistrict?._errors.toString()
+                  }
                 >
                   <Input placeholder="Your Subdistrict" />
                 </Form.Item>
@@ -1973,12 +1707,16 @@ const Stage3Form = () => {
                 <Form.Item<FieldType>
                   name={['address', 'village']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your village!',
-                  //   },
-                  // ]}
+                  validateStatus={
+                    errors && errors.address && errors.address.village
+                      ? 'error'
+                      : ''
+                  }
+                  help={
+                    errors &&
+                    errors.address &&
+                    errors.address.village?._errors.toString()
+                  }
                 >
                   <Input placeholder="Your Village" />
                 </Form.Item>
@@ -2006,14 +1744,6 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['address', 'currentAddress']}
                 className="mb-0"
-                /*
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your current address!',
-                  },
-                ]}
-                */
               >
                 <Input
                   disabled={addressCheck}
@@ -2024,6 +1754,15 @@ const Stage3Form = () => {
           </div>
 
           <label className="fw-bold mt-5 mb-2">Family Structure</label>
+          {errors?.families ? (
+            <Alert
+              message="If you have married, please fill in families structure with your spouse data"
+              type="error"
+              style={{ marginBottom: '1em' }}
+            />
+          ) : (
+            ''
+          )}
           <Tabs
             type="editable-card"
             onChange={onChangeTabs}
@@ -2035,20 +1774,7 @@ const Stage3Form = () => {
           <label className="fw-bold mt-5">Education</label>
           <div className="col-12">
             <div className="input-group-meta position-relative mb-0">
-              <Form.Item<FieldType>
-                name="formalCheckbox"
-                className="mb-0"
-                rules={
-                  !formalCheck
-                    ? [
-                        {
-                          required: true,
-                          message: 'Please choose your education!',
-                        },
-                      ]
-                    : []
-                }
-              >
+              <Form.Item<FieldType> name="formalCheckbox" className="mb-0">
                 <div className="d-flex align-items-center">
                   <Checkbox onChange={handleFormalCheck} checked={formalCheck}>
                     Formal
@@ -2065,12 +1791,18 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'educationLevel']}
                     className="mb-0"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please input your education level!',
-                      },
-                    ]}
+                    validateStatus={
+                      errors &&
+                      errors.education &&
+                      errors.education.educationLevel
+                        ? 'error'
+                        : ''
+                    }
+                    help={
+                      errors &&
+                      errors.education &&
+                      errors.education.educationLevel?._errors.toString()
+                    }
                   >
                     <Select
                       className="w-100"
@@ -2088,12 +1820,18 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'educationMajor']}
                     className="mb-0"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please input your education major!',
-                      },
-                    ]}
+                    validateStatus={
+                      errors &&
+                      errors.education &&
+                      errors.education.educationMajor
+                        ? 'error'
+                        : ''
+                    }
+                    help={
+                      errors &&
+                      errors.education &&
+                      errors.education.educationMajor?._errors.toString()
+                    }
                   >
                     <Select
                       className="w-100"
@@ -2124,12 +1862,18 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'startEduYear']}
                     className="mb-0"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please select year!',
-                      },
-                    ]}
+                    validateStatus={
+                      errors &&
+                      errors.education &&
+                      errors.education.startEduYear
+                        ? 'error'
+                        : ''
+                    }
+                    help={
+                      errors &&
+                      errors.education &&
+                      errors.education.startEduYear?._errors.toString()
+                    }
                   >
                     <DatePicker
                       className="w-100"
@@ -2145,12 +1889,16 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'endEduYear']}
                     className="mb-0"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please select year!',
-                      },
-                    ]}
+                    validateStatus={
+                      errors && errors.education && errors.education.endEduYear
+                        ? 'error'
+                        : ''
+                    }
+                    help={
+                      errors &&
+                      errors.education &&
+                      errors.education.endEduYear?._errors.toString()
+                    }
                   >
                     <DatePicker
                       className="w-100"
@@ -2166,12 +1914,16 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'schoolName']}
                     className="mb-0"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please input your school name!',
-                      },
-                    ]}
+                    validateStatus={
+                      errors && errors.education && errors.education.schoolName
+                        ? 'error'
+                        : ''
+                    }
+                    help={
+                      errors &&
+                      errors.education &&
+                      errors.education.schoolName?._errors.toString()
+                    }
                   >
                     <Select
                       className="w-100"
@@ -2201,12 +1953,18 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'cityOfSchool']}
                     className="mb-0"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please input your city of school!',
-                      },
-                    ]}
+                    validateStatus={
+                      errors &&
+                      errors.education &&
+                      errors.education.cityOfSchool
+                        ? 'error'
+                        : ''
+                    }
+                    help={
+                      errors &&
+                      errors.education &&
+                      errors.education.cityOfSchool?._errors.toString()
+                    }
                   >
                     <Select
                       className="w-100"
@@ -2234,12 +1992,16 @@ const Stage3Form = () => {
                   <Form.Item<FieldType>
                     name={['education', 'gpa']}
                     className="mb-0"
-                    rules={[
-                      {
-                        required: true,
-                        message: 'Please input your gpa!',
-                      },
-                    ]}
+                    validateStatus={
+                      errors && errors.education && errors.education.gpa
+                        ? 'error'
+                        : ''
+                    }
+                    help={
+                      errors &&
+                      errors.education &&
+                      errors.education.gpa?._errors.toString()
+                    }
                   >
                     <InputNumber
                       className="w-100"
@@ -2289,12 +2051,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name="skills"
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your skills!',
-                  },
-                ]}
+                validateStatus={errors && errors.skills ? 'error' : ''}
+                help={errors && errors.skills?.skill?._errors.toString()}
               >
                 <Select
                   className="w-100"
@@ -2327,12 +2085,16 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['language', index.toString(), 'name']}
                       className="mb-0"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please choose your language!',
-                        },
-                      ]}
+                      validateStatus={
+                        errors && errors.language && errors.language.name
+                          ? 'error'
+                          : ''
+                      }
+                      help={
+                        errors &&
+                        errors.language &&
+                        errors.language.name?._errors.toString()
+                      }
                     >
                       <Select
                         className="w-100"
@@ -2377,12 +2139,12 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['language', index.toString(), 'level']}
                       className="mb-0"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please choose your level!',
-                        },
-                      ]}
+                      validateStatus={
+                        errors && errors.language && errors.language.name
+                          ? 'error'
+                          : ''
+                      }
+                      // help={errors && errors.language && errors.language[0].level?._errors.toString()}
                     >
                       <Select
                         className="w-100"
@@ -2426,18 +2188,33 @@ const Stage3Form = () => {
           </div>
 
           <label className="fw-bold mt-5 mb-2">Working Experience</label>
+          {/* Error Alert Experiences */}
+          {errors?.expOption ? (
+            <Alert
+              message={errors.expOption?._errors.toString()}
+              type="error"
+              style={{ marginBottom: '1em' }}
+            />
+          ) : errors?.experience ? (
+            <Alert
+              message={
+                errors.experience?._errors.toString() + ', or click (+) button'
+              }
+              type="error"
+              style={{ marginBottom: '1em' }}
+            />
+          ) : errors?.expectedSalary ? (
+            <Alert
+              message={'Please fill in all required working experience fields'}
+              type="error"
+              style={{ marginBottom: '1em' }}
+            />
+          ) : (
+            ''
+          )}
           <div className="col-12">
             <div className="input-group-meta position-relative mb-15">
-              <Form.Item<FieldType>
-                name="expOption"
-                className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please choose your working experience!',
-                  },
-                ]}
-              >
+              <Form.Item<FieldType> name="expOption" className="mb-0">
                 <Radio.Group onChange={onChangeExp} value={expValue}>
                   <Radio className="d-flex" value="Fresh Graduate">
                     Fresh Graduate
@@ -2456,12 +2233,8 @@ const Stage3Form = () => {
                 <Form.Item<FieldType>
                   name={['experience', 'expectedSalary']}
                   className="mb-0"
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please input your expected salary!',
-                    },
-                  ]}
+                  validateStatus={errors?.expectedSalary ? 'error' : ''}
+                  help={errors?.expectedSalary?._errors?.toString()}
                 >
                   <InputNumber
                     className="w-100"
@@ -2539,12 +2312,10 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['others', 'noticePeriod']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your notice period!',
-                  },
-                ]}
+                validateStatus={
+                  errors && errors?.others?.noticePeriod ? 'error' : ''
+                }
+                help={errors?.others?.noticePeriod?._errors.toString()}
               >
                 <Select
                   className="w-100"
@@ -2572,12 +2343,10 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name="everWorkedOption"
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please choose!',
-                  },
-                ]}
+                validateStatus={
+                  errors && errors.everWorkedOption ? 'error' : ''
+                }
+                help={errors?.everWorkedOption?._errors.toString()}
               >
                 <Radio.Group onChange={everWorkedChange} value={everWorked}>
                   <Radio className="d-flex" value="No">
@@ -2594,12 +2363,6 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['others', 'everWorkedMonth']}
                       className="mb-0"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please input year!',
-                        },
-                      ]}
                     >
                       <DatePicker
                         className="w-100"
@@ -2612,12 +2375,6 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['others', 'everWorkedYear']}
                       className="mb-0"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please input year!',
-                        },
-                      ]}
                     >
                       <DatePicker
                         className="w-100"
@@ -2639,12 +2396,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name="diseaseOption"
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please choose!',
-                  },
-                ]}
+                validateStatus={errors && errors.diseaseOption ? 'error' : ''}
+                help={errors?.diseaseOption?._errors.toString()}
               >
                 <Radio.Group onChange={diseaseChange} value={disease}>
                   <Radio className="d-flex" value="No">
@@ -2661,12 +2414,6 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['others', 'diseaseName']}
                       className="mb-0"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please input medical condition!',
-                        },
-                      ]}
                     >
                       <Input placeholder="Medical Condition" />
                     </Form.Item>
@@ -2675,12 +2422,6 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['others', 'diseaseYear']}
                       className="mb-0"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please input year!',
-                        },
-                      ]}
                     >
                       <DatePicker
                         className="w-100"
@@ -2702,12 +2443,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name="relationOption"
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please choose!',
-                  },
-                ]}
+                validateStatus={errors && errors.relationOption ? 'error' : ''}
+                help={errors?.relationOption?._errors.toString()}
               >
                 <Radio.Group onChange={haveRelationChange} value={haveRelation}>
                   <Radio className="d-flex" value="No">
@@ -2724,12 +2461,6 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['others', 'relationName']}
                       className="mb-0"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please input name!',
-                        },
-                      ]}
                     >
                       <Input placeholder="Name" />
                     </Form.Item>
@@ -2738,12 +2469,6 @@ const Stage3Form = () => {
                     <Form.Item<FieldType>
                       name={['others', 'relationPosition']}
                       className="mb-0"
-                      rules={[
-                        {
-                          required: true,
-                          message: 'Please input position!',
-                        },
-                      ]}
                     >
                       <Input placeholder="Position" />
                     </Form.Item>
@@ -2758,12 +2483,8 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['others', 'uploadCV']}
                 className="mb-0"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please upload your cv!',
-                  },
-                ]}
+                validateStatus={errors && errors.curriculumVitae ? 'error' : ''}
+                help={errors && errors.curriculumVitae?.toString()}
               >
                 <Upload action="" listType="picture" maxCount={1} accept=".pdf">
                   <Button

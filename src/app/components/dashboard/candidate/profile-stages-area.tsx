@@ -2,8 +2,8 @@
 import React from 'react';
 import Stage3Form from '../../forms/stage-3-form';
 import VerificationForm from '../../forms/verif-email-form';
-import DocumentForm from '../../forms/doc-form';
 import DoneRegisterPage from '../../forms/done-register';
+import LinkedInRegisterPage from '../../forms/LinkedInRegister';
 import {
   SafetyOutlined,
   SmileOutlined,
@@ -69,6 +69,7 @@ const ProfileStagesArea = () => {
             ]}
           />
         </div>
+        {stepState === 1 && <LinkedInRegisterPage />}
         {stepState === 2 && <VerificationForm />}
         {stepState === 3 && <Stage3Form />}
         {stepState === 4 && <DoneRegisterPage />}

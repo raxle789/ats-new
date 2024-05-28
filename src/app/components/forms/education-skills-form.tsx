@@ -38,9 +38,9 @@ type FieldType = {
     [id: string]: {
       certificationName?: string;
       institution?: string;
-      issueDate?: string;
-      monthIssue?: string;
-      yearIssue?: string;
+      issueDate?: string | Dayjs;
+      monthIssue?: string | Dayjs;
+      yearIssue?: string | Dayjs;
     };
   };
   skills?: string;
@@ -257,7 +257,7 @@ const EducationSkillsForm = () => {
               >
                 <DatePicker placeholder="Select Month" picker="month" />
               </Form.Item>
-              <Form.Item<FieldType>
+              {/* <Form.Item<FieldType>
                 name={[
                   'certification',
                   certificationIdx.toString(),
@@ -266,7 +266,7 @@ const EducationSkillsForm = () => {
                 className="mb-0"
               >
                 <DatePicker placeholder="Select Year" picker="year" />
-              </Form.Item>
+              </Form.Item> */}
             </div>
           </div>
         </div>
@@ -284,21 +284,38 @@ const EducationSkillsForm = () => {
         <div className="col-12">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Name (Certification/Licence)</label>
-            <p className="mb-0">nama sertifikat</p>
+            <p className="mb-0">
+              {
+                educationAndSkill?.certifications[certificationIdx]
+                  ?.certificates?.name
+              }
+            </p>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Institution</label>
-            <p className="mb-0">Universitas ga jelas</p>
+            <p className="mb-0">
+              {
+                educationAndSkill?.certifications[certificationIdx]
+                  ?.institutionName
+              }
+            </p>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Issue Date</label>
             <div className="d-flex align-items-center">
-              <p className="mb-0">tanggal mulai</p>
-              <p className="mb-0 ms-2">tanggal habis</p>
+              <p className="mb-0">
+                {dayjs(
+                  new Date(
+                    educationAndSkill?.certifications[
+                      certificationIdx
+                    ]?.issuedDate,
+                  ),
+                ).format('YYYY-MM')}
+              </p>
             </div>
           </div>
         </div>
@@ -313,31 +330,33 @@ const EducationSkillsForm = () => {
   const [displayedItems, setDisplayedItems] = useState(certifDisplayedInit);
   const newCertifTabIndex = useRef(0);
 
-  const onChangeCertifTabs = (newActiveKey: any) => {
+  const onChangeCertifTabs = (newActiveKey: string) => {
     setActiveCertifKey(newActiveKey);
   };
 
-  const addCertif = () => {
+  const addCertif = (index: number) => {
     const newActiveKey = `newTab${newCertifTabIndex.current++}`;
     const newPanes = [...certifItems];
     newPanes.push({
       label: `Certification ${certifItems.length + 1}`,
-      children: <CertifTabContent certificationIdx={certificationIdx} />,
+      children: <CertifTabContent certificationIdx={index} />,
       key: newActiveKey,
     });
 
     const newDisplayed = [...displayedItems];
     newDisplayed.push({
       label: `Certification ${certifItems.length + 1}`,
-      children: <DisplayedTabContent certificationIdx={certificationIdx} />,
+      children: <DisplayedTabContent certificationIdx={index} />,
       key: newActiveKey,
       closable: false,
     });
 
+    console.log('certificationIdx', certificationIdx);
     setCertifItems(newPanes);
     setDisplayedItems(newDisplayed);
     setActiveCertifKey(newActiveKey);
-    setCertificationIdx((prevState) => prevState + 1);
+    // setCertificationIdx(certificationIdx + 1);
+    console.log('addCertif');
   };
 
   const removeCertif = (targetKey: TargetKey) => {
@@ -356,7 +375,12 @@ const EducationSkillsForm = () => {
         newActiveKey = newPanes[0].key;
       }
     }
+    const newDisplayedPanes = displayedItems.filter(
+      (item) => item.key !== targetKey,
+    );
+
     setCertifItems(newPanes);
+    setDisplayedItems(newDisplayedPanes);
     setActiveCertifKey(newActiveKey);
   };
 
@@ -364,8 +388,11 @@ const EducationSkillsForm = () => {
     targetKey: React.MouseEvent | React.KeyboardEvent | string,
     action: 'add' | 'remove',
   ) => {
+    let currentIdx = certificationIdx;
     if (action === 'add') {
-      addCertif();
+      addCertif(currentIdx);
+      currentIdx++;
+      setCertificationIdx(currentIdx);
     } else {
       removeCertif(targetKey);
     }
@@ -433,6 +460,8 @@ const EducationSkillsForm = () => {
     }
   };
 
+  const [certifTotal, setCertifTotal] = useState(0);
+  const [certifState, setCertifState] = useState('not-certified');
   const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
 
   useEffect(() => {
@@ -462,38 +491,83 @@ const EducationSkillsForm = () => {
       setLangTotal(languagesData.length);
     }
 
-    setInitFieldsValue((prevState) => ({
-      ...prevState,
-      // formalOption?: string;
-      // formalCheckbox?: boolean;
-      // certificationCheckbox?: boolean;
-      education: {
-        educationLevel: educationAndSkill?.educations?.level,
-        educationMajor: educationAndSkill?.educations?.major,
-        schoolName: educationAndSkill?.educations?.university_name,
-        gpa: educationAndSkill?.educations?.gpa,
-        cityOfSchool: educationAndSkill?.educations?.cityOfSchool,
-        startEduYear: dayjs(
-          new Date(educationAndSkill?.educations?.start_year, 0),
-        ),
-        endEduYear: dayjs(new Date(educationAndSkill?.educations?.end_year, 0)),
-      },
-      skills: skillsString,
-      language: languageField.language,
-    }));
-
-    if (educationAndSkill) {
-      addCertif();
+    const certifications = educationAndSkill?.certifications;
+    type certiField = {
+      [key: string]: {
+        certificationName?: string;
+        institution?: string;
+        monthIssue?: string;
+      };
+    };
+    let certificationsField: certiField;
+    if (certifications) {
+      certificationsField = certifications.reduce(
+        (acc: any, item: any, index: number) => {
+          acc[index] = {
+            certificationName: item.certificates.name,
+            institution: item.institutionName,
+            monthIssue: dayjs(new Date(item.issuedDate)),
+          };
+          return acc;
+        },
+        {},
+      );
     }
 
-    console.log('initFieldsValue: ', initFieldsValue);
+    if (educationAndSkill) {
+      setInitFieldsValue((prevState) => ({
+        ...prevState,
+        education: {
+          educationLevel: educationAndSkill?.educations?.level,
+          educationMajor: educationAndSkill?.educations?.major,
+          schoolName: educationAndSkill?.educations?.university_name,
+          gpa: educationAndSkill?.educations?.gpa,
+          cityOfSchool: educationAndSkill?.educations?.cityOfSchool,
+          startEduYear: educationAndSkill?.educations?.start_year
+            ? dayjs(new Date(educationAndSkill?.educations?.start_year, 0))
+            : dayjs('20240101', 'YYYYMMDD'),
+          endEduYear: educationAndSkill?.educations?.start_year
+            ? dayjs(new Date(educationAndSkill?.educations?.end_year, 0))
+            : dayjs('20240101', 'YYYYMMDD'),
+        },
+        skills: skillsString,
+        language: languageField.language,
+        certification: certificationsField,
+      }));
 
-    form.setFieldsValue(initFieldsValue);
+      if (certifications.length > 0) {
+        setCertifState('certified');
+        setCertifTotal(educationAndSkill.certifications.length);
+      }
+      console.log('initFieldsValue: ', initFieldsValue);
+      console.log('certifTotal: ', certifTotal);
+      console.log('certifState: ', certifState);
+      form.setFieldsValue(initFieldsValue);
+    }
   }, [educationAndSkill]);
 
   useEffect(() => {
-    setCertificationIdx((prevState) => prevState + 1);
-  }, []);
+    // if (certifState === 'certified') {
+    //   const loopTotal = certifTotal - displayedItems.length + 1;
+    //   console.log('loopTotal: ', loopTotal);
+    //   for (let i = 0; i < loopTotal; i++) {
+    //     console.log('i: ', i);
+    //     addCertif();
+    //   }
+    // }
+    if (certifState === 'certified') {
+      let currentIdx = certificationIdx;
+      for (let i = 0; i < certifTotal - displayedItems.length + 1; i++) {
+        addCertif(currentIdx);
+        currentIdx++;
+      }
+      setCertificationIdx(currentIdx);
+    }
+  }, [certifState, certifTotal]);
+
+  useEffect(() => {
+    console.log('certificationIdx useEffect: ', certificationIdx);
+  }, [certificationIdx]);
   return (
     <>
       <div>
@@ -758,7 +832,7 @@ const EducationSkillsForm = () => {
               </div>
             </div>
 
-            {editState && (
+            {editState && certifState === 'certified' && (
               <Tabs
                 type="editable-card"
                 onChange={onChangeCertifTabs}
@@ -767,7 +841,7 @@ const EducationSkillsForm = () => {
                 items={certifItems}
               />
             )}
-            {!editState && (
+            {!editState && certifState === 'certified' && (
               <Tabs
                 type="editable-card"
                 hideAdd

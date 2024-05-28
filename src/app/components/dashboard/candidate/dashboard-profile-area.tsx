@@ -10,8 +10,8 @@ import EducationSkillsForm from '../../forms/education-skills-form';
 import AdditionalInformationForm from '../../forms/additional-information-form';
 /* PDF Reader */
 import { Document, Page, pdfjs } from 'react-pdf';
-import { View } from 'typeorm';
-import { getOnePDF } from '@/libs/Candidate/retrieve-data';
+// import { View } from 'typeorm';
+// import { getOnePDF } from '@/libs/Candidate/retrieve-data';
 
 const DashboardProfileArea = () => {
   const [keyState, setKeyState] = useState('1');
@@ -46,7 +46,7 @@ const DashboardProfileArea = () => {
   useEffect(() => {
     pdfjs.GlobalWorkerOptions.workerSrc = new URL(
       'pdfjs-dist/build/pdf.worker.min.js',
-      import.meta.url
+      import.meta.url,
     ).toString();
 
     // fetchCVDocument();

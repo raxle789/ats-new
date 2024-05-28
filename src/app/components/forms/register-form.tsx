@@ -1,20 +1,17 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { createCandidate, createUser } from '@/libs/Registration';
+import { RegisterPhase1 } from '@/libs/Registration';
 import { Input, Form, DatePicker, Spin, message } from 'antd';
 import type { DatePickerProps, FormProps } from 'antd';
 import { useState } from 'react';
-import { sendOTP } from '@/libs/Registration/verifications';
-import { CANDIDATE, REGISTER } from '@/libs/validations/Register';
-
-type FieldType = {
-  fullname?: string;
-  email?: string;
-  phoneNumber?: string;
-  dateOfBirth?: any;
-  password?: string;
-  confirmPassword?: string;
+export interface FieldType {
+  fullname: string;
+  email: string;
+  phoneNumber: string;
+  dateOfBirth: any;
+  password: string;
+  confirmPassword: string;
 };
 
 const RegisterForm = () => {
@@ -31,63 +28,23 @@ const RegisterForm = () => {
    */
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     setSpinning(true);
-    console.info('begin create user...');
-    const userData = {
-      fullname: values.fullname,
-      email: values.email,
-      password: values.password,
-      confirm_password: values.confirmPassword
-    };
-    const validateUser = REGISTER.safeParse(userData);
-    if(!validateUser.success) {
-      const validationError = validateUser.error.flatten().fieldErrors;
-      console.log('field error:', validationError);
-      for(const [key, value] of Object.entries(validationError)) {
-        message.error(`field ${key}: ${value}`);
-      };
-      return setSpinning(false);
-    };
-    const candidateData = {
-      phoneNumber: values.phoneNumber,
-      dateOfBirth: new Date(values.dateOfBirth),
-    };
-    const validateAge = CANDIDATE.safeParse(candidateData);
-    if(!validateAge.success) {
-      const validationError = validateAge.error.flatten().fieldErrors;
-      console.info(validationError)
+    console.info('Submitted Values: ', values);
+    const plainObjects = JSON.parse(JSON.stringify(values));
+    /**
+     * @description Use JSON.Parse(JSON.stringify(values)) in order to send data into the server-action as a plain object;
+     */
+    const doRegisterPhase1 = await RegisterPhase1(plainObjects);
+    console.info('Register Results: ', doRegisterPhase1);
+    if(!doRegisterPhase1.success) {
+      console.info('Zod Error:', doRegisterPhase1.errors);
       setSpinning(false);
-      return message.error(validationError?.dateOfBirth?.toString());
+      setErrors(doRegisterPhase1.errors);
+      return message.error(doRegisterPhase1.message);
     };
-    const userStore = await createUser(userData, candidateData.phoneNumber);
-    console.log(userStore);
-    if (userStore.success !== true) {
-      setSpinning(false);
-      return message.error(userStore?.message?.saveUser.toString());
-    };
-    console.info('create user success, next...', userStore);
-    const candidateStore = await createCandidate(candidateData);
-    if (candidateStore.success !== true) {
-      setSpinning(false)
-      return setErrors(candidateStore.message);
-    };
-    console.info('create candidate successfully', candidateStore);
-    /* Send OTP */
-    const sendMailOTP = await sendOTP({ email: userData.email as string });
-    console.info('Result sending OTP number...', sendOTP);
-    if (sendMailOTP.success !== true) {
-      setSpinning(false);
-      return {
-        success: false,
-        message: 'Failed to send OTP to email!',
-      };
-    }
-    console.info('Send OTP successfully', sendMailOTP);
-    /* Navigating to user-stages */
+    console.info(doRegisterPhase1);
+    message.success(doRegisterPhase1.message);
     router.replace('/dashboard/user/stages');
-
-    setTimeout(() => {
-      setSpinning(false);
-    }, 1000);
+    setSpinning(false);
   };
   /**
    *
@@ -122,9 +79,9 @@ const RegisterForm = () => {
               <label>Full Name (as per ID/Passport)*</label>
               <Form.Item<FieldType>
                 name="fullname"
-                rules={[
-                  { required: true, message: 'Please input your fullname!' },
-                ]}
+                /* Display Error */
+                validateStatus={errors?.fullname ? 'error' : ''}
+                help={errors && errors.fullname}
               >
                 <Input placeholder="Your Full Name" />
               </Form.Item>
@@ -135,9 +92,9 @@ const RegisterForm = () => {
               <label>Email*</label>
               <Form.Item<FieldType>
                 name="email"
-                rules={[
-                  { required: true, message: 'Please input your email!' },
-                ]}
+                /* Display Error */
+                validateStatus={errors?.email ? 'error' : ''}
+                help={errors && errors.email}
               >
                 <Input placeholder="Your Email" />
               </Form.Item>
@@ -148,12 +105,9 @@ const RegisterForm = () => {
               <label>Phone Number*</label>
               <Form.Item<FieldType>
                 name="phoneNumber"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your phone number!',
-                  },
-                ]}
+                /* Display Error */
+                validateStatus={errors?.phoneNumber ? 'error' : ''}
+                help={errors && errors.phoneNumber}
               >
                 <Input placeholder="Your Phone Number" />
               </Form.Item>
@@ -164,12 +118,9 @@ const RegisterForm = () => {
               <label>Date of Birth*</label>
               <Form.Item<FieldType>
                 name="dateOfBirth"
-                rules={[
-                  {
-                    required: true,
-                    message: 'Please input your date of birth!',
-                  },
-                ]}
+                /* Display Error */
+                validateStatus={errors?.dateOfBirth ? 'error' : ''}
+                help={errors && errors.dateOfBirth}
               >
                 <DatePicker
                   className="w-100"
@@ -184,9 +135,9 @@ const RegisterForm = () => {
               <label>Password*</label>
               <Form.Item<FieldType>
                 name="password"
-                rules={[
-                  { required: true, message: 'Please input your password!' },
-                ]}
+                /* Display Error */
+                validateStatus={errors?.password ? 'error' : ''}
+                help={errors && errors.password}
               >
                 <Input.Password placeholder="Password" />
               </Form.Item>
@@ -197,9 +148,9 @@ const RegisterForm = () => {
               <label>Confirm Password*</label>
               <Form.Item<FieldType>
                 name="confirmPassword"
-                rules={[
-                  { required: true, message: 'Please confirm your password!' },
-                ]}
+                /* Display Error */
+                validateStatus={errors?.confirmPassword ? 'error' : ''}
+                help={errors && errors.confirmPassword}
               >
                 <Input.Password placeholder="Confirm Your Password" />
               </Form.Item>

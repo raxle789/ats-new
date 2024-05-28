@@ -15,6 +15,8 @@ import { UploadOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import { success } from '../../../utils/message';
 import { getAdditionalInformations } from '@/libs/Candidate/retrieve-data';
+import dayjs, { Dayjs } from 'dayjs';
+import { Index } from 'typeorm';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
@@ -24,7 +26,7 @@ type FieldType = {
       relation?: string;
       name?: string;
       gender?: string;
-      dateOfBirth?: string;
+      dateOfBirth?: string | Dayjs;
     };
   };
   everWorkedOption?: string;
@@ -35,10 +37,10 @@ type FieldType = {
     emergencyContactPhoneNumber?: string;
     emergencyContactRelation?: string;
     noticePeriod: string;
-    everWorkedMonth: string;
-    everWorkedYear: string;
+    everWorkedMonth: string | Dayjs;
+    everWorkedYear: string | Dayjs;
     diseaseName: string;
-    diseaseYear: string;
+    diseaseYear: string | Dayjs;
     relationName: string;
     relationPosition: string;
     uploadCV?: string;
@@ -53,6 +55,8 @@ const AdditionalInformationForm = () => {
   const [editState, setEditState] = useState(false);
   const [additionalInformation, setAdditionalInformation] = useState<any>(null);
   console.log('additionalInformation: ', additionalInformation);
+
+  const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
 
   const fetchAdditionalInformations = async () => {
     const additionalInformationsData = await getAdditionalInformations();
@@ -75,157 +79,174 @@ const AdditionalInformationForm = () => {
 
   const [index, setIndex] = useState<number>(0);
 
-  const tabContent: JSX.Element[] = [
-    <div key={index} className="row">
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Relation</label>
-          <Form.Item<FieldType>
-            name={['families', index.toString(), 'relation']}
-            className="mb-0"
-            // rules={
-            //   marriedValue === 'Married'
-            //     ? [
-            //         {
-            //           required: true,
-            //           message:
-            //             'Please input your family relation especially spouse!',
-            //         },
-            //       ]
-            //     : undefined
-            // }
-          >
-            <Select
-              className="w-100"
-              placeholder="Your Family Relation"
-              options={[
-                { value: 'Father', label: 'Father' },
-                { value: 'Mother', label: 'Mother' },
-                { value: 'Sibling', label: 'Sibling' },
-                { value: 'Spouse', label: 'Spouse' },
-                { value: 'Children', label: 'Children' },
-              ]}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Name</label>
-          <Form.Item<FieldType>
-            name={['families', index.toString(), 'name']}
-            className="mb-0"
-            // rules={
-            //   marriedValue === 'Married'
-            //     ? [
-            //         {
-            //           required: true,
-            //           message: 'Please input your relation name!',
-            //         },
-            //       ]
-            //     : undefined
-            // }
-          >
-            <Input placeholder="Your Relation Name" />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Gender</label>
-          <Form.Item<FieldType>
-            name={['families', index.toString(), 'gender']}
-            className="mb-0"
-            // rules={
-            //   marriedValue === 'Married'
-            //     ? [
-            //         {
-            //           required: true,
-            //           message: 'Please input your family gender!',
-            //         },
-            //       ]
-            //     : undefined
-            // }
-          >
-            <Select
-              className="w-100"
-              placeholder="Your Family Gender"
-              options={[
-                { value: 'Male', label: 'Male' },
-                { value: 'Female', label: 'Female' },
-              ]}
-            />
-          </Form.Item>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Date of Birth</label>
-          <Form.Item<FieldType>
-            name={['families', index.toString(), 'dateOfBirth']}
-            // rules={
-            //   marriedValue === 'Married'
-            //     ? [
-            //         {
-            //           required: true,
-            //           message: 'Please input your relation date of birth!',
-            //         },
-            //       ]
-            //     : undefined
-            // }
-          >
-            <DatePicker
-              className="w-100"
-              placeholder="Select Date"
-              // onChange={onChangeDate}
-            />
-          </Form.Item>
-        </div>
-      </div>
-    </div>,
-  ];
+  type Tprops1 = {
+    index: number;
+  };
 
-  const displayedTabContent: JSX.Element[] = [
-    <div key={index} className="row">
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Relation</label>
-          <p className="mb-0">Father</p>
+  const TabContent: React.FC<Tprops1> = ({ index }) => {
+    return (
+      <div key={index} className="row">
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Relation</label>
+            <Form.Item<FieldType>
+              name={['families', index.toString(), 'relation']}
+              className="mb-0"
+              // rules={
+              //   marriedValue === 'Married'
+              //     ? [
+              //         {
+              //           required: true,
+              //           message:
+              //             'Please input your family relation especially spouse!',
+              //         },
+              //       ]
+              //     : undefined
+              // }
+            >
+              <Select
+                className="w-100"
+                placeholder="Your Family Relation"
+                options={[
+                  { value: 'Father', label: 'Father' },
+                  { value: 'Mother', label: 'Mother' },
+                  { value: 'Sibling', label: 'Sibling' },
+                  { value: 'Spouse', label: 'Spouse' },
+                  { value: 'Children', label: 'Children' },
+                ]}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Name</label>
+            <Form.Item<FieldType>
+              name={['families', index.toString(), 'name']}
+              className="mb-0"
+              // rules={
+              //   marriedValue === 'Married'
+              //     ? [
+              //         {
+              //           required: true,
+              //           message: 'Please input your relation name!',
+              //         },
+              //       ]
+              //     : undefined
+              // }
+            >
+              <Input placeholder="Your Relation Name" />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Gender</label>
+            <Form.Item<FieldType>
+              name={['families', index.toString(), 'gender']}
+              className="mb-0"
+              // rules={
+              //   marriedValue === 'Married'
+              //     ? [
+              //         {
+              //           required: true,
+              //           message: 'Please input your family gender!',
+              //         },
+              //       ]
+              //     : undefined
+              // }
+            >
+              <Select
+                className="w-100"
+                placeholder="Your Family Gender"
+                options={[
+                  { value: 'Male', label: 'Male' },
+                  { value: 'Female', label: 'Female' },
+                ]}
+              />
+            </Form.Item>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Date of Birth</label>
+            <Form.Item<FieldType>
+              name={['families', index.toString(), 'dateOfBirth']}
+              // rules={
+              //   marriedValue === 'Married'
+              //     ? [
+              //         {
+              //           required: true,
+              //           message: 'Please input your relation date of birth!',
+              //         },
+              //       ]
+              //     : undefined
+              // }
+            >
+              <DatePicker
+                className="w-100"
+                placeholder="Select Date"
+                // onChange={onChangeDate}
+              />
+            </Form.Item>
+          </div>
         </div>
       </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Name</label>
-          <p className="mb-0">Budi sedunia</p>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Gender</label>
-          <p className="mb-0">Female</p>
-        </div>
-      </div>
-      <div className="col-6">
-        <div className="input-group-meta position-relative mb-15">
-          <label className="fw-bold">Date of Birth</label>
-          <p className="mb-0">pokok tahun 1991</p>
-        </div>
-      </div>
-    </div>,
-  ];
+    );
+  };
 
-  const initialItems = [
-    { label: 'Relation 1', children: tabContent, key: '1' },
-  ];
-  const displayedInit = [
-    {
-      label: 'Relation 1',
-      children: displayedTabContent,
-      key: '1',
-      closable: false,
-    },
-  ];
-  const [activeKey, setActiveKey] = useState(initialItems[0].key);
+  type Tprops2 = {
+    index: number;
+  };
+
+  const DisplayedTabContent: React.FC<Tprops2> = ({ index }) => {
+    return (
+      <div key={index} className="row">
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Relation</label>
+            <p className="mb-0">
+              {initFieldsValue?.families &&
+                initFieldsValue.families[index]?.relation}
+            </p>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Name</label>
+            <p className="mb-0">
+              {initFieldsValue?.families &&
+                initFieldsValue.families[index]?.name}
+            </p>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Gender</label>
+            <p className="mb-0">
+              {initFieldsValue?.families &&
+                initFieldsValue.families[index]?.gender}
+            </p>
+          </div>
+        </div>
+        <div className="col-6">
+          <div className="input-group-meta position-relative mb-15">
+            <label className="fw-bold">Date of Birth</label>
+            <p className="mb-0">
+              {dayjs(
+                initFieldsValue?.families &&
+                  initFieldsValue.families[index]?.dateOfBirth,
+              ).format('YYYY-MM-DD')}
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const initialItems: any[] = [];
+  const displayedInit: any[] = [];
+  const [activeKey, setActiveKey] = useState('');
   const [items, setItems] = useState(initialItems);
   const [displayedItems, setDisplayedItems] = useState(displayedInit);
   const newTabIndex = useRef(0);
@@ -239,14 +260,14 @@ const AdditionalInformationForm = () => {
     const newPanes = [...items];
     newPanes.push({
       label: `Relation ${items.length + 1}`,
-      children: tabContent,
+      children: <TabContent index={index} />,
       key: newActiveKey,
     });
 
     const newDisplayed = [...displayedItems];
     newDisplayed.push({
       label: `Relation ${items.length + 1}`,
-      children: displayedTabContent,
+      children: <DisplayedTabContent index={index} />,
       key: newActiveKey,
       closable: false,
     });
@@ -255,6 +276,7 @@ const AdditionalInformationForm = () => {
     setDisplayedItems(newDisplayed);
     setActiveKey(newActiveKey);
     setIndex((prevState) => prevState + 1);
+    console.log('add tab');
   };
 
   const remove = (targetKey: TargetKey) => {
@@ -273,7 +295,12 @@ const AdditionalInformationForm = () => {
         newActiveKey = newPanes[0].key;
       }
     }
+    const newDisplayedPanes = displayedItems.filter(
+      (item) => item.key !== targetKey,
+    );
+
     setItems(newPanes);
+    setDisplayedItems(newDisplayedPanes);
     setActiveKey(newActiveKey);
   };
 
@@ -320,53 +347,113 @@ const AdditionalInformationForm = () => {
     }
   };
 
-  const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
+  const [relationTotal, setRelationTotal] = useState(0);
 
   useEffect(() => {
     let everWorkedAnswer: string;
+    let everWorkedAnswer2: string;
     let medicalCondition: string;
+    let medicalCondition2: string;
     let colleagueName: string;
+    let colleagueName2: string;
     if (additionalInformation) {
       if (additionalInformation?.candidate_questions[1]?.answer === ',') {
         everWorkedAnswer = 'No';
       } else {
-        everWorkedAnswer = 'Yes';
+        let words = additionalInformation?.candidate_questions[1]?.answer;
+        const separatedArray = words.split(',');
+        everWorkedAnswer = dayjs(separatedArray[0]).format('MM');
+        everWorkedAnswer2 = dayjs(separatedArray[1]).format('YYYY');
       }
 
       if (additionalInformation?.candidate_questions[2]?.answer === ',') {
         medicalCondition = 'No';
       } else {
-        medicalCondition = 'Yes';
+        let words = additionalInformation?.candidate_questions[2]?.answer;
+        const separatedArray = words.split(',');
+        medicalCondition = separatedArray[0];
+        medicalCondition2 = dayjs(separatedArray[1]).format('YYYY');
       }
 
       if (additionalInformation?.candidate_questions[3]?.answer === ',') {
         colleagueName = 'No';
       } else {
-        colleagueName = 'Yes';
+        let words = additionalInformation?.candidate_questions[3]?.answer;
+        const separatedArray = words.split(',');
+        colleagueName = separatedArray[0];
+        colleagueName2 = separatedArray[1];
       }
+    }
+
+    const families = additionalInformation?.families;
+    type familyField = {
+      [id: string]: {
+        relation?: string;
+        name?: string;
+        gender?: string;
+        dateOfBirth?: string | Dayjs;
+      };
+    };
+    let familiesField: familyField;
+    if (additionalInformation) {
+      familiesField = families.reduce((acc: any, item: any, index: number) => {
+        acc[index] = {
+          relation: item.relationStatus,
+          name: item.name,
+          gender: item.gender,
+          dateOfBirth: dayjs(item.dateOfBirth),
+        };
+        return acc;
+      }, {});
     }
 
     setInitFieldsValue((prevState) => ({
       ...prevState,
+      families: familiesField,
       everWorkedOption: everWorkedAnswer,
       diseaseOption: medicalCondition,
       relationOption: colleagueName,
       others: {
         emergencyContactName: additionalInformation?.emergency_contacts?.name,
         emergencyContactPhoneNumber:
-          additionalInformation?.emergency_contacs?.phoneNumber,
+          additionalInformation?.emergency_contacts?.phoneNumber,
         emergencyContactRelation:
-          additionalInformation?.emergency_contacs?.relationStatus,
+          additionalInformation?.emergency_contacts?.relationStatus,
         noticePeriod: additionalInformation?.candidate_questions[0]?.answer,
+        everWorkedMonth: everWorkedAnswer,
+        everWorkedYear: everWorkedAnswer2,
+        diseaseName: medicalCondition,
+        diseaseYear: medicalCondition2,
+        relationName: colleagueName,
+        relationPosition: colleagueName2,
       },
     }));
+
+    if (additionalInformation) {
+      setRelationTotal(additionalInformation.families.length);
+    }
+
     console.log('initFieldsValue: ', initFieldsValue);
     form.setFieldsValue(initFieldsValue);
   }, [additionalInformation]);
 
   useEffect(() => {
-    setIndex((prevState) => prevState + 1);
-  }, []);
+    if (additionalInformation) {
+      const loopTotal = relationTotal - displayedItems.length + 1;
+      // console.log('expTotal: ', expTotal);
+      // console.log('panjang display item: ', displayedItems.length);
+      // console.log('expIdx: ', expIdx);
+      console.log('loopTotal: ', loopTotal);
+      for (let i = 0; i < loopTotal; i++) {
+        console.log('i: ', i);
+        add();
+      }
+    }
+  }, [relationTotal]);
+
+  // useEffect(() => {
+  //   setIndex((prevState) => prevState + 1);
+  // }, []);
   return (
     <>
       <div>
@@ -430,7 +517,11 @@ const AdditionalInformationForm = () => {
                       disabled={!editState}
                     />
                   )}
-                  {!editState && <p className="mb-0">Father</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {initFieldsValue?.others?.emergencyContactRelation}
+                    </p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -447,7 +538,11 @@ const AdditionalInformationForm = () => {
                       disabled={!editState}
                     />
                   )}
-                  {!editState && <p className="mb-0">bapakmu udin</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {initFieldsValue?.others?.emergencyContactName}
+                    </p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -464,7 +559,11 @@ const AdditionalInformationForm = () => {
                       disabled={!editState}
                     />
                   )}
-                  {!editState && <p className="mb-0">0865566553</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {initFieldsValue?.others?.emergencyContactPhoneNumber}
+                    </p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -502,7 +601,11 @@ const AdditionalInformationForm = () => {
                       ]}
                     />
                   )}
-                  {!editState && <p className="mb-0">Ready join boss</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {initFieldsValue?.others?.noticePeriod}
+                    </p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -535,7 +638,13 @@ const AdditionalInformationForm = () => {
                       </Radio>
                     </Radio.Group>
                   )}
-                  {!editState && <p className="mb-0">Nooo</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {initFieldsValue?.others?.everWorkedMonth !== 'No'
+                        ? `${initFieldsValue?.others?.everWorkedMonth}, ${initFieldsValue?.others?.everWorkedYear}`
+                        : 'No'}
+                    </p>
+                  )}
                 </Form.Item>
                 {everWorked === 'Yes' && (
                   <div className="row mt-2">
@@ -611,7 +720,13 @@ const AdditionalInformationForm = () => {
                       </Radio>
                     </Radio.Group>
                   )}
-                  {!editState && <p className="mb-0">Nooo</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {initFieldsValue?.others?.diseaseName !== 'No'
+                        ? `${initFieldsValue?.others?.diseaseName}, ${initFieldsValue?.others?.diseaseYear}`
+                        : 'No'}
+                    </p>
+                  )}
                 </Form.Item>
                 {disease === 'Yes' && (
                   <div className="row mt-2">
@@ -685,7 +800,13 @@ const AdditionalInformationForm = () => {
                       </Radio>
                     </Radio.Group>
                   )}
-                  {!editState && <p className="mb-0">Nooo</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {initFieldsValue?.others?.relationName !== 'No'
+                        ? `${initFieldsValue?.others?.relationName}, ${initFieldsValue?.others?.relationPosition}`
+                        : 'No'}
+                    </p>
+                  )}
                 </Form.Item>
                 {haveRelation === 'Yes' && (
                   <div className="row mt-2">

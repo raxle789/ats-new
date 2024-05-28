@@ -1,12 +1,16 @@
 'use client';
 import React from 'react';
-import ActionCandidate from '../../../../ui/action-card-applicant';
+// import ActionCandidatesMenu from './action-candidates-menu';
 import { ICandidate } from '@/data/candidate-data';
 import Image from 'next/image';
 import { useAppDispatch } from '@/redux/hook';
 import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
+import dynamic from 'next/dynamic';
 
 const CandidatesItems = ({ item }: { item: ICandidate }) => {
+  const DynamicAction = dynamic(() => import('./action-candidates-menu'), {
+    ssr: false,
+  });
   const dispatch = useAppDispatch();
   const showModal = () => {
     dispatch(setIsOpen(true));
@@ -86,7 +90,7 @@ const CandidatesItems = ({ item }: { item: ICandidate }) => {
                     aria-expanded="false"
                   >
                     <span>
-                      <ActionCandidate />
+                      <DynamicAction />
                     </span>
                   </button>
                 </div>

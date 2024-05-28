@@ -55,86 +55,168 @@ type FieldType = {
   probationCheckbox?: boolean;
 };
 
+type currentPackage = {
+  monthlyBasicSalary?: number;
+  monthlyTunjTransportasi?: number;
+  annualBasicSalary?: number;
+  annualTunjTransportasi?: number;
+  annualThr?: number;
+  annualPerformanceBonus?: number;
+  packageAddition?: {
+    [id: string]: {
+      labelName?: string;
+      monthlyAddition?: number;
+      annualAddition?: number;
+    };
+  };
+};
+
+type schemeOffer = {
+  monthlyBasicSalary?: number;
+  monthlyTunjTransportasi?: number;
+  annualBasicSalary?: number;
+  annualTunjTransportasi?: number;
+  annualThr?: number;
+  annualPerformanceBonus?: number;
+  incrementNote?: string;
+  schemeAddition?: {
+    [id: string]: {
+      labelName?: string;
+      monthlyAddition?: number;
+      annualAddition?: number;
+    };
+  };
+};
+
 const CreateOfferingArea = () => {
+  // UseState
   const [form] = Form.useForm();
   const [annualBasicSalaryPackage, setAnnualBasicSalaryPackage] = useState(0);
-
-  const basicSalaryChangeLeft = (value: any) => {
-    setAnnualBasicSalaryPackage(value * 12);
-  };
-
-  useEffect(() => {
-    form.setFieldsValue({
-      annualBasicSalaryPackage: annualBasicSalaryPackage,
-    });
-  }, [annualBasicSalaryPackage]);
-
   const [annualTunjTransportasiPackage, setAnnualTunjTransportasiPackage] =
     useState(0);
-
-  const tunjanganTransportasiChangeLeft = (value: any) => {
-    setAnnualTunjTransportasiPackage(value * 12);
-  };
-
-  useEffect(() => {
-    form.setFieldsValue({
-      annualTunjanganTransportasiPackage: annualTunjTransportasiPackage,
-    });
-  }, [annualTunjTransportasiPackage]);
-
   const [annualThrPackage, setAnnualThrPackage] = useState(0);
-
-  const thrChangeLeft = (value: any) => {
-    setAnnualThrPackage(value);
-  };
-
-  useEffect(() => {
-    form.setFieldsValue({
-      annualThrPackage: annualThrPackage,
-    });
-  }, [annualThrPackage]);
-
   const [annualPerformanceBonusPackage, setAnnualPerformanceBonusPackage] =
     useState(0);
-
-  const performanceBonusChangeLeft = (value: any) => {
-    setAnnualPerformanceBonusPackage(value);
-  };
-
-  useEffect(() => {
-    form.setFieldsValue({
-      annualPerformanceBonusPackage: annualPerformanceBonusPackage,
-    });
-  }, [annualPerformanceBonusPackage]);
-
   const [annualBasicSalaryScheme, setAnnualBasicSalaryScheme] = useState(0);
-
-  const basicSalaryChangeRight = (value: any) => {
-    setAnnualBasicSalaryScheme(value * 12);
-  };
-
-  useEffect(() => {
-    form.setFieldsValue({
-      annualBasicSalaryScheme: annualBasicSalaryScheme,
-    });
-  }, [annualBasicSalaryScheme]);
-
   const [
     annualTunjanganTransportasiScheme,
     setAnnualTunjanganTransportasiScheme,
   ] = useState(0);
 
+  const [currentPackage, setCurrentPackage] = useState<currentPackage>({
+    monthlyBasicSalary: 0,
+    monthlyTunjTransportasi: 0,
+    annualBasicSalary: 0,
+    annualTunjTransportasi: 0,
+    annualThr: 0,
+    annualPerformanceBonus: 0,
+  });
+  const [schemeOffer, setSchemeOffer] = useState<schemeOffer>({
+    monthlyBasicSalary: 0,
+    monthlyTunjTransportasi: 0,
+    annualBasicSalary: 0,
+    annualTunjTransportasi: 0,
+    annualThr: 0,
+    annualPerformanceBonus: 0,
+    incrementNote: '',
+  });
+  const [labelNames, setLabelNames] = useState<any>({});
+  const [leftRowTotal, setLeftRowTotal] = useState(0);
+  const [rightRowTotal, setRightRowTotal] = useState(0);
+  const [monthlyTotalLeft, setMonthlyTotalLeft] = useState(0);
+  const [annualTotalLeft, setAnnualTotalLeft] = useState(0);
+  const [monthlyTotalRight, setMonthlyTotalRight] = useState(0);
+  const [annualTotalRight, setAnnualTotalRight] = useState(0);
+
+  // Functions
+  const basicSalaryChangeLeft = (value: any) => {
+    const annualSalary = value * 12;
+    const prevState = currentPackage;
+    const currentState = {
+      ...prevState,
+      monthlyBasicSalary: value,
+      annualBasicSalary: annualSalary,
+    };
+    setCurrentPackage(currentState);
+  };
+
+  const tunjanganTransportasiChangeLeft = (value: any) => {
+    const annualTransportasi = value * 12;
+    const prevState = currentPackage;
+    const currentState = {
+      ...prevState,
+      monthlyTunjTransportasi: value,
+      annualTunjTransportasi: annualTransportasi,
+    };
+    setCurrentPackage(currentState);
+  };
+
+  const thrChangeLeft = (value: any) => {
+    const prevState = currentPackage;
+    const currentState = {
+      ...prevState,
+      annualThr: value,
+    };
+    setCurrentPackage(currentState);
+  };
+
+  const performanceBonusChangeLeft = (value: any) => {
+    const prevState = currentPackage;
+    const currentState = {
+      ...prevState,
+      annualPerformanceBonus: value,
+    };
+    setCurrentPackage(currentState);
+  };
+
+  const addLabelLeft = (index: number, event: any) => {
+    setLabelNames((prevState: {}) => ({
+      ...prevState,
+      [index.toString()]: event.target.value,
+    }));
+  };
+
+  const addValuesLeft = (index: number, value: any) => {
+    const annualBenefit = value * 12;
+    const prevState = currentPackage;
+    const currentState = {
+      ...prevState,
+      packageAddition: {
+        ...prevState.packageAddition,
+        [index.toString()]: {
+          labelName: labelNames[index as keyof any],
+          monthlyAddition: value,
+          annualAddition: annualBenefit,
+        },
+      },
+    };
+    setCurrentPackage(currentState);
+
+    const fieldsValue = form.getFieldsValue();
+    const newPackageAddition = {
+      ...fieldsValue.packageAddition,
+      [index]: {
+        labelName: labelNames[index as keyof any],
+        monthlyNumber: value,
+        annualNumber: annualBenefit,
+      },
+    };
+
+    const newFieldsValue = {
+      ...fieldsValue,
+      packageAddition: newPackageAddition,
+    };
+    form.setFieldsValue(newFieldsValue);
+  };
+
+  const basicSalaryChangeRight = (value: any) => {
+    setAnnualBasicSalaryScheme(value * 12);
+  };
+
   const tunjanganTransportasiChangeRight = (value: any) => {
     setAnnualTunjanganTransportasiScheme(value * 12);
   };
 
-  useEffect(() => {
-    form.setFieldsValue({
-      annualTunjanganTransportasiScheme: annualTunjanganTransportasiScheme,
-    });
-  }, [annualTunjanganTransportasiScheme]);
-
-  const [leftRowTotal, setLeftRowTotal] = useState(0);
   const addRowLeft = () => {
     if (leftRowTotal < 8) {
       setLeftRowTotal(leftRowTotal + 1);
@@ -146,7 +228,6 @@ const CreateOfferingArea = () => {
     }
   };
 
-  const [rightRowTotal, setRightRowTotal] = useState(0);
   const addRowRight = () => {
     if (rightRowTotal < 8) {
       setRightRowTotal(rightRowTotal + 1);
@@ -165,11 +246,108 @@ const CreateOfferingArea = () => {
     console.log(date, dateString);
   };
 
+  // UseEffect
   // useEffect(() => {
   //   form.setFieldsValue({
   //     annualBasicSalaryPackage: annualBasicSalaryPackage,
   //   });
-  // }, []);
+  // }, [annualBasicSalaryPackage]);
+
+  // useEffect(() => {
+  //   form.setFieldsValue({
+  //     annualTunjanganTransportasiPackage: annualTunjTransportasiPackage,
+  //   });
+  // }, [annualTunjTransportasiPackage]);
+
+  // useEffect(() => {
+  //   form.setFieldsValue({
+  //     annualThrPackage: annualThrPackage,
+  //   });
+  // }, [annualThrPackage]);
+
+  // useEffect(() => {
+  //   form.setFieldsValue({
+  //     annualPerformanceBonusPackage: annualPerformanceBonusPackage,
+  //   });
+  // }, [annualPerformanceBonusPackage]);
+
+  useEffect(() => {
+    form.setFieldsValue({
+      annualBasicSalaryScheme: annualBasicSalaryScheme,
+    });
+  }, [annualBasicSalaryScheme]);
+
+  useEffect(() => {
+    form.setFieldsValue({
+      annualTunjanganTransportasiScheme: annualTunjanganTransportasiScheme,
+    });
+  }, [annualTunjanganTransportasiScheme]);
+
+  useEffect(() => {
+    form.setFieldsValue({
+      annualBasicSalaryPackage: currentPackage?.annualBasicSalary,
+      annualTunjanganTransportasiPackage:
+        currentPackage?.annualTunjTransportasi,
+      annualThrPackage: currentPackage?.annualThr,
+      annualPerformanceBonusPackage: currentPackage?.annualPerformanceBonus,
+    });
+
+    if (
+      currentPackage &&
+      currentPackage?.monthlyBasicSalary &&
+      currentPackage?.monthlyTunjTransportasi
+    ) {
+      let monthlyTotal =
+        currentPackage?.monthlyBasicSalary +
+        currentPackage?.monthlyTunjTransportasi;
+      if (currentPackage?.packageAddition) {
+        const benefitAddition = Object.values(currentPackage?.packageAddition);
+        const initialValue = 0;
+        const sumWithInitial = benefitAddition.reduce(
+          (accumulator, currentValue) =>
+            accumulator + (currentValue.monthlyAddition || 0),
+          initialValue,
+        );
+        monthlyTotal += sumWithInitial;
+      }
+      console.log('package total annual: ', monthlyTotal);
+      setMonthlyTotalLeft(monthlyTotal);
+    }
+
+    if (
+      currentPackage &&
+      currentPackage?.annualBasicSalary &&
+      currentPackage?.annualTunjTransportasi &&
+      currentPackage?.annualThr &&
+      currentPackage?.annualPerformanceBonus
+    ) {
+      let annualTotal =
+        currentPackage?.annualBasicSalary +
+        currentPackage?.annualTunjTransportasi +
+        currentPackage?.annualThr +
+        currentPackage?.annualPerformanceBonus;
+      if (currentPackage?.packageAddition) {
+        const benefitAddition = Object.values(currentPackage?.packageAddition);
+        const initialValue = 0;
+        const sumWithInitial = benefitAddition.reduce(
+          (accumulator, currentValue) =>
+            accumulator + (currentValue.annualAddition || 0),
+          initialValue,
+        );
+        annualTotal += sumWithInitial;
+      }
+      console.log('package total annual: ', annualTotal);
+      setAnnualTotalLeft(annualTotal);
+    }
+  }, [currentPackage]);
+
+  useEffect(() => {
+    console.log('labelNames: ', labelNames);
+  }, [labelNames]);
+
+  useEffect(() => {
+    console.log('currentPackage: ', currentPackage);
+  }, [currentPackage]);
   return (
     <>
       <div className="job-fpk-header mb-40 lg-mb-30">
@@ -181,7 +359,7 @@ const CreateOfferingArea = () => {
         <Form form={form}>
           <div className="row">
             <div className="col-lg-12">
-              <h3 className="main-title sub-section-title">Profile</h3>
+              <h3 className="section-page-title">Profile</h3>
             </div>
             <div className="col-lg-3">
               <p className="mb-0 section-label">Name</p>
@@ -197,10 +375,10 @@ const CreateOfferingArea = () => {
             </div>
 
             <div className="col-lg-6">
-              <h3 className="main-title sub-section-title">Create Package</h3>
+              <h3 className="section-page-title">Current Package</h3>
             </div>
             <div className="col-lg-6">
-              <h3 className="main-title sub-section-title">Scheme Offer</h3>
+              <h3 className="section-page-title">Scheme Offer</h3>
             </div>
             <div className="col-lg-6">
               <div className="row">
@@ -311,7 +489,13 @@ const CreateOfferingArea = () => {
                           ]}
                           className="mb-0"
                         >
-                          <Input className="w-100" placeholder="Label" />
+                          <Input
+                            className="w-100"
+                            placeholder="Label"
+                            onChange={(event: any) =>
+                              addLabelLeft(index, event)
+                            }
+                          />
                         </Form.Item>
                       </div>
                       <div className="col-lg-4 mb-2">
@@ -336,6 +520,9 @@ const CreateOfferingArea = () => {
                               value: string | undefined,
                             ): string | number =>
                               value!.replace(/\Rp\s?|(\.*)/g, '')
+                            }
+                            onChange={(value: any) =>
+                              addValuesLeft(index, value)
                             }
                           />
                         </Form.Item>
@@ -473,7 +660,7 @@ const CreateOfferingArea = () => {
                 </div>
               </div>
               <div className="row mt-110">
-                <h3 className="main-title sub-section-title">
+                <h3 className="section-page-title">
                   Annual Convert Monthly Existing
                 </h3>
                 <div className="col-lg-8">
@@ -482,14 +669,24 @@ const CreateOfferingArea = () => {
                   </p>
                 </div>
                 <div className="col-lg-4">
-                  <p className="section-label mb-0">Rp. 10.000.000</p>
+                  <p className="section-label mb-0">
+                    {`Rp. ${annualTotalLeft}`.replace(
+                      /\B(?=(\d{3})+(?!\d))/g,
+                      '.',
+                    )}
+                  </p>
                 </div>
 
                 <div className="col-lg-8">
                   <p className="section-label mb-0">Total Gross Monthly</p>
                 </div>
                 <div className="col-lg-4">
-                  <p className="section-label mb-0">Rp. 10.000.000</p>
+                  <p className="section-label mb-0">
+                    {`Rp. ${monthlyTotalLeft}`.replace(
+                      /\B(?=(\d{3})+(?!\d))/g,
+                      '.',
+                    )}
+                  </p>
                 </div>
               </div>
             </div>
@@ -687,7 +884,7 @@ const CreateOfferingArea = () => {
                 </div>
                 <div className="col-lg-4 mb-2">
                   <Form.Item<FieldType> name="thrScheme" className="mb-0">
-                    <InputNumber className="w-100" min={1} />
+                    <InputNumber className="w-100" min={1} disabled />
                   </Form.Item>
                 </div>
                 <div className="col-lg-4 mb-2">
@@ -701,6 +898,7 @@ const CreateOfferingArea = () => {
                       parser={(value: string | undefined): string | number =>
                         value!.replace(/\Rp\s?|(\.*)/g, '')
                       }
+                      disabled
                     />
                   </Form.Item>
                 </div>
@@ -716,7 +914,7 @@ const CreateOfferingArea = () => {
                     name="performanceBonusScheme"
                     className="mb-0"
                   >
-                    <InputNumber className="w-100" min={0.1} step={0.1} />
+                    <InputNumber className="w-100" min={0} step={0.1} />
                   </Form.Item>
                 </div>
                 <div className="col-lg-4 mb-2">
@@ -763,7 +961,7 @@ const CreateOfferingArea = () => {
                 </div>
               </div>
               <div className="row mt-25">
-                <h3 className="main-title sub-section-title">
+                <h3 className="section-page-title">
                   Annual Convert Monthly Existing
                 </h3>
                 <div className="col-lg-8">
@@ -772,23 +970,31 @@ const CreateOfferingArea = () => {
                   </p>
                 </div>
                 <div className="col-lg-4">
-                  <p className="section-label mb-0">Rp. 10.000.000</p>
+                  <p className="section-label mb-0">
+                    {`Rp. ${annualTotalRight}`.replace(
+                      /\B(?=(\d{3})+(?!\d))/g,
+                      '.',
+                    )}
+                  </p>
                 </div>
 
                 <div className="col-lg-8">
                   <p className="section-label mb-0">Total Gross Monthly</p>
                 </div>
                 <div className="col-lg-4">
-                  <p className="section-label mb-0">Rp. 10.000.000</p>
+                  <p className="section-label mb-0">
+                    {`Rp. ${monthlyTotalRight}`.replace(
+                      /\B(?=(\d{3})+(?!\d))/g,
+                      '.',
+                    )}
+                  </p>
                 </div>
               </div>
             </div>
 
             <div className="col-lg-12 mt-20">
               <div className="row">
-                <h3 className="main-title sub-section-title">
-                  Percentage Increase
-                </h3>
+                <h3 className="section-page-title">Percentage Increase</h3>
                 <div className="col-lg-3">
                   <p className="section-label mb-0">Monthly Increase</p>
                 </div>
@@ -806,9 +1012,7 @@ const CreateOfferingArea = () => {
 
             <div className="col-lg-12 mt-20">
               <div className="row">
-                <h3 className="main-title sub-section-title">
-                  Approval Offering
-                </h3>
+                <h3 className="section-page-title">Approval Offering</h3>
                 <div className="col-lg-4">
                   <div className="input-group-meta position-relative mb-15">
                     <label>Level*</label>

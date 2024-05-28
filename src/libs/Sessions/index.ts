@@ -46,7 +46,7 @@ export async function getUserSession(sessionName: 'auth' | 'reg' | 'otp'): Promi
  * @param isRememberOn optional argument if user doesn't wants to re-logged in
  * @returns 'void' -> session is set
  */
-export async function setUserSession(sessionName: 'auth' | 'reg' | 'otp', payload: any, isRememberOn?: 'on' | undefined) {
+export async function setUserSession(sessionName: 'auth' | 'reg' | 'otp' | 'linkedin', payload: any, isRememberOn?: 'on' | undefined) {
   switch(sessionName) {
     case 'auth':
       const authSessionName = Utils.authSession;
@@ -59,17 +59,25 @@ export async function setUserSession(sessionName: 'auth' | 'reg' | 'otp', payloa
       break;
     case 'reg':
       const regSessionName = Utils.regSession;
-      const regExpires = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+      const regExpires = new Date(Date.now() + 1 * 60 * 1000);
       const encryptedRegSession = Jwt.EncryptSession(payload);
       /* set-session */
       cookies().set(regSessionName, encryptedRegSession as string, { expires: regExpires, httpOnly: false});
       break;
     case 'otp':
       const otpSessionName = Utils.otpSession;
-      const otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+      const otpExpires = new Date(Date.now() + 2.5 * 60 * 1000);
       const encryptedOTPsession = Jwt.EncryptSession(payload);
       /* set otp-session */
       cookies().set(otpSessionName, encryptedOTPsession as string, { expires: otpExpires, httpOnly: true });
+      break;
+    case 'linkedin':
+      const linkedinSessionName = Utils.linkedinSession;
+      const linkedinExpires = new Date(Date.now() + 10 * 60 * 1000);
+      const encryptedLinkedInSession = Jwt.EncryptSession(payload);
+      /* set linkedin-session */
+      cookies().set(linkedinSessionName, encryptedLinkedInSession as string, { expires: linkedinExpires, httpOnly: false });
+      break;
 
     default:
       console.info("Invalid session name or payload!")
@@ -77,7 +85,7 @@ export async function setUserSession(sessionName: 'auth' | 'reg' | 'otp', payloa
   };
 };
 
-export async function deleteSession(sessionName: 'auth' | 'reg' | 'otp') {
+export async function deleteSession(sessionName: 'auth' | 'reg' | 'otp' | 'linkedin') {
   switch(sessionName) {
     case 'auth':
       console.info('Deleting auth-session...');
@@ -90,6 +98,14 @@ export async function deleteSession(sessionName: 'auth' | 'reg' | 'otp') {
     case 'otp':
       console.info('Deleting otp-session...');
       cookies().delete(Utils.otpSession);
+      break;
+    case 'linkedin':
+      console.info('deleting linkedin-session...');
+      cookies().delete(Utils.linkedinSession);
+      break;
+    
+    default:
+      console.info('no valid session choosen');
       break;
   };
 };

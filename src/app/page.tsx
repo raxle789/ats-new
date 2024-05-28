@@ -1,29 +1,30 @@
 import { Metadata } from 'next';
-import { registerAssessment } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-assessment/action';
-import * as crypto from '@/lib/utils/utils';
-import CryptoJS from 'crypto-js';
-import { getAllApplicantDataByJobVacancyId } from '@/lib/actions/job-vacancies/job-vacancy-details/action';
+// import { registerAssessment } from '@/lib/action/job-vacancies/job-vacancy-details/job-vacancy-details-assessment/action';
+// import * as crypto from '@/lib/utils/utils';
+// import CryptoJS from 'crypto-js';
+// import { getAllApplicantDataByJobVacancyId } from '@/lib/action/job-vacancies/job-vacancy-details/action';
 import Wrapper from '@/layouts/wrapper';
 import HeaderSix from '@/layouts/headers/header-6';
 import HeroBannerSix from './components/hero-banners/hero-banner-six';
-import CategorySectionSix from './components/category/category-section-6';
+// import CategorySectionSix from './components/category/category-section-6';
 import { TrendingJobs } from './components/category/category-section-3';
 import { JobListItems } from './components/jobs/list/job-list-one';
 import BlogFour from './components/blogs/blog-four';
 import SpiritSection from './components/home/spirit-section';
-import EngageSection from './components/home/engage-section';
+// import EngageSection from './components/home/engage-section';
 import VerticalSection from './components/home/vertical-section';
 // import FancyBannerThree from './components/fancy-banner/fancy-banner-3';
 // import EventSection from './components/home/event-section';
 // import VisionSection from './components/home/vision-section';
 import FeatureNine from './components/features/feature-nine';
-import FeedbackFive from './components/feedBacks/feedback-five';
+// import FeedbackFive from './components/feedBacks/feedback-five';
 // import FancyBannerSix from './components/fancy-banner/fancy-banner-6';
-import FooterOne from '@/layouts/footers/footer-one';
+// import FooterOne from '@/layouts/footers/footer-one';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 
 // import { getFatkhur, migrateFromATS } from '@/libs/MsSQL/FETCH_EXISTING';
-import { getSession } from '@/libs/Authentication/session';
+// import { getSession } from '@/libs/Authentication/session';
 // import { proint } from '@/app/services/connection/db';
 
 export const metadata: Metadata = {
@@ -31,6 +32,16 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
+  const DynamicCategory = dynamic(
+    () => import('./components/category/category-section-6'),
+  );
+  const DynamicFeedback = dynamic(
+    () => import('./components/feedBacks/feedback-five'),
+  );
+  const DynamicEngage = dynamic(
+    () => import('./components/home/engage-section'),
+  );
+  const DynamicFooter = dynamic(() => import('@/layouts/footers/footer-one'));
   // const data = await getAllApplicantDataByJobVacancyId(2, 0, 10);
 
   // console.info(data);
@@ -80,14 +91,8 @@ export default async function Home() {
         <HeroBannerSix />
         {/* hero banner end */}
 
-        {/* partners logo start*/}
-        {/* <div className="partner-logos bg-color border-0 pt-45 pb-45 ps-3 pe-3">
-          <PartnersSlider />
-        </div> */}
-        {/* partners logo end*/}
-
         {/* category section start */}
-        <CategorySectionSix style_2={true} />
+        <DynamicCategory style_2={true} />
         {/* category section end */}
 
         {/* trending jobs start */}
@@ -141,13 +146,6 @@ export default async function Home() {
                 Explore all jobs
               </Link>
             </div>
-            {/* <div className="text-center mt-50 wow fadeInUp">
-              <div className="btn-eight fw-500">
-                Do you want to post a job for your company?{' '}
-                <span>We can help.</span>{' '}
-                <Link href="/auth/register">Click here</Link>
-              </div>
-            </div> */}
           </div>
         </section>
         {/* job list items end */}
@@ -156,52 +154,28 @@ export default async function Home() {
         <SpiritSection />
         {/* spirit words end */}
 
-        {/* fancy banner start */}
-        {/* <FancyBannerThree style_2={true} /> */}
-        {/* fancy banner end */}
-
         {/* text feature start */}
         <FeatureNine />
         {/* text feature end */}
-
-        {/* vision section start */}
-        {/* <VisionSection /> */}
-        {/* vision section end */}
 
         {/* vertical section start */}
         <VerticalSection />
         {/* vertical section end */}
 
         {/* feedback start */}
-        <FeedbackFive />
+        <DynamicFeedback />
         {/* feedback end */}
-
-        {/* kickstart section start */}
-        {/* <KickstartSection /> */}
-        {/* kickstart section end */}
-
-        {/* text feature two start */}
-        {/* <FeatureTwo /> */}
-        {/* text feature two end */}
-
-        {/* event section start */}
-        {/* <EventSection /> */}
-        {/* event section end */}
 
         {/* blog start */}
         <BlogFour />
         {/* blog end */}
 
         {/* engage section start */}
-        <EngageSection />
+        <DynamicEngage />
         {/* engage section end */}
 
-        {/* fancy banner start */}
-        {/* <FancyBannerSix /> */}
-        {/* fancy banner end */}
-
         {/* footer start */}
-        <FooterOne style_2={true} />
+        <DynamicFooter style_2={true} />
         {/* footer end */}
       </div>
     </Wrapper>

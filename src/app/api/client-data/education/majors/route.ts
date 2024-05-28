@@ -1,4 +1,5 @@
 import prisma from "@/root/prisma";
+import { PrismaClientInitializationError } from "@prisma/client/runtime/library";
 import { NextResponse } from "next/server";
 export async function GET() {
   try {
@@ -10,7 +11,12 @@ export async function GET() {
      * Handling error code from database operation here.
      * Upcoming
      */
-    console.info(error);
-    return NextResponse.json(error);
+    console.info('ERROR FETCHING...', error instanceof PrismaClientInitializationError);
+    return NextResponse.json([
+      {
+        value: 'database connection error',
+        label: 'Error while fetching cities data'
+      }
+    ]);
   }
 }

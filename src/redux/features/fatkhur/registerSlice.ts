@@ -1,16 +1,4 @@
-import { checkEmailVerifiedStatus } from '@/libs/Registration';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-// const fetchUseEmail = async (): Promise<number> => {
-//   const status = await checkEmailVerifiedStatus();
-//   if(status) {
-//     return 3;
-//   };
-//   return 2;
-// };
-
-// const init = fetchUseEmail();
-// const init = 3;
 
 const initialRegisterState = {
   next: 2,
