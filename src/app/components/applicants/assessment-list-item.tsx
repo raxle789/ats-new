@@ -5,19 +5,14 @@ import { handleApplicant } from '../message/confirm';
 import { useRouter } from 'next/navigation';
 import * as messages from '@/utils/message';
 import * as confirmations from '@/utils/confirmation';
-import AssessmentItems from '../dashboard/employ/assessment-item';
+import AssessmentItem from '../dashboard/employ/assessment-item';
 import { Checkbox, Popover, Spin, Modal, message } from 'antd';
 import type { CheckboxProps } from 'antd';
 import ActionCheckboxPipeline from '../common/popup/action-checkbox-pipeline';
 
 const { confirm } = Modal;
 
-const AssessmentListItem = ({
-  status,
-  applicantData,
-  jobVacancyId,
-  registerAssessment,
-}) => {
+const AssessmentListItem = ({ status, applicantData, jobVacancyId }) => {
   const router = useRouter();
 
   const [api, contextHolder] = message.useMessage();
@@ -126,7 +121,7 @@ const AssessmentListItem = ({
       </div>
       <div className="wrapper">
         {applicantData?.map((item) => (
-          <AssessmentItems
+          <AssessmentItem
             key={item?.candidateId}
             item={item}
             status={status}

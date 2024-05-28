@@ -1,4 +1,4 @@
-import { getJobVacancyData } from '@/lib/action/job-vacancies/job-vacancy-details/action';
+import { getJobVacancyData } from '@/lib/actions/job-vacancies/job-vacancy-details/action';
 import EmployJobArea from './job-area';
 import EmployLayoutJobDetailItem from './layout-job-detail-item';
 import { Status } from '@/status/applicant-status';

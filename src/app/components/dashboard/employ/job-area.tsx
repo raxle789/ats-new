@@ -4,7 +4,7 @@ import React from 'react';
 import {
   getAllJobVacancyData,
   deleteJobVacancyData,
-} from '@/lib/action/job-vacancies/action';
+} from '@/lib/actions/job-vacancies/action';
 import Link from 'next/link';
 // import DashboardHeader from '../candidate/dashboard-header';
 import EmployJobItem from './job-item';

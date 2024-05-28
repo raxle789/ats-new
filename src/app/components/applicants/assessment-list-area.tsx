@@ -1,8 +1,9 @@
 'use server';
 
 import AssessmentListItem from './assessment-list-item';
-import { registerAssessment } from '@/lib/action/job-vacancies/job-vacancy-details/job-vacancy-details-assessment/action';
-import { getAllApplicantDataByJobVacancyIdAndStateName } from '@/lib/action/job-vacancies/job-vacancy-details/action';
+import JobAssessmentResultArea from '../dashboard/employ/job-assessment-result-area';
+import { registerAssessment } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-assessment/action';
+import { getAllApplicantDataByJobVacancyIdAndStateName } from '@/lib/actions/job-vacancies/job-vacancy-details/action';
 
 const AssessmentListArea = async ({
   jobVacancyId,
@@ -28,7 +29,6 @@ const AssessmentListArea = async ({
       status={status}
       applicantData={applicantData?.data}
       jobVacancyId={jobVacancyId}
-      registerAssessment={registerAssessment}
     />
   );
 };

@@ -6,7 +6,7 @@ import Pagination from '@/ui/pagination';
 import {
   getAllJobVacancyData,
   candidateApplyJobVacancy,
-} from '@/lib/action/job-vacancies/action';
+} from '@/lib/actions/job-vacancies/action';
 import JobListItem from './job-list-item';
 import JobFilter from '../filter/job-filter';
 

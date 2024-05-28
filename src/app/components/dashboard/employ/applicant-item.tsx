@@ -2,13 +2,13 @@
 
 import React, { SetStateAction } from 'react';
 import img_2 from '@/assets/images/candidates/img_02.jpg';
-import ActionCandidate from './action-card-candidate';
+import ActionApplicant from '../../../../ui/action-card-applicant';
 import Image from 'next/image';
 import { useAppDispatch } from '@/redux/hook';
 import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
 import { Checkbox } from 'antd';
 
-const ApplicantsItems = ({
+const ApplicantItem = ({
   item,
   status,
   checkboxState,
@@ -106,7 +106,7 @@ const ApplicantsItems = ({
             <div className="col-lg-4 col-md-4 col-sm-6">
               <div className="candidate-info">
                 <span>Year of Experience</span>
-                <div>{item?.candidateYearOfExperience ?? '-'}</div>
+                <div>{`${item?.candidateYearOfExperience ?? '-'} year`}</div>
               </div>
               <div className="candidate-info mt-2">
                 <span>Status</span>
@@ -127,7 +127,7 @@ const ApplicantsItems = ({
                     aria-expanded="false"
                   >
                     <span>
-                      <ActionCandidate
+                      <ActionApplicant
                         status={status}
                         candidateId={item?.candidateId}
                         jobVacancyId={jobVacancyId}
@@ -148,4 +148,4 @@ const ApplicantsItems = ({
   );
 };
 
-export default ApplicantsItems;
+export default ApplicantItem;

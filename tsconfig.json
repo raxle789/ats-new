@@ -37,7 +37,7 @@
     "src/app/pages/user/layout.jsx",
     "src/app/pages/main/job/page.jsx",
     "src/app/components/dashboard/employ/job-fpk-area.tsx",
-    "src/app/services/connection/entity/efpk.js",
+    "src/lib/services/connection/entity/efpk.js",
     "src/app/(pages)/api/upload/upload.js"
   ],
   "exclude": ["node_modules"]

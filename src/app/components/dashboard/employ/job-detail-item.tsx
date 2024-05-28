@@ -2,7 +2,7 @@
 
 import { useState, useMemo, ReactNode, cloneElement, lazy } from 'react';
 import JobDetailWrapper from '../../wrapper/job-detail-wrapper';
-import { registerAssessment } from '@/lib/action/job-vacancies/job-vacancy-details/job-vacancy-details-assessment/action';
+import { registerAssessment } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-assessment/action';
 import { useRouter } from 'next/navigation';
 import * as messages from '@/utils/message';
 import * as confirmations from '@/utils/confirmation';
@@ -87,6 +87,12 @@ const EmployJobDetailItem = ({ jobVacancyData, perPage, offset, listArea }) => {
             return <div key={status}>{area.content}</div>;
           }
         });
+      case Status.INTERVIEW:
+        return listArea?.map((area) => {
+          if (area?.id === Status.INTERVIEW && area.content) {
+            return <div key={status}>{area.content}</div>;
+          }
+        });
       default:
         return listArea?.map((area) => {
           if (area?.id === Status.APPLICANT) {
@@ -157,9 +163,9 @@ const EmployJobDetailItem = ({ jobVacancyData, perPage, offset, listArea }) => {
         </button>
         <button
           className="d-flex flex-column align-items-center me-4"
-          onClick={() => setStatus(Status.APPLICANT)}
+          onClick={() => setStatus(Status.INTERVIEW)}
         >
-          <span>{jobVacancyData?.applicant}</span>
+          <span>{jobVacancyData?.interview}</span>
           <span>Interview</span>
         </button>
         <button

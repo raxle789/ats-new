@@ -1,6 +1,6 @@
 'use client';
 import React from 'react';
-import ActionCandidate from './action-card-candidate';
+import ActionCandidate from '../../../../ui/action-card-applicant';
 import { ICandidate } from '@/data/candidate-data';
 import Image from 'next/image';
 import { useAppDispatch } from '@/redux/hook';

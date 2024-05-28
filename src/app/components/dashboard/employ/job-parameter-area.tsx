@@ -3,7 +3,7 @@ import React from 'react';
 import {
   getAllPositionLevelRequirementData,
   searchPositionLevelRequirementData,
-} from '@/lib/action/position-level-requirements/action';
+} from '@/lib/actions/position-level-requirements/action';
 import EmployJobParameter from './job-parameter-item';
 import EmployShortSelect from './short-select';
 import Pagination from '@/ui/pagination';

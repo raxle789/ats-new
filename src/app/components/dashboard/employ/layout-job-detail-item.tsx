@@ -2,7 +2,7 @@
 
 import { useState, useMemo, ReactNode, cloneElement, lazy } from 'react';
 import JobDetailWrapper from '../../wrapper/job-detail-wrapper';
-import { registerAssessment } from '@/lib/action/job-vacancies/job-vacancy-details/job-vacancy-details-assessment/action';
+import { registerAssessment } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-assessment/action';
 import { useRouter } from 'next/navigation';
 import * as messages from '@/utils/message';
 import * as confirmations from '@/utils/confirmation';

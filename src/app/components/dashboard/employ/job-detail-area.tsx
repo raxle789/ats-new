@@ -1,4 +1,5 @@
-import { getJobVacancyData } from '@/lib/action/job-vacancies/job-vacancy-details/action';
+import { getJobVacancyData } from '@/lib/actions/job-vacancies/job-vacancy-details/action';
+import InterviewListArea from '../../applicants/interview-list-area';
 import { Status } from '@/status/applicant-status';
 import AssessmentListArea from '../../applicants/assessment-list-area';
 import ApplicantListArea from '../../applicants/applicant-list-area';
@@ -61,6 +62,17 @@ const EmployJobDetailArea = async ({ params, searchParams }) => {
               <AssessmentListArea
                 jobVacancyId={jobVacancyData?.jobId}
                 status={Status.ASSESSMENT}
+                perPage={Number(perPage)}
+                offset={Number(offset)}
+              />
+            ),
+          },
+          {
+            id: Status.INTERVIEW,
+            content: (
+              <InterviewListArea
+                jobVacancyId={jobVacancyData?.jobId}
+                status={Status.INTERVIEW}
                 perPage={Number(perPage)}
                 offset={Number(offset)}
               />

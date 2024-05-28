@@ -7,7 +7,7 @@ import {
   searchFpkData,
   getTaData,
   assignTa,
-} from '@/lib/action/fpk/action';
+} from '@/lib/actions/fpk/action';
 import Pagination from '@/ui/pagination';
 
 // export const fpkData = [

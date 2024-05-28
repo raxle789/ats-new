@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import CreateInterviewModal from '../../common/popup/create-interview-modal';
 import Link from 'next/link';
 import EmployJobItem from './job-item';
 import EmployShortSelect from './short-select';
@@ -8,7 +9,7 @@ import search from '@/assets/dashboard/images/icon/icon_10.svg';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
 import candidate_data from '@/data/candidate-data';
-import CandidateInterviewItem from './candidate-interview-item';
+import CandidateInterviewItem from './interview-item';
 import SearchBar from '@/ui/search-bar';
 import { useAppDispatch } from '@/redux/hook';
 import { setApplicantStep } from '@/redux/features/applicantStepSlice';
@@ -17,6 +18,8 @@ import type { CheckboxProps } from 'antd';
 import ActionCheckboxPipeline from '../../common/popup/action-checkbox-pipeline';
 
 const CandidateInterview = () => {
+  const [isModalOpen, setModalOpen] = useState(true);
+
   const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -167,7 +170,11 @@ const CandidateInterview = () => {
         </Popover>
       </div>
       <div className="wrapper">
-        {candidate_items.map((item) => (
+        <CreateInterviewModal
+          isOpen={isModalOpen}
+          setIsOpenModal={setModalOpen}
+        />
+        {/* {candidate_items.map((item) => (
           <CandidateInterviewItem
             key={item.id}
             item={item}
@@ -176,7 +183,7 @@ const CandidateInterview = () => {
             setCheckbox={setCheckbox}
             setCheckboxAllValue={setCheckboxAllValue}
           />
-        ))}
+        ))} */}
       </div>
     </>
   );
