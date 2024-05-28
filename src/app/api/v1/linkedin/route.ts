@@ -51,7 +51,10 @@ export async function GET(request: NextRequest) {
   if (isSuccessOAuth(searchParams)) {
     try {
       console.info('verifying state token...');
-      jwt.verify(searchParams.get('state') as string, process.env.JWT_SECRET_KEY as string);
+      jwt.verify(
+        searchParams.get('state') as string,
+        process.env.JWT_SECRET_KEY as string,
+      );
 
       const URLSearchParamsBody = new URLSearchParams({
         grant_type: 'authorization_code',
@@ -61,10 +64,13 @@ export async function GET(request: NextRequest) {
         redirect_uri: process.env.LINKEDIN_REDIRECT_URL as string,
       });
       console.info('request auth token...');
-      const requestAuthToken = await fetch(process.env.LINKEDIN_EXCHANGE_AUTH_TOKEN as string, {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
+      const requestAuthToken = await fetch(
+        process.env.LINKEDIN_EXCHANGE_AUTH_TOKEN as string,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
         },
       );
       const response: TypeOpenIDToken = await requestAuthToken.json();
@@ -72,14 +78,18 @@ export async function GET(request: NextRequest) {
 
       /* Make Authenticated Request */
       console.info('request user information...');
-      const getBasicLinkedInProfile = await fetch('https://api.linkedin.com/v2/userinfo', {
-        method: 'GET',
-        headers: {
-          "Authorization": "Bearer " + response.access_token
+      const getBasicLinkedInProfile = await fetch(
+        'https://api.linkedin.com/v2/userinfo',
+        {
+          method: 'GET',
+          headers: {
+            Authorization: 'Bearer ' + response.access_token,
+          },
         },
       );
 
-      const responseUserInfo: TypeUserInfo = await getBasicLinkedInProfile.json();
+      const responseUserInfo: TypeUserInfo =
+        await getBasicLinkedInProfile.json();
       console.info('response user information', responseUserInfo);
       console.info('checking users table with provided user linkedin email...');
       const isEmailRegistered = await prisma.users.findUnique({
@@ -90,9 +100,12 @@ export async function GET(request: NextRequest) {
       /**
        * If user email already registered.
        */
-      if(isEmailRegistered) {
+      if (isEmailRegistered) {
         console.info('user email already registered...');
-        const failEmailRegistered = new URL('/dashboard/user/stages', request.url);
+        const failEmailRegistered = new URL(
+          '/dashboard/user/stages',
+          request.url,
+        );
         const errorParams = new URLSearchParams({
           state: searchParams.get('state') as string,
           error: 'Email is already registered',
@@ -107,8 +120,14 @@ export async function GET(request: NextRequest) {
          */
         console.info('creating fail linkedin session within 10 seconds...');
         const failLinkedInExires = new Date(Date.now() + 15 * 1000);
-        const failLinkedInPayload = jwt.sign({ success: false }, 'sidokaredev24');
-        cookies().set(linkedinSession, failLinkedInPayload, { expires: failLinkedInExires, httpOnly: false });
+        const failLinkedInPayload = jwt.sign(
+          { success: false },
+          'sidokaredev24',
+        );
+        cookies().set(linkedinSession, failLinkedInPayload, {
+          expires: failLinkedInExires,
+          httpOnly: false,
+        });
 
         return NextResponse.redirect(failEmailRegistered);
       }
@@ -118,7 +137,7 @@ export async function GET(request: NextRequest) {
        */
       await setUserSession('linkedin', {
         ...responseUserInfo,
-        success: true
+        success: true,
       });
       /* Validate Error Code */
 
