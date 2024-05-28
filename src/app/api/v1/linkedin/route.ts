@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { setUserSession } from '@/libs/Sessions';
 import prisma from '@/root/prisma';
+import { cookies } from 'next/headers';
+import { linkedinSession } from '@/libs/Sessions/utils';
 
 type TypeOpenIDToken = {
   access_token: string;
@@ -51,6 +53,7 @@ export async function GET(request: NextRequest) {
   console.info('is success response? ', isSuccessOAuth(searchParams));
   if(isSuccessOAuth(searchParams)) {
     try {
+      console.info('verifying state token...');
       jwt.verify(searchParams.get('state') as string, process.env.JWT_SECRET_KEY as string);
 
       const URLSearchParamsBody = new URLSearchParams({
@@ -60,6 +63,7 @@ export async function GET(request: NextRequest) {
         client_secret: process.env.LINKEDIN_SECRET_KEY as string,
         redirect_uri: process.env.LINKEDIN_REDIRECT_URL as string
       });
+      console.info('request auth token...');
       const requestAuthToken = await fetch(process.env.LINKEDIN_EXCHANGE_AUTH_TOKEN as string, {
         method: 'POST',
         headers: {
@@ -68,8 +72,10 @@ export async function GET(request: NextRequest) {
         body: URLSearchParamsBody
       });
       const response: TypeOpenIDToken = await requestAuthToken.json();
+      console.info('response of auth token...', response);
 
       /* Make Authenticated Request */
+      console.info('request user information...');
       const getBasicLinkedInProfile = await fetch('https://api.linkedin.com/v2/userinfo', {
         method: 'GET',
         headers: {
@@ -78,6 +84,8 @@ export async function GET(request: NextRequest) {
       });
 
       const responseUserInfo: TypeUserInfo = await getBasicLinkedInProfile.json();
+      console.info('response user information', responseUserInfo);
+      console.info('checking users table with provided user linkedin email...');
       const isEmailRegistered = await prisma.users.findUnique({
         where: {
           email: responseUserInfo.email
@@ -87,6 +95,7 @@ export async function GET(request: NextRequest) {
        * If user email already registered.
        */
       if(isEmailRegistered) {
+        console.info('user email already registered...');
         const failEmailRegistered = new URL('/dashboard/user/stages', request.url);
         const errorParams = new URLSearchParams({
           state: searchParams.get('state') as string,
@@ -95,10 +104,25 @@ export async function GET(request: NextRequest) {
         });
         failEmailRegistered.search = errorParams.toString();
 
+        /**
+         * Set linkedin session with 10 seconds.
+         * { success: false }
+         */
+        console.info('creating fail linkedin session within 10 seconds...');
+        const failLinkedInExires = new Date(Date.now() + 15 * 1000);
+        const failLinkedInPayload = jwt.sign({ success: false }, 'sidokaredev24');
+        cookies().set(linkedinSession, failLinkedInPayload, { expires: failLinkedInExires, httpOnly: false });
+
         return NextResponse.redirect(failEmailRegistered);
       };
       /* Set-Cookie */
-      await setUserSession('linkedin', responseUserInfo);
+      /**
+       * Spreads responseUserInfo, and add success: true.
+       */
+      await setUserSession('linkedin', {
+        ...responseUserInfo,
+        success: true
+      });
       /* Validate Error Code */
 
       return NextResponse.redirect(new URL('/dashboard/user/stages', request.url));
@@ -106,6 +130,8 @@ export async function GET(request: NextRequest) {
       /**
        * Error handling for JWT ERROR, FETCH TYPEERROR, PRISMA ERROR
        */
+
+      console.info('error deebug: ', error);
 
       return NextResponse.json({
         error: error

@@ -70,10 +70,10 @@ const ProfileStagesArea = () => {
             ]}
           />
         </div>
+        {stepState === 1 && <LinkedInRegisterPage />}
         {stepState === 2 && <VerificationForm />}
         {stepState === 3 && <Stage3Form />}
         {stepState === 4 && <DoneRegisterPage />}
-        {stepState === 5 && <LinkedInRegisterPage />}
       </div>
     </>
   );

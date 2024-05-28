@@ -231,8 +231,8 @@ const Stage3Form = () => {
   /* Calling Session-Context */
   const session = useAppSessionContext();
   const regSessionValue = session[`${regSession}`];
-  const regSessionDecoded = DecryptSession(regSessionValue);
-  // console.info('reg-session value:', regSessionDecoded);
+  let regSessionDecoded = DecryptSession(regSessionValue);
+  const [sessionExist, isSessionExist] = useState(false);
   /* Session-Context */
   const [form] = Form.useForm();
   const dispatch = useAppDispatch();
@@ -244,9 +244,6 @@ const Stage3Form = () => {
   const [errors, setErrors] = useState<any | undefined | null>(null);
 
   const [masterData, setMasterData] = useState<MasterData | null>(null);
-  const [citysName, setCitysName] = useState<
-    { value: string; label: string }[] | null
-  >(null);
 
   /**
    * ACTIONS
@@ -566,7 +563,7 @@ const Stage3Form = () => {
     const newPanes = [...certifItems];
     newPanes.push({
       label: `Certification ${certifItems.length + 1}`,
-      children: <CertifTabContent certificationIdx={index} />,
+      children: <CertifTabContent certificationIdx={certificationIdx} />,
       key: newActiveKey,
     });
     setCertifItems(newPanes);
@@ -1074,6 +1071,15 @@ const Stage3Form = () => {
 
     setIndex(index + 1);
 
+    if(regSessionDecoded === false) {
+      console.info('SAMA DENGAN FALSE...');
+      isSessionExist(prevState => (!prevState));
+      regSessionDecoded = DecryptSession(regSessionValue);
+    };
+
+  }, [sessionExist]);
+
+  useEffect(() => {
     /**
      * ACTIONS
      * @description Fetch all required data.
@@ -1082,16 +1088,16 @@ const Stage3Form = () => {
   }, []);
 
   /* SHOW FIRST CERTIF AND EXP TAB */
-  // const [tabAdditionState, setTabAdditionState] = useState(true);
-  // useEffect(() => {
-  //   if (masterData && masterData.certificates_name && masterData.job_levels) {
-  //     if (tabAdditionState) {
-  //       addCertif();
-  //       addExp();
-  //       setTabAdditionState(false);
-  //     }
-  //   }
-  // }, [masterData]);
+  const [tabAdditionState, setTabAdditionState] = useState(true);
+  useEffect(() => {
+    if (masterData && masterData.certificates_name && masterData.job_levels) {
+      if (tabAdditionState) {
+        addCertif();
+        addExp();
+        setTabAdditionState(false);
+      };
+    };
+  }, [masterData]);
   return (
     <>
       <Form

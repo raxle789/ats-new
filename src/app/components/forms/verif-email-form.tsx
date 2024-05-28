@@ -43,6 +43,7 @@ const VerificationForm = () => {
   const session = useAppSessionContext();
   /* reg-session */
   const getRegSession = session[`${regSession}`];
+  console.log('reg-session: ', getRegSession);
   let decodedRegSession: any;
   if (getRegSession !== undefined) {
     decodedRegSession = DecryptSession(getRegSession);
@@ -50,9 +51,10 @@ const VerificationForm = () => {
   // console.info('decoded reg-session:', decodedRegSession);
   /* auth-session */
   const authSessionValue = session[`${authSession}`];
-  // console.info('auth session value', authSessionValue);
+  console.info('auth session value', authSessionValue);
   /* linkedin-session */
   const linkedinSessionValue = session[`${linkedinSession}`];
+  console.info('linkedin session: ', linkedinSessionValue);
   /* End Session Context */
 
   const handleFinish = async (otp: any) => {
@@ -114,7 +116,7 @@ const VerificationForm = () => {
       dispatch(setRegisterStep(4));
     } else if(linkedinSessionValue !== undefined) {
       console.info('user create account using linkedin...');
-      dispatch(setRegisterStep(5));
+      dispatch(setRegisterStep(1));
     };
   };
 

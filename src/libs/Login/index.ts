@@ -6,6 +6,7 @@ import prisma from '@/root/prisma';
 import { deleteSession, setUserSession } from '../Sessions';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { sendOTP } from '../Registration/verifications';
 
 type GreCaptcha = {
   secret: string;
@@ -123,6 +124,19 @@ export async function userAuth(formData: any) {
         date_of_birth: candidate?.date_of_birth
       }
     }, undefined);
+
+    /**
+     * Send OTP
+     * code here...
+     */
+    const sendingOTP = await sendOTP({ email: user.email });
+    console.info('sending otp...');
+    if(!sendingOTP.success) {
+      return {
+        success: false,
+        message: 'Error while sending OTP, please try login again'
+      };
+    };
 
     return {
       success: true,

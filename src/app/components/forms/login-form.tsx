@@ -53,13 +53,8 @@ const LoginForm: React.FC<LoginFormProps> = ({
     // console.log('callback token: ', value);
     setToken(value);
   };
-  // const [spinning, setSpinning] = useState<boolean>(false);
 
-  // const showLoader = () => {
-  //   setSpinning(false);
-  //   // setTimeout(() => {
-  //   // }, 3000);
-  // };
+  /* ACTIONS */
   const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
     setSpinning(true);
     console.log('Suubmitted data:', values);
@@ -68,7 +63,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
      * Verify captcha
      */
     const checkingCaptcha = await GReCaptchaV2Check(token);
-    // console.log('result checking captcha: ', checkingCaptcha);
+    console.log('result checking captcha: ', checkingCaptcha);
     if(!checkingCaptcha.success) {
       setSpinning(false);
       return message.error('Please verify that captcha!');
@@ -91,6 +86,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     router.push('/dashboard/user');
     setSpinning(false);
   };
+  /* END OF ACTIONS */
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
     errorInfo,

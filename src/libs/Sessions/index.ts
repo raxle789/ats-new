@@ -59,7 +59,7 @@ export async function setUserSession(sessionName: 'auth' | 'reg' | 'otp' | 'link
       break;
     case 'reg':
       const regSessionName = Utils.regSession;
-      const regExpires = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+      const regExpires = new Date(Date.now() + 1 * 60 * 1000);
       const encryptedRegSession = Jwt.EncryptSession(payload);
       /* set-session */
       cookies().set(regSessionName, encryptedRegSession as string, { expires: regExpires, httpOnly: false});
@@ -73,7 +73,7 @@ export async function setUserSession(sessionName: 'auth' | 'reg' | 'otp' | 'link
       break;
     case 'linkedin':
       const linkedinSessionName = Utils.linkedinSession;
-      const linkedinExpires = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000);
+      const linkedinExpires = new Date(Date.now() + 10 * 60 * 1000);
       const encryptedLinkedInSession = Jwt.EncryptSession(payload);
       /* set linkedin-session */
       cookies().set(linkedinSessionName, encryptedLinkedInSession as string, { expires: linkedinExpires, httpOnly: false });
