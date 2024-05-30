@@ -227,10 +227,12 @@
     color: $color-one;
     margin-bottom: 20px;
   }
-  .label-group-custom {
+  .label-group-custom1 {
     font-size: 16px;
-    margin-left: 3px;
     margin-right: 28px;
+  }
+  .label-group-custom2 {
+    font-size: 16px;
   }
   .radio-custom {
     transform: scale(1.4);
@@ -1971,4 +1973,81 @@
     font-size: 13px;
     color: black;
   }
+  .rating-icon {
+    font-size: 20px;
+    display: inline;
+    color: #898989;
+    margin-right: 14px;
+  }
+  .rating-icon2 {
+    font-size: 20px;
+    display: inline;
+    color: #898989;
+  }
+  .rating-active1 {
+    font-size: 20px;
+    display: inline;
+    color: #ff2730;
+    margin-right: 14px;
+  }
+  .rating-active2 {
+    font-size: 20px;
+    display: inline;
+    color: #eff824;
+    margin-right: 14px;
+  }
+  .rating-active3 {
+    font-size: 20px;
+    display: inline;
+    color: #29d259;
+  }
+
+  .rating-icon3 {
+    font-size: 13px;
+    display: inline;
+    color: #898989;
+    margin-right: 14px;
+  }
+  .rating-icon4 {
+    font-size: 15px;
+    display: inline;
+    color: #898989;
+    margin-right: 14px;
+  }
+
+  // .rating-icon1 {
+  //   font-size: 20px;
+  //   display: inline;
+  //   color: #898989;
+  //   margin-right: 14px;
+  // }
+  // .rating-icon1:active {
+  //   color: #ff2730;
+  // }
+  // .rating-icon1:focus {
+  //   color: #ff2730;
+  // }
+  // .rating-icon2 {
+  //   font-size: 20px;
+  //   display: inline;
+  //   color: #898989;
+  //   margin-right: 14px;
+  // }
+  // .rating-icon2:active {
+  //   color: #eff824;
+  // }
+  // .rating-icon2:focus {
+  //   color: #eff824;
+  // }
+  // .rating-icon3 {
+  //   font-size: 20px;
+  //   display: inline;
+  //   color: #898989;
+  // }
+  // .rating-icon3:active {
+  //   color: #29d259;
+  // }
+  // .rating-icon3:focus {
+  //   color: #29d259;
+  // }
 }

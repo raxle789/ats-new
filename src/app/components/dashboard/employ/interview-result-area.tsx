@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, InputNumber, Radio, message } from 'antd';
+import { Form, Input, InputNumber, Radio, message, Rate } from 'antd';
 import type { RadioChangeEvent, FormProps } from 'antd';
+import { FiThumbsDown } from 'react-icons/fi';
+import { FiThumbsUp } from 'react-icons/fi';
 
 const { TextArea } = Input;
 
@@ -43,15 +45,28 @@ interface FieldType {
   };
 }
 
+const desc = ['terrible', 'bad', 'normal', 'good'];
+
 const InterviewResultArea = () => {
+  // UseState
   const [form] = Form.useForm();
   const [radioValues, setRadioValues] = useState<number[]>([]);
   const [scoreTotal, setScoreTotal] = useState('');
+  const [rating, setRating] = useState<number[]>([
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  ]);
 
+  // Functions
   const onChange = (index: number, e: RadioChangeEvent) => {
     const newValues = [...radioValues];
     newValues[index] = e.target.value;
     setRadioValues(newValues);
+  };
+
+  const handleRatingClick = (index: number, value: number) => {
+    let stateChanged = [...rating];
+    stateChanged[index] = value;
+    setRating(stateChanged);
   };
 
   const handleSubmit: FormProps<FieldType>['onFinish'] = () => {
@@ -61,7 +76,6 @@ const InterviewResultArea = () => {
       ...values,
       resultInfo: { ...values.resultInfo, scoreTotal: scoreTotal },
     };
-    console.log('values: ', values);
   };
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
@@ -75,8 +89,9 @@ const InterviewResultArea = () => {
     }
   };
 
+  // UseEffect
   useEffect(() => {
-    console.log('radio values: ', radioValues);
+    // console.log('radio values: ', radioValues);
     if (radioValues) {
       const initialValue = 0;
       const sumWithInitial = radioValues.reduce(
@@ -88,11 +103,15 @@ const InterviewResultArea = () => {
       setScoreTotal(score);
     }
   }, [radioValues]);
+
+  useEffect(() => {
+    console.log('ratingUseEffect: ', rating);
+  }, [rating]);
   return (
     <>
       <div className="job-fpk-header mb-40 lg-mb-30">
         <div className="d-sm-flex align-items-start justify-content-between mb-40 lg-mb-30">
-          <h2 className="main-title m0 flex-grow-1">Interview Result Form</h2>
+          <h2 className="main-title m0 flex-grow-1">Interview Report Form</h2>
         </div>
       </div>
       <div className="bg-white card-box border-20">
@@ -278,62 +297,62 @@ const InterviewResultArea = () => {
                   Candidate has an educational/training background that is
                   relevant to the position
                 </label>
-                <div className="d-flex justify-content-center align-items-center">
-                  <div className="row">
-                    <div className="col-1 m-auto">
-                      <label className="label-group-custom">1</label>
-                    </div>
-                    <div className="col-1 m-auto">
-                      <label className="label-group-custom">2</label>
-                    </div>
-                    <div className="col-1 m-auto">
-                      <label className="label-group-custom">3</label>
-                    </div>
-                    <div className="col-1 m-auto">
-                      <label className="label-group-custom">4</label>
-                    </div>
+                <div className="row">
+                  <div className="col-2">
+                    <Form.Item<FieldType>
+                      name={['resultInfo', 'eduBackground']}
+                      className="mt-2 mb-0"
+                    >
+                      <div>
+                        {/* <button
+                          type="button"
+                          className={`${rating[0] === 1 ? 'rating-active1' : 'rating-icon'}`}
+                          onClick={() => handleRatingClick(0, 1)}
+                        >
+                          <FiThumbsDown />
+                        </button>
+                        <button
+                          type="button"
+                          className={`${rating[0] === 2 ? 'rating-active2' : 'rating-icon'}`}
+                          onClick={() => handleRatingClick(0, 2)}
+                        >
+                          <FiThumbsDown />
+                        </button>
+                        <button
+                          type="button"
+                          className={`${rating[0] === 3 ? 'rating-active2' : 'rating-icon'}`}
+                          onClick={() => handleRatingClick(0, 3)}
+                        >
+                          <FiThumbsUp />
+                        </button>
+                        <button
+                          type="button"
+                          className={`${rating[0] === 4 ? 'rating-active3' : 'rating-icon2'}`}
+                          onClick={() => handleRatingClick(0, 4)}
+                        >
+                          <FiThumbsUp />
+                        </button> */}
+                        <Rate
+                          tooltips={desc}
+                          onChange={(value) => handleRatingClick(0, value)}
+                          value={rating[0]}
+                          count={4}
+                        />
+                      </div>
+                    </Form.Item>
+                  </div>
+                  <div className="col-10">
+                    <Form.Item<FieldType>
+                      name={['resultInfo', 'eduBackgroundComment']}
+                      className="mb-0"
+                    >
+                      <TextArea
+                        placeholder="Comment"
+                        autoSize={{ minRows: 3, maxRows: 5 }}
+                      />
+                    </Form.Item>
                   </div>
                 </div>
-                <Form.Item<FieldType>
-                  name={['resultInfo', 'eduBackground']}
-                  className="mb-0"
-                >
-                  <Radio.Group
-                    className="d-flex justify-content-center align-items-center"
-                    // onChange={onChange}
-                    // value={value}
-                    value={radioValues[0]}
-                    onChange={(e) => onChange(0, e)}
-                  >
-                    <div className="row">
-                      <div className="col-1 m-auto">
-                        <Radio className="radio-custom" value={1}></Radio>
-                      </div>
-                      <div className="col-1 m-auto">
-                        <Radio className="radio-custom" value={2}></Radio>
-                      </div>
-                      <div className="col-1 m-auto">
-                        <Radio className="radio-custom" value={3}></Radio>
-                      </div>
-                      <div className="col-1 m-auto">
-                        <Radio className="radio-custom" value={4}></Radio>
-                      </div>
-                    </div>
-                  </Radio.Group>
-                </Form.Item>
-              </div>
-              <div className="input-group-meta position-relative mb-15">
-                <Form.Item<FieldType>
-                  name={['resultInfo', 'eduBackgroundComment']}
-                  className="mb-0"
-                >
-                  <TextArea
-                    // value={jobDescValue}
-                    // onChange={(e) => setJobDescValue(e.target.value)}
-                    placeholder="Comment"
-                    autoSize={{ minRows: 3, maxRows: 5 }}
-                  />
-                </Form.Item>
               </div>
             </div>
 

@@ -301,7 +301,9 @@ const InterviewItem = ({
                   <div>
                     {item?.candidateInterviews?.length ? (
                       <Select
-                        defaultValue={interviewValue + 1}
+                        defaultValue={
+                          item?.candidateInterviews[interviewValue]?.value
+                        }
                         style={{ width: '230px' }}
                         onChange={handleInterviewChange}
                         options={item?.candidateInterviews}
