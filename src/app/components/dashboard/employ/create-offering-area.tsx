@@ -510,8 +510,12 @@ const CreateOfferingArea = () => {
   }, [schemeOffer]);
 
   useEffect(() => {
-    const newMonthlyIncrease = monthlyTotalRight / monthlyTotalLeft - 1;
-    const newYearlyIncrease = annualTotalRight / annualTotalLeft - 1;
+    let newMonthlyIncrease = monthlyTotalRight / monthlyTotalLeft - 1;
+    newMonthlyIncrease = parseFloat(newMonthlyIncrease.toFixed(2));
+    newMonthlyIncrease = newMonthlyIncrease * 100;
+    let newYearlyIncrease = annualTotalRight / annualTotalLeft - 1;
+    newYearlyIncrease = parseFloat(newYearlyIncrease.toFixed(2));
+    newYearlyIncrease = newYearlyIncrease * 100;
     setMonthlyIncrease(newMonthlyIncrease);
     setYearlyIncrease(newYearlyIncrease);
     console.log('newMonthlyIncrease: ', newMonthlyIncrease);
@@ -1211,13 +1215,13 @@ const CreateOfferingArea = () => {
                   <p className="section-label mb-0">Monthly Increase</p>
                 </div>
                 <div className="col-lg-3">
-                  <p className="section-label mb-0">{`${isNaN(monthlyIncrease) ? '0' : monthlyIncrease.toFixed(2)}%`}</p>
+                  <p className="section-label mb-0">{`${isNaN(monthlyIncrease) ? '0' : monthlyIncrease.toFixed(0)}%`}</p>
                 </div>
                 <div className="col-lg-3">
                   <p className="section-label mb-0">Yearly Increase</p>
                 </div>
                 <div className="col-lg-3">
-                  <p className="section-label mb-0">{`${isNaN(yearlyIncrease) ? '0' : yearlyIncrease.toFixed(2)}%`}</p>
+                  <p className="section-label mb-0">{`${isNaN(yearlyIncrease) ? '0' : yearlyIncrease.toFixed(0)}%`}</p>
                 </div>
               </div>
             </div>
