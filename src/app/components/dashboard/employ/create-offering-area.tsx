@@ -511,10 +511,10 @@ const CreateOfferingArea = () => {
 
   useEffect(() => {
     let newMonthlyIncrease = monthlyTotalRight / monthlyTotalLeft - 1;
-    newMonthlyIncrease = parseFloat(newMonthlyIncrease.toFixed(2));
+    // newMonthlyIncrease = parseFloat(newMonthlyIncrease.toFixed(2));
     newMonthlyIncrease = newMonthlyIncrease * 100;
     let newYearlyIncrease = annualTotalRight / annualTotalLeft - 1;
-    newYearlyIncrease = parseFloat(newYearlyIncrease.toFixed(2));
+    // newYearlyIncrease = parseFloat(newYearlyIncrease.toFixed(2));
     newYearlyIncrease = newYearlyIncrease * 100;
     setMonthlyIncrease(newMonthlyIncrease);
     setYearlyIncrease(newYearlyIncrease);
