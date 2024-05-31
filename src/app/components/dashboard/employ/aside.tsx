@@ -49,13 +49,13 @@ const nav_data: {
   subLink?: subLink[];
   title: string;
 }[] = [
-  // {
-  //   id: 1,
-  //   icon: nav_1,
-  //   icon_active: nav_1_active,
-  //   link: '/dashboard/ta',
-  //   title: 'Dashboard',
-  // },
+  {
+    id: 1,
+    icon: nav_1,
+    icon_active: nav_1_active,
+    link: '/dashboard/ta',
+    title: 'Dashboard',
+  },
   // {
   //   id: 2,
   //   icon: nav_2,

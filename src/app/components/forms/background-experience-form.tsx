@@ -10,10 +10,7 @@ import {
   InputNumber,
   message,
 } from 'antd';
-import type {
-  FormProps,
-  RadioChangeEvent,
-} from 'antd';
+import type { FormProps, RadioChangeEvent } from 'antd';
 // import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
 // import { getExperiences } from '@/libs/Candidate/retrieve-data';
@@ -68,15 +65,15 @@ const BackgroundExperienceForm = () => {
     await Promise.all([
       fetchJobFunctions(setMasterData),
       jobJobLevels(setMasterData),
-      lineIndutries(setMasterData)
+      lineIndutries(setMasterData),
     ]);
   };
 
   const fetchExperiences = async () => {
     const experiencesData = await getCandidateExperiences();
-    if(!experiencesData.success) {
+    if (!experiencesData.success) {
       return message.error(experiencesData.message);
-    };
+    }
     return setExperiences(experiencesData.data);
   };
 
@@ -88,13 +85,12 @@ const BackgroundExperienceForm = () => {
     fetchData();
   }, []);
 
-  const [editState, setEditState] = useState(false)
+  const [editState, setEditState] = useState(false);
 
   const [expValue, setExpValue] = useState<string>('Professional');
   const onChangeExp = (e: RadioChangeEvent) => {
     setExpValue(e.target.value);
   };
-
 
   const editOnChange = () => {
     setEditState(!editState);
@@ -215,15 +211,36 @@ const BackgroundExperienceForm = () => {
                 showSearch
                 placeholder="Your Position Level"
                 optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label.toLowerCase() ?? '').includes(input)
-                }
+                // filterOption={(input, option) =>
+                //   (option?.label.toLowerCase() ?? '').includes(input)
+                // }
                 filterSort={(optionA, optionB) =>
                   (optionA?.label ?? '')
                     .toLowerCase()
                     .localeCompare((optionB?.label ?? '').toLowerCase())
                 }
-                options={masterData?.job_levels}
+                // options={masterData?.job_levels}
+                options={[
+                  { value: 'Director', label: 'Director' },
+                  { value: 'VP', label: 'VP' },
+                  {
+                    value: 'General Manager',
+                    label: 'General Manager',
+                  },
+                  { value: 'Manager', label: 'Manager' },
+                  {
+                    value: 'Assistant Manager',
+                    label: 'Assistant Manager',
+                  },
+                  {
+                    value: 'Supervisor',
+                    label: 'Supervisor',
+                  },
+                  {
+                    value: 'Staff',
+                    label: 'Staff',
+                  },
+                ]}
               />
             </Form.Item>
           </div>
@@ -671,10 +688,7 @@ const BackgroundExperienceForm = () => {
             {editState && (
               <div className="col-12">
                 <div className="input-group-meta position-relative mb-15">
-                  <Form.Item<FieldType>
-                    name="expOption"
-                    className="mb-0"
-                  >
+                  <Form.Item<FieldType> name="expOption" className="mb-0">
                     <Radio.Group onChange={onChangeExp} value={expValue}>
                       <Radio className="d-flex" value="Fresh Graduate">
                         Fresh Graduate
@@ -737,6 +751,48 @@ const BackgroundExperienceForm = () => {
                 items={displayedItems}
               />
             )}
+
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-15">
+                <label className="fw-bold">
+                  How long your notice period?
+                  <span style={{ color: '#ff1818' }}>*</span>
+                </label>
+                <Form.Item<FieldType>
+                  // name={['others', 'noticePeriod']}
+                  className="mb-0"
+                  // validateStatus={
+                  //   errors && errors?.others?.noticePeriod ? 'error' : ''
+                  // }
+                  // help={errors?.others?.noticePeriod?._errors.toString()}
+                >
+                  {editState && (
+                    <Select
+                      className="w-100"
+                      placeholder="Your Notice Period"
+                      options={[
+                        { value: 'Ready join now', label: 'Ready join now' },
+                        {
+                          value: 'Less than 1 month',
+                          label: 'Less than 1 month',
+                        },
+                        { value: '1 month', label: '1 month' },
+                        { value: '2 months', label: '2 months' },
+                        { value: '3 months', label: '3 months' },
+                        {
+                          value: 'More than 3 months',
+                          label: 'More than 3 months',
+                        },
+                      ]}
+                    />
+                  )}
+                  {!editState && (
+                    // <p className="mb-0">{experiences?.expectedSalary}</p>
+                    <p className="mb-0">{experiences?.expectedSalary}</p>
+                  )}
+                </Form.Item>
+              </div>
+            </div>
 
             {editState && (
               <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
