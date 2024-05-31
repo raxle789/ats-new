@@ -59,7 +59,7 @@ export async function setUserSession(sessionName: 'auth' | 'reg' | 'otp' | 'link
       break;
     case 'reg':
       const regSessionName = Utils.regSession;
-      const regExpires = new Date(Date.now() + 1 * 60 * 1000);
+      const regExpires = new Date(Date.now() + 1 * 60 * 60 * 1000);
       const encryptedRegSession = Jwt.EncryptSession(payload);
       /* set-session */
       cookies().set(regSessionName, encryptedRegSession as string, { expires: regExpires, httpOnly: false});

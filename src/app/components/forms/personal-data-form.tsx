@@ -1,50 +1,32 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import ImageNext from 'next/image';
 import {
   Input,
   Form,
   Select,
   DatePicker,
-  Tabs,
-  Radio,
-  Modal,
   Checkbox,
-  InputNumber,
-  Button,
-  Divider,
-  Space,
   Image,
   Upload,
   message,
 } from 'antd';
 import type {
-  DatePickerProps,
   FormProps,
-  RadioChangeEvent,
-  InputRef,
   CheckboxProps,
   GetProp,
   UploadProps,
   UploadFile,
 } from 'antd';
-import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import {
-  getAddress,
-  getEducation,
-  getEmergency,
-  getFamilies,
-  getLanguages,
-  getOnePDF,
-  getProfileNCandidate,
-  getQuestions,
-  getSkills,
+  getCandidateProfile,
 } from '@/libs/Candidate/retrieve-data';
 import { loading, success } from '@/utils/message';
 import dayjs, { Dayjs } from 'dayjs';
 import { convertToPlainObject, fileToBase64 } from '@/libs/Registration/utils';
 import { updateCandidateProfile } from '@/libs/Candidate/actions';
-import { Document, Page } from 'react-pdf';
+import { fetchCities, fetchCountries, fetchEthnicity } from '@/libs/Fetch';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
@@ -57,7 +39,7 @@ const getBase64 = (file: FileType): Promise<string> =>
     reader.onerror = (error) => reject(error);
   });
 
-type FieldType = {
+export type FieldType = {
   profile?: {
     uploadPhoto?: UploadFile;
     fullname?: string;
@@ -71,7 +53,7 @@ type FieldType = {
     bloodType?: string;
     maritalStatus?: string;
   };
-  addressCheckbox?: string;
+  addressCheckbox?: string | boolean;
   address?: {
     permanentAddress?: string;
     country?: string;
@@ -85,7 +67,7 @@ type FieldType = {
   };
 };
 
-type MasterData = {
+export type MasterData = {
   citys?: {
     value: string;
     label: string;
@@ -94,19 +76,7 @@ type MasterData = {
     value: string;
     label: string;
   }[];
-  countrys?: {
-    value: number;
-    label: string;
-  }[];
-  job_levels?: {
-    value: number;
-    label: string;
-  }[];
-  job_functions?: {
-    value: number;
-    label: string;
-  }[];
-  line_industries?: {
+  countries?: {
     value: string;
     label: string;
   }[];
@@ -114,132 +84,32 @@ type MasterData = {
 
 const PersonalDataForm = () => {
   const [form] = Form.useForm();
-  const [messageApi, contextHolder] = message.useMessage();
-  // success(messageApi, 'Fetching Data...');
   const [editState, setEditState] = useState(false);
   const editOnChange = () => {
     setEditState(!editState);
   };
-  const [citysName, setCitysName] = useState<
-    { value: string; label: string }[] | null
-  >(null);
+  /* Master Data */
   const [masterData, setMasterData] = useState<MasterData | null>(null);
-  /* From Fetched */
-  const [profileData, setProfileData] = useState<any>({});
-  const [addresses, setAddresses] = useState<any>({});
-  const [families, setFamilies] = useState<any>({});
-  const [education, setEducation] = useState<any>({});
-  const [skills, setSkills] = useState<any>({});
-  const [languages, setLanguages] = useState<any>({});
-  const [emergency, setEmergency] = useState<any>({});
-  const [questions, setQuestions] = useState<any>({});
-  const [error, setError] = useState<string>('');
-  console.info('Profile Data: ', profileData);
-
+  const [profileData, setProfileData] = useState<any | null>(null);
+  const [errors, setErrors] = useState<string>('');
+  /* Fetch Form Data */
   const fetchProfileData = async () => {
-    const profileData = await getProfileNCandidate();
-    if (!profileData.success)
-      return message.error(profileData.message as string);
-    setPreviewImage(profileData.data?.document);
-    return setProfileData(profileData.data?.profile);
+    const profileData = await getCandidateProfile();
+    console.info('client:profile-data -> ', profileData);
+    if(!profileData.success) {
+      return setErrors(profileData.message);
+    };
+    return setProfileData(profileData.data);
   };
-
-  const fetchAddress = async () => {
-    const addressesData = await getAddress();
-    if (!addressesData.success)
-      return message.error(addressesData.message as string);
-    setAddresses(addressesData.data);
-  };
-
-  // const fetchFamilies = async () => {
-  //   const familiesData = await getFamilies();
-  //   if (!familiesData.success) return setError(familiesData.message as string);
-  //   return setFamilies(familiesData.data);
-  // };
-
-  // const fetchEducation = async () => {
-  //   const educationData = await getEducation();
-  //   if (!educationData.success)
-  //     return message.error(educationData.message as string);
-  //   return setEducation(educationData.data);
-  // };
-
-  // const fetchSkills = async () => {
-  //   const skillsData = await getSkills();
-  //   if (!skillsData.success) return message.error(skillsData.message as string);
-  //   return setSkills(skillsData.data);
-  // };
-
-  // const fetchLanguages = async () => {
-  //   const languagesData = await getLanguages();
-  //   if (!languagesData.success)
-  //     return message.error(languagesData.message as string);
-  //   return setLanguages(languagesData.data);
-  // };
-
-  // const fetchEmergency = async () => {
-  //   const emergencyData = await getEmergency();
-  //   if (!emergencyData.success)
-  //     return message.error(emergencyData.message as string);
-  //   return setEmergency(emergencyData.data);
-  // };
-
-  // const fetchQuestions = async () => {
-  //   const questionsData = await getQuestions();
-  //   if (!questionsData.success)
-  //     return message.error(questionsData.message as string);
-  //   return setQuestions(questionsData.data);
-  // };
-
-  /* Fetching Master Data */
-  const fetchCitys = async () => {
-    const citys = await fetch('/api/client-data/citys', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const citysData = await citys.json();
-    console.log('cityData: ', citysData);
-    setMasterData((prevState) => ({
-      ...prevState,
-      citys: citysData,
-    }));
-    const citysNameOnly: { value: string; label: string }[] = citysData;
-    citysNameOnly.forEach((city) => (city.value = city.label));
-    setCitysName(citysNameOnly);
-  };
-
-  const fetchEthnicity = async () => {
-    const ethnicity = await fetch('/api/client-data/ethnicity', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const ethnicityData = await ethnicity.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      ethnicity: ethnicityData,
-    }));
-  };
-
-  const fetchCountrys = async () => {
-    const countrys = await fetch('/api/client-data/countrys', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const countrysData = await countrys.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      countrys: countrysData,
-    }));
+  const fetchData = async () => {
+    await Promise.all([
+      fetchCities(setMasterData),
+      fetchEthnicity(setMasterData),
+      fetchCountries(setMasterData),
+    ]);
   };
 
   const [pdf, setPDF] = useState<string | File>('');
-  console.log('pdfbase64: ', pdf);
 
   const [pageNumber, setPageNumber] = useState<number>(1);
 
@@ -247,37 +117,21 @@ const PersonalDataForm = () => {
     setPageNumber(numPages);
   }
 
-  const fetchCVDocument = async () => {
-    console.log('Begin fetch documents...');
-    const cv = await getOnePDF();
-    console.log('Got cv: ', cv);
-    console.log('getting cv: ', cv);
-    if (cv) {
-      const pdfFile = await fetch(cv.data as string);
-      const blobFile = await pdfFile.blob();
-      const newFile = new File([blobFile], 'pdf-cv', {
-        type: 'application/pdf',
-      });
-      console.info('NEW FILE: ', newFile);
-      return setPDF(cv.data as string);
-    }
-  };
-
-  useEffect(() => {
-    fetchProfileData();
-    fetchAddress();
-    fetchCVDocument();
-    // fetchFamilies();
-    // fetchEducation();
-    // fetchSkills();
-    // fetchLanguages();
-    // fetchEmergency();
-    // fetchQuestions();
-
-    fetchCitys();
-    fetchEthnicity();
-    fetchCountrys();
-  }, [editState]);
+  // const fetchCVDocument = async () => {
+  //   console.log('Begin fetch documents...');
+  //   const cv = await getOnePDF();
+  //   console.log('Got cv: ', cv);
+  //   console.log('getting cv: ', cv);
+  //   if (cv) {
+  //     const pdfFile = await fetch(cv.data as string);
+  //     const blobFile = await pdfFile.blob();
+  //     const newFile = new File([blobFile], 'pdf-cv', {
+  //       type: 'application/pdf',
+  //     });
+  //     console.info('NEW FILE: ', newFile);
+  //     return setPDF(cv.data as string);
+  //   }
+  // };
 
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
@@ -371,84 +225,44 @@ const PersonalDataForm = () => {
     }
   };
 
+  useLayoutEffect(() => {
+    fetchData();
+  }, []);
+  // useEffect(() => {
+  //   fetchProfileData()
+  // }, [editState]);
   useEffect(() => {
+    fetchProfileData();
     form.setFieldsValue({
       profile: {
-        email: profileData.candidate?.users?.email,
-        fullname: profileData.candidate?.users.name,
-        phoneNumber: profileData.candidate?.phone_number,
-        dateOfBirth: dayjs(profileData.candidate?.date_of_birth),
-        placeOfBirth: profileData.candidate?.birthCity,
-        gender: profileData.candidate?.gender,
-        religion: profileData.candidate?.religion,
-        ethnicity: profileData.candidate?.ethnicity,
-        bloodType: profileData.candidate?.blood_type,
-        maritalStatus: profileData.candidate?.maritalStatus,
+        email: profileData?.users?.email,
+        fullname: profileData?.users?.name,
+        phoneNumber: profileData?.phone_number,
+        dateOfBirth: dayjs(profileData?.date_of_birth),
+        placeOfBirth: profileData?.birthCity,
+        gender: profileData?.gender,
+        religion: profileData?.religion,
+        ethnicity: profileData?.ethnicity,
+        bloodType: profileData?.blood_type,
+        maritalStatus: profileData?.maritalStatus,
       },
-      addressCheckbox: addresses.length === 2 ? false : true,
+      addressCheckbox: profileData?.addresses[0]?.currentAddress ? true : false,
       address: {
-        permanentAddress: addresses[0]?.street,
-        country: addresses[0]?.country,
-        rt: addresses[0]?.rt,
-        rw: addresses[0]?.rw,
-        city: addresses[0]?.city,
-        subdistrict: addresses[0]?.subdistrict,
-        village: addresses[0]?.village,
-        zipCode: addresses[0]?.zipCode,
-        currentAddress:
-          addresses.length === 2
-            ? addresses[1]?.currentAddress
-            : addresses[0]?.street,
+        permanentAddress: profileData?.addresses[0]?.street,
+        country: profileData?.addresses[0]?.country,
+        rt: profileData?.addresses[0]?.rt,
+        rw: profileData?.addresses[0]?.rw,
+        city: profileData?.addresses[0]?.city,
+        subdistrict: profileData?.addresses[0]?.subdistrict,
+        village: profileData?.addresses[0]?.village,
+        zipCode: profileData?.addresses[0]?.zipCode,
+        currentAddress: profileData?.addresses[0]?.currentAddres,
       },
-      // families: {
-      //   0: {
-      //     relation: families[0]?.relationStatus,
-      //     name: families[0]?.name,
-      //     gender: families[0]?.gender,
-      //     dateOfBirth: dayjs(families[0]?.dateOfBirth),
-      //   },
-      //   1: {
-      //     relation: families[1]?.relationStatus,
-      //     name: families[1]?.name,
-      //     gender: families[1]?.gender,
-      //     dateOfBirth: dayjs(families[1]?.dateOfBirth),
-      //   },
-      // },
-      // skills: skills,
-      // education: {
-      //   educationLevel: education?.level,
-      //   educationMajor: education?.major,
-      //   schoolName: education?.university_name,
-      //   gpa: education?.gpa,
-      //   cityOfSchool: education?.cityOfSchool,
-      //   startEduYear: dayjs(education?.start_year),
-      //   endEduYear: dayjs(education?.end_year),
-      // },
-      // language: languages,
-      // others: {
-      //   emergencyContactName: emergency?.name,
-      //   emergencyContactPhoneNumber: emergency?.phoneNumber,
-      //   emergencyContactRelation: emergency?.relationStatus,
-      //   noticePeriod: questions[0],
-      //   diseaseName: questions[1],
-      //   diseaseYear: '2027',
-      //   relationName: 'Wika Salim',
-      //   relationPosition: 'Mantan Istri',
-      // },
-    });
-    if (profileData === null) {
-      loading(messageApi, 'Fetching Data...');
-    } else {
-      messageApi.destroy;
-    }
-  }, [profileData, addresses, families, education, skills]);
+    },);
+
+  }, [editState]);
   return (
     <>
-      {contextHolder}
-      {/* <Document file={pdf}>
-        <Page>
-        </Page>
-      </Document> */}
       <div>
         <div className="mb-25">
           <button
@@ -472,7 +286,8 @@ const PersonalDataForm = () => {
                 <label className="fw-bold">Upload Photo*</label>
                 {!editState && (
                   <ImageNext
-                    src={previewImage}
+                    // src={previewImage}
+                    src={profileData?.documents}
                     alt="Profile"
                     width={60}
                     height={60}
@@ -481,12 +296,6 @@ const PersonalDataForm = () => {
                 <Form.Item<FieldType>
                   name={['profile', 'uploadPhoto']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please upload your photo!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <div>
@@ -538,20 +347,15 @@ const PersonalDataForm = () => {
                 </label>
                 <Form.Item<FieldType>
                   name={['profile', 'fullname']}
-                  // rules={[
-                  //   { required: true, message: 'Please input your fullname!' },
-                  // ]}
                 >
                   {editState && (
                     <Input
                       placeholder="Your Full Name"
                       disabled={!editState}
-                      // defaultValue={regSessionDecoded.user?.name ?? ''}
-                      // value={regSessionDecoded.user?.name ?? ''}
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">{profileData.candidate?.users?.name}</p>
+                    <p className="mb-0">{profileData?.users?.name}</p>
                   )}
                 </Form.Item>
               </div>
@@ -559,19 +363,16 @@ const PersonalDataForm = () => {
                 <label className="fw-bold">Email*</label>
                 <Form.Item<FieldType>
                   name={['profile', 'email']}
-                  // rules={[{ required: true, message: 'Please input your email!' }]}
                 >
                   {editState && (
                     <Input
                       placeholder="Your Email"
                       disabled
-                      defaultValue={profileData.candidate?.users?.email}
-                      // defaultValue={regSessionDecoded.user?.email ?? ''}
                     />
                   )}
                   {!editState && (
                     <p className="mb-0">
-                      {profileData.candidate?.users?.email}
+                      {profileData?.users?.email}
                     </p>
                   )}
                 </Form.Item>
@@ -582,23 +383,16 @@ const PersonalDataForm = () => {
                 <label className="fw-bold">Phone Number*</label>
                 <Form.Item<FieldType>
                   name={['profile', 'phoneNumber']}
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please input your phone number!',
-                    },
-                  ]}
                 >
                   {editState && (
                     <Input
                       placeholder="Your Phone Number"
                       disabled={!editState}
-                      // defaultValue={regSessionDecoded.candidate?.phone_number ?? ''}
                     />
                   )}
                   {!editState && (
                     <p className="mb-0">
-                      {profileData.candidate?.phone_number}
+                      {profileData?.phone_number}
                     </p>
                   )}
                 </Form.Item>
@@ -607,26 +401,17 @@ const PersonalDataForm = () => {
                 <label className="fw-bold">Date of Birth*</label>
                 <Form.Item<FieldType>
                   name={['profile', 'dateOfBirth']}
-                  rules={[
-                    {
-                      required: true,
-                      message: 'Please input your date of birth!',
-                    },
-                  ]}
                 >
                   {editState && (
                     <DatePicker
                       className="w-100"
-                      // defaultValue={dayjs(
-                      //   `${regSessionDecoded.candidate?.date_of_birth ?? '-'}`,
-                      // )}
                       placeholder="Select Date"
                       disabled={!editState}
                     />
                   )}
                   {!editState && (
                     <p className="mb-0">
-                      {dayjs(profileData.candidate?.date_of_birth).format(
+                      {dayjs(profileData?.date_of_birth).format(
                         'YYYY-MM-DD',
                       )}
                     </p>
@@ -640,12 +425,6 @@ const PersonalDataForm = () => {
                 <Form.Item<FieldType>
                   name={['profile', 'placeOfBirth']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your place of birth!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Select
@@ -663,12 +442,11 @@ const PersonalDataForm = () => {
                       }
                       disabled={!editState}
                       /* Feted Data */
-                      // options={citysName as { value: string; label: string }[]}
                       options={masterData?.citys}
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">{profileData.candidate?.birthCity}</p>
+                    <p className="mb-0">{profileData?.birthCity}</p>
                   )}
                 </Form.Item>
               </div>
@@ -679,12 +457,6 @@ const PersonalDataForm = () => {
                 <Form.Item<FieldType>
                   name={['profile', 'gender']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your gender!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Select
@@ -698,7 +470,7 @@ const PersonalDataForm = () => {
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">{profileData.candidate?.gender}</p>
+                    <p className="mb-0">{profileData?.gender}</p>
                   )}
                 </Form.Item>
               </div>
@@ -709,12 +481,6 @@ const PersonalDataForm = () => {
                 <Form.Item<FieldType>
                   name={['profile', 'religion']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your religion!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Select
@@ -760,7 +526,7 @@ const PersonalDataForm = () => {
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">{profileData.candidate?.religion}</p>
+                    <p className="mb-0">{profileData?.religion}</p>
                   )}
                 </Form.Item>
               </div>
@@ -771,12 +537,6 @@ const PersonalDataForm = () => {
                 <Form.Item<FieldType>
                   name={['profile', 'ethnicity']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your ethnicity!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Select
@@ -798,7 +558,7 @@ const PersonalDataForm = () => {
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">{profileData.candidate?.ethnicity}</p>
+                    <p className="mb-0">{profileData?.ethnicity}</p>
                   )}
                 </Form.Item>
               </div>
@@ -824,7 +584,7 @@ const PersonalDataForm = () => {
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">{profileData.candidate?.blood_type}</p>
+                    <p className="mb-0">{profileData?.blood_type}</p>
                   )}
                 </Form.Item>
               </div>
@@ -835,12 +595,6 @@ const PersonalDataForm = () => {
                 <Form.Item<FieldType>
                   name={['profile', 'maritalStatus']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your marital status!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Select
@@ -880,7 +634,7 @@ const PersonalDataForm = () => {
                   )}
                   {!editState && (
                     <p className="mb-0">
-                      {profileData.candidate?.maritalStatus}
+                      {profileData?.maritalStatus}
                     </p>
                   )}
                 </Form.Item>
@@ -896,12 +650,6 @@ const PersonalDataForm = () => {
                 <Form.Item<FieldType>
                   name={['address', 'permanentAddress']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your permanent address!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Input
@@ -909,7 +657,7 @@ const PersonalDataForm = () => {
                       disabled={!editState}
                     />
                   )}
-                  {!editState && <p className="mb-0">{addresses[0]?.street}</p>}
+                  {!editState && <p className="mb-0">{profileData?.addresses[0]?.street}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -919,12 +667,6 @@ const PersonalDataForm = () => {
                 <Form.Item<FieldType>
                   name={['address', 'country']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your country!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Select
@@ -943,11 +685,11 @@ const PersonalDataForm = () => {
                       }
                       disabled={!editState}
                       /* Fetched Data */
-                      options={masterData?.countrys}
+                      options={masterData?.countries}
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">{addresses[0]?.country}</p>
+                    <p className="mb-0">{profileData?.addresses[0]?.country}</p>
                   )}
                 </Form.Item>
               </div>
@@ -958,12 +700,6 @@ const PersonalDataForm = () => {
                 <Form.Item<FieldType>
                   name={['address', 'city']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your city!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Select
@@ -981,10 +717,10 @@ const PersonalDataForm = () => {
                       }
                       disabled={!editState}
                       /* Fetched Data */
-                      options={citysName as { value: string; label: string }[]}
+                      options={masterData?.citys}
                     />
                   )}
-                  {!editState && <p className="mb-0">{addresses[0]?.city}</p>}
+                  {!editState && <p className="mb-0">{profileData?.addresses[0]?.city}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -994,18 +730,12 @@ const PersonalDataForm = () => {
                 <Form.Item<FieldType>
                   name={['address', 'zipCode']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your zip code!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Input placeholder="Your Zip Code" disabled={!editState} />
                   )}
                   {!editState && (
-                    <p className="mb-0">{addresses[0]?.zipCode}</p>
+                    <p className="mb-0">{profileData?.addresses[0]?.zipCode}</p>
                   )}
                 </Form.Item>
               </div>
@@ -1016,22 +746,16 @@ const PersonalDataForm = () => {
                 <Form.Item<FieldType>
                   name={['address', 'rt']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your RT!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Input
                       placeholder="Your RT"
                       disabled={
-                        !editState || addresses[0]?.country !== 'Indonesia'
+                        !editState || profileData?.addresses[0]?.country !== 'Indonesia'
                       }
                     />
                   )}
-                  {!editState && <p className="mb-0">{addresses[0]?.rt}</p>}
+                  {!editState && <p className="mb-0">{Boolean(profileData?.addresses[0]?.rt) ? profileData?.addresses[0]?.rt : '-'}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -1041,22 +765,16 @@ const PersonalDataForm = () => {
                 <Form.Item<FieldType>
                   name={['address', 'rw']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your RW!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Input
                       placeholder="Your RW"
                       disabled={
-                        !editState || addresses[0]?.country !== 'Indonesia'
+                        !editState || profileData?.addresses[0]?.country !== 'Indonesia'
                       }
                     />
                   )}
-                  {!editState && <p className="mb-0">{addresses[0]?.rw}</p>}
+                  {!editState && <p className="mb-0">{Boolean(profileData?.addresses[0]?.rw) ? profileData?.addresses[0]?.rw : '-'}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -1066,23 +784,17 @@ const PersonalDataForm = () => {
                 <Form.Item<FieldType>
                   name={['address', 'subdistrict']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your subdistrict!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Input
                       placeholder="Your Subdistrict"
                       disabled={
-                        !editState || addresses[0]?.country !== 'Indonesia'
+                        !editState || profileData?.addresses[0]?.country !== 'Indonesia'
                       }
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">{addresses[0]?.subdistrict}</p>
+                    <p className="mb-0">{Boolean(profileData?.addresses[0]?.subdistrict) ? profileData?.addresses[0]?.subdistrict : '-'}</p>
                   )}
                 </Form.Item>
               </div>
@@ -1093,23 +805,17 @@ const PersonalDataForm = () => {
                 <Form.Item<FieldType>
                   name={['address', 'village']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your village!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Input
                       placeholder="Your Village"
                       disabled={
-                        !editState || addresses[0]?.country !== 'Indonesia'
+                        !editState || profileData?.addresses[0]?.country !== 'Indonesia'
                       }
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">{addresses[0]?.village}</p>
+                    <p className="mb-0">{Boolean(profileData?.addresses[0]?.village)? profileData?.addresses[0]?.village  : '-'}</p>
                   )}
                 </Form.Item>
               </div>
@@ -1122,7 +828,7 @@ const PersonalDataForm = () => {
                       <Checkbox
                         onChange={handleAddressCheck}
                         disabled={!editState}
-                        checked={addresses.length === 2 ? false : true}
+                        checked={profileData?.addresses[0]?.currentAddress === null ? true : false}
                       >
                         Same as Permanent Address
                       </Checkbox>
@@ -1146,9 +852,9 @@ const PersonalDataForm = () => {
                   )}
                   {!editState && (
                     <p className="mb-0">
-                      {addresses.length === 2
-                        ? addresses[1]?.currentAddress
-                        : addresses[0]?.street}
+                      {
+                        profileData?.addresses[0]?.currentAddress ?? '-'
+                      }
                     </p>
                   )}
                 </Form.Item>

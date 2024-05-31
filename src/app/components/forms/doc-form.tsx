@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+'use client';
+
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import type { UploadProps, FormProps } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { Upload, Button, message, Input, Form } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
+import { getCandidateDocuments } from '@/libs/Candidate/retrieve-data';
+import { Document, Page } from 'react-pdf';
+import { StyleSheet } from '@react-pdf/renderer';
 
 type FieldType = {
   idFile?: string;
@@ -43,6 +48,36 @@ const props: UploadProps = {
 
 const DocumentForm = () => {
   const [editState, setEditState] = useState(false);
+  const [documentPDF, setDocumentPDF] = useState<string>('');
+  const [displayPDF, setDisplayPDF] = useState<File | null>(null);
+  console.info('pdf-file:', displayPDF);
+
+  const styles = StyleSheet.create({
+    page: {
+      flexDirection: 'row',
+      backgroundColor: '#E4E4E4',
+    },
+    section: {
+      margin: 10,
+      padding: 10,
+      flexGrow: 1,
+    },
+  });
+
+  const fetchDocumentPDF = async () => {
+    const stringBase64 = await getCandidateDocuments();
+    const toReqFile = await fetch(stringBase64.data as string);
+    
+    const blob = await toReqFile.blob();
+    console.info('blob: ', blob);
+    const toFile = new File([blob], 'newFile.pdf', {
+      type: blob.type,
+      lastModified: Date.now()
+    });
+    setDisplayPDF(toFile);
+    console.info('new-file: ', toFile);
+  };
+
   const editOnChange = () => {
     setEditState(!editState);
   };
@@ -62,8 +97,20 @@ const DocumentForm = () => {
       message.error(`Failed: ${errorMessage}`);
     }
   };
+
+  useEffect(() => {
+    /* test-document */
+    fetchDocumentPDF();
+  }, []);
   return (
     <>
+      {displayPDF !== null &&
+        <div>
+          <Document file={displayPDF} >
+            <Page pageNumber={1} />
+          </Document>
+        </div>
+      }
       <div>
         <div className="mb-25">
           <button
@@ -87,12 +134,6 @@ const DocumentForm = () => {
                 <Form.Item<FieldType>
                   name="idNumber"
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please upload id/pasport file!',
-                  //   },
-                  // ]}
                 >
                   <Input
                     placeholder="Your ID/Pasport Number"
@@ -107,12 +148,6 @@ const DocumentForm = () => {
                 <Form.Item<FieldType>
                   name="idFile"
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please upload id/pasport file!',
-                  //   },
-                  // ]}
                 >
                   <Upload {...props} disabled={!editState}>
                     <Button icon={<UploadOutlined />}>Upload File</Button>
@@ -126,12 +161,6 @@ const DocumentForm = () => {
                 <Form.Item<FieldType>
                   name="npwpNumber"
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please upload id/pasport file!',
-                  //   },
-                  // ]}
                 >
                   <Input placeholder="Your NPWP Number" disabled={!editState} />
                 </Form.Item>
@@ -143,12 +172,6 @@ const DocumentForm = () => {
                 <Form.Item<FieldType>
                   name="npwp"
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please upload id/pasport file!',
-                  //   },
-                  // ]}
                 >
                   <Upload {...props} disabled={!editState}>
                     <Button icon={<UploadOutlined />}>Upload File</Button>
@@ -162,12 +185,6 @@ const DocumentForm = () => {
                 <Form.Item<FieldType>
                   name="kkNumber"
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please upload id/pasport file!',
-                  //   },
-                  // ]}
                 >
                   <Input
                     placeholder="Your Family Register Number"
@@ -182,12 +199,6 @@ const DocumentForm = () => {
                 <Form.Item<FieldType>
                   name="kk"
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please upload id/pasport file!',
-                  //   },
-                  // ]}
                 >
                   <Upload {...props} disabled={!editState}>
                     <Button icon={<UploadOutlined />}>Upload File</Button>
@@ -201,12 +212,6 @@ const DocumentForm = () => {
                 <Form.Item<FieldType>
                   name="bankAccountNumber"
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please upload id/pasport file!',
-                  //   },
-                  // ]}
                 >
                   <Input
                     placeholder="Your Bank Account Number"
@@ -221,12 +226,6 @@ const DocumentForm = () => {
                 <Form.Item<FieldType>
                   name="bankAccount"
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please upload id/pasport file!',
-                  //   },
-                  // ]}
                 >
                   <Upload {...props} disabled={!editState}>
                     <Button icon={<UploadOutlined />}>Upload File</Button>
@@ -240,12 +239,6 @@ const DocumentForm = () => {
                 <Form.Item<FieldType>
                   name="latestEducation"
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please upload id/pasport file!',
-                  //   },
-                  // ]}
                 >
                   <Upload {...props} disabled={!editState}>
                     <Button icon={<UploadOutlined />}>Upload File</Button>
@@ -259,12 +252,6 @@ const DocumentForm = () => {
                 <Form.Item<FieldType>
                   name="healthCertificate"
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please upload id/pasport file!',
-                  //   },
-                  // ]}
                 >
                   <Upload {...props} disabled={!editState}>
                     <Button icon={<UploadOutlined />}>Upload File</Button>

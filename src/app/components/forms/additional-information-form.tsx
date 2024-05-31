@@ -13,10 +13,9 @@ import {
 import type { FormProps, RadioChangeEvent } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
-import { success } from '../../../utils/message';
-import { getAdditionalInformations } from '@/libs/Candidate/retrieve-data';
+// import { getAdditionalInformations } from '@/libs/Candidate/retrieve-data';
 import dayjs, { Dayjs } from 'dayjs';
-import { Index } from 'typeorm';
+import { getAdditionalInformations } from '@/libs/Candidate/retrieve-data';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
@@ -70,6 +69,7 @@ const AdditionalInformationForm = () => {
   };
 
   useEffect(() => {
+    /* Candidate data */
     fetchAdditionalInformations();
   }, []);
 
@@ -92,17 +92,6 @@ const AdditionalInformationForm = () => {
             <Form.Item<FieldType>
               name={['families', index.toString(), 'relation']}
               className="mb-0"
-              // rules={
-              //   marriedValue === 'Married'
-              //     ? [
-              //         {
-              //           required: true,
-              //           message:
-              //             'Please input your family relation especially spouse!',
-              //         },
-              //       ]
-              //     : undefined
-              // }
             >
               <Select
                 className="w-100"
@@ -124,16 +113,6 @@ const AdditionalInformationForm = () => {
             <Form.Item<FieldType>
               name={['families', index.toString(), 'name']}
               className="mb-0"
-              // rules={
-              //   marriedValue === 'Married'
-              //     ? [
-              //         {
-              //           required: true,
-              //           message: 'Please input your relation name!',
-              //         },
-              //       ]
-              //     : undefined
-              // }
             >
               <Input placeholder="Your Relation Name" />
             </Form.Item>
@@ -145,16 +124,6 @@ const AdditionalInformationForm = () => {
             <Form.Item<FieldType>
               name={['families', index.toString(), 'gender']}
               className="mb-0"
-              // rules={
-              //   marriedValue === 'Married'
-              //     ? [
-              //         {
-              //           required: true,
-              //           message: 'Please input your family gender!',
-              //         },
-              //       ]
-              //     : undefined
-              // }
             >
               <Select
                 className="w-100"
@@ -172,16 +141,6 @@ const AdditionalInformationForm = () => {
             <label className="fw-bold">Date of Birth</label>
             <Form.Item<FieldType>
               name={['families', index.toString(), 'dateOfBirth']}
-              // rules={
-              //   marriedValue === 'Married'
-              //     ? [
-              //         {
-              //           required: true,
-              //           message: 'Please input your relation date of birth!',
-              //         },
-              //       ]
-              //     : undefined
-              // }
             >
               <DatePicker
                 className="w-100"

@@ -79,7 +79,16 @@ export async function userAuth(formData: any) {
 
   console.info('comparing password...');
   /* password-check */
-  const match = await bcrypt.compare(formData.password, user.password);
+  let match;
+  try {
+    match = await bcrypt.compare(formData.password, user.password);
+  } catch (error) {
+    console.info('Error Throwed from bcrypt: ', error);
+    return {
+      success: false,
+      message: 'Fail while comparing password due to compatibility issues.'
+    };
+  };
   console.info('value match: ', match);
 
   console.info('comparing result...', match);

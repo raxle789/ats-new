@@ -193,7 +193,6 @@ export async function jobJobLevels(setMasterData: React.Dispatch<React.SetStateA
       },
     });
     const jobLevelsData = await levels.json();
-    console.info('FETCHED JOB LEVEL -> ', jobLevelsData);
     setMasterData((prevState) => ({
       ...prevState,
       job_levels: jobLevelsData,

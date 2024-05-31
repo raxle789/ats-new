@@ -97,22 +97,6 @@ export async function RegisterPhase1(
             message: 'Email already used',
           };
         console.info('checking phone number... - skipped');
-        /*  Checking Phone Number */
-        /*
-      const isPhoneNumberExist = await tx.candidates.findUnique({
-        where: {
-          phone_number: submittedValues1.phoneNumber
-        }
-      });
-      if(isPhoneNumberExist) return {
-        success: false,
-        data: null,
-        errors: {
-          phoneNumber: ['Phone number already used by another candidate']
-        },
-        message: 'Phone number already used'
-      };
-      */
         /* Create Users */
         console.info('creating user...');
         console.info('hashing user password...');

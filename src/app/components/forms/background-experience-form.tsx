@@ -13,14 +13,13 @@ import {
 import type {
   FormProps,
   RadioChangeEvent,
-  CheckboxProps,
-  GetProp,
-  UploadProps,
 } from 'antd';
 // import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
-import { getExperiences } from '@/libs/Candidate/retrieve-data';
+// import { getExperiences } from '@/libs/Candidate/retrieve-data';
 import dayjs, { Dayjs } from 'dayjs';
+import { fetchJobFunctions, jobJobLevels, lineIndutries } from '@/libs/Fetch';
+import { getCandidateExperiences } from '@/libs/Candidate/retrieve-data';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 const { TextArea } = Input;
@@ -45,48 +44,16 @@ type FieldType = {
 };
 
 type MasterData = {
-  citys?: {
-    value: string;
-    label: string;
-  }[];
-  ethnicity?: {
-    value: string;
-    label: string;
-  }[];
-  countrys?: {
-    value: number;
-    label: string;
-  }[];
-  education_levels?: {
-    value: number;
-    label: string;
-  }[];
-  education_majors?: {
-    value: number;
-    label: string;
-  }[];
-  education_institutions?: {
-    value: number;
-    label: string;
-  }[];
-  certificates_name?: {
-    value: number;
-    label: string;
-  }[];
-  skills?: {
-    value: number;
-    label: string;
-  }[];
   job_levels?: {
-    value: string;
+    value: number;
     label: string;
   }[];
   job_functions?: {
-    value: string;
+    value: number;
     label: string;
   }[];
   line_industries?: {
-    value: string;
+    value: number;
     label: string;
   }[];
 };
@@ -94,118 +61,40 @@ type MasterData = {
 const BackgroundExperienceForm = () => {
   const [form] = Form.useForm();
   const [masterData, setMasterData] = useState<MasterData | null>(null);
-  const [editState, setEditState] = useState(false);
-  const [experiences, setExperiences] = useState<any>(null);
-  console.log('EXPERIENCES: ', experiences);
+  const [experiences, setExperiences] = useState<any | null>(null);
+  console.info('typeof Experiences: ', experiences);
 
-  /**
-   * If a Fresh Graduate return
-   * {
-   *  expected_salary: number
-   * }
-   *
-   * If a Professional return
-   * {
-   *  expected_salary: number,
-   *  experiences: [
-   *    id: 5,
-        company_name: 'SidokareDev',
-        line_industry: 'Technology',
-        job_title: 'Senior Cloud Engineer',
-        job_level: 'Staff',
-        job_function: 'Manage Operation',
-        job_description: 'Controlling Branch Operation',
-        salary: 5600000,
-        start_at: 2024-05-14T00:00:00.000Z,
-        end_at: 2024-05-14T00:00:00.000Z,
-        is_currently: true,
-        created_at: 2024-05-14T10:20:49.606Z,
-        updated_at: 2024-05-14T10:20:49.606Z,
-        candidateId: 2
-   *  ]
-   * }
-   */
+  const fetchData = async () => {
+    await Promise.all([
+      fetchJobFunctions(setMasterData),
+      jobJobLevels(setMasterData),
+      lineIndutries(setMasterData)
+    ]);
+  };
+
   const fetchExperiences = async () => {
-    const experiencesData = await getExperiences();
-    if (!experiencesData.success) return message.error(experiencesData.message);
-    if (experiencesData.data?.message === 'candidate.have.no.experiences') {
-      setExpValue('Fresh Graduate');
-    } else if (experiencesData.data?.message === 'candidate.have.experiences') {
-      setExpValue('Professional');
-    }
-    setExperiences(experiencesData.data?.data);
+    const experiencesData = await getCandidateExperiences();
+    if(!experiencesData.success) {
+      return message.error(experiencesData.message);
+    };
+    return setExperiences(experiencesData.data);
   };
 
-  /**
-   * Place the masterData.job_functions to the select for of job functions
-   */
-  const fetchJobFunctions = async () => {
-    const jobFunctions = await fetch('/api/client-data/job/functions', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const jobFunctionsData = await jobFunctions.json();
-    // console.log('Job function data: ', jobFunctionsData);
-    setMasterData((prevState) => ({
-      ...prevState,
-      job_functions: jobFunctionsData,
-    }));
-  };
+  /* ACTIONS */
+  useEffect(() => {
+    /* Candidate data */
+    fetchExperiences();
+    /* Master data */
+    fetchData();
+  }, []);
 
-  /**
-   * Place the masterData.job_levels to the select for of job_levels
-   */
-  const jobJobLevels = async () => {
-    const levels = await fetch('/api/client-data/job/levels', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const jobLevelsData = await levels.json();
-    // console.info('FETCHED JOB LEVEL -> ', jobLevelsData);
-    setMasterData((prevState) => ({
-      ...prevState,
-      job_levels: jobLevelsData,
-    }));
-  };
+  const [editState, setEditState] = useState(false)
 
-  /**
-   * Place the masterData.line_industries to the select for of line_industries
-   */
-  const lineIndutries = async () => {
-    const lineIndustries = await fetch('/api/client-data/job/line-industries', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const lineIndustriesData = await lineIndustries.json();
-    // console.log('Fetched line-industries: ', lineIndustriesData);
-    setMasterData((prevState) => ({
-      ...prevState,
-      line_industries: lineIndustriesData,
-    }));
-  };
-
-  const [expValue, setExpValue] = useState<string>('Fresh Graduate');
+  const [expValue, setExpValue] = useState<string>('Professional');
   const onChangeExp = (e: RadioChangeEvent) => {
     setExpValue(e.target.value);
   };
 
-  /**
-   * Fetched data from databse here.
-   */
-  useEffect(() => {
-    fetchExperiences();
-
-    /* For Form data on experience field */
-    fetchJobFunctions();
-    jobJobLevels();
-    lineIndutries();
-  }, []);
 
   const editOnChange = () => {
     setEditState(!editState);
@@ -707,7 +596,7 @@ const BackgroundExperienceForm = () => {
           ...prevState,
           expOption: expValue,
           experience: {
-            expectedSalary: experiences?.expected_salary,
+            expectedSalary: 0,
             ...experiences?.experiences?.reduce(
               (acc: any, exp: any, index: number) => {
                 acc[index] = {
@@ -719,7 +608,7 @@ const BackgroundExperienceForm = () => {
                   jobDesc: exp?.job_description,
                   startYear: dayjs(exp?.start_at),
                   endYear: dayjs(exp?.end_at),
-                  currentYear: exp?.is_currently,
+                  // currentYear: exp?.is_currently, // ganti status
                   currentSalary: exp?.salary,
                 };
                 return acc;
@@ -728,7 +617,7 @@ const BackgroundExperienceForm = () => {
             ),
           },
         }));
-        // console.log('transformed experiences: ', initFieldsValue);
+        console.log('transformed experiences: ', initFieldsValue);
         setExpValue('Professional');
         setExpTotal(experiences.experiences.length);
       }
@@ -737,7 +626,7 @@ const BackgroundExperienceForm = () => {
 
   useEffect(() => {
     if (expValue === 'Professional') {
-      const loopTotal = expTotal - displayedItems.length + 1;
+      const loopTotal = expTotal - displayedItems.length;
       // console.log('expTotal: ', expTotal);
       // console.log('panjang display item: ', displayedItems.length);
       // console.log('expIdx: ', expIdx);
@@ -751,6 +640,10 @@ const BackgroundExperienceForm = () => {
 
   useEffect(() => {
     form.setFieldsValue(initFieldsValue);
+  }, [experiences]);
+
+  useEffect(() => {
+    // if()
   }, [experiences]);
   return (
     <>
@@ -781,12 +674,6 @@ const BackgroundExperienceForm = () => {
                   <Form.Item<FieldType>
                     name="expOption"
                     className="mb-0"
-                    // rules={[
-                    //   {
-                    //     required: true,
-                    //     message: 'Please choose your working experience!',
-                    //   },
-                    // ]}
                   >
                     <Radio.Group onChange={onChangeExp} value={expValue}>
                       <Radio className="d-flex" value="Fresh Graduate">
@@ -809,12 +696,6 @@ const BackgroundExperienceForm = () => {
                   <Form.Item<FieldType>
                     name={['experience', 'expectedSalary']}
                     className="mb-0"
-                    // rules={[
-                    //   {
-                    //     required: true,
-                    //     message: 'Please input your expected salary!',
-                    //   },
-                    // ]}
                   >
                     {editState && (
                       <InputNumber
@@ -830,7 +711,7 @@ const BackgroundExperienceForm = () => {
                       />
                     )}
                     {!editState && (
-                      <p className="mb-0">{experiences?.expected_salary}</p>
+                      <p className="mb-0">{experiences?.expectedSalary}</p>
                     )}
                   </Form.Item>
                 </div>

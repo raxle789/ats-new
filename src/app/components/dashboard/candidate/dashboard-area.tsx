@@ -11,7 +11,7 @@ import icon_4 from '@/assets/dashboard/images/icon/icon_15.svg';
 import main_graph from '@/assets/dashboard/images/main-graph.png';
 import DashboardHeader from './dashboard-header';
 import { Alert, Button, Tag } from 'antd';
-import { getAppliedJobs } from '@/libs/Candidate/retrieve-data';
+// import { getAppliedJobs } from '@/libs/Candidate/retrieve-data';
 import Paragraph from 'antd/es/typography/Paragraph';
 import { useRouter } from 'next/navigation';
 
@@ -51,18 +51,18 @@ const DashboardArea = () => {
   const [error, setError] = useState<string>('');
   const router = useRouter();
 
-  const getAppliedJobsData = async () => {
-    const appliedJobsSData = await getAppliedJobs();
-    if (appliedJobsSData.success) {
-      if (typeof appliedJobsSData.data === 'string')
-        return setError(appliedJobsSData.data);
-      return setAppliedJobs(appliedJobsSData.data);
-    }
-    return setError(appliedJobsSData.message as string);
-  };
+  // const getAppliedJobsData = async () => {
+  //   const appliedJobsSData = await getAppliedJobs();
+  //   if (appliedJobsSData.success) {
+  //     if (typeof appliedJobsSData.data === 'string')
+  //       return setError(appliedJobsSData.data);
+  //     return setAppliedJobs(appliedJobsSData.data);
+  //   }
+  //   return setError(appliedJobsSData.message as string);
+  // };
 
   useEffect(() => {
-    getAppliedJobsData();
+    // getAppliedJobsData();
   }, []);
 
   return (

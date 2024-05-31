@@ -93,6 +93,7 @@ export async function compareOTP(clientOTP: string, email: string) {
     await deleteSession('otp');
     /* Update reg-session */
     const regSession = await getUserSession('reg');
+    console.info('REG-SESSION:', regSession);
     await setUserSession(
       'reg',
       {

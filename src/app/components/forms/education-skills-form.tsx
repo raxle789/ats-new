@@ -15,8 +15,9 @@ import {
 import type { FormProps, CheckboxProps, InputRef } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
-import { getEducationNSkills } from '@/libs/Candidate/retrieve-data';
 import dayjs, { Dayjs } from 'dayjs';
+import { getEducationSkills } from '@/libs/Candidate/retrieve-data';
+import { fetchCertificates, fetchCities, fetchEducatioMajors, fetchEducationInstitutios, fetchEducationLevels, fetchSkills } from '@/libs/Fetch';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 let languageIndex = 0;
@@ -58,15 +59,15 @@ type MasterData = {
     label: string;
   }[];
   education_levels?: {
-    value: number;
+    value: string;
     label: string;
   }[];
   education_majors?: {
-    value: number;
+    value: string;
     label: string;
   }[];
   education_institutions?: {
-    value: number;
+    value: string;
     label: string;
   }[];
   certificates_name?: {
@@ -86,102 +87,31 @@ const EducationSkillsForm = () => {
   const [educationAndSkill, setEducationAndSkill] = useState<any>(null);
   console.log('EDUCATION SKILLS: ', educationAndSkill);
 
-  /**
-   * @returns {
-   *
-   * }
-   */
-  const fetchEducationSkillCertification = async () => {
-    const educationSkillCertificationData = await getEducationNSkills();
-    if (!educationSkillCertificationData.success)
-      return message.error(educationSkillCertificationData.message);
-    setEducationAndSkill(educationSkillCertificationData.data);
+  const fetchData = async () => {
+    await Promise.all([
+      fetchCities(setMasterData),
+      fetchEducationLevels(setMasterData),
+      fetchEducatioMajors(setMasterData),
+      fetchEducationInstitutios(setMasterData),
+      fetchCertificates(setMasterData),
+      fetchSkills(setMasterData)
+    ]);
   };
 
-  /* Fetch Master Data */
-  const fetchEducationLevels = async () => {
-    const educationLevels = await fetch('/api/client-data/education/levels', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const educationLevelsData = await educationLevels.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      education_levels: educationLevelsData,
-    }));
-  };
-
-  const fetchEducatioMajors = async () => {
-    const educationMajors = await fetch('/api/client-data/education/majors', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const educationMajorsData = await educationMajors.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      education_majors: educationMajorsData,
-    }));
-  };
-
-  const fetchEducationInstitutios = async () => {
-    const institutions = await fetch(
-      '/api/client-data/education/institutions',
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      },
-    );
-    const institutionsData = await institutions.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      education_institutions: institutionsData,
-    }));
-  };
-
-  const fetchSkills = async () => {
-    const skills = await fetch('/api/client-data/skills', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const skillsData = await skills.json();
-    setMasterData((prevState) => ({
-      ...prevState,
-      skills: skillsData,
-    }));
-  };
-
-  const fetchCitys = async () => {
-    const citys = await fetch('/api/client-data/citys', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const citysData = await citys.json();
-    // console.log('City Data: ', citysData);
-    setMasterData((prevState) => ({
-      ...prevState,
-      citys: citysData,
-    }));
+  const fetchEducationSkills = async () => {
+    const educationSkillsData = await getEducationSkills();
+    if(!educationSkillsData.success) {
+      return message.error(educationSkillsData.message);
+    };
+    return setEducationAndSkill(educationSkillsData.data);
   };
 
   useEffect(() => {
-    fetchEducationSkillCertification();
+    /* Candidate Data */
+    fetchEducationSkills();
 
     /* Master Data */
-    fetchEducationLevels();
-    fetchEducatioMajors();
-    fetchEducationInstitutios();
-    fetchSkills();
-    fetchCitys();
+    fetchData();
   }, []);
 
   const editOnChange = () => {
@@ -518,27 +448,27 @@ const EducationSkillsForm = () => {
       setInitFieldsValue((prevState) => ({
         ...prevState,
         education: {
-          educationLevel: educationAndSkill?.educations?.level,
-          educationMajor: educationAndSkill?.educations?.major,
-          schoolName: educationAndSkill?.educations?.university_name,
-          gpa: educationAndSkill?.educations?.gpa,
-          cityOfSchool: educationAndSkill?.educations?.cityOfSchool,
-          startEduYear: educationAndSkill?.educations?.start_year
-            ? dayjs(new Date(educationAndSkill?.educations?.start_year, 0))
+          educationLevel: educationAndSkill?.education?.edu_level,
+          educationMajor: educationAndSkill?.education?.edu_major,
+          schoolName: educationAndSkill?.education?.university_name,
+          gpa: educationAndSkill?.education?.gpa,
+          cityOfSchool: educationAndSkill?.education?.city,
+          startEduYear: educationAndSkill?.education?.start_year
+            ? dayjs(new Date(educationAndSkill?.education?.start_year, 0))
             : dayjs('20240101', 'YYYYMMDD'),
-          endEduYear: educationAndSkill?.educations?.start_year
-            ? dayjs(new Date(educationAndSkill?.educations?.end_year, 0))
-            : dayjs('20240101', 'YYYYMMDD'),
+          endEduYear: educationAndSkill?.education?.start_year
+            ? dayjs(new Date(educationAndSkill?.education?.end_year, 0))
+            : dayjs(new Date(Date.now()), 'YYYYMMDD'),
         },
         skills: skillsString,
         language: languageField.language,
         certification: certificationsField,
       }));
 
-      if (certifications.length > 0) {
-        setCertifState('certified');
-        setCertifTotal(educationAndSkill.certifications.length);
-      }
+      // if (certifications.length > 0) {
+      //   setCertifState('certified');
+      //   setCertifTotal(educationAndSkill.certifications.length);
+      // }
       console.log('initFieldsValue: ', initFieldsValue);
       console.log('certifTotal: ', certifTotal);
       console.log('certifState: ', certifState);
@@ -594,12 +524,6 @@ const EducationSkillsForm = () => {
                 <Form.Item<FieldType>
                   name={['education', 'educationLevel']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your education level!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Select
@@ -625,12 +549,6 @@ const EducationSkillsForm = () => {
                 <Form.Item<FieldType>
                   name={['education', 'educationMajor']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your education major!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Select
@@ -668,12 +586,6 @@ const EducationSkillsForm = () => {
                 <Form.Item<FieldType>
                   name={['education', 'startEduYear']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please select year!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <DatePicker
@@ -697,12 +609,6 @@ const EducationSkillsForm = () => {
                 <Form.Item<FieldType>
                   name={['education', 'endEduYear']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please select year!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <DatePicker
@@ -726,12 +632,6 @@ const EducationSkillsForm = () => {
                 <Form.Item<FieldType>
                   name={['education', 'schoolName']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your school name!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Select
@@ -769,12 +669,6 @@ const EducationSkillsForm = () => {
                 <Form.Item<FieldType>
                   name={['education', 'cityOfSchool']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your city of school!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Select
@@ -808,12 +702,6 @@ const EducationSkillsForm = () => {
                 <Form.Item<FieldType>
                   name={['education', 'gpa']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your gpa!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <InputNumber
@@ -858,12 +746,6 @@ const EducationSkillsForm = () => {
                 <Form.Item<FieldType>
                   name="skills"
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your skills!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Select
@@ -902,12 +784,6 @@ const EducationSkillsForm = () => {
                       <Form.Item<FieldType>
                         name={['language', index.toString(), 'name']}
                         className="mb-0"
-                        // rules={[
-                        //   {
-                        //     required: true,
-                        //     message: 'Please choose your language!',
-                        //   },
-                        // ]}
                       >
                         {editState && (
                           <Select
@@ -965,12 +841,6 @@ const EducationSkillsForm = () => {
                       <Form.Item<FieldType>
                         name={['language', index.toString(), 'level']}
                         className="mb-0"
-                        // rules={[
-                        //   {
-                        //     required: true,
-                        //     message: 'Please choose your level!',
-                        //   },
-                        // ]}
                       >
                         {editState && (
                           <Select
