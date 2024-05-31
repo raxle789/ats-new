@@ -3,8 +3,8 @@
 import { useRouter } from 'next/navigation';
 import { RegisterPhase1 } from '@/libs/Registration';
 import { Input, Form, DatePicker, Spin, message } from 'antd';
-import type { DatePickerProps, FormProps } from 'antd';
-import { useState } from 'react';
+import type { FormProps } from 'antd';
+import React, { useState } from 'react';
 export interface FieldType {
   fullname: string;
   email: string;
@@ -12,11 +12,14 @@ export interface FieldType {
   dateOfBirth: any;
   password: string;
   confirmPassword: string;
-};
+}
 
 const RegisterForm = () => {
+  const [form] = Form.useForm();
   const router = useRouter();
   const [spinning, setSpinning] = useState(false);
+  // const [fullname, setFullname] = useState('');
+  // const [phoneNumber, setPhoneNumber] = useState('');
   /* This should displayed when fail to storing data */
   const [errors, setErrors] = useState<{ [key: string]: string[] } | undefined>(
     { ['']: [''] },
@@ -35,12 +38,12 @@ const RegisterForm = () => {
      */
     const doRegisterPhase1 = await RegisterPhase1(plainObjects);
     console.info('Register Results: ', doRegisterPhase1);
-    if(!doRegisterPhase1.success) {
+    if (!doRegisterPhase1.success) {
       console.info('Zod Error:', doRegisterPhase1.errors);
       setSpinning(false);
       setErrors(doRegisterPhase1.errors);
       return message.error(doRegisterPhase1.message);
-    };
+    }
     console.info(doRegisterPhase1);
     message.success(doRegisterPhase1.message);
     router.replace('/dashboard/user/stages');
@@ -60,15 +63,29 @@ const RegisterForm = () => {
    * @param date Biar fatih yang kasih deskripsi - Anjay fatih tersangkut redux.
    * @param dateString Biar fatih yang kasih deskripsi - Anjay fatih tersangkut redux.
    */
-  const onChange: DatePickerProps['onChange'] = (date, dateString) => {
-    console.log(date, dateString);
+
+  const sanitizePhoneNumber = (input: string) => {
+    let numericInput = input.replace(/\D/g, '');
+    if (numericInput.length > 0 && numericInput[0] === '0') {
+      numericInput = '0' + numericInput.slice(1);
+    }
+    form.setFieldsValue({
+      phoneNumber: numericInput,
+    });
   };
 
+  const sanitizeFullname = (input: string) => {
+    let nameInput = input.replace(/[^a-zA-Z\s]/g, '');
+    form.setFieldsValue({
+      fullname: nameInput,
+    });
+  };
   return (
     <>
       <Form
         name="form1"
         variant="filled"
+        form={form}
         initialValues={{ remember: true }}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
@@ -76,20 +93,28 @@ const RegisterForm = () => {
         <div className="row">
           <div className="col-12">
             <div className="input-group-meta position-relative mb-15">
-              <label>Full Name (as per ID/Passport)*</label>
+              <label>
+                Full Name (as per ID/Passport)
+                <span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name="fullname"
                 /* Display Error */
                 validateStatus={errors?.fullname ? 'error' : ''}
                 help={errors && errors.fullname}
               >
-                <Input placeholder="Your Full Name" />
+                <Input
+                  placeholder="Your Full Name"
+                  onChange={(e) => sanitizeFullname(e.target.value)}
+                />
               </Form.Item>
             </div>
           </div>
           <div className="col-12">
             <div className="input-group-meta position-relative mb-15">
-              <label>Email*</label>
+              <label>
+                Email<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name="email"
                 /* Display Error */
@@ -102,20 +127,27 @@ const RegisterForm = () => {
           </div>
           <div className="col-6">
             <div className="input-group-meta position-relative mb-15">
-              <label>Phone Number*</label>
+              <label>
+                Phone Number<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name="phoneNumber"
                 /* Display Error */
                 validateStatus={errors?.phoneNumber ? 'error' : ''}
                 help={errors && errors.phoneNumber}
               >
-                <Input placeholder="Your Phone Number" />
+                <Input
+                  placeholder="Your Phone Number"
+                  onChange={(e) => sanitizePhoneNumber(e.target.value)}
+                />
               </Form.Item>
             </div>
           </div>
           <div className="col-6">
             <div className="input-group-meta position-relative mb-15">
-              <label>Date of Birth*</label>
+              <label>
+                Date of Birth<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name="dateOfBirth"
                 /* Display Error */
@@ -124,7 +156,7 @@ const RegisterForm = () => {
               >
                 <DatePicker
                   className="w-100"
-                  onChange={onChange}
+                  format={'DD-MMM-YYYY'}
                   placeholder="Select Date"
                 />
               </Form.Item>
@@ -132,7 +164,9 @@ const RegisterForm = () => {
           </div>
           <div className="col-6">
             <div className="input-group-meta position-relative mb-15">
-              <label>Password*</label>
+              <label>
+                Password<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name="password"
                 /* Display Error */
@@ -145,7 +179,9 @@ const RegisterForm = () => {
           </div>
           <div className="col-6">
             <div className="input-group-meta position-relative mb-15">
-              <label>Confirm Password*</label>
+              <label>
+                Confirm Password<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name="confirmPassword"
                 /* Display Error */
