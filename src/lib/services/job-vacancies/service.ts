@@ -9,23 +9,26 @@ import { transpileModule } from 'typescript';
 
 export async function getAllEfpkByTa(taId) {
   try {
-    const data = await prisma.efpkTa.findMany({
-      where: {
-        taId: taId,
-      },
-      orderBy: {
-        efpkRequestNo: 'desc',
-      },
-    });
+    // const data = await prisma.efpkTa.findMany({
+    //   where: {
+    //     taId: taId,
+    //   },
+    //   orderBy: {
+    //     efpkRequestNo: 'desc',
+    //   },
+    // });
 
-    const aliasedData = data?.map((d) => {
-      return {
-        value: d?.efpkRequestNo,
-        label: d?.efpkRequestNo,
-      };
-    });
+    const data =
+      await prisma.$queryRaw`SELECT efpk_request_no AS value, efpk_request_no AS label FROM efpk_ta WHERE ta_id = ${taId} ORDER BY efpk_request_no DESC`;
 
-    return aliasedData;
+    // const aliasedData = data?.map((d) => {
+    //   return {
+    //     value: d?.efpkRequestNo,
+    //     label: d?.efpkRequestNo,
+    //   };
+    // });
+
+    return data;
   } catch (e) {
     console.log(e);
 
@@ -80,20 +83,23 @@ export async function getAllJobTitle() {
 
 export async function getAllJobFunction() {
   try {
-    const data = await prisma.jobFunctions.findMany({
-      orderBy: {
-        name: 'asc',
-      },
-    });
+    // const data = await prisma.jobFunctions.findMany({
+    //   orderBy: {
+    //     name: 'asc',
+    //   },
+    // });
 
-    const aliasedData = data?.map((d) => {
-      return {
-        value: d?.id,
-        label: d?.name,
-      };
-    });
+    const data =
+      await prisma.$queryRaw`SELECT id AS value, name AS label FROM job_functions ORDER BY name`;
 
-    return aliasedData;
+    // const aliasedData = data?.map((d) => {
+    //   return {
+    //     value: d?.id,
+    //     label: d?.name,
+    //   };
+    // });
+
+    return data;
   } catch (e) {
     console.info(e);
 
@@ -106,20 +112,23 @@ export async function getAllEmploymentStatus() {
     // const data =
     //   await prisma.$queryRaw`SELECT EmpTypeId AS value, EmpType AS label FROM MASTER_ERA.dbo.ERA_MasterEmploymentType ORDER BY EmpType`;
 
-    const data = await prisma.employmentStatus.findMany({
-      orderBy: {
-        name: 'asc',
-      },
-    });
+    // const data = await prisma.employmentStatus.findMany({
+    //   orderBy: {
+    //     name: 'asc',
+    //   },
+    // });
 
-    const aliasedData = data?.map((d) => {
-      return {
-        value: d?.name,
-        label: d?.name,
-      };
-    });
+    const data =
+      await prisma.$queryRaw`SELECT name AS value, name AS label FROM employment_status ORDER BY name`;
 
-    return aliasedData;
+    // const aliasedData = data?.map((d) => {
+    //   return {
+    //     value: d?.name,
+    //     label: d?.name,
+    //   };
+    // });
+
+    return data;
 
     // return data;
   } catch (e) {
@@ -131,21 +140,24 @@ export async function getAllEmploymentStatus() {
 
 export async function getAllPositionLevel() {
   try {
-    const data = await prisma.positionLevels.findMany({
-      orderBy: {
-        level: 'desc',
-      },
-    });
+    // const data = await prisma.positionLevels.findMany({
+    //   orderBy: {
+    //     level: 'desc',
+    //   },
+    // });
 
-    const aliasedData = data?.map((d) => {
-      return {
-        value: d?.level,
-        label: d?.name,
-        slaDays: d?.slaDays,
-      };
-    });
+    const data =
+      await prisma.$queryRaw`SELECT level AS value, name AS label, sla_days AS slaDays FROM position_levels ORDER BY level DESC`;
 
-    return aliasedData;
+    // const aliasedData = data?.map((d) => {
+    //   return {
+    //     value: d?.level,
+    //     label: d?.name,
+    //     slaDays: d?.slaDays,
+    //   };
+    // });
+
+    return data;
   } catch (e) {
     console.log(e);
 
@@ -155,20 +167,23 @@ export async function getAllPositionLevel() {
 
 export async function getAllVertical() {
   try {
-    const data = await prisma.verticals.findMany({
-      orderBy: {
-        code: 'asc',
-      },
-    });
+    // const data = await prisma.verticals.findMany({
+    //   orderBy: {
+    //     code: 'asc',
+    //   },
+    // });
 
-    const aliasedData = data?.map((d) => {
-      return {
-        value: d?.code,
-        label: `${d?.name} (${d?.code})`,
-      };
-    });
+    const data =
+      await prisma.$queryRaw`SELECT code AS value, CONCAT(name, ' (', code, ')') AS label FROM verticals ORDER BY label`;
 
-    return aliasedData;
+    // const aliasedData = data?.map((d) => {
+    //   return {
+    //     value: d?.code,
+    //     label: `${d?.name} (${d?.code})`,
+    //   };
+    // });
+
+    return data;
   } catch (e) {
     console.log(e);
 
@@ -227,18 +242,21 @@ export async function getAllDepartment() {
 
 export async function getAllLineIndustry() {
   try {
-    const data = await prisma.lineIndustries.findMany({
-      orderBy: {
-        name: 'asc',
-      },
-    });
+    // const data = await prisma.lineIndustries.findMany({
+    //   orderBy: {
+    //     name: 'asc',
+    //   },
+    // });
 
-    const aliasedData = data?.map((d) => ({
-      value: d?.id,
-      label: d?.name,
-    }));
+    const data =
+      await prisma.$queryRaw`SELECT id AS value, name AS label FROM line_industries ORDER BY name`;
 
-    return aliasedData;
+    // const aliasedData = data?.map((d) => ({
+    //   value: d?.id,
+    //   label: d?.name,
+    // }));
+
+    return data;
   } catch (e) {
     console.log(e);
 
@@ -262,7 +280,9 @@ export async function getAllRegion() {
 export async function getAllWorkLocation() {
   try {
     const data =
-      await prisma.$queryRaw`SELECT LocationCode AS value, LocationName AS label FROM MASTER_ERA.dbo.ERA_MasterLocation WHERE NOT LocationCode = '(None)' ORDER BY LocationName`;
+      await prisma.$queryRaw`SELECT LocationCode AS value, (CASE WHEN CHARINDEX('@', LocationName) > 0 THEN RTRIM(LTRIM(SUBSTRING(LocationName, CHARINDEX('@', LocationName) + 1, LEN(LocationName)))) ELSE LocationName END) AS label FROM MASTER_ERA.dbo.ERA_MasterLocation WHERE NOT LocationCode = '(None)' ORDER BY label`;
+
+    // console.info(data);
 
     return data;
   } catch (e) {
@@ -274,16 +294,19 @@ export async function getAllWorkLocation() {
 
 export async function getAllGender() {
   try {
-    const data = await prisma.genders.findMany();
+    // const data = await prisma.genders.findMany();
 
-    const aliasedData = data?.map((d) => {
-      return {
-        value: d?.id,
-        label: d?.name,
-      };
-    });
+    const data =
+      await prisma.$queryRaw`SELECT id AS value, name AS label FROM genders ORDER BY name`;
 
-    return aliasedData;
+    // const aliasedData = data?.map((d) => {
+    //   return {
+    //     value: d?.id,
+    //     label: d?.name,
+    //   };
+    // });
+
+    return data;
   } catch (e) {
     console.info(e);
 
@@ -293,20 +316,23 @@ export async function getAllGender() {
 
 export async function getAllSkill() {
   try {
-    const data = await prisma.skills.findMany({
-      orderBy: {
-        name: 'asc',
-      },
-    });
+    // const data = await prisma.skills.findMany({
+    //   orderBy: {
+    //     name: 'asc',
+    //   },
+    // });
 
-    const aliasedData = data?.map((d) => {
-      return {
-        value: d?.id,
-        label: d?.name,
-      };
-    });
+    const data =
+      await prisma.$queryRaw`SELECT id AS value, name AS label FROM skills ORDER BY name`;
 
-    return aliasedData;
+    // const aliasedData = data?.map((d) => {
+    //   return {
+    //     value: d?.id,
+    //     label: d?.name,
+    //   };
+    // });
+
+    return data;
   } catch (e) {
     console.info(e);
 
@@ -316,20 +342,23 @@ export async function getAllSkill() {
 
 export async function getAllCertificate() {
   try {
-    const data = await prisma.certificates.findMany({
-      orderBy: {
-        name: 'asc',
-      },
-    });
+    // const data = await prisma.certificates.findMany({
+    //   orderBy: {
+    //     name: 'asc',
+    //   },
+    // });
 
-    const aliasedData = data?.map((d) => {
-      return {
-        value: d?.id,
-        label: d?.name,
-      };
-    });
+    const data =
+      await prisma.$queryRaw`SELECT id AS value, name AS label FROM certificates ORDER BY name`;
 
-    return aliasedData;
+    // const aliasedData = data?.map((d) => {
+    //   return {
+    //     value: d?.id,
+    //     label: d?.name,
+    //   };
+    // });
+
+    return data;
   } catch (e) {
     console.info(e);
 
@@ -1897,6 +1926,7 @@ export async function createAssessment(
             finalResult: finalResult,
             startedAt: startDate,
             finishedAt: finishDate,
+            candidateStateId: candidateState.id,
           },
           create: {
             remoteId: remoteId,

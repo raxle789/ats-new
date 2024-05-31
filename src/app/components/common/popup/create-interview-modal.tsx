@@ -190,6 +190,8 @@ const CreateInterviewModal = ({
               values,
             );
 
+            console.info(validate);
+
             if (validate && Array.isArray(validate) && validate?.length) {
               for (let i = 0; i < validate.length; i++) {
                 if (validate[i]?.success) {
@@ -332,6 +334,7 @@ const CreateInterviewModal = ({
                       className="w-100"
                       onChange={handleDateTime}
                       showTime
+                      format="YYYY-MM-DD HH:mm"
                       placeholder="Select Date and Time"
                     />
                   </Form.Item>

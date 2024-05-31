@@ -6,6 +6,28 @@ import prisma from '../connection/db';
 
 // const moment = require('moment');
 
+export const newData = async () => {
+  const data = await prisma.documents.findUnique({
+    where: {
+      id: 10,
+    },
+  });
+
+  const newData = { ...data, file_base: data?.file_base?.toString() };
+
+  // console.info(newData);
+
+  // const stringBase64 = await data?.file_base.toString();
+
+  // const binary = await fetch(stringBase64 as string);
+
+  // const blob = await binary.blob();
+
+  // const file = new File([blob], 'file.pdf');
+
+  return newData;
+};
+
 export async function getAllFpk(offset: number, perPage: number) {
   try {
     // const db = await getDb(poolName);

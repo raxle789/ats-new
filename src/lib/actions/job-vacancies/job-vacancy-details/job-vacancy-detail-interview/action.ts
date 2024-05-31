@@ -91,7 +91,7 @@ export async function insertInterview(candidateId, jobVacancyId, values) {
 
             email.push({
               ...candidateEmailResponse,
-              role: '',
+              role: 'Candidate',
               name: response?.candidates?.users?.name,
               email: response?.candidates?.users?.email,
             });
@@ -201,80 +201,80 @@ export async function resendEmail(
     interviewId,
   });
 
-  if (validate.success) {
+  if (validate?.success) {
     const interviewData = await getInterviewById(validate?.data?.interviewId);
 
     if (interviewData && !_.isEmpty(interviewData)) {
       if (role === 'candidate') {
-        const isEmailSent = interviewData?.isEmailSent;
+        // const isEmailSent = interviewData?.isEmailSent;
 
-        if (isEmailSent) {
-          return {
-            success: false,
-            message: 'Email Already Sent',
-          };
-        } else {
-          const response = await sendEmail(
-            interviewData?.candidateStates?.candidates?.users?.email,
-            'Interview Invitation',
-            interviewData?.message,
-          );
+        // if (isEmailSent) {
+        //   return {
+        //     success: false,
+        //     message: 'Email Already Sent',
+        //   };
+        // }
 
-          if (response?.success) {
-            await updateInterview(validate?.data?.interviewId, true);
-          }
+        const response = await sendEmail(
+          interviewData?.candidateStates?.candidates?.users?.email,
+          'Interview Invitation',
+          interviewData?.message,
+        );
 
-          return {
-            ...response,
-            role: 'Candidate',
-            name: interviewData?.candidateStates?.candidates?.users?.name,
-            email: interviewData?.candidateStates?.candidates?.users?.email,
-          };
+        if (response?.success) {
+          await updateInterview(validate?.data?.interviewId, true);
         }
+
+        return {
+          ...response,
+          role: 'Candidate',
+          name: interviewData?.candidateStates?.candidates?.users?.name,
+          email: interviewData?.candidateStates?.candidates?.users?.email,
+        };
       } else if (role === 'interviewer') {
         const validateNik = validateInterviewerNik.safeParse({
           interviewerNik,
         });
 
-        if (validateNik.success) {
-          const isEmailSent = interviewData?.interviewInterviewers?.find(
-            (data) =>
-              data?.interviewerNIK === validateNik?.data?.interviewerNik,
-          )?.isEmailSent;
+        if (validateNik?.success) {
+          // const isEmailSent = interviewData?.interviewInterviewers?.find(
+          //   (data) =>
+          //     data?.interviewerNIK === validateNik?.data?.interviewerNik,
+          // )?.isEmailSent;
 
-          if (isEmailSent) {
-            return {
-              success: false,
-              message: 'Email Already Sent',
-            };
-          } else {
-            const interviewerEmail = await getInterviewerEmailByNik(
+          // if (isEmailSent) {
+          //   return {
+          //     success: false,
+          //     message: 'Email Already Sent',
+          //   };
+          // }
+
+          const interviewerEmail = await getInterviewerEmailByNik(
+            validateNik?.data?.interviewerNik,
+          );
+
+          const response = await sendEmail(
+            interviewerEmail,
+            'Interview Invitation',
+            "<p>You've been invited to an interview.</p>",
+          );
+
+          if (response?.success) {
+            await updateInterviewInterviewer(
+              validate?.data?.interviewId,
               validateNik?.data?.interviewerNik,
+              true,
             );
-
-            const response = await sendEmail(
-              interviewerEmail,
-              'Interview Invitation',
-              "<p>You've been invited to an interview.</p>",
-            );
-
-            if (response?.success) {
-              await updateInterviewInterviewer(
-                validate?.data?.interviewId,
-                validateNik?.data?.interviewerNik,
-                true,
-              );
-            }
-
-            return {
-              ...response,
-              role: 'Interviewer',
-              name: await getInterviewerNameByNik(
-                validateNik?.data?.interviewerNik,
-              ),
-              email: interviewerEmail,
-            };
           }
+
+          return {
+            ...response,
+            role: 'Interviewer',
+            name: await getInterviewerNameByNik(
+              validateNik?.data?.interviewerNik,
+            ),
+            email: interviewerEmail,
+          };
         } else {
           console.log(validateNik.error);
 

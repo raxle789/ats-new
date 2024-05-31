@@ -14,39 +14,39 @@ import CandidateDetailsModal from '../../common/popup/candidate-details-modal';
 
 const { confirm } = Modal;
 
-type TSub = {
-  name: string;
-  status: string;
-};
+// type TSub = {
+//   name: string;
+//   status: string;
+// };
 
-type TInterviewer = {
-  [key: string]: {
-    date: string;
-    names: TSub[];
-  };
-};
+// type TInterviewer = {
+//   [key: string]: {
+//     date: string;
+//     names: TSub[];
+//   };
+// };
 
-const interview: TInterviewer = {
-  interview1: {
-    date: '20-04-2023',
-    names: [
-      { name: 'Gusti', status: 'Hire' },
-      { name: 'Vladimir', status: 'Reject' },
-      { name: 'Gusti', status: 'Keep In View' },
-    ],
-  },
-  interview2: {
-    date: '14-04-2023',
-    names: [
-      { name: 'Aji', status: 'Waiting' },
-      { name: 'Vladimir', status: 'Waiting' },
-    ],
-  },
-  interview3: {
-    date: '10-04-2023',
-    names: [{ name: 'Gusti', status: 'Keep In View' }],
-  },
-};
+// const interview: TInterviewer = {
+//   interview1: {
+//     date: '20-04-2023',
+//     names: [
+//       { name: 'Gusti', status: 'Hire' },
+//       { name: 'Vladimir', status: 'Reject' },
+//       { name: 'Gusti', status: 'Keep In View' },
+//     ],
+//   },
+//   interview2: {
+//     date: '14-04-2023',
+//     names: [
+//       { name: 'Aji', status: 'Waiting' },
+//       { name: 'Vladimir', status: 'Waiting' },
+//     ],
+//   },
+//   interview3: {
+//     date: '10-04-2023',
+//     names: [{ name: 'Gusti', status: 'Keep In View' }],
+//   },
+// };
 
 const InterviewItem = ({
   item,
@@ -77,8 +77,10 @@ const InterviewItem = ({
 
   const [buttonDisabled, setButtonDisabled] = useState({});
 
-  const handleInterviewChange = (interviewValue) => {
-    setInterviewValue(interviewValue - 1);
+  const handleInterviewChange = (value) => {
+    setInterviewValue(
+      item?.candidateInterviews?.findIndex((data) => data?.value === value),
+    );
   };
 
   const onChangeCheckbox = (index: number) => {
@@ -118,7 +120,7 @@ const InterviewItem = ({
                   `${validate?.message} to ${validate?.name} (${validate?.role})`,
                 );
 
-                router.refresh();
+                // router.refresh();
 
                 resolve(setLoading(false));
               } else {
@@ -127,7 +129,7 @@ const InterviewItem = ({
                   `${validate?.message} to ${validate?.name} (${validate?.role})`,
                 );
 
-                router.refresh();
+                // router.refresh();
 
                 resolve(
                   new Promise((resolve, reject) => {
@@ -144,7 +146,7 @@ const InterviewItem = ({
           }).catch((e) => console.log('Failed Resend Email to Candidate', e));
         },
         onCancel() {
-          router.refresh();
+          // router.refresh();
 
           setLoading(false);
 
@@ -177,25 +179,44 @@ const InterviewItem = ({
                   `${validate?.message} to ${validate?.name} (${validate?.role})`,
                 );
 
-                router.refresh();
+                // router.refresh();
 
-                resolve(setLoading(false));
-              } else {
-                messages.error(
-                  api,
-                  `${validate?.message} to ${validate?.name} (${validate?.role})`,
-                );
-
-                router.refresh();
+                // resolve(setLoading(false));
 
                 resolve(
                   new Promise((resolve, reject) => {
-                    setButtonDisabled((prevState) => ({
-                      ...prevState,
-                      [`interviewer${interviewerNik}`]: false,
-                    }));
+                    setTimeout(() => {
+                      setButtonDisabled((prevState) => ({
+                        ...prevState,
+                        [`interviewer${interviewerNik}`]: false,
+                      }));
 
-                    resolve(setLoading(false));
+                      resolve(setLoading(false));
+                    }, 2000);
+                  }),
+                );
+              } else {
+                messages.error(api, validate?.message);
+
+                // router.refresh();
+
+                resolve(
+                  new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                      setButtonDisabled((prevState) => ({
+                        ...prevState,
+                        [`interviewer${interviewerNik}`]: false,
+                      }));
+
+                      resolve(setLoading(false));
+                    }, 2000);
+
+                    // setButtonDisabled((prevState) => ({
+                    //   ...prevState,
+                    //   [`interviewer${interviewerNik}`]: false,
+                    // }));
+
+                    // resolve(setLoading(false));
                   }),
                 );
               }
@@ -205,7 +226,7 @@ const InterviewItem = ({
           );
         },
         onCancel() {
-          router.refresh();
+          // router.refresh();
 
           setLoading(false);
 
@@ -329,7 +350,7 @@ const InterviewItem = ({
                       : '-'}
                   </div>
                 </div>
-                <div className="candidate-info mt-2">
+                {/* <div className="candidate-info mt-2">
                   <div>
                     {item?.candidateInterviews?.length &&
                     !item?.candidateInterviews[interviewValue]?.isEmailSent ? (
@@ -352,7 +373,7 @@ const InterviewItem = ({
                       <></>
                     )}
                   </div>
-                </div>
+                </div> */}
               </div>
               <div className="col-lg-4 col-md-4 col-sm-6">
                 <div className="candidate-info">
@@ -389,7 +410,8 @@ const InterviewItem = ({
                                 Keep In View
                               </Tag>
                             )}
-                            {!data?.isEmailSent && (
+                            {
+                              /* {!data?.isEmailSent &&  */
                               <Button
                                 disabled={
                                   buttonDisabled[
@@ -407,7 +429,7 @@ const InterviewItem = ({
                               >
                                 Resend Interview Invitation
                               </Button>
-                            )}
+                            }
                           </div>
                         </div>
                       ))}
@@ -428,6 +450,9 @@ const InterviewItem = ({
                           status={status}
                           candidateId={item?.candidateId}
                           jobVacancyId={jobVacancyId}
+                          interviewId={
+                            item?.candidateInterviews[interviewValue]?.value
+                          }
                           api={api}
                           router={router}
                           setLoading={setLoading}

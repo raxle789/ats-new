@@ -163,3 +163,14 @@ export function resendEmailConfirmation(
 
   return confirmation;
 }
+
+export function resendAssessmentConfirmation() {
+  const confirmation = (() => {
+    return {
+      ...confirmationTemplate,
+      content: 'Do you want to resend assessment to this candidate?',
+    };
+  })();
+
+  return confirmation;
+}

@@ -1,16 +1,25 @@
 'use server';
 
 import ApplicantListItem from './applicant-list-item';
+import { handleApplicant } from '../message/confirm';
 import { registerAssessment } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-assessment/action';
 import { getAllApplicantDataByJobVacancyId } from '@/lib/actions/job-vacancies/job-vacancy-details/action';
 
-const ApplicantListArea = async ({ jobVacancyId, status, perPage, offset }) => {
+const ApplicantListArea = async ({ params, searchParams, status }) => {
+  const page = searchParams?.page ?? '1';
+
+  const perPage = searchParams?.perPage ?? '10';
+
+  const searchQuery = searchParams?.query ?? '';
+
+  const offset = (Number(page) - 1) * Number(perPage);
+
   const applicantData = await (async () => {
-    if (jobVacancyId) {
+    if (params?.id) {
       return await getAllApplicantDataByJobVacancyId(
-        jobVacancyId,
+        params?.id,
         offset,
-        perPage,
+        Number(perPage),
       );
     } else {
       return [];
@@ -21,8 +30,8 @@ const ApplicantListArea = async ({ jobVacancyId, status, perPage, offset }) => {
     <ApplicantListItem
       status={status}
       applicantData={applicantData?.data}
-      jobVacancyId={jobVacancyId}
-      registerAssessment={registerAssessment}
+      jobVacancyId={params?.id}
+      handleApplicant={handleApplicant}
     />
   );
 };
