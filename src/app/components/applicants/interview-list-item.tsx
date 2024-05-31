@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import InterviewItem from '../dashboard/employ/interview-item';
-import { handleApplicant } from '../message/confirm';
 import { useRouter } from 'next/navigation';
 import * as messages from '@/utils/message';
 import * as confirmations from '@/utils/confirmation';
@@ -22,6 +21,7 @@ const InterviewListItem = ({
   placeData,
   insertInterview,
   resendEmail,
+  handleApplicant,
 }) => {
   const router = useRouter();
 

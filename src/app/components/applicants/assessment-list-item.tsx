@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { handleApplicant } from '../message/confirm';
 import { useRouter } from 'next/navigation';
 import * as messages from '@/utils/message';
 import * as confirmations from '@/utils/confirmation';
@@ -12,7 +11,12 @@ import ActionCheckboxPipeline from '../common/popup/action-checkbox-pipeline';
 
 const { confirm } = Modal;
 
-const AssessmentListItem = ({ status, applicantData, jobVacancyId }) => {
+const AssessmentListItem = ({
+  status,
+  applicantData,
+  jobVacancyId,
+  handleApplicant,
+}) => {
   const router = useRouter();
 
   const [api, contextHolder] = message.useMessage();

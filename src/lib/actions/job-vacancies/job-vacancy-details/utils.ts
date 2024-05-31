@@ -3,6 +3,8 @@
 import moment from 'moment';
 
 export async function calculateYearOfExperience(workingExperiences) {
+  // console.info(workingExperiences);
+
   let totalYearOfExperience = 0;
 
   if (workingExperiences?.length) {
@@ -23,6 +25,12 @@ export async function calculateYearOfExperience(workingExperiences) {
                 moment(startDate, 'YYYY-MM-DD'),
                 'years',
               ));
+      } else if (moment(startDate).isValid() && !moment(endDate).isValid()) {
+        totalYearOfExperience =
+          totalYearOfExperience +
+          (moment().diff(moment(startDate, 'YYYY-MM-DD'), 'years') < 1
+            ? 0
+            : moment().diff(moment(startDate, 'YYYY-MM-DD'), 'years'));
       } else {
         totalYearOfExperience = totalYearOfExperience + 0;
       }

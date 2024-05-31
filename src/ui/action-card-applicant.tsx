@@ -15,37 +15,86 @@ const ActionApplicant = (props) => {
   return (
     <>
       <ul className="dropdown-menu dropdown-menu-end">
-        <li>
-          <button
-            className="applicant-action"
-            type="button"
-            onClick={() => props.setIsOpenModal(true)}
-          >
-            View Details
-          </button>
-        </li>
-        <li>
-          <button
-            className="applicant-action"
-            type="button"
-            onClick={() => props.setIsOpenModal(true)}
-          >
-            Create Interview
-          </button>
-        </li>
+        {props?.status === Status?.ASSESSMENT && (
+          <>
+            <li>
+              <button
+                className="applicant-action"
+                type="button"
+                onClick={() => props?.setIsOpenModal(true)}
+              >
+                View Assessment Detail
+              </button>
+            </li>
+            <li>
+              <button
+                className="applicant-action"
+                type="button"
+                onClick={() => {
+                  props?.handleApplicant(
+                    'resendAssessment',
+                    props?.candidateId,
+                    props?.jobVacancyId,
+                    0,
+                    props?.api,
+                    props?.router,
+                    props?.setLoading,
+                    Status?.ASSESSMENT,
+                  );
+                }}
+              >
+                Resend Assessment
+              </button>
+            </li>
+          </>
+        )}
+        {props?.status === Status?.INTERVIEW && (
+          <>
+            <li>
+              <button
+                className="applicant-action"
+                type="button"
+                onClick={() => props?.setIsOpenModal(true)}
+              >
+                Create Interview
+              </button>
+            </li>
+            <li>
+              <button
+                className="applicant-action"
+                type="button"
+                onClick={() => {
+                  props?.handleApplicant(
+                    'resendCandidateInterviewInvitation',
+                    '',
+                    '',
+                    props?.interviewId,
+                    props?.api,
+                    props?.router,
+                    props?.setLoading,
+                    Status?.INTERVIEW,
+                  );
+                }}
+              >
+                Resend Interview Invitation to Candidate
+              </button>
+            </li>
+          </>
+        )}
         <li>
           <button
             className="applicant-action"
             type="button"
             onClick={() => {
-              props.handleApplicant(
+              props?.handleApplicant(
                 'assignInterview',
-                props.candidateId,
-                props.jobVacancyId,
-                props.api,
-                props.router,
-                props.setLoading,
-                Status.INTERVIEW,
+                props?.candidateId,
+                props?.jobVacancyId,
+                0,
+                props?.api,
+                props?.router,
+                props?.setLoading,
+                Status?.INTERVIEW,
               );
             }}
           >
@@ -57,14 +106,15 @@ const ActionApplicant = (props) => {
             className="applicant-action"
             type="button"
             onClick={() => {
-              props.handleApplicant(
+              props?.handleApplicant(
                 'assignAssessment',
-                props.candidateId,
-                props.jobVacancyId,
-                props.api,
-                props.router,
-                props.setLoading,
-                Status.ASSESSMENT,
+                props?.candidateId,
+                props?.jobVacancyId,
+                0,
+                props?.api,
+                props?.router,
+                props?.setLoading,
+                Status?.ASSESSMENT,
               );
             }}
           >
@@ -72,7 +122,9 @@ const ActionApplicant = (props) => {
           </button>
         </li>
         <li>
-          <a className="applicant-action">Blacklist</a>
+          <button className="applicant-action" type="button">
+            Blacklist
+          </button>
         </li>
       </ul>
 

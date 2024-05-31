@@ -96,7 +96,7 @@ export async function registerAssessment(candidateId, jobVacancyId) {
           if (res && !_.isEmpty(res)) {
             const validateSchema = validateAssessmentSchema.safeParse(res);
 
-            if (validateSchema.success) {
+            if (validateSchema?.success) {
               const data = await createAssessment(
                 validate?.data?.candidateId,
                 validate?.data?.jobVacancyId,
@@ -115,33 +115,33 @@ export async function registerAssessment(candidateId, jobVacancyId) {
 
               return {
                 success: false,
-                message: 'Failed to Assign This Candidate to Assessment',
+                message: 'Failed Assign This Candidate to Assessment',
               };
             } else {
               console.log(validateSchema.error);
 
               return {
                 success: false,
-                message: 'Failed to Assign This Candidate to Assessment',
+                message: 'Failed Assign This Candidate to Assessment',
               };
             }
           }
 
           return {
             success: false,
-            message: 'Failed to Assign This Candidate to Assessment',
+            message: 'Failed Assign This Candidate to Assessment',
           };
         }
 
         return {
           success: false,
-          message: 'Failed to Assign This Candidate to Assessment',
+          message: 'Failed Assign This Candidate to Assessment',
         };
       }
 
       return {
         success: false,
-        message: 'Failed to Assign This Candidate to Assessment',
+        message: 'Failed Assign This Candidate to Assessment',
       };
     } else {
       console.log(validate.error);

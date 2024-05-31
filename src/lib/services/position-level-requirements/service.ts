@@ -191,18 +191,21 @@ export async function getPositionLevelRequirement(positionLevelId) {
 
 export async function getAllPositionLevel() {
   try {
-    const data = await prisma.positionLevels.findMany({
-      orderBy: {
-        level: 'desc',
-      },
-    });
+    // const data = await prisma.positionLevels.findMany({
+    //   orderBy: {
+    //     level: 'desc',
+    //   },
+    // });
 
-    const aliasedData = data?.map((d) => ({
-      value: d?.id,
-      label: d?.name,
-    }));
+    const data =
+      await prisma.$queryRaw`SELECT id AS value, name AS label FROM position_levels ORDER BY level DESC`;
 
-    return aliasedData;
+    // const aliasedData = data?.map((d) => ({
+    //   value: d?.id,
+    //   label: d?.name,
+    // }));
+
+    return data;
   } catch (e) {
     console.log(e);
 
@@ -212,18 +215,21 @@ export async function getAllPositionLevel() {
 
 export async function getAllLineIndustry() {
   try {
-    const data = await prisma.lineIndustries.findMany({
-      orderBy: {
-        name: 'asc',
-      },
-    });
+    // const data = await prisma.lineIndustries.findMany({
+    //   orderBy: {
+    //     name: 'asc',
+    //   },
+    // });
 
-    const aliasedData = data?.map((d) => ({
-      value: d?.id,
-      label: d?.name,
-    }));
+    const data =
+      await prisma.$queryRaw`SELECT id AS value, name AS label FROM line_industries ORDER BY name`;
 
-    return aliasedData;
+    // const aliasedData = data?.map((d) => ({
+    //   value: d?.id,
+    //   label: d?.name,
+    // }));
+
+    return data;
   } catch (e) {
     console.log(e);
 
@@ -233,18 +239,21 @@ export async function getAllLineIndustry() {
 
 export async function getAllEducationLevel() {
   try {
-    const data = await prisma.educationLevels.findMany({
-      orderBy: {
-        id: 'asc',
-      },
-    });
+    // const data = await prisma.educationLevels.findMany({
+    //   orderBy: {
+    //     id: 'asc',
+    //   },
+    // });
 
-    const aliasedData = data?.map((d) => ({
-      value: d?.id,
-      label: d?.name,
-    }));
+    const data =
+      await prisma.$queryRaw`SELECT id AS value, name AS label FROM education_levels ORDER BY id`;
 
-    return aliasedData;
+    // const aliasedData = data?.map((d) => ({
+    //   value: d?.id,
+    //   label: d?.name,
+    // }));
+
+    return data;
   } catch (e) {
     console.log(e);
 

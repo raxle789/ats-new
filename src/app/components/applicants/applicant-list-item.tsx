@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { handleApplicant } from '../message/confirm';
 import { useRouter } from 'next/navigation';
 import * as messages from '@/utils/message';
 import * as confirmations from '@/utils/confirmation';
@@ -16,7 +15,7 @@ const ApplicantListItem = ({
   status,
   applicantData,
   jobVacancyId,
-  registerAssessment,
+  handleApplicant,
 }) => {
   const router = useRouter();
 
