@@ -37,7 +37,9 @@ const EmployJobFpkItem = ({ fpkData, offset, taData, assignTa, perPage }) => {
   // const [loading, setLoading] = useState(false);
 
   const [api, contextHolder] = message.useMessage();
+
   const [assignDisabled, setAssignDisabled] = useState({});
+
   const router = useRouter();
 
   const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(

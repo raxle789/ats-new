@@ -6,37 +6,30 @@ import Pagination from '@/ui/pagination';
 import {
   getAllJobVacancyData,
   candidateApplyJobVacancy,
-} from '@/lib/action/job-vacancies/action';
+} from '@/lib/actions/job-vacancies/action';
 import JobListItem from './job-list-item';
 import JobFilter from '../filter/job-filter';
 
-interface IProps {
-  searchParams: {
-    page?: string;
-    perPage?: string;
-    query?: string;
-  };
-}
+// interface IProps {
+//   searchParams: {
+//     page?: string;
+//     perPage?: string;
+//     query?: string;
+//   };
+// }
 
-const JobList: React.FC<IProps> = async ({ searchParams }) => {
+const JobList = async ({ searchParams }) => {
   const page = searchParams?.page ?? '1';
-
   const perPage = searchParams?.perPage ?? '10';
-
   const searchQuery = searchParams?.query ?? '';
-
   const offset = (Number(page) - 1) * Number(perPage);
-
   // const candidateId = await (async () => {
   //   const candidateSession = await getUserSession('auth');
-
   //   if (candidateSession) {
   //     return candidateSession?.candidate?.id;
   //   }
-
   //   return false;
   // })();
-
   const jobVacancyData = await getAllJobVacancyData(
     offset,
     Number(perPage),
@@ -44,11 +37,8 @@ const JobList: React.FC<IProps> = async ({ searchParams }) => {
   )
     .then((res) => {
       const data = res?.data ?? [];
-
       const total = res?.total ?? 0;
-
       console.info(data);
-
       return {
         data: data,
         total: total,
@@ -56,18 +46,15 @@ const JobList: React.FC<IProps> = async ({ searchParams }) => {
     })
     .catch((e) => {
       console.log('Failed Getting Job Vacancy Data: ', e);
-
       return {
         data: [],
         total: 0,
       };
     });
-
   // const candidateAlreadyApply = () => {
   //   if (candidateId) {
   //   }
   // };
-
   return (
     <section className="job-listing-three pt-110 lg-pt-80 pb-160 xl-pb-150 lg-pb-80">
       <div className="container">

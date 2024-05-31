@@ -74,7 +74,7 @@ const CandidateAssessmentItem: React.FC<IProps> = ({
                   <span>Last Position</span>
                   <div>{item.latestPosition}</div>
                 </div>
-                <div className="candidate-info mt-5">
+                {/* <div className="candidate-info mt-5">
                   <ul className="candidate-skills style-none d-flex align-items-center">
                     {item.skills.slice(0, 4).map((s, i) => (
                       <li key={i}>{s}</li>
@@ -85,7 +85,7 @@ const CandidateAssessmentItem: React.FC<IProps> = ({
                       </li>
                     )}
                   </ul>
-                </div>
+                </div> */}
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6">

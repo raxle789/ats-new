@@ -6,7 +6,7 @@ import JobDetailsItem from './job-details-item';
 import {
   getJobVacancyData,
   candidateApplyJobVacancy,
-} from '@/lib/action/job-vacancies/action';
+} from '@/lib/actions/job-vacancies/action';
 import CryptoJS from 'crypto-js';
 import { IJobType } from '@/types/job-data-type';
 import Image from 'next/image';

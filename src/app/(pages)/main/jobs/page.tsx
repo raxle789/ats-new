@@ -10,15 +10,15 @@ import JobList from '../../../components/jobs/list/job-list-area';
 
 export const revalidate = 0;
 
-interface IProps {
-  searchParams: {
-    page?: string;
-    perPage?: string;
-    query?: string;
-  };
-}
+// interface IProps {
+//   searchParams: {
+//     page?: string;
+//     perPage?: string;
+//     query?: string;
+//   };
+// }
 
-const JobVacancies: React.FC<IProps> = ({ searchParams }) => {
+const JobVacancies = async ({ searchParams }) => {
   return (
     <Wrapper>
       <div className="main-page-wrapper">

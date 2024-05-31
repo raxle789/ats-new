@@ -6,7 +6,7 @@ import icon_1 from '@/assets/dashboard/images/icon/icon_12.svg';
 import icon_2 from '@/assets/dashboard/images/icon/icon_13.svg';
 import icon_3 from '@/assets/dashboard/images/icon/icon_14.svg';
 import icon_4 from '@/assets/dashboard/images/icon/icon_15.svg';
-import main_graph from '@/assets/dashboard/images/main-graph.png';
+// import main_graph from '@/assets/dashboard/images/main-graph.png';
 import DashboardHeader from '../candidate/dashboard-header';
 import { CardItem } from '../candidate/dashboard-area';
 import NiceSelect from '@/ui/nice-select';
@@ -71,11 +71,11 @@ const EmployDashboardArea = () => {
               </div>
             </div>
             <div className="ps-5 pe-5 mt-50">
-              <Image
+              {/* <Image
                 src={main_graph}
                 alt="main-graph"
                 className="lazy-img m-auto"
-              />
+              /> */}
             </div>
           </div>
         </div>

@@ -1,4 +1,12 @@
-import React, { useState } from 'react';
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { useDebouncedCallback } from 'use-debounce';
+import * as utils from '@/lib/utils/utils';
+import * as messages from '@/utils/message';
+import * as confirmations from '@/utils/confirmation';
+import moment from 'moment';
+import EmailPreview from '@/lib/services/messages/email/preview';
 import {
   Modal,
   Form,
@@ -8,21 +16,12 @@ import {
   DatePicker,
   TimePicker,
   Button,
+  message,
 } from 'antd';
 import type { RadioChangeEvent } from 'antd';
 import ReactQuill from 'react-quill';
 
-type FieldType = {
-  interviewTitle?: string;
-  interviewType?: string;
-  interviewers?: string;
-  interviewTemplate?: string;
-  interviewInfo?: string;
-  interviewDate?: string;
-  interviewTime?: string;
-  interviewLink?: string;
-  interviewPlace?: string;
-};
+const { confirm } = Modal;
 
 const modules = {
   toolbar: [
@@ -41,91 +40,275 @@ const modules = {
   ],
 };
 
-type TProps = {
-  isOpen: boolean;
-  setIsOpenModal: React.Dispatch<boolean>;
-};
+const CreateInterviewModal = ({
+  isOpenModal,
+  router,
+  api,
+  setLoading,
+  setIsOpenModal,
+  typeData,
+  interviewerData,
+  messageTemplateData,
+  placeData,
+  insertInterview,
+  candidateId,
+  jobVacancyId,
+  candidateName,
+  jobTitleAliases,
+}) => {
+  const [form] = Form.useForm();
 
-const CreateInterviewModal: React.FC<TProps> = ({ isOpen, setIsOpenModal }) => {
+  const [interviewType, setInterviewType] = useState(2);
+
+  const [interviewMessageTemplate, setInterviewMessageTemplate] = useState(-1);
+
+  useEffect(() => {
+    form.setFieldsValue({
+      type: interviewType,
+    });
+  });
+
+  useEffect(() => {
+    const value = form.getFieldValue('messageTemplate') ?? '-';
+
+    const interviewDateTime = form.getFieldValue('dateTime') ?? '-';
+
+    const interviewMeetingLink = form.getFieldValue('meetingLink') ?? '-';
+
+    if (value !== '-') {
+      utils
+        .formatHtml(
+          messageTemplateData[Number(value) - 1]?.message,
+          candidateName,
+          jobTitleAliases,
+          interviewDateTime,
+          'Audrey Harnov',
+          interviewMeetingLink,
+        )
+        .then((res) => {
+          setInterviewMessageTemplate(value);
+
+          form.setFieldValue('message', res);
+        });
+    }
+  }, [candidateName, jobTitleAliases, messageTemplateData]);
+
+  const onChangeRadio = (e) => {
+    setInterviewType(e.target.value);
+
+    form.setFieldValue('type', e.target.value);
+  };
+
+  function handleTemplate(value) {
+    const interviewDateTime = form.getFieldValue('dateTime') ?? '-';
+
+    const interviewMeetingLink = form.getFieldValue('meetingLink') ?? '-';
+
+    // console.info('interviewDateTime', interviewDateTime);
+
+    // console.info(
+    //   moment(interviewDateTime, 'YYYY-MM-DD HH:mm:ss').format('DD-MM-YYYY'),
+    // );
+
+    utils
+      .formatHtml(
+        messageTemplateData[value - 1]?.message,
+        candidateName,
+        jobTitleAliases,
+        interviewDateTime,
+        'Audrey Harnov',
+        interviewMeetingLink,
+      )
+      .then((res) => {
+        setInterviewMessageTemplate(value);
+
+        form.setFieldValue('message', res);
+      });
+  }
+
+  function handleDateTime(value) {
+    const messageTemplate = form.getFieldValue('messageTemplate') ?? '-';
+
+    const interviewMeetingLink = form.getFieldValue('meetingLink') ?? '-';
+
+    if (messageTemplate !== '-') {
+      utils
+        .formatHtml(
+          messageTemplateData[messageTemplate - 1]?.message,
+          candidateName,
+          jobTitleAliases,
+          value,
+          'Audrey Harnov',
+          interviewMeetingLink,
+        )
+        .then((res) => {
+          setInterviewMessageTemplate(value);
+
+          form.setFieldValue('message', res);
+        });
+    }
+  }
+
+  const handleMeetingLink = useDebouncedCallback((value) => {
+    const messageTemplate = form.getFieldValue('messageTemplate') ?? '-';
+
+    const interviewDateTime = form.getFieldValue('dateTime') ?? '-';
+
+    if (messageTemplate !== '-') {
+      utils
+        .formatHtml(
+          messageTemplateData[messageTemplate - 1]?.message,
+          candidateName,
+          jobTitleAliases,
+          interviewDateTime,
+          'Audrey Harnov',
+          value,
+        )
+        .then((res) => {
+          setInterviewMessageTemplate(value);
+
+          form.setFieldValue('message', res);
+        });
+    }
+  }, 500);
+
   const handleCancel = () => {
     setIsOpenModal(false);
   };
 
-  const handleSubmit = () => {
-    console.log('success');
-  };
-  const onFinishFailed = () => {
-    console.log('failed');
-  };
+  function handleSubmitInterview(values) {
+    setLoading(true);
 
-  const [interviewType, setInterviewType] = useState('choose');
-  const onChangeRadio = (e: RadioChangeEvent) => {
-    setInterviewType(e.target.value);
-  };
+    confirm({
+      ...confirmations.submitConfirmation('interview'),
+      onOk() {
+        return new Promise<void>((resolve, reject) => {
+          setTimeout(async () => {
+            const validate = await insertInterview(
+              candidateId,
+              jobVacancyId,
+              values,
+            );
 
-  const [interviewTemplate, setInterviewTemplate] = useState('');
-  const handleTemplate = (value: string) => {
-    setInterviewTemplate(value);
-  };
+            console.info(validate);
+
+            if (validate && Array.isArray(validate) && validate?.length) {
+              for (let i = 0; i < validate.length; i++) {
+                if (validate[i]?.success) {
+                  messages.success(
+                    api,
+                    `Interview Invitation Sent Successfully to ${validate[i]?.name} (${validate[i]?.role})`,
+                  );
+                } else {
+                  messages.error(
+                    api,
+                    `Interview Invitation Failed Sent to ${validate[i]?.name} (${validate[i]?.role})`,
+                  );
+                }
+              }
+
+              router.refresh();
+
+              handleCancel();
+
+              resolve(setLoading(false));
+            } else if (validate?.success) {
+              messages.success(api, validate?.message);
+
+              router.refresh();
+
+              handleCancel();
+
+              resolve(setLoading(false));
+            } else {
+              messages.error(api, validate?.message);
+
+              form.resetFields();
+
+              router.refresh();
+
+              handleCancel();
+
+              resolve(setLoading(false));
+            }
+          }, 2000);
+        }).catch((e) => console.log('Failed Creating Interview', e));
+      },
+      onCancel() {
+        router.refresh();
+
+        handleCancel();
+
+        setLoading(false);
+      },
+    });
+  }
+
+  // const onFinishFailed = () => {
+  //   console.log('failed');
+  // };
+
   return (
     <>
       <Modal
         title="Create Interview"
+        maskClosable={false}
         centered
-        open={isOpen}
+        open={isOpenModal}
+        onOk={() => form.submit()}
         onCancel={handleCancel}
-        footer={null}
+        okText="Submit"
+        cancelText="Cancel"
         width={700}
         wrapClassName="custom-modal-wrapper"
       >
         <Form
           name="createInterviewForm"
-          // form={form}
+          form={form}
           className="overflow-x-hidden"
           variant="filled"
-          initialValues={{ remember: true }}
-          onFinish={handleSubmit}
-          onFinishFailed={onFinishFailed}
+          onFinish={handleSubmitInterview}
         >
           <div className="row mt-20">
             <div className="col-lg-6">
               <div className="input-group-meta position-relative mb-15">
-                <label>Interview Type*</label>
-                <Form.Item<FieldType>
-                  name="interviewType"
+                <label>Interview Type</label>
+                <Form.Item
+                  name="type"
                   className="mb-0"
                   rules={[
                     {
                       required: true,
-                      message: 'Please choose interview type!',
+                      message: 'Please Choose Interview Type',
                     },
                   ]}
                 >
                   <Radio.Group
                     className="radio d-flex align-items-center"
+                    options={typeData}
                     buttonStyle="solid"
                     onChange={onChangeRadio}
-                  >
-                    <Radio.Button className="radio-children" value="Online">
+                  />
+                  {/* <Radio.Button className="radio-children" value="Online">
                       Online
                     </Radio.Button>
                     <Radio.Button className="radio-children" value="Offline">
                       Offline
-                    </Radio.Button>
-                  </Radio.Group>
+                    </Radio.Button> */}
+                  {/* </Radio.Group> */}
                 </Form.Item>
               </div>
             </div>
             <div className="col-lg-6">
               <div className="input-group-meta position-relative mb-15">
-                <label>Interview Title*</label>
-                <Form.Item<FieldType>
-                  name="interviewTitle"
+                <label>Interview Title</label>
+                <Form.Item
+                  name="title"
                   className="mb-0"
                   rules={[
                     {
                       required: true,
-                      message: 'Please input interview title!',
+                      message: 'Please Input Interview Title',
                     },
                   ]}
                 >
@@ -135,21 +318,27 @@ const CreateInterviewModal: React.FC<TProps> = ({ isOpen, setIsOpenModal }) => {
             </div>
             <div className="col-6">
               <div className="input-group-meta position-relative mb-15">
-                <label>Interview Date*</label>
+                <label>Interview Date and Time</label>
                 <div className="d-flex align-items-center">
-                  <Form.Item<FieldType>
-                    name="interviewDate"
+                  <Form.Item
+                    name="dateTime"
                     className="mb-0 me-2"
                     rules={[
                       {
                         required: true,
-                        message: 'Please select date!',
+                        message: 'Please Select Interview Date and Time!',
                       },
                     ]}
                   >
-                    <DatePicker className="w-100" placeholder="Select Date" />
+                    <DatePicker
+                      className="w-100"
+                      onChange={handleDateTime}
+                      showTime
+                      format="YYYY-MM-DD HH:mm"
+                      placeholder="Select Date and Time"
+                    />
                   </Form.Item>
-                  <Form.Item<FieldType>
+                  {/* <Form.Item<FieldType>
                     name="interviewTime"
                     className="mb-0"
                     rules={[
@@ -160,20 +349,20 @@ const CreateInterviewModal: React.FC<TProps> = ({ isOpen, setIsOpenModal }) => {
                     ]}
                   >
                     <TimePicker className="w-100" placeholder="Select Time" />
-                  </Form.Item>
+                  </Form.Item> */}
                 </div>
               </div>
             </div>
             <div className="col-lg-6">
               <div className="input-group-meta position-relative mb-15">
-                <label>Interviewers*</label>
-                <Form.Item<FieldType>
+                <label>Interviewers</label>
+                <Form.Item
                   name="interviewers"
                   className="mb-0"
                   rules={[
                     {
                       required: true,
-                      message: 'Please choose interviewers!',
+                      message: 'Please Select Interviewers',
                     },
                   ]}
                 >
@@ -191,53 +380,28 @@ const CreateInterviewModal: React.FC<TProps> = ({ isOpen, setIsOpenModal }) => {
                         .toLowerCase()
                         .localeCompare((optionB?.label ?? '').toLowerCase())
                     }
-                    options={[
-                      {
-                        value: '1',
-                        label: 'Not Identified',
-                      },
-                      {
-                        value: '2',
-                        label: 'Closed',
-                      },
-                      {
-                        value: '3',
-                        label: 'Communicated',
-                      },
-                      {
-                        value: '4',
-                        label: 'Identified',
-                      },
-                      {
-                        value: '5',
-                        label: 'Resolved',
-                      },
-                      {
-                        value: '6',
-                        label: 'Cancelled',
-                      },
-                    ]}
+                    options={interviewerData}
                   />
                 </Form.Item>
               </div>
             </div>
             <div className="col-lg-6">
               <div className="input-group-meta position-relative mb-15">
-                <label>Interview Template*</label>
-                <Form.Item<FieldType>
-                  name="interviewTemplate"
+                <label>Interview Message Template</label>
+                <Form.Item
+                  name="messageTemplate"
                   className="mb-0"
                   rules={[
                     {
                       required: true,
-                      message: 'Please choose interview template!',
+                      message: 'Please Select Interview Message Template',
                     },
                   ]}
                 >
                   <Select
                     className="w-100"
                     showSearch
-                    placeholder="Select Interview Template"
+                    placeholder="Select Interview Message Template"
                     optionFilterProp="children"
                     onChange={handleTemplate}
                     filterOption={(input, option) =>
@@ -248,74 +412,52 @@ const CreateInterviewModal: React.FC<TProps> = ({ isOpen, setIsOpenModal }) => {
                         .toLowerCase()
                         .localeCompare((optionB?.label ?? '').toLowerCase())
                     }
-                    options={[
-                      {
-                        value: '1',
-                        label: 'Not Identified',
-                      },
-                      {
-                        value: '2',
-                        label: 'Closed',
-                      },
-                      {
-                        value: '3',
-                        label: 'Communicated',
-                      },
-                      {
-                        value: '4',
-                        label: 'Identified',
-                      },
-                      {
-                        value: '5',
-                        label: 'Resolved',
-                      },
-                      {
-                        value: '6',
-                        label: 'Cancelled',
-                      },
-                    ]}
+                    options={messageTemplateData}
                   />
                 </Form.Item>
               </div>
             </div>
 
-            {interviewType === 'Online' && (
+            {interviewType === 1 && (
               <div className="col-lg-6">
                 <div className="input-group-meta position-relative mb-15">
-                  <label>Interview Link*</label>
-                  <Form.Item<FieldType>
-                    name="interviewLink"
+                  <label>Interview Link</label>
+                  <Form.Item
+                    name="meetingLink"
                     className="mb-0"
                     rules={[
                       {
                         required: true,
-                        message: 'Please input interview link!',
+                        message: 'Please Input Interview Link',
                       },
                     ]}
                   >
-                    <Input placeholder="Input Interview Link" />
+                    <Input
+                      placeholder="Input Interview Link"
+                      onChange={(e) => handleMeetingLink(e.target.value)}
+                    />
                   </Form.Item>
                 </div>
               </div>
             )}
-            {interviewType === 'Offline' && (
+            {interviewType === 2 && (
               <div className="col-lg-6">
                 <div className="input-group-meta position-relative mb-15">
-                  <label>Interview Place*</label>
-                  <Form.Item<FieldType>
-                    name="interviewPlace"
+                  <label>Interview Place</label>
+                  <Form.Item
+                    name="place"
                     className="mb-0"
                     rules={[
                       {
                         required: true,
-                        message: 'Please choose interview place!',
+                        message: 'Please Select Interview Place',
                       },
                     ]}
                   >
                     <Select
                       className="w-100"
                       showSearch
-                      placeholder="Select Place"
+                      placeholder="Select Interview Place"
                       optionFilterProp="children"
                       filterOption={(input, option) =>
                         (option?.label.toLowerCase() ?? '').includes(input)
@@ -325,50 +467,25 @@ const CreateInterviewModal: React.FC<TProps> = ({ isOpen, setIsOpenModal }) => {
                           .toLowerCase()
                           .localeCompare((optionB?.label ?? '').toLowerCase())
                       }
-                      options={[
-                        {
-                          value: '1',
-                          label: 'Not Identified',
-                        },
-                        {
-                          value: '2',
-                          label: 'Closed',
-                        },
-                        {
-                          value: '3',
-                          label: 'Communicated',
-                        },
-                        {
-                          value: '4',
-                          label: 'Identified',
-                        },
-                        {
-                          value: '5',
-                          label: 'Resolved',
-                        },
-                        {
-                          value: '6',
-                          label: 'Cancelled',
-                        },
-                      ]}
+                      options={placeData}
                     />
                   </Form.Item>
                 </div>
               </div>
             )}
-            {interviewType === 'choose' && <div className="col-lg-6"></div>}
+            {/* {interviewType === 'choose' && <div className="col-lg-6"></div>} */}
 
-            {interviewTemplate && (
+            {messageTemplateData?.length && interviewMessageTemplate !== -1 ? (
               <div className="col-lg-12">
                 <div className="input-group-meta position-relative mb-15">
-                  <label>Interview Info*</label>
-                  <Form.Item<FieldType>
-                    name="interviewInfo"
+                  <label>Interview Message</label>
+                  <Form.Item
+                    name="message"
                     className="mb-0"
                     rules={[
                       {
                         required: true,
-                        message: 'Please input interview info!',
+                        message: 'Please Input Interview Message',
                       },
                     ]}
                   >
@@ -376,20 +493,29 @@ const CreateInterviewModal: React.FC<TProps> = ({ isOpen, setIsOpenModal }) => {
                       className="textArea"
                       theme="snow"
                       modules={modules}
-                      placeholder="Input Interview Info"
+                      placeholder="Input Interview Message"
                     />
                   </Form.Item>
+                  {/* <EmailPreview
+                    emailHtml={String(
+                      messageTemplateData[interviewMessageTemplate]?.message,
+                    )}
+                  /> */}
                 </div>
               </div>
+            ) : (
+              <></>
             )}
 
-            <div className="col-lg-6">
+            {/* <div className="col-lg-6">
               <div className="input-group-meta position-relative mb-15">
                 <Form.Item>
-                  <Button type="primary">Submit</Button>
+                  <Button htmlType="submit" type="primary">
+                    Submit
+                  </Button>
                 </Form.Item>
               </div>
-            </div>
+            </div> */}
           </div>
         </Form>
       </Modal>

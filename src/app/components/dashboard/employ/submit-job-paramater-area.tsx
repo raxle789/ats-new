@@ -6,7 +6,7 @@ import {
   getAllPositionLevelData,
   getAllLineIndustryData,
   getAllEducationLevelData,
-} from '@/lib/action/position-level-requirements/action';
+} from '@/lib/actions/position-level-requirements/action';
 
 type Props = {
   params: any;

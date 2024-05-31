@@ -3,7 +3,7 @@ import { Popover, Checkbox } from 'antd';
 import type { CheckboxProps } from 'antd';
 import ActionCheckboxPipeline from '../../common/popup/action-checkbox-pipeline';
 // import CandidateAssessmentItem from './candidate-assessment-item';
-import CandidateInterviewItem from './candidate-interview-item';
+import InterviewItem from './interview-item';
 import candidate_data from '@/data/candidate-data';
 
 const InterviewArea = () => {
@@ -62,7 +62,7 @@ const InterviewArea = () => {
       </div>
       <div className="wrapper">
         {candidate_items.map((item) => (
-          <CandidateInterviewItem
+          <InterviewItem
             key={item.id}
             item={item}
             checkboxState={checkbox}

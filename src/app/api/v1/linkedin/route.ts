@@ -33,11 +33,8 @@ type TypeUserInfo = {
  * @returns boolean true or false.
  */
 function isSuccessOAuth(searchParams: URLSearchParams): boolean {
-  return (
-    searchParams.has('code') &&
-    searchParams.has('state')
-  );
-};
+  return searchParams.has('code') && searchParams.has('state');
+}
 
 function isFailedOAuth(searchParams: URLSearchParams): boolean {
   return (
@@ -45,62 +42,75 @@ function isFailedOAuth(searchParams: URLSearchParams): boolean {
     searchParams.has('error_description') &&
     searchParams.has('state')
   );
-};
+}
 
 export async function GET(request: NextRequest) {
   const searchParams: URLSearchParams = request.nextUrl.searchParams;
   // const plainObjectSearchParams = Object.fromEntries(searchParams.entries());
   console.info('is success response? ', isSuccessOAuth(searchParams));
-  if(isSuccessOAuth(searchParams)) {
+  if (isSuccessOAuth(searchParams)) {
     try {
       console.info('verifying state token...');
-      jwt.verify(searchParams.get('state') as string, process.env.JWT_SECRET_KEY as string);
+      jwt.verify(
+        searchParams.get('state') as string,
+        process.env.JWT_SECRET_KEY as string,
+      );
 
       const URLSearchParamsBody = new URLSearchParams({
         grant_type: 'authorization_code',
         code: searchParams.get('code') as string,
         client_id: process.env.LINKEDIN_CLIENT_ID as string,
         client_secret: process.env.LINKEDIN_SECRET_KEY as string,
-        redirect_uri: process.env.LINKEDIN_REDIRECT_URL as string
+        redirect_uri: process.env.LINKEDIN_REDIRECT_URL as string,
       });
       console.info('request auth token...');
-      const requestAuthToken = await fetch(process.env.LINKEDIN_EXCHANGE_AUTH_TOKEN as string, {
-        method: 'POST',
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
+      const requestAuthToken = await fetch(
+        process.env.LINKEDIN_EXCHANGE_AUTH_TOKEN as string,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
         },
-        body: URLSearchParamsBody
-      });
+      );
       const response: TypeOpenIDToken = await requestAuthToken.json();
       console.info('response of auth token...', response);
 
       /* Make Authenticated Request */
       console.info('request user information...');
-      const getBasicLinkedInProfile = await fetch('https://api.linkedin.com/v2/userinfo', {
-        method: 'GET',
-        headers: {
-          "Authorization": "Bearer " + response.access_token
+      const getBasicLinkedInProfile = await fetch(
+        'https://api.linkedin.com/v2/userinfo',
+        {
+          method: 'GET',
+          headers: {
+            Authorization: 'Bearer ' + response.access_token,
+          },
         },
-      });
+      );
 
-      const responseUserInfo: TypeUserInfo = await getBasicLinkedInProfile.json();
+      const responseUserInfo: TypeUserInfo =
+        await getBasicLinkedInProfile.json();
       console.info('response user information', responseUserInfo);
       console.info('checking users table with provided user linkedin email...');
       const isEmailRegistered = await prisma.users.findUnique({
         where: {
-          email: responseUserInfo.email
-        }
+          email: responseUserInfo.email,
+        },
       });
       /**
        * If user email already registered.
        */
-      if(isEmailRegistered) {
+      if (isEmailRegistered) {
         console.info('user email already registered...');
-        const failEmailRegistered = new URL('/dashboard/user/stages', request.url);
+        const failEmailRegistered = new URL(
+          '/dashboard/user/stages',
+          request.url,
+        );
         const errorParams = new URLSearchParams({
           state: searchParams.get('state') as string,
           error: 'Email is already registered',
-          error_description: 'Unfortunately, your email is already registered in our system. Please try logging in instead.'
+          error_description:
+            'Unfortunately, your email is already registered in our system. Please try logging in instead.',
         });
         failEmailRegistered.search = errorParams.toString();
 
@@ -110,22 +120,30 @@ export async function GET(request: NextRequest) {
          */
         console.info('creating fail linkedin session within 10 seconds...');
         const failLinkedInExires = new Date(Date.now() + 15 * 1000);
-        const failLinkedInPayload = jwt.sign({ success: false }, 'sidokaredev24');
-        cookies().set(linkedinSession, failLinkedInPayload, { expires: failLinkedInExires, httpOnly: false });
+        const failLinkedInPayload = jwt.sign(
+          { success: false },
+          'sidokaredev24',
+        );
+        cookies().set(linkedinSession, failLinkedInPayload, {
+          expires: failLinkedInExires,
+          httpOnly: false,
+        });
 
         return NextResponse.redirect(failEmailRegistered);
-      };
+      }
       /* Set-Cookie */
       /**
        * Spreads responseUserInfo, and add success: true.
        */
       await setUserSession('linkedin', {
         ...responseUserInfo,
-        success: true
+        success: true,
       });
       /* Validate Error Code */
 
-      return NextResponse.redirect(new URL('/dashboard/user/stages', request.url));
+      return NextResponse.redirect(
+        new URL('/dashboard/user/stages', request.url),
+      );
     } catch (error) {
       /**
        * Error handling for JWT ERROR, FETCH TYPEERROR, PRISMA ERROR
@@ -134,18 +152,18 @@ export async function GET(request: NextRequest) {
       console.info('error deebug: ', error);
 
       return NextResponse.json({
-        error: error
+        error: error,
       });
-    };
-  } else if(isFailedOAuth(searchParams)) {
+    }
+  } else if (isFailedOAuth(searchParams)) {
     const failOAuth = new URL('/dashboard/user/stages', request.url);
     failOAuth.search = searchParams.toString();
 
     return NextResponse.redirect(failOAuth);
-  };
+  }
   /* Default return */
   return NextResponse.json({
     success: false,
-    message: 'Unknown Error on default return:'
+    message: 'Unknown Error on default return:',
   });
-};
+}

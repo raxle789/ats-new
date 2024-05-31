@@ -1,9 +1,18 @@
 'use client';
 
-import { useState, useMemo, ReactNode, cloneElement, lazy } from 'react';
+import {
+  useState,
+  useRef,
+  useEffect,
+  useMemo,
+  ReactNode,
+  cloneElement,
+  lazy,
+} from 'react';
+import _ from 'lodash';
 import JobDetailWrapper from '../../wrapper/job-detail-wrapper';
-import { registerAssessment } from '@/lib/action/job-vacancies/job-vacancy-details/job-vacancy-details-assessment/action';
-import { useRouter } from 'next/navigation';
+import { registerAssessment } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-assessment/action';
+import { useRouter, usePathname } from 'next/navigation';
 import * as messages from '@/utils/message';
 import * as confirmations from '@/utils/confirmation';
 import { Spin, Modal, message } from 'antd';
@@ -17,14 +26,46 @@ import ListArea from '../../applicants/list-area';
 
 const { confirm } = Modal;
 
-const EmployJobDetailItem = ({ jobVacancyData, perPage, offset, listArea }) => {
+const EmployJobDetailItem = ({ jobVacancyData, params }) => {
   const router = useRouter();
+
+  const pathname = usePathname();
+
+  const isFirstRender = useRef(true);
 
   const [status, setStatus] = useState(Status.APPLICANT);
 
   const [api, contextHolder] = message.useMessage();
 
   const [loading, setLoading] = useState(false);
+
+  const path = {
+    APPLICANT: `/dashboard/ta/jobs/${params?.id}`,
+    ASSESSMENT: `/dashboard/ta/jobs/${params?.id}/${Status.ASSESSMENT.toLowerCase()}`,
+    INTERVIEW: `/dashboard/ta/jobs/${params?.id}/${Status.INTERVIEW.toLowerCase()}`,
+  };
+
+  function handlePath(status) {
+    if (status === Status?.APPLICANT) {
+      router.replace(path?.APPLICANT);
+    } else if (status === Status?.ASSESSMENT) {
+      router.replace(path?.ASSESSMENT);
+    } else if (status === Status?.INTERVIEW) {
+      router.replace(path?.INTERVIEW);
+    }
+  }
+
+  // useEffect(() => {
+  //   if (params?.id && jobVacancyData && !_.isEmpty(jobVacancyData)) {
+  //     if (status === Status.APPLICANT && pathname.endsWith(params?.id)) {
+  //       return;
+  //     } else if (status === Status.APPLICANT) {
+  //       router.push(`/dashboard/ta/jobs/${params?.id}`);
+  //     } else {
+  //       router.push(`/dashboard/ta/jobs/${params?.id}/${status.toLowerCase()}`);
+  //     }
+  //   }
+  // }, [status]);
 
   // const [list, setList] = useState(
   //   listArea?.map((area) => {
@@ -73,34 +114,40 @@ const EmployJobDetailItem = ({ jobVacancyData, perPage, offset, listArea }) => {
   //   }
   // }
 
-  const list = useMemo(() => {
-    switch (status) {
-      case Status.APPLICANT:
-        return listArea?.map((area) => {
-          if (area?.id === Status.APPLICANT && area.content) {
-            return <div key={status}>{area.content}</div>;
-          }
-        });
-      case Status.ASSESSMENT:
-        return listArea?.map((area) => {
-          if (area?.id === Status.ASSESSMENT && area.content) {
-            return <div key={status}>{area.content}</div>;
-          }
-        });
-      default:
-        return listArea?.map((area) => {
-          if (area?.id === Status.APPLICANT) {
-            return <div key={status}>{area.content}</div>;
-          }
-        });
-    }
-  }, [status, jobVacancyData, perPage, offset, listArea]);
+  // const list = useMemo(() => {
+  //   switch (status) {
+  //     case Status.APPLICANT:
+  //       return listArea?.map((area) => {
+  //         if (area?.id === Status.APPLICANT && area.content) {
+  //           return <div key={status}>{area.content}</div>;
+  //         }
+  //       });
+  //     case Status.ASSESSMENT:
+  //       return listArea?.map((area) => {
+  //         if (area?.id === Status.ASSESSMENT && area.content) {
+  //           return <div key={status}>{area.content}</div>;
+  //         }
+  //       });
+  //     case Status.INTERVIEW:
+  //       return listArea?.map((area) => {
+  //         if (area?.id === Status.INTERVIEW && area.content) {
+  //           return <div key={status}>{area.content}</div>;
+  //         }
+  //       });
+  //     default:
+  //       return listArea?.map((area) => {
+  //         if (area?.id === Status.APPLICANT) {
+  //           return <div key={status}>{area.content}</div>;
+  //         }
+  //       });
+  //   }
+  // }, [status, jobVacancyData, perPage, offset, listArea]);
 
   return (
     <>
-      {/* {contextHolder}
+      {contextHolder}
 
-      <Spin spinning={loading} fullscreen /> */}
+      <Spin spinning={loading} fullscreen />
 
       <div className="d-sm-flex align-items-start justify-content-between mb-10 lg-mb-30">
         <div>
@@ -129,70 +176,70 @@ const EmployJobDetailItem = ({ jobVacancyData, perPage, offset, listArea }) => {
       <div className="nav-bar-responsive d-flex align-items-center justify-content-center mb-40 pb-3 overflow-auto">
         <button
           className="d-flex flex-column align-items-center me-4"
-          onClick={() => setStatus(Status.APPLICANT)}
+          onClick={() => handlePath(Status?.APPLICANT)}
         >
           <span>{jobVacancyData?.applicant}</span>
-          <span>Applicants</span>
+          <span>Applicant</span>
         </button>
         <button
           className="d-flex flex-column align-items-center me-4"
-          onClick={() => setStatus(Status.APPLICANT)}
+          onClick={() => handlePath(Status?.APPLICANT)}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span>Shortlisted</span>
         </button>
         <button
           className="d-flex flex-column align-items-center me-4"
-          onClick={() => setStatus(Status.APPLICANT)}
+          onClick={() => handlePath(Status?.APPLICANT)}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span className="text-center">Talent Pool</span>
         </button>
         <button
           className="d-flex flex-column align-items-center me-4"
-          onClick={() => setStatus(Status.ASSESSMENT)}
+          onClick={() => handlePath(Status?.ASSESSMENT)}
         >
           <span>{jobVacancyData?.assessment}</span>
           <span>Assessment</span>
         </button>
         <button
           className="d-flex flex-column align-items-center me-4"
-          onClick={() => setStatus(Status.APPLICANT)}
+          onClick={() => handlePath(Status?.INTERVIEW)}
         >
-          <span>{jobVacancyData?.applicant}</span>
+          <span>{jobVacancyData?.interview}</span>
           <span>Interview</span>
         </button>
         <button
           className="d-flex flex-column align-items-center me-4"
-          onClick={() => setStatus(Status.APPLICANT)}
+          onClick={() => handlePath(Status?.APPLICANT)}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span className="text-center">Ref Check</span>
         </button>
         <button
           className="d-flex flex-column align-items-center me-4"
-          onClick={() => setStatus(Status.APPLICANT)}
+          onClick={() => handlePath(Status?.APPLICANT)}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span>Offering</span>
         </button>
         <button
           className="d-flex flex-column align-items-center me-4"
-          onClick={() => setStatus(Status.APPLICANT)}
+          onClick={() => handlePath(Status?.APPLICANT)}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span>MCU</span>
         </button>
         <button
           className="d-flex flex-column align-items-center me-4"
-          onClick={() => setStatus(Status.APPLICANT)}
+          onClick={() => handlePath(Status?.APPLICANT)}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span>Agreement</span>
         </button>
         <button
           className="d-flex flex-column align-items-center"
-          onClick={() => setStatus(Status.APPLICANT)}
+          onClick={() => handlePath(Status?.APPLICANT)}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span>Boarding</span>
@@ -201,12 +248,18 @@ const EmployJobDetailItem = ({ jobVacancyData, perPage, offset, listArea }) => {
 
       <div className="d-flex justify-content-between align-items-center mb-40">
         <div>
-          <h4 className="sub-main-title">{status}</h4>
+          <h4 className="sub-main-title">
+            {pathname?.endsWith(params?.id)
+              ? 'APPLICANT'
+              : pathname
+                  ?.split('/')
+                  [pathname?.split('/')?.length - 1]?.toUpperCase() ?? '-'}
+          </h4>
         </div>
-        <SearchBar />
+        {/* <SearchBar /> */}
       </div>
 
-      {list}
+      {/* {list} */}
     </>
   );
 };

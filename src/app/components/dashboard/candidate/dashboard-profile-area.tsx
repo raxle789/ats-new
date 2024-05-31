@@ -44,7 +44,7 @@ const DashboardProfileArea = () => {
   useEffect(() => {
     pdfjs.GlobalWorkerOptions.workerSrc = new URL(
       'pdfjs-dist/build/pdf.worker.min.js',
-      import.meta.url
+      import.meta.url,
     ).toString();
 
   }, []);

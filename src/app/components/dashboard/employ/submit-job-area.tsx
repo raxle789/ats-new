@@ -24,7 +24,7 @@ import {
   insertJobVacancy,
   getJobVacancyData,
   updateJobVacancy,
-} from '@/lib/action/job-vacancies/action';
+} from '@/lib/actions/job-vacancies/action';
 
 const SubmitJobArea = async ({ params, searchParams }) => {
   const taId = 73023;

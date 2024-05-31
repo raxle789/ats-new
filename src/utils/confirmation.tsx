@@ -53,7 +53,7 @@ export function duplicateConfirmation(handleType: 'jobVacancy') {
 }
 
 export function submitConfirmation(
-  handleType: 'jobVacancy' | 'fpk' | 'positionLevelRequirement',
+  handleType: 'jobVacancy' | 'fpk' | 'positionLevelRequirement' | 'interview',
   mode?: 'create' | 'update',
 ) {
   const confirmation = (() => {
@@ -78,6 +78,11 @@ export function submitConfirmation(
       return {
         ...confirmationTemplate,
         content: "Do you want to submit this position level's requirements?",
+      };
+    } else if (handleType === 'interview') {
+      return {
+        ...confirmationTemplate,
+        content: 'Do you want to create this interview?',
       };
     }
   })();
@@ -119,14 +124,52 @@ export function viewConfirmation(handleType: 'jobVacancy') {
   return confirmation;
 }
 
-export function assignConfirmation(handleType: 'assessment') {
+export function assignConfirmation(handleType: 'assessment' | 'interview') {
   const confirmation = (() => {
     if (handleType === 'assessment') {
       return {
         ...confirmationTemplate,
         content: 'Do you want to assign this candidate to assessment?',
       };
+    } else if (handleType === 'interview') {
+      return {
+        ...confirmationTemplate,
+        content: 'Do you want to assign this candidate to interview?',
+      };
     }
+  })();
+
+  return confirmation;
+}
+
+export function resendEmailConfirmation(
+  handleType: 'candidate' | 'interviewer',
+) {
+  const confirmation = (() => {
+    if (handleType === 'candidate') {
+      return {
+        ...confirmationTemplate,
+        content:
+          'Do you want to resend interview invitation to this candidate?',
+      };
+    } else if (handleType === 'interviewer') {
+      return {
+        ...confirmationTemplate,
+        content:
+          'Do you want to resend interview invitation to this interviewer?',
+      };
+    }
+  })();
+
+  return confirmation;
+}
+
+export function resendAssessmentConfirmation() {
+  const confirmation = (() => {
+    return {
+      ...confirmationTemplate,
+      content: 'Do you want to resend assessment to this candidate?',
+    };
   })();
 
   return confirmation;

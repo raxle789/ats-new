@@ -2,8 +2,8 @@
 import React from 'react';
 import Stage3Form from '../../forms/stage-3-form';
 import VerificationForm from '../../forms/verif-email-form';
-import DocumentForm from '../../forms/doc-form';
 import DoneRegisterPage from '../../forms/done-register';
+import LinkedInRegisterPage from '../../forms/LinkedInRegister';
 import {
   SafetyOutlined,
   SmileOutlined,
@@ -12,7 +12,6 @@ import {
 } from '@ant-design/icons';
 import { Steps } from 'antd';
 import { useAppSelector } from '@/redux/hook';
-import LinkedInRegisterPage from '../../forms/LinkedInRegister';
 
 const ProfileStagesArea = () => {
   const stepState = useAppSelector((state) => state.userRegisterStep.next);

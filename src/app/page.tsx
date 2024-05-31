@@ -1,4 +1,6 @@
 import { Metadata } from 'next';
+import { Document, Page } from 'react-pdf';
+import prisma from '@/lib/services/connection/db';
 // import { registerAssessment } from '@/lib/action/job-vacancies/job-vacancy-details/job-vacancy-details-assessment/action';
 // import * as crypto from '@/lib/utils/utils';
 // import CryptoJS from 'crypto-js';

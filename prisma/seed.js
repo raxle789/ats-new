@@ -159,6 +159,12 @@ async function main() {
 
   await prisma.$executeRaw`INSERT INTO states(name, alias) VALUES('WAITING', 'Waiting'), ('ASSESSMENT', 'Assessment'), ('INTERVIEW', 'Interview'), ('REFERENCE CHECK', 'Reference Check'), ('OFFERING', 'Offering'), ('MCU', 'Medical Check Up'), ('AGREEMENT', 'Agreement'), ('ONBOARDING', 'Onboarding'), ('REJECTED', 'Rejected')`;
 
+  await prisma.$executeRaw`INSERT INTO types(name) VALUES ('Online'), ('Offline')`;
+
+  await prisma.$executeRaw`INSERT INTO places(name, address) VALUES ('Erajaya Gedong Panjang', 'Jl. Gedong Panjang No. 1, Jakarta Utara'), ('Erajaya Plaza', 'Jl. Pemuda No. 60, Jakarta Pusat'), ('Erajaya Hayam Wuruk', 'Jl. Hayam Wuruk No. 2, Jakarta Pusat')`;
+
+  await prisma.$executeRaw`INSERT INTO email_templates(name, message) SELECT title, template FROM ats.dbo.interview_infos ORDER BY title`;
+
   // await prisma.$executeRaw`INSERT INTO phones(user_id, type, number, status, [current], created_at, updated_at) SELECT user_id, type, number, status, [current], created_at, updated_at FROM ats.dbo.phones ORDER BY id;`;
 
   // await prisma.$executeRaw`INSERT INTO efpk_initiator_informations(nik, name, email, position, efpk_id, user_id) SELECT efpk.initiator_nik, efpk.initiator_name, efpk.initiator_email, u.position, efpk.id, u.id FROM efpk LEFT JOIN ats.dbo.users AS u ON efpk.initiator_email COLLATE SQL_Latin1_General_CP1_CI_AS = u.email COLLATE SQL_Latin1_General_CP1_CI_AS ORDER BY efpk.id;`;

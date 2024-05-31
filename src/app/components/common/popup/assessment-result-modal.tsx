@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import { Modal, Collapse } from 'antd';
 import Link from 'next/link';
@@ -22,15 +24,7 @@ const items: CollapseProps['items'] = [
   },
 ];
 
-type TProps = {
-  isOpen: boolean;
-  setIsOpenModal: React.Dispatch<boolean>;
-};
-
-const AssessmentResultModal: React.FC<TProps> = ({
-  isOpen,
-  setIsOpenModal,
-}) => {
+const AssessmentResultModal = ({ isOpenModal, setIsOpenModal, item }) => {
   const handleCancel = () => {
     setIsOpenModal(false);
   };
@@ -55,8 +49,9 @@ const AssessmentResultModal: React.FC<TProps> = ({
     <>
       <Modal
         title="Assessment Result"
+        maskClosable={false}
         centered
-        open={isOpen}
+        open={isOpenModal}
         onCancel={handleCancel}
         footer={null}
         width={700}
@@ -81,16 +76,31 @@ const AssessmentResultModal: React.FC<TProps> = ({
               </b>
             </div>
             <div className="col-lg-6">
-              <p>Testing Purpose - Assessment and Interview</p>
-              <p>1</p>
-              <p>22-02-2024 01:00:00</p>
-              <p>26-02-2024 23:59:59</p>
-              <p>Tidak direkomendasikan</p>
-              <p>Psikotes Online - 1</p>
+              <p>{item?.jobTitle ?? '-'}</p>
+              <p>{item?.positionLevel ?? '-'}</p>
+              <p>{item?.candidateAssessmentStartDate ?? '-'}</p>
+              <p>{item?.candidateAssessmentEndDate ?? '-'}</p>
+              <p>{item?.candidateAssessmentStatus ?? '-'}</p>
+              <p>{item?.candidateAssessmentTestName ?? '-'}</p>
             </div>
           </div>
           <div>
-            <Collapse items={items} defaultActiveKey={['0']} />
+            <Collapse
+              items={
+                item?.candidateAssessmentResult?.length
+                  ? item?.candidateAssessmentResult?.map((d) => {
+                      const newData = {
+                        key: d?.category_id,
+                        label: d?.name,
+                        children: <p>{d?.result}</p>,
+                      };
+
+                      return newData;
+                    })
+                  : []
+              }
+              defaultActiveKey={['0']}
+            />
           </div>
           <div className="mt-30 d-flex align-items-center justify-content-center">
             <Link

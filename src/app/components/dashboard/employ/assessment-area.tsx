@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import JobAssessmentResultArea from './job-assessment-result-area';
 import { Popover, Checkbox } from 'antd';
 import type { CheckboxProps } from 'antd';
 import ActionCheckboxPipeline from '../../common/popup/action-checkbox-pipeline';
@@ -68,6 +69,7 @@ const AssessmentArea = () => {
             checkboxAllValue={checkboxAllValue}
             setCheckbox={setCheckbox}
             setCheckboxAllValue={setCheckboxAllValue}
+            assessmentDetailModal={<JobAssessmentResultArea />}
           />
         ))}
       </div>

@@ -1,14 +1,14 @@
 'use client';
 
-import { useAppSessionContext } from "@/libs/Sessions/AppSession";
-import { Alert, Avatar, Button, DatePicker, Form, Input, message } from "antd";
-import { linkedinSession } from "@/libs/Sessions/utils";
-import { DecryptSession } from "@/libs/Sessions/jwt";
-import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { RegisterWithLinkedIn } from "@/libs/Registration/LinkedIn";
-import { useAppDispatch } from "@/redux/hook";
-import { setRegisterStep } from "@/redux/features/fatkhur/registerSlice";
+import { useAppSessionContext } from '@/libs/Sessions/AppSession';
+import { Alert, Avatar, Button, DatePicker, Form, Input, message } from 'antd';
+import { linkedinSession } from '@/libs/Sessions/utils';
+import { DecryptSession } from '@/libs/Sessions/jwt';
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { RegisterWithLinkedIn } from '@/libs/Registration/LinkedIn';
+import { useAppDispatch } from '@/redux/hook';
+import { setRegisterStep } from '@/redux/features/fatkhur/registerSlice';
 
 export interface FieldType {
   fullname: string;
@@ -17,7 +17,7 @@ export interface FieldType {
   dateOfBirth: any;
   password: string;
   confirmPassword: string;
-};
+}
 
 export default function LinkedInRegisterPage() {
   /* Use session context here */
@@ -33,7 +33,9 @@ export default function LinkedInRegisterPage() {
   const [form] = Form.useForm();
 
   /* zodErrors-state */
-  const [zodErrors, setZodErrors] = useState<{ [key: string]: string[] } | null>(null);
+  const [zodErrors, setZodErrors] = useState<{
+    [key: string]: string[];
+  } | null>(null);
   const dispatch = useAppDispatch();
 
   /* ACTIONS */
@@ -43,18 +45,18 @@ export default function LinkedInRegisterPage() {
     console.info('date:', plainObjects.dateOfBirth instanceof Date);
     const doRegisterPhase1 = await RegisterWithLinkedIn({
       ...plainObjects,
-      dateOfBirth: new Date(plainObjects.dateOfBirth)
+      dateOfBirth: new Date(plainObjects.dateOfBirth),
     });
-    if(!doRegisterPhase1.success) {
+    if (!doRegisterPhase1.success) {
       console.info('zodErrors:', doRegisterPhase1.errors);
       setZodErrors(doRegisterPhase1.errors);
       return message.error(doRegisterPhase1.message);
-    };
+    }
 
     message.success(doRegisterPhase1.message);
     // return dispatch(setRegisterStep(3));
     return setTimeout(() => {
-      dispatch(setRegisterStep(3))
+      dispatch(setRegisterStep(3));
     }, 2000);
   };
   /* END OF ACTIONS */
@@ -64,7 +66,7 @@ export default function LinkedInRegisterPage() {
       fullname: decodedLinkedInSession.name,
       email: decodedLinkedInSession.email,
     });
-  }, [])
+  }, []);
   return (
     <>
       {decodedLinkedInSession?.success && (
@@ -155,31 +157,33 @@ export default function LinkedInRegisterPage() {
           </Form>
         </>
       )}
-      {isSearchParams &&
-        <AccountAlreadyExist searchParams={searchParams} />
-      }
+      {isSearchParams && <AccountAlreadyExist searchParams={searchParams} />}
     </>
   );
-};
+}
 
-function AccountAlreadyExist({ searchParams } : { searchParams: URLSearchParams }) {
+function AccountAlreadyExist({
+  searchParams,
+}: {
+  searchParams: URLSearchParams;
+}) {
   const router = useRouter();
   const [countdown, setCountdown] = useState<number>(10);
   console.info('countdown: ', countdown);
   useEffect(() => {
     if (countdown > 0) {
       const interval = setInterval(() => {
-        setCountdown(prevCountdown => prevCountdown - 1);
+        setCountdown((prevCountdown) => prevCountdown - 1);
       }, 1000);
 
       return () => clearInterval(interval);
     } else {
       return router.replace('/');
-    };
+    }
   });
   return (
     <>
-      <h3>{searchParams.get('error')}</h3>
+      <h3 className="section-page-title">{searchParams.get('error')}</h3>
       <Alert message={searchParams.get('error_description')} type="error" />
       <h5>You will be directed into homepage on {countdown} seconds</h5>
       <p>OR</p>
@@ -187,11 +191,11 @@ function AccountAlreadyExist({ searchParams } : { searchParams: URLSearchParams 
         href="/"
         type="primary"
         style={{
-          marginTop: '1rem'
+          marginTop: '1rem',
         }}
       >
         Back to Home
       </Button>
     </>
   );
-};
+}

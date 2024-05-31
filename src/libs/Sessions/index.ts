@@ -6,87 +6,110 @@ import * as Jwt from './jwt';
 import { cookies } from 'next/headers';
 
 /**
- * 
+ *
  * @param sessionName name of the session, auth or reg
  * @returns payload as object user-information. if fails, 'false' returned out.
  */
-export async function getUserSession(sessionName: 'auth' | 'reg' | 'otp'): Promise<any> {
-  switch(sessionName) {
+export async function getUserSession(
+  sessionName: 'auth' | 'reg' | 'otp',
+): Promise<any> {
+  switch (sessionName) {
     case 'auth':
       /* Getting both client and server */
       const authSession = cookies().get(Utils.authSession)?.value;
-      if(!authSession) return false;
+      if (!authSession) return false;
       const decryptedAuthSession = Jwt.DecryptSession(authSession as string);
       // console.log('Decrypted session', decryptedAuthSession);
       return decryptedAuthSession;
 
     case 'reg':
       const regSession = cookies().get(Utils.regSession)?.value;
-      if(!regSession) return false;
+      if (!regSession) return false;
       const decryptedRegSession = Jwt.DecryptSession(regSession as string);
       return decryptedRegSession;
 
     case 'otp':
       const otpSession = cookies().get(Utils.otpSession)?.value;
-      if(!otpSession) return false;
+      if (!otpSession) return false;
       const decryptedOtpSession = Jwt.DecryptSession(otpSession as string);
       return decryptedOtpSession;
 
     default:
       return {
-        message: 'Invalid session name!'
+        message: 'Invalid session name!',
       };
   }
-};
+}
 
 /**
- * 
+ *
  * @param sessionName name of the session that wanted to set
  * @param payload information data as an object that will stored on cookies
  * @param isRememberOn optional argument if user doesn't wants to re-logged in
  * @returns 'void' -> session is set
  */
-export async function setUserSession(sessionName: 'auth' | 'reg' | 'otp' | 'linkedin', payload: any, isRememberOn?: 'on' | undefined) {
-  switch(sessionName) {
+export async function setUserSession(
+  sessionName: 'auth' | 'reg' | 'otp' | 'linkedin',
+  payload: any,
+  isRememberOn?: 'on' | undefined,
+) {
+  switch (sessionName) {
     case 'auth':
       const authSessionName = Utils.authSession;
-      const authExpires = isRememberOn === "on" ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) : new Date(Date.now() * 5 * 60 * 1000);
+      const authExpires =
+        isRememberOn === 'on'
+          ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+          : new Date(Date.now() * 5 * 60 * 1000);
       const encryptedAuthSession = Jwt.EncryptSession(payload);
       /* set-session -> server */
       // cookies().set(authSessionName, encryptedAuthSession as string, { expires: authExpires, httpOnly: true });
       /* set-session -> client */
-      cookies().set(authSessionName, encryptedAuthSession as string, { expires: authExpires, httpOnly: false});
+      cookies().set(authSessionName, encryptedAuthSession as string, {
+        expires: authExpires,
+        httpOnly: false,
+      });
       break;
     case 'reg':
       const regSessionName = Utils.regSession;
       const regExpires = new Date(Date.now() + 1 * 60 * 60 * 1000);
       const encryptedRegSession = Jwt.EncryptSession(payload);
       /* set-session */
-      cookies().set(regSessionName, encryptedRegSession as string, { expires: regExpires, httpOnly: false});
+      cookies().set(regSessionName, encryptedRegSession as string, {
+        expires: regExpires,
+        httpOnly: false,
+      });
       break;
     case 'otp':
       const otpSessionName = Utils.otpSession;
       const otpExpires = new Date(Date.now() + 2.5 * 60 * 1000);
       const encryptedOTPsession = Jwt.EncryptSession(payload);
       /* set otp-session */
-      cookies().set(otpSessionName, encryptedOTPsession as string, { expires: otpExpires, httpOnly: true });
+      cookies().set(otpSessionName, encryptedOTPsession as string, {
+        expires: otpExpires,
+        httpOnly: true,
+      });
       break;
     case 'linkedin':
       const linkedinSessionName = Utils.linkedinSession;
       const linkedinExpires = new Date(Date.now() + 10 * 60 * 1000);
       const encryptedLinkedInSession = Jwt.EncryptSession(payload);
       /* set linkedin-session */
-      cookies().set(linkedinSessionName, encryptedLinkedInSession as string, { expires: linkedinExpires, httpOnly: false });
+      cookies().set(linkedinSessionName, encryptedLinkedInSession as string, {
+        expires: linkedinExpires,
+        httpOnly: false,
+      });
       break;
 
     default:
-      console.info("Invalid session name or payload!")
+      console.info('Invalid session name or payload!');
       break;
-  };
-};
+  }
+}
 
-export async function deleteSession(sessionName: 'auth' | 'reg' | 'otp' | 'linkedin') {
-  switch(sessionName) {
+export async function deleteSession(
+  sessionName: 'auth' | 'reg' | 'otp' | 'linkedin',
+) {
+  switch (sessionName) {
     case 'auth':
       console.info('Deleting auth-session...');
       cookies().delete(Utils.authSession);
@@ -103,11 +126,11 @@ export async function deleteSession(sessionName: 'auth' | 'reg' | 'otp' | 'linke
       console.info('deleting linkedin-session...');
       cookies().delete(Utils.linkedinSession);
       break;
-    
+
     default:
       console.info('no valid session choosen');
       break;
-  };
-};
+  }
+}
 
 // export { Utils };

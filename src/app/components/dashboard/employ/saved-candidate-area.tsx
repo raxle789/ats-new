@@ -2,7 +2,7 @@
 import React from 'react';
 import DashboardHeader from '../candidate/dashboard-header';
 import candidate_data from '@/data/candidate-data';
-import CandidateItem from './candidate-interview-item';
+import CandidateItem from './interview-item';
 import EmployShortSelect from './short-select';
 
 // props type
