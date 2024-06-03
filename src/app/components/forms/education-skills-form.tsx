@@ -8,7 +8,7 @@ import {
   Divider,
   Space,
   Button,
-  Checkbox,
+  // Checkbox,
   InputNumber,
   message,
 } from 'antd';
@@ -16,8 +16,8 @@ import type { FormProps, CheckboxProps, InputRef } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import dayjs, { Dayjs } from 'dayjs';
-import { getEducationSkills } from '@/libs/Candidate/retrieve-data';
-import { fetchCertificates, fetchCities, fetchEducatioMajors, fetchEducationInstitutios, fetchEducationLevels, fetchSkills } from '@/libs/Fetch';
+// import { getEducationSkills } from '@/libs/Candidate/retrieve-data';
+// import { fetchCertificates, fetchCities, fetchEducatioMajors, fetchEducationInstitutios, fetchEducationLevels, fetchSkills } from '@/libs/Fetch';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 let languageIndex = 0;
@@ -58,6 +58,26 @@ type MasterData = {
     value: string;
     label: string;
   }[];
+  ethnicity?: {
+    value: string;
+    label: string;
+  }[];
+  countries?: {
+    value: string;
+    label: string;
+  }[];
+  job_levels?: {
+    value: number;
+    label: string;
+  }[];
+  job_functions?: {
+    value: number;
+    label: string;
+  }[];
+  line_industries?: {
+    value: number;
+    label: string;
+  }[];
   education_levels?: {
     value: string;
     label: string;
@@ -80,39 +100,46 @@ type MasterData = {
   }[];
 };
 
-const EducationSkillsForm = () => {
+type Props = {
+  educationAndSkill?: any;
+  masterData?: MasterData | null;
+  errors?: any;
+};
+
+const EducationSkillsForm: React.FC<Props> = ({
+  educationAndSkill,
+  masterData,
+  errors,
+}) => {
   const [form] = Form.useForm();
-  const [masterData, setMasterData] = useState<MasterData | null>(null);
+  // const [masterData, setMasterData] = useState<MasterData | null>(null);
   const [editState, setEditState] = useState(false);
-  const [educationAndSkill, setEducationAndSkill] = useState<any>(null);
-  console.log('EDUCATION SKILLS: ', educationAndSkill);
+  // const [educationAndSkill, setEducationAndSkill] = useState<any>(null);
+  // console.log('EDUCATION SKILLS: ', educationAndSkill);
 
-  const fetchData = async () => {
-    await Promise.all([
-      fetchCities(setMasterData),
-      fetchEducationLevels(setMasterData),
-      fetchEducatioMajors(setMasterData),
-      fetchEducationInstitutios(setMasterData),
-      fetchCertificates(setMasterData),
-      fetchSkills(setMasterData)
-    ]);
-  };
+  // const fetchData = async () => {
+  //   await Promise.all([
+  //     fetchCities(setMasterData),
+  //     fetchEducationLevels(setMasterData),
+  //     fetchEducatioMajors(setMasterData),
+  //     fetchEducationInstitutios(setMasterData),
+  //     fetchCertificates(setMasterData),
+  //     fetchSkills(setMasterData)
+  //   ]);
+  // };
 
-  const fetchEducationSkills = async () => {
-    const educationSkillsData = await getEducationSkills();
-    if(!educationSkillsData.success) {
-      return message.error(educationSkillsData.message);
-    };
-    return setEducationAndSkill(educationSkillsData.data);
-  };
+  // const fetchEducationSkills = async () => {
+  //   const educationSkillsData = await getEducationSkills();
+  //   if(!educationSkillsData.success) {
+  //     return message.error(educationSkillsData.message);
+  //   };
+  //   return setEducationAndSkill(educationSkillsData.data);
+  // };
 
-  useEffect(() => {
-    /* Candidate Data */
-    fetchEducationSkills();
-
-    /* Master Data */
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchEducationSkills();
+  //   fetchData();
+  // }, []);
 
   const editOnChange = () => {
     setEditState(!editState);
@@ -264,19 +291,19 @@ const EducationSkillsForm = () => {
     setActiveCertifKey(newActiveKey);
   };
 
-  const addCertif = (index: number) => {
+  const addCertif = () => {
     const newActiveKey = `newTab${newCertifTabIndex.current++}`;
     const newPanes = [...certifItems];
     newPanes.push({
       label: `Certification ${certifItems.length + 1}`,
-      children: <CertifTabContent certificationIdx={index} />,
+      children: <CertifTabContent certificationIdx={certificationIdx} />,
       key: newActiveKey,
     });
 
     const newDisplayed = [...displayedItems];
     newDisplayed.push({
       label: `Certification ${certifItems.length + 1}`,
-      children: <DisplayedTabContent certificationIdx={index} />,
+      children: <DisplayedTabContent certificationIdx={certificationIdx} />,
       key: newActiveKey,
       closable: false,
     });
@@ -285,7 +312,7 @@ const EducationSkillsForm = () => {
     setCertifItems(newPanes);
     setDisplayedItems(newDisplayed);
     setActiveCertifKey(newActiveKey);
-    // setCertificationIdx(certificationIdx + 1);
+    setCertificationIdx(certificationIdx + 1);
     console.log('addCertif');
   };
 
@@ -318,11 +345,8 @@ const EducationSkillsForm = () => {
     targetKey: React.MouseEvent | React.KeyboardEvent | string,
     action: 'add' | 'remove',
   ) => {
-    let currentIdx = certificationIdx;
     if (action === 'add') {
-      addCertif(currentIdx);
-      currentIdx++;
-      setCertificationIdx(currentIdx);
+      addCertif();
     } else {
       removeCertif(targetKey);
     }
@@ -391,6 +415,7 @@ const EducationSkillsForm = () => {
   };
 
   const [certifTotal, setCertifTotal] = useState(0);
+  const [loopTotal, setLoopTotal] = useState(0);
   const [certifState, setCertifState] = useState('not-certified');
   const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
 
@@ -465,39 +490,31 @@ const EducationSkillsForm = () => {
         certification: certificationsField,
       }));
 
-      // if (certifications.length > 0) {
-      //   setCertifState('certified');
-      //   setCertifTotal(educationAndSkill.certifications.length);
-      // }
-      console.log('initFieldsValue: ', initFieldsValue);
-      console.log('certifTotal: ', certifTotal);
-      console.log('certifState: ', certifState);
-      form.setFieldsValue(initFieldsValue);
+      if (certifications) {
+        if (certifications.length > 0) {
+          setCertifState('certified');
+          setCertifTotal(educationAndSkill.certifications.length);
+        }
+        console.log('certifTotal: ', certifTotal);
+        console.log('certifState: ', certifState);
+        if (certifState === 'certified') {
+          addCertif();
+          setLoopTotal((prevState) => prevState + 1);
+        }
+      }
     }
   }, [educationAndSkill]);
 
   useEffect(() => {
-    // if (certifState === 'certified') {
-    //   const loopTotal = certifTotal - displayedItems.length + 1;
-    //   console.log('loopTotal: ', loopTotal);
-    //   for (let i = 0; i < loopTotal; i++) {
-    //     console.log('i: ', i);
-    //     addCertif();
-    //   }
-    // }
-    if (certifState === 'certified') {
-      let currentIdx = certificationIdx;
-      for (let i = 0; i < certifTotal - displayedItems.length + 1; i++) {
-        addCertif(currentIdx);
-        currentIdx++;
-      }
-      setCertificationIdx(currentIdx);
+    if (loopTotal <= certifTotal && certifState === 'certified') {
+      addCertif();
     }
-  }, [certifState, certifTotal]);
+  }, [certifTotal]);
 
   useEffect(() => {
-    console.log('certificationIdx useEffect: ', certificationIdx);
-  }, [certificationIdx]);
+    console.log('initFieldsValue: ', initFieldsValue);
+    form.setFieldsValue(initFieldsValue);
+  }, [educationAndSkill]);
   return (
     <>
       <div>
@@ -743,10 +760,7 @@ const EducationSkillsForm = () => {
             <div className="col-12">
               <div className="input-group-meta position-relative mb-15">
                 <label className="fw-bold">What skills do you have?*</label>
-                <Form.Item<FieldType>
-                  name="skills"
-                  className="mb-0"
-                >
+                <Form.Item<FieldType> name="skills" className="mb-0">
                   {editState && (
                     <Select
                       className="w-100"

@@ -18,28 +18,13 @@ const ApplicantListItem = ({
   handleApplicant,
 }) => {
   const router = useRouter();
-
   const [api, contextHolder] = message.useMessage();
-
   const [loading, setLoading] = useState(false);
-
-  const initialCheckboxState = applicantData?.reduce(
-    (acc: { [key: string]: boolean }, _: any, index: string) => {
-      return {
-        ...acc,
-        [index]: false,
-      };
-    },
-    {},
-  );
-
   const [checkboxAllValue, setCheckboxAllValue] = useState(false);
-
-  const [checkbox, setCheckbox] = useState<{ [key: string]: boolean }>(
-    initialCheckboxState,
-  );
-
+  const [checkbox, setCheckbox] = useState<{ [key: string]: boolean }>({});
   const [popOverState, setPopOverState] = useState(false);
+
+  let initialCheckboxState: { [key: string]: boolean };
 
   const onChangeCheckboxAll: CheckboxProps['onChange'] = (e) => {
     const checked = e.target.checked;
@@ -64,6 +49,22 @@ const ApplicantListItem = ({
       setPopOverState(false);
     }
   }, [checkbox]);
+
+  useEffect(() => {
+    if (applicantData) {
+      initialCheckboxState = applicantData?.reduce(
+        (acc: { [key: string]: boolean }, _: any, index: string) => {
+          return {
+            ...acc,
+            [index]: false,
+          };
+        },
+        {},
+      );
+
+      setCheckbox(initialCheckboxState);
+    }
+  }, [applicantData]);
 
   // function handleApplicant(handleType: 'assignAssessment', candidateId) {
   //   switch (handleType) {
@@ -124,7 +125,7 @@ const ApplicantListItem = ({
         </Popover>
       </div>
       <div className="wrapper">
-        {applicantData?.map((item) => (
+        {applicantData?.map((item: any) => (
           <ApplicantItem
             key={item?.candidateId}
             item={item}
