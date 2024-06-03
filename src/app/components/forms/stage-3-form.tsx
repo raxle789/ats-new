@@ -76,6 +76,8 @@ import {
   jobJobLevels,
   lineIndutries,
 } from '@/libs/Fetch';
+import dynamic from 'next/dynamic';
+// import TermsConditionsModal from '../common/popup/terms-conditions-modal';
 // import { type } from '../../../libs/Authentication/permissions';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
@@ -186,15 +188,17 @@ export type FieldType = {
     emergencyContactName?: string;
     emergencyContactPhoneNumber?: string;
     emergencyContactRelation?: string;
-    noticePeriod: string;
-    everWorkedMonth: string;
-    everWorkedYear: string;
-    diseaseName: string;
-    diseaseYear: string;
-    relationName: string;
-    relationPosition: string;
+    noticePeriod?: string;
+    source?: string;
+    everWorkedMonth?: string;
+    everWorkedYear?: string;
+    diseaseName?: string;
+    diseaseYear?: string;
+    relationName?: string;
+    relationPosition?: string;
     uploadCV?: string;
   };
+  termsCheckbox?: boolean;
 };
 
 export type MasterData = {
@@ -245,6 +249,10 @@ export type MasterData = {
 };
 
 const Stage3Form = () => {
+  const DynamicModal = dynamic(
+    () => import('../common/popup/terms-conditions-modal'),
+    { ssr: false },
+  );
   /* Calling Session-Context */
   const session = useAppSessionContext();
   const regSessionValue = session[`${regSession}`];
@@ -282,6 +290,11 @@ const Stage3Form = () => {
     ]);
   };
   /* END OF ACTIONS */
+
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const handleTermsModal = () => {
+    setIsTermsOpen(true);
+  };
 
   const handleBeforeUpload = (file: FileType) => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -827,14 +840,14 @@ const Stage3Form = () => {
                 showSearch
                 placeholder="Your Position Level"
                 optionFilterProp="children"
-                // filterOption={(input, option) =>
-                //   (option?.label.toLowerCase() ?? '').includes(input)
-                // }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? '')
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                filterOption={(input, option) =>
+                  (option?.label.toLowerCase() ?? '').includes(input)
                 }
+                // filterSort={(optionA, optionB) =>
+                //   (optionA?.label ?? '')
+                //     .toLowerCase()
+                //     .localeCompare((optionB?.label ?? '').toLowerCase())
+                // }
                 // options={masterData?.job_levels}
                 options={[
                   { value: 'Director', label: 'Director' },
@@ -1118,7 +1131,7 @@ const Stage3Form = () => {
   };
 
   /* ACTIONS */
-  const handleOk = async () => {
+  const handleOk: any = async () => {
     setIsModalOpen(false);
     setSpinning(true);
     const values = form.getFieldsValue();
@@ -1127,6 +1140,10 @@ const Stage3Form = () => {
      * Transform File object into ready to store file.
      * @return transformed file base64 or zodErrors
      */
+    if (typeof values.termsCheckbox === 'undefined' || !values.termsCheckbox) {
+      setSpinning(false);
+      return message.error('You have to agree the terms & conditions');
+    }
     const transformedDocuments = await ManipulateDocuments({
       profilePhoto: profilePhoto ? profilePhoto[0]?.originFileObj : null,
       curriculumVitae: values.others?.uploadCV
@@ -2444,7 +2461,7 @@ const Stage3Form = () => {
           </div>
 
           <label className="fw-bold mt-5">Others</label>
-          <div className="col-4">
+          <div className="col-3">
             <div className="input-group-meta position-relative mb-15">
               <label>Emergency Contact Relation</label>
               <Form.Item<FieldType>
@@ -2465,7 +2482,7 @@ const Stage3Form = () => {
               </Form.Item>
             </div>
           </div>
-          <div className="col-4">
+          <div className="col-3">
             <div className="input-group-meta position-relative mb-15">
               <label>Name</label>
               <Form.Item<FieldType>
@@ -2476,7 +2493,7 @@ const Stage3Form = () => {
               </Form.Item>
             </div>
           </div>
-          <div className="col-4">
+          <div className="col-3">
             <div className="input-group-meta position-relative mb-15">
               <label>Phone Number</label>
               <Form.Item<FieldType>
@@ -2484,6 +2501,51 @@ const Stage3Form = () => {
                 className="mb-0"
               >
                 <Input placeholder="Your Emergency Contact Phone Number" />
+              </Form.Item>
+            </div>
+          </div>
+          <div className="col-3">
+            <div className="input-group-meta position-relative mb-15">
+              <label>
+                Source<span style={{ color: '#ff1818' }}>*</span>
+              </label>
+              <Form.Item<FieldType>
+                name={['others', 'source']}
+                className="mb-0"
+                // validateStatus={
+                //   errors &&
+                //   errors.education &&
+                //   errors.education.cityOfSchool
+                //     ? 'error'
+                //     : ''
+                // }
+                // help={
+                //   errors &&
+                //   errors.education &&
+                //   errors.education.cityOfSchool?._errors.toString()
+                // }
+              >
+                <Select
+                  className="w-100"
+                  placeholder="Select Source"
+                  showSearch
+                  mode="tags"
+                  maxCount={1}
+                  filterOption={(input, option) =>
+                    (option?.label.toLowerCase() ?? '').includes(input)
+                  }
+                  filterSort={(optionA, optionB) =>
+                    (optionA?.label ?? '')
+                      .toLowerCase()
+                      .localeCompare((optionB?.label ?? '').toLowerCase())
+                  }
+                  /* Fetched Data */
+                  options={[
+                    { value: 'Partnership', label: 'Partnership' },
+                    { value: 'Jobstreet', label: 'Jobstreet' },
+                    { value: 'Job Fair', label: 'Job Fair' },
+                  ]}
+                />
               </Form.Item>
             </div>
           </div>
@@ -2659,6 +2721,28 @@ const Stage3Form = () => {
             </div>
           </div>
 
+          <div className="col-12">
+            <div className="input-group-meta position-relative mb-0">
+              <Form.Item<FieldType> name="termsCheckbox" className="mb-0">
+                <div className="d-flex align-items-center">
+                  <Checkbox>
+                    <p className="mb-0">
+                      By checking this box, I agree to the{' '}
+                      <Button
+                        type="link"
+                        onClick={handleTermsModal}
+                        style={{ padding: '0px', margin: '0px' }}
+                      >
+                        terms and conditions
+                      </Button>
+                      .
+                    </p>
+                  </Checkbox>
+                </div>
+              </Form.Item>
+            </div>
+          </div>
+
           <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
             <button type="submit" className="dash-btn-two tran3s me-3">
               Submit
@@ -2678,6 +2762,9 @@ const Stage3Form = () => {
         </Modal>
       </Form>
 
+      {/* start modal */}
+      <DynamicModal isOpen={isTermsOpen} setIsOpenModal={setIsTermsOpen} />
+      {/* end modal */}
       <Spin fullscreen spinning={spinning} />
     </>
   );

@@ -15,7 +15,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
 // import { getAdditionalInformations } from '@/libs/Candidate/retrieve-data';
 import dayjs, { Dayjs } from 'dayjs';
-import { getAdditionalInformations } from '@/libs/Candidate/retrieve-data';
+// import { getAdditionalInformations } from '@/libs/Candidate/retrieve-data';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
@@ -48,30 +48,40 @@ type FieldType = {
 
 type MasterData = {};
 
-const AdditionalInformationForm = () => {
+type Props = {
+  additionalInformation?: any;
+  masterData?: MasterData | null;
+  errors?: any;
+};
+
+const AdditionalInformationForm: React.FC<Props> = ({
+  additionalInformation,
+  masterData,
+  errors,
+}) => {
   const [form] = Form.useForm();
-  const [masterData, setMasterData] = useState<MasterData | null>(null);
+  // const [masterData, setMasterData] = useState<MasterData | null>(null);
   const [editState, setEditState] = useState(false);
-  const [additionalInformation, setAdditionalInformation] = useState<any>(null);
-  console.log('additionalInformation: ', additionalInformation);
+  // const [additionalInformation, setAdditionalInformation] = useState<any>(null);
+  // console.log('additionalInformation: ', additionalInformation);
 
   const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
 
-  const fetchAdditionalInformations = async () => {
-    const additionalInformationsData = await getAdditionalInformations();
-    if (!additionalInformationsData.success)
-      return message.error(additionalInformationsData.message);
-    console.log(
-      'additional informations data:',
-      additionalInformationsData.data,
-    );
-    setAdditionalInformation(additionalInformationsData.data);
-  };
+  // const fetchAdditionalInformations = async () => {
+  //   const additionalInformationsData = await getAdditionalInformations();
+  //   if (!additionalInformationsData.success)
+  //     return message.error(additionalInformationsData.message);
+  //   console.log(
+  //     'additional informations data:',
+  //     additionalInformationsData.data,
+  //   );
+  //   setAdditionalInformation(additionalInformationsData.data);
+  // };
 
-  useEffect(() => {
-    /* Candidate data */
-    fetchAdditionalInformations();
-  }, []);
+  // useEffect(() => {
+  //   /* Candidate data */
+  //   fetchAdditionalInformations();
+  // }, []);
 
   const editOnChange = () => {
     setEditState(!editState);
@@ -307,6 +317,7 @@ const AdditionalInformationForm = () => {
   };
 
   const [relationTotal, setRelationTotal] = useState(0);
+  const [loopTotal, setLoopTotal] = useState(0);
 
   useEffect(() => {
     let everWorkedAnswer: string;
@@ -390,29 +401,23 @@ const AdditionalInformationForm = () => {
 
     if (additionalInformation) {
       setRelationTotal(additionalInformation.families.length);
+      if (additionalInformation.families.length > 1) {
+        add();
+        setLoopTotal((prevState) => prevState + 1);
+      }
     }
-
-    console.log('initFieldsValue: ', initFieldsValue);
-    form.setFieldsValue(initFieldsValue);
   }, [additionalInformation]);
 
   useEffect(() => {
-    if (additionalInformation) {
-      const loopTotal = relationTotal - displayedItems.length + 1;
-      // console.log('expTotal: ', expTotal);
-      // console.log('panjang display item: ', displayedItems.length);
-      // console.log('expIdx: ', expIdx);
-      console.log('loopTotal: ', loopTotal);
-      for (let i = 0; i < loopTotal; i++) {
-        console.log('i: ', i);
-        add();
-      }
+    if (loopTotal <= relationTotal && additionalInformation) {
+      add();
     }
   }, [relationTotal]);
 
-  // useEffect(() => {
-  //   setIndex((prevState) => prevState + 1);
-  // }, []);
+  useEffect(() => {
+    console.log('initFieldsValue: ', initFieldsValue);
+    form.setFieldsValue(initFieldsValue);
+  }, [additionalInformation]);
   return (
     <>
       <div>

@@ -19,12 +19,12 @@ import type {
 } from 'antd';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { MdOutlineModeEdit } from 'react-icons/md';
-import { getCandidateProfile } from '@/libs/Candidate/retrieve-data';
+// import { getCandidateProfile } from '@/libs/Candidate/retrieve-data';
 // import { loading, success } from '@/utils/message';
 import dayjs, { Dayjs } from 'dayjs';
 import { convertToPlainObject, fileToBase64 } from '@/libs/Registration/utils';
 import { updateCandidateProfile } from '@/libs/Candidate/actions';
-import { fetchCities, fetchCountries, fetchEthnicity } from '@/libs/Fetch';
+// import { fetchCities, fetchCountries, fetchEthnicity } from '@/libs/Fetch';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
@@ -65,7 +65,7 @@ export type FieldType = {
   };
 };
 
-export type MasterData = {
+type MasterData = {
   citys?: {
     value: string;
     label: string;
@@ -78,42 +78,82 @@ export type MasterData = {
     value: string;
     label: string;
   }[];
+  job_levels?: {
+    value: number;
+    label: string;
+  }[];
+  job_functions?: {
+    value: number;
+    label: string;
+  }[];
+  line_industries?: {
+    value: number;
+    label: string;
+  }[];
+  education_levels?: {
+    value: string;
+    label: string;
+  }[];
+  education_majors?: {
+    value: string;
+    label: string;
+  }[];
+  education_institutions?: {
+    value: string;
+    label: string;
+  }[];
+  certificates_name?: {
+    value: number;
+    label: string;
+  }[];
+  skills?: {
+    value: number;
+    label: string;
+  }[];
 };
 
-const PersonalDataForm = () => {
+type Props = {
+  profileData?: any;
+  masterData?: MasterData | null;
+  errors?: any;
+};
+
+const PersonalDataForm: React.FC<Props> = ({
+  profileData,
+  masterData,
+  errors,
+}) => {
   const [form] = Form.useForm();
   const [editState, setEditState] = useState(false);
   const editOnChange = () => {
     setEditState(!editState);
   };
   /* Master Data */
-  const [masterData, setMasterData] = useState<MasterData | null>(null);
-  const [profileData, setProfileData] = useState<any | null>(null);
-  const [errors, setErrors] = useState<string>('');
+  // const [masterData, setMasterData] = useState<MasterData | null>(null);
+  // const [profileData, setProfileData] = useState<any | null>(null);
+  // const [errors, setErrors] = useState<string>('');
   /* Fetch Form Data */
-  const fetchProfileData = async () => {
-    const profileData = await getCandidateProfile();
-    console.info('client:profile-data -> ', profileData);
-    if (!profileData.success) {
-      return setErrors(profileData.message);
-    }
-    return setProfileData(profileData.data);
-  };
-  const fetchData = async () => {
-    await Promise.all([
-      fetchCities(setMasterData),
-      fetchEthnicity(setMasterData),
-      fetchCountries(setMasterData),
-    ]);
-  };
+  // const fetchProfileData = async () => {
+  //   const profileData = await getCandidateProfile();
+  //   console.info('client:profile-data -> ', profileData);
+  //   if (!profileData.success) {
+  //     return setErrors(profileData.message);
+  //   }
+  //   return setProfileData(profileData.data);
+  // };
+  // const fetchData = async () => {
+  //   await Promise.all([
+  //     fetchCities(setMasterData),
+  //     fetchEthnicity(setMasterData),
+  //     fetchCountries(setMasterData),
+  //   ]);
+  // };
 
-  const [pdf, setPDF] = useState<string | File>('');
-
-  const [pageNumber, setPageNumber] = useState<number>(1);
-
-  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
-    setPageNumber(numPages);
-  }
+  // const [pdf, setPDF] = useState<string | File>('');
+  // const [pageNumber, setPageNumber] = useState<number>(1);
+  // function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
+  //   setPageNumber(numPages);
+  // }
 
   // const fetchCVDocument = async () => {
   //   console.log('Begin fetch documents...');
@@ -184,15 +224,15 @@ const PersonalDataForm = () => {
     setFileList(newFileList);
   };
 
-  const [country, setCountry] = useState<string>('');
-  const handleChangeCountry = (value: string) => {
-    setCountry(value);
-  };
+  // const [country, setCountry] = useState<string>('');
+  // const handleChangeCountry = (value: string) => {
+  //   setCountry(value);
+  // };
 
-  const [marriedValue, setMarriedValue] = useState<string>('');
-  const handleChangeMarried = (value: string) => {
-    setMarriedValue(value);
-  };
+  // const [marriedValue, setMarriedValue] = useState<string>('');
+  // const handleChangeMarried = (value: string) => {
+  //   setMarriedValue(value);
+  // };
 
   const [addressCheck, setAddressCheck] = useState<boolean>(false);
   const handleAddressCheck: CheckboxProps['onChange'] = (e) => {
@@ -244,14 +284,14 @@ const PersonalDataForm = () => {
     }
   };
 
-  useLayoutEffect(() => {
-    fetchData();
-  }, []);
+  // useLayoutEffect(() => {
+  //   fetchData();
+  // }, []);
   // useEffect(() => {
   //   fetchProfileData()
   // }, [editState]);
   useEffect(() => {
-    fetchProfileData();
+    // fetchProfileData();
     form.setFieldsValue({
       profile: {
         email: profileData?.users?.email,
@@ -603,7 +643,7 @@ const PersonalDataForm = () => {
                       showSearch
                       placeholder="Your Marital Status"
                       optionFilterProp="children"
-                      onChange={handleChangeMarried}
+                      // onChange={handleChangeMarried}
                       filterOption={(input, option) =>
                         (option?.label ?? '').includes(input)
                       }
@@ -675,7 +715,7 @@ const PersonalDataForm = () => {
                       showSearch
                       placeholder="Your Country"
                       optionFilterProp="children"
-                      onChange={handleChangeCountry}
+                      // onChange={handleChangeCountry}
                       filterOption={(input, option) =>
                         (option?.label.toLowerCase() ?? '').includes(input)
                       }

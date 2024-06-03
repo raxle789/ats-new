@@ -15,8 +15,8 @@ import type { FormProps, RadioChangeEvent } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 // import { getExperiences } from '@/libs/Candidate/retrieve-data';
 import dayjs, { Dayjs } from 'dayjs';
-import { fetchJobFunctions, jobJobLevels, lineIndutries } from '@/libs/Fetch';
-import { getCandidateExperiences } from '@/libs/Candidate/retrieve-data';
+// import { fetchJobFunctions, jobJobLevels, lineIndutries } from '@/libs/Fetch';
+// import { getCandidateExperiences } from '@/libs/Candidate/retrieve-data';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 const { TextArea } = Input;
@@ -41,6 +41,18 @@ type FieldType = {
 };
 
 type MasterData = {
+  citys?: {
+    value: string;
+    label: string;
+  }[];
+  ethnicity?: {
+    value: string;
+    label: string;
+  }[];
+  countries?: {
+    value: string;
+    label: string;
+  }[];
   job_levels?: {
     value: number;
     label: string;
@@ -53,37 +65,65 @@ type MasterData = {
     value: number;
     label: string;
   }[];
+  education_levels?: {
+    value: string;
+    label: string;
+  }[];
+  education_majors?: {
+    value: string;
+    label: string;
+  }[];
+  education_institutions?: {
+    value: string;
+    label: string;
+  }[];
+  certificates_name?: {
+    value: number;
+    label: string;
+  }[];
+  skills?: {
+    value: number;
+    label: string;
+  }[];
 };
 
-const BackgroundExperienceForm = () => {
+type Props = {
+  experiences?: any;
+  masterData?: MasterData | null;
+  errors?: any;
+};
+
+const BackgroundExperienceForm: React.FC<Props> = ({
+  experiences,
+  masterData,
+  errors,
+}) => {
   const [form] = Form.useForm();
-  const [masterData, setMasterData] = useState<MasterData | null>(null);
-  const [experiences, setExperiences] = useState<any | null>(null);
-  console.info('typeof Experiences: ', experiences);
+  // const [masterData, setMasterData] = useState<MasterData | null>(null);
+  // const [experiences, setExperiences] = useState<any | null>(null);
+  // console.info('typeof Experiences: ', experiences);
 
-  const fetchData = async () => {
-    await Promise.all([
-      fetchJobFunctions(setMasterData),
-      jobJobLevels(setMasterData),
-      lineIndutries(setMasterData),
-    ]);
-  };
+  // const fetchData = async () => {
+  //   await Promise.all([
+  //     fetchJobFunctions(setMasterData),
+  //     jobJobLevels(setMasterData),
+  //     lineIndutries(setMasterData),
+  //   ]);
+  // };
 
-  const fetchExperiences = async () => {
-    const experiencesData = await getCandidateExperiences();
-    if (!experiencesData.success) {
-      return message.error(experiencesData.message);
-    }
-    return setExperiences(experiencesData.data);
-  };
+  // const fetchExperiences = async () => {
+  //   const experiencesData = await getCandidateExperiences();
+  //   if (!experiencesData.success) {
+  //     return message.error(experiencesData.message);
+  //   }
+  //   return setExperiences(experiencesData.data);
+  // };
 
   /* ACTIONS */
-  useEffect(() => {
-    /* Candidate data */
-    fetchExperiences();
-    /* Master data */
-    fetchData();
-  }, []);
+  // useEffect(() => {
+  //   fetchExperiences();
+  //   fetchData();
+  // }, []);
 
   const [editState, setEditState] = useState(false);
 
@@ -390,13 +430,6 @@ const BackgroundExperienceForm = () => {
   };
 
   const DisplayedTabContent: React.FC<Tprops2> = ({ expIdx }) => {
-    // const [yearState, setYearState] = useState<{ [key: string]: boolean }>({});
-    // const handleCheckboxChange: any = (e: any, expIdx: number) => {
-    //   setYearState((prevState) => ({
-    //     ...prevState,
-    //     [expIdx.toString()]: e.target.checked,
-    //   }));
-    // };
     return (
       <div key={expIdx} className="row">
         <div className="col-6">
@@ -461,26 +494,17 @@ const BackgroundExperienceForm = () => {
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">End Year*</label>
             <p className="mb-0">
-              {dayjs(experiences?.experiences[expIdx]?.end_at).format(
+              {/* {dayjs(experiences?.experiences[expIdx]?.end_at).format(
                 'MM/YYYY',
-              )}
+              )} */}
+              {dayjs(experiences?.experiences[expIdx]?.end_at).isValid()
+                ? dayjs(experiences?.experiences[expIdx]?.end_at).format(
+                    'MM/YYYY',
+                  )
+                : 'Now'}
             </p>
           </div>
         </div>
-        {/* <div className="col-2">
-      <div className="input-group-meta position-relative mb-15">
-        <Form.Item<FieldType>
-          name={['experience', expIdx.toString(), 'currentYear']}
-          className="pt-15"
-        >
-          <Checkbox
-            onChange={(e) => handleCheckboxChange(e, expIdx)}
-          >
-            Current
-          </Checkbox>
-        </Form.Item>
-      </div>
-    </div> */}
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Current Salary (gross Monthly)*</label>
@@ -490,28 +514,13 @@ const BackgroundExperienceForm = () => {
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Expected Salary (gross Monthly)*</label>
-            <p className="mb-0">{experiences?.expected_salary}</p>
+            <p className="mb-0">{experiences?.expectedSalary}</p>
           </div>
         </div>
       </div>
     );
   };
 
-  // const initExpItems = [
-  //   {
-  //     label: 'Experience 1',
-  //     children: <ExpTabContent expIdx={expIdx} />,
-  //     key: '1',
-  //   },
-  // ];
-  // const displayedInit = [
-  //   {
-  //     label: 'Experience 1',
-  //     children: <DisplayedTabContent expIdx={expIdx} />,
-  //     key: '1',
-  //     closable: false,
-  //   },
-  // ];
   const initExpItems: any[] = [];
   const displayedInit: any[] = [];
 
@@ -526,7 +535,6 @@ const BackgroundExperienceForm = () => {
   };
 
   const addExp = () => {
-    console.log('expIdx: ', expIdx);
     const newActiveKey = `newTab${newExpTabIdx.current++}`;
     const newPanes = [...expItems];
     newPanes.push({
@@ -604,6 +612,7 @@ const BackgroundExperienceForm = () => {
   };
 
   const [expTotal, setExpTotal] = useState(0);
+  const [loopTotal, setLoopTotal] = useState(0);
   const [initFieldsValue, setInitFieldsValue] = useState({});
 
   useEffect(() => {
@@ -613,7 +622,7 @@ const BackgroundExperienceForm = () => {
           ...prevState,
           expOption: expValue,
           experience: {
-            expectedSalary: 0,
+            expectedSalary: experiences?.expectedSalary,
             ...experiences?.experiences?.reduce(
               (acc: any, exp: any, index: number) => {
                 acc[index] = {
@@ -637,30 +646,30 @@ const BackgroundExperienceForm = () => {
         console.log('transformed experiences: ', initFieldsValue);
         setExpValue('Professional');
         setExpTotal(experiences.experiences.length);
+        if (expValue === 'Professional') {
+          addExp();
+          setLoopTotal((prevState) => prevState + 1);
+        }
+      } else {
+        setInitFieldsValue((prevState) => ({
+          ...prevState,
+          expOption: expValue,
+          experience: {
+            expectedSalary: experiences?.expectedSalary,
+          },
+        }));
       }
     }
   }, [experiences]);
 
   useEffect(() => {
-    if (expValue === 'Professional') {
-      const loopTotal = expTotal - displayedItems.length;
-      // console.log('expTotal: ', expTotal);
-      // console.log('panjang display item: ', displayedItems.length);
-      // console.log('expIdx: ', expIdx);
-      console.log('loopTotal: ', loopTotal);
-      for (let i = 0; i < loopTotal; i++) {
-        console.log('i: ', i);
-        addExp();
-      }
+    if (loopTotal <= expTotal && expValue === 'Professional') {
+      addExp();
     }
-  }, [expValue, expTotal]);
+  }, [expTotal]);
 
   useEffect(() => {
     form.setFieldsValue(initFieldsValue);
-  }, [experiences]);
-
-  useEffect(() => {
-    // if()
   }, [experiences]);
   return (
     <>
@@ -754,10 +763,7 @@ const BackgroundExperienceForm = () => {
 
             <div className="col-6">
               <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">
-                  How long your notice period?
-                  <span style={{ color: '#ff1818' }}>*</span>
-                </label>
+                <label className="fw-bold">How long your notice period?*</label>
                 <Form.Item<FieldType>
                   // name={['others', 'noticePeriod']}
                   className="mb-0"
@@ -788,7 +794,7 @@ const BackgroundExperienceForm = () => {
                   )}
                   {!editState && (
                     // <p className="mb-0">{experiences?.expectedSalary}</p>
-                    <p className="mb-0">{experiences?.expectedSalary}</p>
+                    <p className="mb-0">-</p>
                   )}
                 </Form.Item>
               </div>
