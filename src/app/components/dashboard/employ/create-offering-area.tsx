@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Form,
   Input,
@@ -10,12 +10,7 @@ import {
   Tooltip,
   message,
 } from 'antd';
-import type {
-  CheckboxProps,
-  FormProps,
-  DatePickerProps,
-  InputNumberProps,
-} from 'antd';
+import type { CheckboxProps, FormProps, InputNumberProps } from 'antd';
 
 const { TextArea } = Input;
 
@@ -55,6 +50,7 @@ type FieldType = {
   contactPeriod?: string;
   signatory?: string;
   hrbp?: string;
+  management?: string;
   startWorking?: string;
   fpk?: string;
   superior?: string;
@@ -126,6 +122,7 @@ const CreateOfferingArea = () => {
   const [multiPerformanceBonus, setMultiPerformanceBonus] = useState(1);
   const [monthlyIncrease, setMonthlyIncrease] = useState(0);
   const [yearlyIncrease, setYearlyIncrease] = useState(0);
+  const [levelValue, setLevelValue] = useState('');
 
   // Functions
   const basicSalaryChangeLeft = (value: any) => {
@@ -377,6 +374,9 @@ const CreateOfferingArea = () => {
   const showCandidateChange: CheckboxProps['onChange'] = (e) => {
     console.log(`checked = ${e.target.checked}`);
   };
+  const handleLevelChanged = (value: string) => {
+    setLevelValue(value);
+  };
   // const onChangeDate: DatePickerProps['onChange'] = (date, dateString) => {
   //   console.log(date, dateString);
   // };
@@ -404,8 +404,8 @@ const CreateOfferingArea = () => {
       annualBasicSalaryPackage: currentPackage?.annualBasicSalary,
       annualTunjanganTransportasiPackage:
         currentPackage?.annualTunjTransportasi,
-      annualThrPackage: currentPackage?.annualThr,
-      annualPerformanceBonusPackage: currentPackage?.annualPerformanceBonus,
+      thrPackage: currentPackage?.annualThr,
+      performanceBonusPackage: currentPackage?.annualPerformanceBonus,
     });
 
     if (
@@ -541,7 +541,9 @@ const CreateOfferingArea = () => {
     <>
       <div className="job-fpk-header mb-40 lg-mb-30">
         <div className="d-sm-flex align-items-start justify-content-between mb-40 lg-mb-30">
-          <h2 className="main-title m0 flex-grow-1">Create Offering</h2>
+          <h2 className="main-title m0 flex-grow-1">
+            Create Offering (Position Name)
+          </h2>
         </div>
       </div>
       <div className="bg-white card-box border-20">
@@ -763,126 +765,6 @@ const CreateOfferingArea = () => {
                   </div>
                 </div>
                 <div className="col-lg-2"></div>
-
-                <div className="col-lg-2 mb-2">Variabel Pay</div>
-                <div className="col-lg-4 mb-2">
-                  <label>Addition</label>
-                </div>
-                <div className="col-lg-4 mb-2">
-                  <label>Annual</label>
-                </div>
-                <div className="col-lg-2 mb-2"></div>
-
-                <div className="col-lg-2 mb-2">
-                  <label>THR</label>
-                </div>
-                <div className="col-lg-4 mb-2">
-                  <Form.Item<FieldType> name="thrPackage" className="mb-0">
-                    <InputNumber
-                      className="w-100"
-                      min={0}
-                      formatter={(value) =>
-                        `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-                      }
-                      parser={(value: string | undefined): string | number =>
-                        value!.replace(/\Rp\s?|(\.*)/g, '')
-                      }
-                      onChange={thrChangeLeft}
-                    />
-                  </Form.Item>
-                </div>
-                <div className="col-lg-4 mb-2">
-                  <Form.Item<FieldType>
-                    name="annualThrPackage"
-                    className="mb-0"
-                  >
-                    <InputNumber
-                      className="w-100"
-                      min={0}
-                      formatter={(value) =>
-                        `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-                      }
-                      parser={(value: string | undefined): string | number =>
-                        value!.replace(/\Rp\s?|(\.*)/g, '')
-                      }
-                    />
-                  </Form.Item>
-                </div>
-                <div className="col-lg-2 mb-2">
-                  <label>gross</label>
-                </div>
-
-                <div className="col-lg-2 mb-2">
-                  <label>Performance Bonus</label>
-                </div>
-                <div className="col-lg-4 mb-2">
-                  <Form.Item<FieldType>
-                    name="performanceBonusPackage"
-                    className="mb-0"
-                  >
-                    <InputNumber
-                      className="w-100"
-                      min={0}
-                      formatter={(value) =>
-                        `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-                      }
-                      parser={(value: string | undefined): string | number =>
-                        value!.replace(/\Rp\s?|(\.*)/g, '')
-                      }
-                      onChange={performanceBonusChangeLeft}
-                    />
-                  </Form.Item>
-                </div>
-                <div className="col-lg-4 mb-2">
-                  <Form.Item<FieldType>
-                    name="annualPerformanceBonusPackage"
-                    className="mb-0"
-                  >
-                    <InputNumber
-                      className="w-100"
-                      min={0}
-                      formatter={(value) =>
-                        `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-                      }
-                      parser={(value: string | undefined): string | number =>
-                        value!.replace(/\Rp\s?|(\.*)/g, '')
-                      }
-                    />
-                  </Form.Item>
-                </div>
-                <div className="col-lg-2 mb-2">
-                  <label>gross</label>
-                </div>
-              </div>
-              <div className="row mt-110">
-                <h3 className="section-page-title">
-                  Annual Convert Monthly Existing
-                </h3>
-                <div className="col-lg-8">
-                  <p className="section-label mb-0">
-                    Total Annual Guaranteed Cash
-                  </p>
-                </div>
-                <div className="col-lg-4">
-                  <p className="section-label mb-0">
-                    {`Rp. ${annualTotalLeft}`.replace(
-                      /\B(?=(\d{3})+(?!\d))/g,
-                      '.',
-                    )}
-                  </p>
-                </div>
-
-                <div className="col-lg-8">
-                  <p className="section-label mb-0">Total Gross Monthly</p>
-                </div>
-                <div className="col-lg-4">
-                  <p className="section-label mb-0">
-                    {`Rp. ${monthlyTotalLeft}`.replace(
-                      /\B(?=(\d{3})+(?!\d))/g,
-                      '.',
-                    )}
-                  </p>
-                </div>
               </div>
             </div>
             <div className="col-lg-6">
@@ -1075,135 +957,298 @@ const CreateOfferingArea = () => {
                   </div>
                 </div>
                 <div className="col-lg-2"></div>
+              </div>
+            </div>
 
-                <div className="col-lg-2 mb-2">Variabel Pay</div>
-                <div className="col-lg-4 mb-2">
-                  <label>Multiplier</label>
-                </div>
-                <div className="col-lg-4 mb-2">
-                  <label>Annual</label>
-                </div>
-                <div className="col-lg-2 mb-2"></div>
+            {/* Yearly Pay */}
+            <div className="col-lg-12 mt-20">
+              <div className="row">
+                <div className="col-lg-6">
+                  <div className="row">
+                    <div className="col-lg-2 mb-2">Yearly Pay</div>
+                    <div className="col-lg-4 mb-2">
+                      <label></label>
+                    </div>
+                    <div className="col-lg-4 mb-2">
+                      <label>Annual</label>
+                    </div>
+                    <div className="col-lg-2 mb-2"></div>
 
-                <div className="col-lg-2 mb-2">
-                  <label>THR</label>
-                </div>
-                <div className="col-lg-4 mb-2">
-                  <Form.Item<FieldType>
-                    name="thrScheme"
-                    className="mb-0"
-                    initialValue={1}
-                  >
-                    <InputNumber className="w-100" min={1} disabled />
-                  </Form.Item>
-                </div>
-                <div className="col-lg-4 mb-2">
-                  <Form.Item<FieldType> name="annualThrScheme" className="mb-0">
-                    <InputNumber
-                      className="w-100"
-                      min={0}
-                      formatter={(value) =>
-                        `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-                      }
-                      parser={(value: string | undefined): string | number =>
-                        value!.replace(/\Rp\s?|(\.*)/g, '')
-                      }
-                      disabled
-                    />
-                  </Form.Item>
-                </div>
-                <div className="col-lg-2 mb-2">
-                  <label>gross</label>
-                </div>
+                    <div className="col-lg-2 mb-2">
+                      <label>THR</label>
+                    </div>
+                    <div className="col-lg-4 mb-2">
+                      <Form.Item<FieldType> name="thrPackage" className="mb-0">
+                        <InputNumber
+                          className="w-100"
+                          min={0}
+                          formatter={(value) =>
+                            `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                          }
+                          parser={(
+                            value: string | undefined,
+                          ): string | number =>
+                            value!.replace(/\Rp\s?|(\.*)/g, '')
+                          }
+                          disabled
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="col-lg-4 mb-2">
+                      <Form.Item<FieldType>
+                        name="annualThrPackage"
+                        className="mb-0"
+                      >
+                        <InputNumber
+                          className="w-100"
+                          min={0}
+                          formatter={(value) =>
+                            `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                          }
+                          parser={(
+                            value: string | undefined,
+                          ): string | number =>
+                            value!.replace(/\Rp\s?|(\.*)/g, '')
+                          }
+                          onChange={thrChangeLeft}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="col-lg-2 mb-2">
+                      <label>gross</label>
+                    </div>
 
-                <div className="col-lg-2 mb-2">
-                  <label>Performance Bonus</label>
+                    <div className="col-lg-2 mb-2">
+                      <label>Performance Bonus</label>
+                    </div>
+                    <div className="col-lg-4 mb-2">
+                      <Form.Item<FieldType>
+                        name="performanceBonusPackage"
+                        className="mb-0"
+                      >
+                        <InputNumber
+                          className="w-100"
+                          min={0}
+                          formatter={(value) =>
+                            `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                          }
+                          parser={(
+                            value: string | undefined,
+                          ): string | number =>
+                            value!.replace(/\Rp\s?|(\.*)/g, '')
+                          }
+                          disabled
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="col-lg-4 mb-2">
+                      <Form.Item<FieldType>
+                        name="annualPerformanceBonusPackage"
+                        className="mb-0"
+                      >
+                        <InputNumber
+                          className="w-100"
+                          min={0}
+                          formatter={(value) =>
+                            `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                          }
+                          parser={(
+                            value: string | undefined,
+                          ): string | number =>
+                            value!.replace(/\Rp\s?|(\.*)/g, '')
+                          }
+                          onChange={performanceBonusChangeLeft}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="col-lg-2 mb-2">
+                      <label>gross</label>
+                    </div>
+                  </div>
                 </div>
-                <div className="col-lg-4 mb-2">
-                  <Form.Item<FieldType>
-                    name="performanceBonusScheme"
-                    className="mb-0"
-                    initialValue={1}
-                  >
-                    <InputNumber
-                      className="w-100"
-                      min={0}
-                      step={0.1}
-                      onChange={multipleBonusChange}
-                    />
-                  </Form.Item>
-                </div>
-                <div className="col-lg-4 mb-2">
-                  <Form.Item<FieldType>
-                    name="annualPerformanceBonusScheme"
-                    className="mb-0"
-                  >
-                    <InputNumber
-                      className="w-100"
-                      min={0}
-                      formatter={(value) =>
-                        `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-                      }
-                      parser={(value: string | undefined): string | number =>
-                        value!.replace(/\Rp\s?|(\.*)/g, '')
-                      }
-                    />
-                  </Form.Item>
-                </div>
-                <div className="col-lg-2 mb-2">
-                  <label>gross</label>
-                </div>
+                <div className="col-lg-6">
+                  <div className="row">
+                    <div className="col-lg-2 mb-2">Yearly Pay</div>
+                    <div className="col-lg-4 mb-2">
+                      <label>Multiplier</label>
+                    </div>
+                    <div className="col-lg-4 mb-2">
+                      <label>Annual</label>
+                    </div>
+                    <div className="col-lg-2 mb-2"></div>
 
-                <div className="col-lg-4 mb-2">
-                  <label>Increment After Probation</label>
-                </div>
-                <div className="col-lg-5 mb-2">
-                  <Form.Item<FieldType> name="probationNote" className="mb-0">
-                    <TextArea
-                      placeholder="Note"
-                      autoSize={{ minRows: 3, maxRows: 5 }}
-                    ></TextArea>
-                  </Form.Item>
-                </div>
-                <div className="col-lg-3 mb-2">
-                  <Form.Item<FieldType>
-                    name="probationCheckbox"
-                    className="mb-0"
-                  >
-                    <Checkbox onChange={showCandidateChange}>
-                      Show to Candidate
-                    </Checkbox>
-                  </Form.Item>
+                    <div className="col-lg-2 mb-2">
+                      <label>THR</label>
+                    </div>
+                    <div className="col-lg-4 mb-2">
+                      <Form.Item<FieldType>
+                        name="thrScheme"
+                        className="mb-0"
+                        initialValue={1}
+                      >
+                        <InputNumber className="w-100" min={1} disabled />
+                      </Form.Item>
+                    </div>
+                    <div className="col-lg-4 mb-2">
+                      <Form.Item<FieldType>
+                        name="annualThrScheme"
+                        className="mb-0"
+                      >
+                        <InputNumber
+                          className="w-100"
+                          min={0}
+                          formatter={(value) =>
+                            `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                          }
+                          parser={(
+                            value: string | undefined,
+                          ): string | number =>
+                            value!.replace(/\Rp\s?|(\.*)/g, '')
+                          }
+                          disabled
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="col-lg-2 mb-2">
+                      <label>gross</label>
+                    </div>
+
+                    <div className="col-lg-2 mb-2">
+                      <label>Performance Bonus</label>
+                    </div>
+                    <div className="col-lg-4 mb-2">
+                      <Form.Item<FieldType>
+                        name="performanceBonusScheme"
+                        className="mb-0"
+                        initialValue={1}
+                      >
+                        <InputNumber
+                          className="w-100"
+                          min={0}
+                          step={0.1}
+                          onChange={multipleBonusChange}
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="col-lg-4 mb-2">
+                      <Form.Item<FieldType>
+                        name="annualPerformanceBonusScheme"
+                        className="mb-0"
+                      >
+                        <InputNumber
+                          className="w-100"
+                          min={0}
+                          formatter={(value) =>
+                            `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                          }
+                          parser={(
+                            value: string | undefined,
+                          ): string | number =>
+                            value!.replace(/\Rp\s?|(\.*)/g, '')
+                          }
+                        />
+                      </Form.Item>
+                    </div>
+                    <div className="col-lg-2 mb-2">
+                      <label>gross</label>
+                    </div>
+
+                    <div className="col-lg-4 mb-2">
+                      <label>Increment After Probation</label>
+                    </div>
+                    <div className="col-lg-5 mb-2">
+                      <Form.Item<FieldType>
+                        name="probationNote"
+                        className="mb-0"
+                      >
+                        <TextArea
+                          placeholder="Note"
+                          autoSize={{ minRows: 3, maxRows: 5 }}
+                        ></TextArea>
+                      </Form.Item>
+                    </div>
+                    <div className="col-lg-3 mb-2">
+                      <Form.Item<FieldType>
+                        name="probationCheckbox"
+                        className="mb-0"
+                      >
+                        <Checkbox onChange={showCandidateChange}>
+                          Show to Candidate
+                        </Checkbox>
+                      </Form.Item>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="row mt-25">
-                <h3 className="section-page-title">
-                  Annual Convert Monthly Existing
-                </h3>
-                <div className="col-lg-8">
-                  <p className="section-label mb-0">
-                    Total Annual Guaranteed Cash
-                  </p>
-                </div>
-                <div className="col-lg-4">
-                  <p className="section-label mb-0">
-                    {`Rp. ${annualTotalRight}`.replace(
-                      /\B(?=(\d{3})+(?!\d))/g,
-                      '.',
-                    )}
-                  </p>
+            </div>
+
+            {/* Annual Convert */}
+            <div className="col-lg-12 mt-20">
+              <div className="row">
+                <div className="col-lg-6">
+                  <h3 className="section-page-title">
+                    Annual Convert Monthly Existing
+                  </h3>
+                  <div className="row">
+                    <div className="col-lg-8">
+                      <p className="section-label mb-0">
+                        Total Annual Guaranteed Cash
+                      </p>
+                    </div>
+                    <div className="col-lg-4">
+                      <p className="section-label mb-0">
+                        {`Rp. ${annualTotalLeft}`.replace(
+                          /\B(?=(\d{3})+(?!\d))/g,
+                          '.',
+                        )}
+                      </p>
+                    </div>
+
+                    <div className="col-lg-8">
+                      <p className="section-label mb-0">Total Gross Monthly</p>
+                    </div>
+                    <div className="col-lg-4">
+                      <p className="section-label mb-0">
+                        {`Rp. ${monthlyTotalLeft}`.replace(
+                          /\B(?=(\d{3})+(?!\d))/g,
+                          '.',
+                        )}
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="col-lg-8">
-                  <p className="section-label mb-0">Total Gross Monthly</p>
-                </div>
-                <div className="col-lg-4">
-                  <p className="section-label mb-0">
-                    {`Rp. ${monthlyTotalRight}`.replace(
-                      /\B(?=(\d{3})+(?!\d))/g,
-                      '.',
-                    )}
-                  </p>
+                <div className="col-lg-6">
+                  <h3 className="section-page-title">
+                    Annual Convert Monthly Existing
+                  </h3>
+                  <div className="row">
+                    <div className="col-lg-8">
+                      <p className="section-label mb-0">
+                        Total Annual Guaranteed Cash
+                      </p>
+                    </div>
+                    <div className="col-lg-4">
+                      <p className="section-label mb-0">
+                        {`Rp. ${annualTotalRight}`.replace(
+                          /\B(?=(\d{3})+(?!\d))/g,
+                          '.',
+                        )}
+                      </p>
+                    </div>
+
+                    <div className="col-lg-8">
+                      <p className="section-label mb-0">Total Gross Monthly</p>
+                    </div>
+                    <div className="col-lg-4">
+                      <p className="section-label mb-0">
+                        {`Rp. ${monthlyTotalRight}`.replace(
+                          /\B(?=(\d{3})+(?!\d))/g,
+                          '.',
+                        )}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1212,16 +1257,24 @@ const CreateOfferingArea = () => {
               <div className="row">
                 <h3 className="section-page-title">Percentage Increase</h3>
                 <div className="col-lg-3">
-                  <p className="section-label mb-0">Monthly Increase</p>
+                  <p className="section-label increase-label mb-0">
+                    Monthly Increase
+                  </p>
                 </div>
                 <div className="col-lg-3">
-                  <p className="section-label mb-0">{`${isNaN(monthlyIncrease) ? '0' : monthlyIncrease.toFixed(0)}%`}</p>
+                  <p
+                    className={`section-label increase-label mb-0 ${parseInt(monthlyIncrease.toFixed(0)) === 30 ? 'warning-increase-label' : ''} ${parseInt(monthlyIncrease.toFixed(0)) > 30 ? 'danger-increase-label' : ''}`}
+                  >{`${isNaN(monthlyIncrease) ? '0' : monthlyIncrease.toFixed(0)}%`}</p>
                 </div>
                 <div className="col-lg-3">
-                  <p className="section-label mb-0">Yearly Increase</p>
+                  <p className="section-label increase-label mb-0">
+                    Yearly Increase
+                  </p>
                 </div>
                 <div className="col-lg-3">
-                  <p className="section-label mb-0">{`${isNaN(yearlyIncrease) ? '0' : yearlyIncrease.toFixed(0)}%`}</p>
+                  <p
+                    className={`section-label increase-label mb-0 ${parseInt(yearlyIncrease.toFixed(0)) === 30 ? 'warning-increase-label' : ''} ${parseInt(yearlyIncrease.toFixed(0)) > 30 ? 'danger-increase-label' : ''}`}
+                  >{`${isNaN(yearlyIncrease) ? '0' : yearlyIncrease.toFixed(0)}%`}</p>
                 </div>
               </div>
             </div>
@@ -1229,7 +1282,7 @@ const CreateOfferingArea = () => {
             <div className="col-lg-12 mt-20">
               <div className="row">
                 <h3 className="section-page-title">Approval Offering</h3>
-                <div className="col-lg-4">
+                <div className="col-lg-6">
                   <div className="input-group-meta position-relative mb-15">
                     <label>Level*</label>
                     <Form.Item<FieldType>
@@ -1245,6 +1298,7 @@ const CreateOfferingArea = () => {
                       <Select
                         className="w-100"
                         placeholder="Select Level"
+                        onChange={handleLevelChanged}
                         options={[
                           { value: 'Director', label: 'Director' },
                           { value: 'VP', label: 'VP' },
@@ -1270,7 +1324,7 @@ const CreateOfferingArea = () => {
                     </Form.Item>
                   </div>
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-6">
                   <div className="input-group-meta position-relative mb-15">
                     <label>Grade*</label>
                     <Form.Item<FieldType>
@@ -1299,7 +1353,7 @@ const CreateOfferingArea = () => {
                     </Form.Item>
                   </div>
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-6">
                   <div className="input-group-meta position-relative mb-15">
                     <label>Contact Period*</label>
                     <Form.Item<FieldType>
@@ -1420,7 +1474,7 @@ const CreateOfferingArea = () => {
                     </Form.Item>
                   </div>
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-6">
                   <div className="input-group-meta position-relative mb-15">
                     <label>Signatory*</label>
                     <Form.Item<FieldType>
@@ -1448,7 +1502,7 @@ const CreateOfferingArea = () => {
                     </Form.Item>
                   </div>
                 </div>
-                <div className="col-lg-4">
+                <div className="col-lg-6">
                   <div className="input-group-meta position-relative mb-15">
                     <label>HRBP*</label>
                     <Form.Item<FieldType>
@@ -1476,7 +1530,48 @@ const CreateOfferingArea = () => {
                     </Form.Item>
                   </div>
                 </div>
-                <div className="col-lg-4">
+
+                {levelValue.length > 0 &&
+                  levelValue !== 'Staff' &&
+                  levelValue !== 'Supervisor' &&
+                  levelValue !== 'Assistant Manager' && (
+                    <div className="col-lg-6">
+                      <div className="input-group-meta position-relative mb-15">
+                        <label>Management*</label>
+                        <Form.Item<FieldType>
+                          name="management"
+                          className="mb-0"
+                          rules={[
+                            {
+                              required: true,
+                              message: 'Please input management!',
+                            },
+                          ]}
+                        >
+                          <Select
+                            className="w-100"
+                            placeholder="Select Management"
+                            options={[
+                              {
+                                value: '1 (Satu) Bulan',
+                                label: '1 (Satu) Bulan',
+                              },
+                              {
+                                value: '2 (Dua) Bulan',
+                                label: '2 (Dua) Bulan',
+                              },
+                              {
+                                value: '3 (Tiga) Bulan',
+                                label: '3 (Tiga) Bulan',
+                              },
+                            ]}
+                          />
+                        </Form.Item>
+                      </div>
+                    </div>
+                  )}
+
+                <div className="col-lg-6">
                   <div className="input-group-meta position-relative mb-15">
                     <label>Start Working*</label>
                     <Form.Item<FieldType>

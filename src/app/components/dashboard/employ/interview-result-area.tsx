@@ -56,7 +56,7 @@ interface FieldType {
   };
 }
 
-const desc = ['terrible', 'bad', 'normal', 'good'];
+const desc = ['Poor', 'Fair', 'Good', 'Excellent'];
 
 const InterviewResultArea = () => {
   // UseState
