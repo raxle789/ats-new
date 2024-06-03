@@ -6,14 +6,41 @@ import prisma from "@/root/prisma";
 
 export async function GET(request: NextRequest) {
   const session = request.cookies.get('_ERAHC-AUTH');
-  const candidateSkills = await prisma.candidateSkills.findMany({
-    include: {
-      candidates: true,
-      skills: true
+  const roles = await prisma.userRoles.findMany({
+    where: {
+      userId: 77550
+    },
+    select: {
+      roles: {
+        select: {
+          name: true
+        }
+      }
     }
   });
+  // const user = await prisma.users.findUnique({
+  //   where: {
+  //     email: 'tahsamarliah@gmail.com',
+  //   },
+  //   include: {
+  //     userRoles: { // empty array.
+  //       include: {
+  //         roles: {
+  //           select: {
+  //             name: true
+  //           }
+  //         }
+  //       }
+  //     },
+  //     candidates: { // null.
+  //       select: {
+  //         gender: true
+  //       }
+  //     }
+  //   }
+  // });
   return NextResponse.json({
-    candidate_skills: candidateSkills
+    user: roles
   });
   // if(session) {
     // const serverSession = cookies().get(session.value);

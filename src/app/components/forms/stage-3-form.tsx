@@ -1061,7 +1061,7 @@ const Stage3Form = () => {
      * @return transformed file base64 or zodErrors
      */
     const transformedDocuments = await ManipulateDocuments({
-      profilePhoto: profilePhoto ? profilePhoto[0].originFileObj : null,
+      profilePhoto: profilePhoto ? profilePhoto[0]?.originFileObj : null,
       curriculumVitae: values.others?.uploadCV
         ? values.others?.uploadCV.file.originFileObj
         : null,

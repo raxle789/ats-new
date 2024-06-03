@@ -144,6 +144,7 @@ export async function RegisterPhase1(
               phone_number: createCandidate.phone_number,
               date_of_birth: createCandidate.date_of_birth,
             },
+            roles: [] // empty roles if user only register on a phase 1
           },
           undefined,
         );
@@ -258,6 +259,13 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
           name: validatedInputData.profile.fullname,
           email: validatedInputData.profile.email,
           updated_at: new Date(Date.now())
+        }
+      });
+      console.info('assigning role...');
+      await tx.userRoles.create({
+        data: {
+          roleId: 3,
+          userId: regSession.user.id
         }
       });
       console.info('updating candidate...');
@@ -554,13 +562,31 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
         });
       };
 
+      console.info('getting roles...');
+      const roles = await tx.userRoles.findMany({
+        where: {
+          userId: regSession.user.id,
+        },
+        select: {
+          roles: {
+            select: {
+              name: true
+            },
+          },
+        },
+      });
+      console.info("roles \t:", roles);
+      const listOfRoles = roles.map(role => role.roles.name);
+
       /* Final transaction return */
       return {
         success: true,
-        data: null,
+        data: listOfRoles,
         errors: null,
         message: 'Register phase 2 successfully'
       }
+    }, {
+      timeout: 10000
     });
     console.info('closing database connection...');
     /* Close prisma.connection */
@@ -573,7 +599,8 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
       },
       candidate: {
         id: regSession.candidate.id
-      }
+      },
+      roles: doRegisterPhase2.data
     });
     console.info('deleting register session...');
     /* Delete register session */
