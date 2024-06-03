@@ -31,7 +31,7 @@ export async function TrialTestFunction(
   documemts: object[],
 ) {
   console.log('Submitted Values 2: ', submittedValues1);
-  const { expectedSalary, ...restOfExperiences } = submittedValues1.experience; // give this type of experiences.
+  const { expectedSalary, ...restOfExperiences } = { ...submittedValues1.experience }; // give this type of experiences.
   const transformedSubmittedValues = {
     ...submittedValues1,
     families: transformToArrayOfObject(submittedValues1.families),
@@ -362,7 +362,8 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
             /* Return if the value already number */
             return {
               id_of_candidate: regSession.candidate.id,
-              id_of_certificate: Number(certification.certificationName.toString()), // it's should be a number
+              id_of_certificate: Number(certification.certificationName), // it's should be a number
+              // id_of_certificate: Number(certification.certificationName.toString()), // it's should be a number
               institutionName: certification.institution,
               issuedDate: certification.monthIssue,
               created_at: new Date(Date.now())
@@ -586,7 +587,7 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
         message: 'Register phase 2 successfully'
       }
     }, {
-      timeout: 10000
+      timeout: 20000
     });
     console.info('closing database connection...');
     /* Close prisma.connection */

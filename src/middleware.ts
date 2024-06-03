@@ -4,16 +4,14 @@ import { getUserSession } from "./libs/Sessions";
 import { authSession, regSession } from "./libs/Sessions/utils";
 
 export async function middleware(request: NextRequest) {
-  // console.info("referer \t:", request.headers.get("referer"));
-  // if(request.nextUrl.pathname.includes("/dashboard/user/stages")) {
-  //   const session = request.cookies.get(regSession)
-  //   const referer = request.headers.get('referer');
-  //   console.info("referer \t:", referer);
-  //   if(!session) return NextResponse.redirect(new URL('/', request.url));
-    // return NextResponse.next();
-  // };
-  // if(request.nextUrl.pathname.includes("/register")) {
-  //   const session = request.cookies.get(authSession)
-  //   if(session) return NextResponse.redirect(new URL('/', request.url));
-  // }
+  const session = request.cookies;
+  const pathname = request.nextUrl.pathname;
+  /* Stages */
+  if(session.has(authSession) && pathname.includes("/dashboard/user/stages")) {
+    return NextResponse.redirect(new URL("/dashboard/user/profile", request.url));
+  };
+  /* Register */
+  if(session.has(authSession) && pathname.includes("/register")) {
+    return NextResponse.redirect(new URL("/dashboard/user", request.url));
+  };
 };
