@@ -281,7 +281,8 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
           religion: validatedInputData.profile.religion,
           ethnicity: validatedInputData.profile.ethnicity,
           blood_type: validatedInputData.profile.bloodType,
-          maritalStatus: validatedInputData.profile.maritalStatus
+          maritalStatus: validatedInputData.profile.maritalStatus,
+          sourceId: Number(submittedValues2.others?.source?.toString())
         }
       });
       console.info('storing address...');

@@ -146,7 +146,7 @@ export async function userAuth(formData: any) {
     };
     console.info('checking is already filled required data...');
     if(userData.candidates.gender === null) {
-      await setUserSession('auth', {
+      await setUserSession('reg', {
         user: {
           id: userData.id,
           name: userData.name,

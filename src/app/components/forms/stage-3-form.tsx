@@ -73,6 +73,7 @@ import {
   fetchEthnicity,
   fetchJobFunctions,
   fetchSkills,
+  fetchSources,
   jobJobLevels,
   lineIndutries,
 } from '@/libs/Fetch';
@@ -246,6 +247,10 @@ export type MasterData = {
     value: number;
     label: string;
   }[];
+  sources?: {
+    value: number;
+    label: string;
+  }[];
 };
 
 const Stage3Form = () => {
@@ -287,6 +292,7 @@ const Stage3Form = () => {
       fetchJobFunctions(setMasterData),
       jobJobLevels(setMasterData),
       lineIndutries(setMasterData),
+      fetchSources(setMasterData)
     ]);
   };
   /* END OF ACTIONS */
@@ -2512,6 +2518,10 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['others', 'source']}
                 className="mb-0"
+                rules={[{
+                  required: true,
+                  message: 'Please select source'
+                }]}
                 // validateStatus={
                 //   errors &&
                 //   errors.education &&
@@ -2540,11 +2550,7 @@ const Stage3Form = () => {
                       .localeCompare((optionB?.label ?? '').toLowerCase())
                   }
                   /* Fetched Data */
-                  options={[
-                    { value: 'Partnership', label: 'Partnership' },
-                    { value: 'Jobstreet', label: 'Jobstreet' },
-                    { value: 'Job Fair', label: 'Job Fair' },
-                  ]}
+                  options={masterData?.sources}
                 />
               </Form.Item>
             </div>
