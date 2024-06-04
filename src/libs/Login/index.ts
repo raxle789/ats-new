@@ -106,6 +106,14 @@ export async function userAuth(formData: any) {
         },
         roles: roles
       });
+      /**
+       * Add admin here
+       */
+      return {
+        success: true,
+        is_admin: true,
+        message: `Login successfully as ${userData.name} Administrator`
+      }
     };
     console.info('checking candidate data...');
     if(!userData.candidates) return {
