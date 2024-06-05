@@ -136,6 +136,10 @@ export async function getAdditionalInformations(): Promise<TypeFetchReturned> {
   };
 };
 
+/**
+ * @description Test
+ * @returns 
+ */
 export async function getCandidateDocuments() {
   const authSession = await getUserSession('auth');
   try {
@@ -150,6 +154,44 @@ export async function getCandidateDocuments() {
       data: documentPDF?.file_base.toString(),
       message: 'Data fetched:'
     };
+  } catch (error) {
+    console.info('Fetching Error: ', error);
+    return {
+      success: false,
+      data: null,
+      message: 'Fetching Error: There is a problem with database connection: '
+    };
+  };
+};
+
+export async function getAppliedJobs(): Promise<TypeFetchReturned> {
+  const authSession = await getUserSession('auth');
+  try {
+    const appliedJobData = await prisma.candidateStates.findMany({
+      where: {
+        candidateId: authSession.candidate.id
+      },
+      select: {
+        id: true,
+        stateName: true,
+        jobVacancies: {
+          select: {
+            jobTitleAliases: true,
+            workLocationAddress: true,
+            employmentStatusName: true,
+            verticalCode: true,
+            publishedDate: true,
+            expiredDate: true,
+          }
+        },
+      },
+    });
+    console.log('APPLIED \t:',appliedJobData);
+    return {
+      success: true,
+      data: appliedJobData,
+      message: 'Data Fetched:'
+    }
   } catch (error) {
     console.info('Fetching Error: ', error);
     return {

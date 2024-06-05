@@ -172,6 +172,31 @@ async function main() {
    */
   // const hashedAdmin = await bcrypt.hash('super.admin-pass', 10);
   // const hashedCandidate = await bcrypt.hash('candidate-pass', 10);
+  // await prisma.$transaction(async (tx) => {
+  //   const adminUser = await tx.users.upsert({
+  //     where: {
+  //       email: 'oujakdev.rep@gmail.com'
+  //     },
+  //     update: {
+  //       name: 'vkr-talent.administator',
+  //       email: 'admin.super@atsera.com',
+  //       is_email_verified: true,
+  //       password: hashedAdmin
+  //     },
+  //     create: {
+  //       name: 'vkr-talent.administator',
+  //       email: 'admin.super@atsera.com',
+  //       is_email_verified: true,
+  //       password: hashedAdmin,
+  //     },
+  //   });
+  //   await tx.userRoles.create({
+  //     data: {
+  //       roleId: 1,
+  //       userId: adminUser.id
+  //     }
+  //   });
+  // });
   // await prisma.users.upsert({
   //   where: {
   //     email: 'oujakdev.rep@gmail.com'
@@ -194,7 +219,7 @@ async function main() {
   //     data: {
   //       name: 'vkr-candidate.jobseeker',
   //       email: 'candidate.super@atsera.com',
-  //       password: hashedCandidate
+  //       password: hashedCandidate,
   //     }
   //   });
   //   await tx.userRoles.create({
