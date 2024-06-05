@@ -6,7 +6,7 @@ import logo from '@/assets/images/logo/logo_03.png';
 import logo_2 from '@/assets/images/logo/logo_04.png';
 import logo_w from '@/assets/images/logo/logo_06.png';
 import shape from '@/assets/images/shape/shape_28.svg';
-import { WidgetOne, WidgetThree, WidgetTwo } from './component/footer-widgets';
+import { WidgetOne, WidgetTwo } from './component/footer-widgets';
 import SocialLinks from './component/social-links';
 
 const FooterOne = ({

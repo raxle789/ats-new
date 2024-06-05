@@ -48,7 +48,7 @@ type FieldType = {
   language?: {
     [id: string]: {
       name?: string;
-      level?: string;
+      proficiency?: string;
     };
   };
 };
@@ -112,34 +112,7 @@ const EducationSkillsForm: React.FC<Props> = ({
   errors,
 }) => {
   const [form] = Form.useForm();
-  // const [masterData, setMasterData] = useState<MasterData | null>(null);
   const [editState, setEditState] = useState(false);
-  // const [educationAndSkill, setEducationAndSkill] = useState<any>(null);
-  // console.log('EDUCATION SKILLS: ', educationAndSkill);
-
-  // const fetchData = async () => {
-  //   await Promise.all([
-  //     fetchCities(setMasterData),
-  //     fetchEducationLevels(setMasterData),
-  //     fetchEducatioMajors(setMasterData),
-  //     fetchEducationInstitutios(setMasterData),
-  //     fetchCertificates(setMasterData),
-  //     fetchSkills(setMasterData)
-  //   ]);
-  // };
-
-  // const fetchEducationSkills = async () => {
-  //   const educationSkillsData = await getEducationSkills();
-  //   if(!educationSkillsData.success) {
-  //     return message.error(educationSkillsData.message);
-  //   };
-  //   return setEducationAndSkill(educationSkillsData.data);
-  // };
-
-  // useEffect(() => {
-  //   fetchEducationSkills();
-  //   fetchData();
-  // }, []);
 
   const editOnChange = () => {
     setEditState(!editState);
@@ -212,18 +185,8 @@ const EducationSkillsForm: React.FC<Props> = ({
                 ]}
                 className="mb-0 me-2"
               >
-                <DatePicker placeholder="Select Month" picker="month" />
+                <DatePicker placeholder="Select Date" picker="month" />
               </Form.Item>
-              {/* <Form.Item<FieldType>
-                name={[
-                  'certification',
-                  certificationIdx.toString(),
-                  'yearIssue',
-                ]}
-                className="mb-0"
-              >
-                <DatePicker placeholder="Select Year" picker="year" />
-              </Form.Item> */}
             </div>
           </div>
         </div>
@@ -242,10 +205,7 @@ const EducationSkillsForm: React.FC<Props> = ({
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Name (Certification/Licence)</label>
             <p className="mb-0">
-              {
-                educationAndSkill?.certifications[certificationIdx]
-                  ?.certificates?.name
-              }
+              {educationAndSkill?.certifications[certificationIdx]?.name}
             </p>
           </div>
         </div>
@@ -291,29 +251,32 @@ const EducationSkillsForm: React.FC<Props> = ({
     setActiveCertifKey(newActiveKey);
   };
 
-  const addCertif = () => {
-    const newActiveKey = `newTab${newCertifTabIndex.current++}`;
-    const newPanes = [...certifItems];
-    newPanes.push({
-      label: `Certification ${certifItems.length + 1}`,
-      children: <CertifTabContent certificationIdx={certificationIdx} />,
-      key: newActiveKey,
-    });
+  const addCertif = (tabTotal: number) => {
+    let newPanes = [...certifItems];
+    let newDisplayed = [...displayedItems];
+    let index = certificationIdx;
+    for (let i = 0; i < tabTotal; i++) {
+      const newActiveKey = `newTab${newCertifTabIndex.current++}`;
+      newPanes.push({
+        label: `Certification ${index + 1}`,
+        children: <CertifTabContent certificationIdx={index} />,
+        key: newActiveKey,
+      });
 
-    const newDisplayed = [...displayedItems];
-    newDisplayed.push({
-      label: `Certification ${certifItems.length + 1}`,
-      children: <DisplayedTabContent certificationIdx={certificationIdx} />,
-      key: newActiveKey,
-      closable: false,
-    });
-
-    console.log('certificationIdx', certificationIdx);
+      newDisplayed.push({
+        label: `Certification ${index + 1}`,
+        children: <DisplayedTabContent certificationIdx={index} />,
+        key: newActiveKey,
+        closable: false,
+      });
+      index++;
+      setActiveCertifKey(newActiveKey);
+    }
+    // console.log('certificationIdx', certificationIdx);
+    setCertificationIdx(index);
     setCertifItems(newPanes);
     setDisplayedItems(newDisplayed);
-    setActiveCertifKey(newActiveKey);
-    setCertificationIdx(certificationIdx + 1);
-    console.log('addCertif');
+    // console.log('addCertif');
   };
 
   const removeCertif = (targetKey: TargetKey) => {
@@ -346,20 +309,20 @@ const EducationSkillsForm: React.FC<Props> = ({
     action: 'add' | 'remove',
   ) => {
     if (action === 'add') {
-      addCertif();
+      addCertif(1);
     } else {
       removeCertif(targetKey);
     }
   };
 
-  const [formalCheck, setFormalCheck] = useState<boolean>(true);
-  const handleFormalCheck: CheckboxProps['onChange'] = (e) => {
-    setFormalCheck(e.target.checked);
-  };
-  const [certificationCheck, setCertificationCheck] = useState<boolean>(true);
-  const handleCertificationCheck: CheckboxProps['onChange'] = (e) => {
-    setCertificationCheck(e.target.checked);
-  };
+  // const [formalCheck, setFormalCheck] = useState<boolean>(true);
+  // const handleFormalCheck: CheckboxProps['onChange'] = (e) => {
+  //   setFormalCheck(e.target.checked);
+  // };
+  // const [certificationCheck, setCertificationCheck] = useState<boolean>(true);
+  // const handleCertificationCheck: CheckboxProps['onChange'] = (e) => {
+  //   setCertificationCheck(e.target.checked);
+  // };
 
   const [eduLevel, setEduLevel] = useState<string>('');
   const onChangeEdu = (value: string) => {
@@ -429,7 +392,7 @@ const EducationSkillsForm: React.FC<Props> = ({
     const languagesData = educationAndSkill?.languages;
     type LanguageField = {
       language: {
-        [key: string]: { name: string; level: string };
+        [key: string]: { name: string; proficiency: string };
       };
     };
     let languageField: LanguageField = {
@@ -459,9 +422,9 @@ const EducationSkillsForm: React.FC<Props> = ({
       certificationsField = certifications.reduce(
         (acc: any, item: any, index: number) => {
           acc[index] = {
-            certificationName: item.certificates.name,
-            institution: item.institutionName,
-            monthIssue: dayjs(new Date(item.issuedDate)),
+            certificationName: item?.name,
+            institution: item?.institutionName,
+            monthIssue: dayjs(new Date(item?.issuedDate)),
           };
           return acc;
         },
@@ -490,31 +453,35 @@ const EducationSkillsForm: React.FC<Props> = ({
         certification: certificationsField,
       }));
 
-      if (certifications) {
+      console.log(
+        'function - (education) - initFieldsValue: ',
+        initFieldsValue,
+      );
+      if (loopTotal < 1 && certifications) {
         if (certifications.length > 0) {
           setCertifState('certified');
           setCertifTotal(educationAndSkill.certifications.length);
-        }
-        console.log('certifTotal: ', certifTotal);
-        console.log('certifState: ', certifState);
-        if (certifState === 'certified') {
-          addCertif();
+          addCertif(educationAndSkill.certifications.length);
           setLoopTotal((prevState) => prevState + 1);
         }
       }
     }
   }, [educationAndSkill]);
 
-  useEffect(() => {
-    if (loopTotal <= certifTotal && certifState === 'certified') {
-      addCertif();
-    }
-  }, [certifTotal]);
+  console.log('certifTotal: ', certifTotal);
+  console.log('certifState: ', certifState);
+  console.log('certificationIdx: ', certificationIdx);
+
+  // useEffect(() => {
+  //   if (loopTotal < certifTotal && certifState === 'certified') {
+  //     addCertif();
+  //   }
+  // }, [certifTotal]);
 
   useEffect(() => {
-    console.log('initFieldsValue: ', initFieldsValue);
+    console.log('useEffect - (education) - initFieldsValue: ', initFieldsValue);
     form.setFieldsValue(initFieldsValue);
-  }, [educationAndSkill]);
+  }, [initFieldsValue]);
   return (
     <>
       <div>
@@ -554,7 +521,7 @@ const EducationSkillsForm: React.FC<Props> = ({
                   )}
                   {!editState && (
                     <p className="mb-0">
-                      {educationAndSkill?.educations?.level}
+                      {educationAndSkill?.education?.edu_level}
                     </p>
                   )}
                 </Form.Item>
@@ -591,7 +558,7 @@ const EducationSkillsForm: React.FC<Props> = ({
                   )}
                   {!editState && (
                     <p className="mb-0">
-                      {educationAndSkill?.educations?.major}
+                      {educationAndSkill?.education?.edu_major}
                     </p>
                   )}
                 </Form.Item>
@@ -614,7 +581,9 @@ const EducationSkillsForm: React.FC<Props> = ({
                   )}
                   {!editState && (
                     <p className="mb-0">
-                      {educationAndSkill?.educations?.start_year}
+                      {dayjs(educationAndSkill?.education?.start_year).format(
+                        'YYYY',
+                      ) || 'Invalid Date'}
                     </p>
                   )}
                 </Form.Item>
@@ -637,7 +606,9 @@ const EducationSkillsForm: React.FC<Props> = ({
                   )}
                   {!editState && (
                     <p className="mb-0">
-                      {educationAndSkill?.educations?.end_year}
+                      {dayjs(educationAndSkill?.education?.end_year).format(
+                        'YYYY',
+                      ) || 'Invalid Date'}
                     </p>
                   )}
                 </Form.Item>
@@ -674,7 +645,7 @@ const EducationSkillsForm: React.FC<Props> = ({
                   )}
                   {!editState && (
                     <p className="mb-0">
-                      {educationAndSkill?.educations?.university_name}
+                      {educationAndSkill?.education?.university_name}
                     </p>
                   )}
                 </Form.Item>
@@ -706,9 +677,7 @@ const EducationSkillsForm: React.FC<Props> = ({
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">
-                      {educationAndSkill?.educations?.cityOfSchool}
-                    </p>
+                    <p className="mb-0">{educationAndSkill?.education?.city}</p>
                   )}
                 </Form.Item>
               </div>
@@ -731,12 +700,15 @@ const EducationSkillsForm: React.FC<Props> = ({
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">{educationAndSkill?.educations?.gpa}</p>
+                    <p className="mb-0">{educationAndSkill?.education?.gpa}</p>
                   )}
                 </Form.Item>
               </div>
             </div>
 
+            <label className="fw-bold mt-5 sub-section-profile">
+              Certification
+            </label>
             {editState && certifState === 'certified' && (
               <Tabs
                 type="editable-card"
@@ -759,7 +731,7 @@ const EducationSkillsForm: React.FC<Props> = ({
             <label className="fw-bold mt-5 sub-section-profile">Skill</label>
             <div className="col-12">
               <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">What skills do you have?*</label>
+                <label className="fw-bold">What skills do you have?</label>
                 <Form.Item<FieldType> name="skills" className="mb-0">
                   {editState && (
                     <Select
@@ -853,7 +825,7 @@ const EducationSkillsForm: React.FC<Props> = ({
                   <div className="col-6">
                     <div className="input-group-meta position-relative mb-15">
                       <Form.Item<FieldType>
-                        name={['language', index.toString(), 'level']}
+                        name={['language', index.toString(), 'proficiency']}
                         className="mb-0"
                       >
                         {editState && (
@@ -891,7 +863,7 @@ const EducationSkillsForm: React.FC<Props> = ({
                               {initFieldsValue &&
                                 initFieldsValue.language &&
                                 initFieldsValue.language[index.toString()]
-                                  ?.level}
+                                  ?.proficiency}
                             </p>
                           </>
                         )}

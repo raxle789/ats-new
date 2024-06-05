@@ -16,8 +16,8 @@ const ErrorPageArea = () => {
           <div className="col-xl-5 col-md-6 ms-auto order-md-last">
             <h2>Something went wrong!</h2>
             <p className="text-md">
-              Can not find what you need? Take a moment and start from our
-              Homepage.
+              Can not find what you need? Take a moment, start from our homepage
+              or refresh the page.
             </p>
             <Link
               href="/"

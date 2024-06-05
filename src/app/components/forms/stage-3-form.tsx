@@ -587,7 +587,7 @@ const Stage3Form = () => {
               >
                 <DatePicker
                   className="w-100"
-                  placeholder="Select Month & Year"
+                  placeholder="Select Date"
                   picker="month"
                 />
               </Form.Item>

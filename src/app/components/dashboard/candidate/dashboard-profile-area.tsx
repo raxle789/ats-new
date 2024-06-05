@@ -8,8 +8,6 @@ import BackgroundExperienceForm from '../../forms/background-experience-form';
 import DocumentForm from '../../forms/doc-form';
 import EducationSkillsForm from '../../forms/education-skills-form';
 import AdditionalInformationForm from '../../forms/additional-information-form';
-/* PDF Reader */
-import { pdfjs } from 'react-pdf';
 import { fetchCities, fetchCountries, fetchEthnicity } from '@/libs/Fetch';
 import { fetchJobFunctions, jobJobLevels, lineIndutries } from '@/libs/Fetch';
 import {
@@ -101,6 +99,8 @@ const DashboardProfileArea = () => {
   const [experiences, setExperiences] = useState<any | null>(null);
   const [educationAndSkill, setEducationAndSkill] = useState<any>(null);
   const [additionalInformation, setAdditionalInformation] = useState<any>(null);
+  const [source, setSource] = useState<string>('');
+  const [noticePeriod, setNoticePeriod] = useState<string>('');
   const [errors, setErrors] = useState<string>('');
 
   /* Fetch Form Data */
@@ -124,6 +124,7 @@ const DashboardProfileArea = () => {
 
   const fetchEducationSkills = async () => {
     const educationSkillsData = await getEducationSkills();
+    console.log('client:education-data -> ', educationAndSkill);
     if (!educationSkillsData.success) {
       return message.error(educationSkillsData.message);
     }
@@ -132,13 +133,11 @@ const DashboardProfileArea = () => {
 
   const fetchAdditionalInformations = async () => {
     const additionalInformationsData = await getAdditionalInformations();
-    if (!additionalInformationsData.success)
+    console.log('client:additional-data -> ', additionalInformation);
+    if (!additionalInformationsData.success) {
       return message.error(additionalInformationsData.message);
-    console.log(
-      'additional informations data:',
-      additionalInformationsData.data,
-    );
-    setAdditionalInformation(additionalInformationsData.data);
+    }
+    return setAdditionalInformation(additionalInformationsData.data);
   };
 
   const fetchData = async () => {
@@ -161,26 +160,41 @@ const DashboardProfileArea = () => {
     setKeyState(key);
   };
 
-  // useEffect(() => {
-  //   pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  //     'pdfjs-dist/build/pdf.worker.min.js',
-  //     import.meta.url,
-  //   ).toString();
-  // }, []);
-
   useEffect(() => {
     /* Candidate Data */
     fetchProfileData();
     fetchExperiences();
     fetchEducationSkills();
     fetchAdditionalInformations();
+
     /* Master data */
     fetchData();
   }, []);
 
-  // useEffect(() => {
-  //   console.log('useEffect:experiences-data -> ', experiences);
-  // }, [experiences]);
+  useEffect(() => {
+    if (additionalInformation) {
+      setNoticePeriod(additionalInformation?.candidate_questions[0]?.answer);
+    }
+  }, [additionalInformation]);
+
+  useEffect(() => {
+    if (profileData) {
+      setSource(profileData?.sources);
+    }
+  }, [profileData]);
+
+  useEffect(() => {
+    console.log('useEffect:profile-data -> ', profileData);
+  }, [experiences]);
+  useEffect(() => {
+    console.log('useEffect:experiences-data -> ', experiences);
+  }, [experiences]);
+  useEffect(() => {
+    console.log('useEffect:education-data -> ', educationAndSkill);
+  }, [experiences]);
+  useEffect(() => {
+    console.log('useEffect:additional-data -> ', additionalInformation);
+  }, [experiences]);
   return (
     <>
       <h2 className="main-title">My Profile</h2>
@@ -198,6 +212,7 @@ const DashboardProfileArea = () => {
           <BackgroundExperienceForm
             experiences={experiences}
             masterData={masterData}
+            noticePeriod={noticePeriod}
             errors={errors}
           />
         )}
@@ -211,6 +226,7 @@ const DashboardProfileArea = () => {
         {keyState === '4' && (
           <AdditionalInformationForm
             additionalInformation={additionalInformation}
+            source={source}
             masterData={masterData}
             errors={errors}
           />

@@ -6,12 +6,12 @@ import {
   DatePicker,
   Tabs,
   Radio,
-  Upload,
-  Button,
+  // Upload,
+  // Button,
   message,
 } from 'antd';
 import type { FormProps, RadioChangeEvent } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+// import { UploadOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
 // import { getAdditionalInformations } from '@/libs/Candidate/retrieve-data';
 import dayjs, { Dayjs } from 'dayjs';
@@ -35,7 +35,7 @@ type FieldType = {
     emergencyContactName?: string;
     emergencyContactPhoneNumber?: string;
     emergencyContactRelation?: string;
-    noticePeriod: string;
+    source: string;
     everWorkedMonth: string | Dayjs;
     everWorkedYear: string | Dayjs;
     diseaseName: string;
@@ -50,41 +50,28 @@ type MasterData = {};
 
 type Props = {
   additionalInformation?: any;
+  source?: string;
   masterData?: MasterData | null;
   errors?: any;
 };
 
 const AdditionalInformationForm: React.FC<Props> = ({
   additionalInformation,
+  source,
   masterData,
   errors,
 }) => {
   const [form] = Form.useForm();
-  // const [masterData, setMasterData] = useState<MasterData | null>(null);
   const [editState, setEditState] = useState(false);
-  // const [additionalInformation, setAdditionalInformation] = useState<any>(null);
-  // console.log('additionalInformation: ', additionalInformation);
-
   const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
-
-  // const fetchAdditionalInformations = async () => {
-  //   const additionalInformationsData = await getAdditionalInformations();
-  //   if (!additionalInformationsData.success)
-  //     return message.error(additionalInformationsData.message);
-  //   console.log(
-  //     'additional informations data:',
-  //     additionalInformationsData.data,
-  //   );
-  //   setAdditionalInformation(additionalInformationsData.data);
-  // };
-
-  // useEffect(() => {
-  //   /* Candidate data */
-  //   fetchAdditionalInformations();
-  // }, []);
 
   const editOnChange = () => {
     setEditState(!editState);
+    // if (editState === false) {
+    //   setEverWorked('you-choose');
+    //   setDisease('you-choose');
+    //   setHaveRelation('you-choose');
+    // }
   };
 
   const [index, setIndex] = useState<number>(0);
@@ -175,8 +162,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Relation</label>
             <p className="mb-0">
-              {initFieldsValue?.families &&
-                initFieldsValue.families[index]?.relation}
+              {additionalInformation?.families[index]?.relation}
             </p>
           </div>
         </div>
@@ -184,8 +170,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Name</label>
             <p className="mb-0">
-              {initFieldsValue?.families &&
-                initFieldsValue.families[index]?.name}
+              {additionalInformation?.families[index]?.name}
             </p>
           </div>
         </div>
@@ -193,8 +178,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Gender</label>
             <p className="mb-0">
-              {initFieldsValue?.families &&
-                initFieldsValue.families[index]?.gender}
+              {additionalInformation?.families[index]?.gender}
             </p>
           </div>
         </div>
@@ -203,8 +187,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
             <label className="fw-bold">Date of Birth</label>
             <p className="mb-0">
               {dayjs(
-                initFieldsValue?.families &&
-                  initFieldsValue.families[index]?.dateOfBirth,
+                additionalInformation?.families[index]?.dateOfBirth,
               ).format('YYYY-MM-DD')}
             </p>
           </div>
@@ -224,28 +207,31 @@ const AdditionalInformationForm: React.FC<Props> = ({
     setActiveKey(newActiveKey);
   };
 
-  const add = () => {
-    const newActiveKey = `newTab${newTabIndex.current++}`;
-    const newPanes = [...items];
-    newPanes.push({
-      label: `Relation ${items.length + 1}`,
-      children: <TabContent index={index} />,
-      key: newActiveKey,
-    });
+  const add = (tabTotal: number) => {
+    let newPanes = [...items];
+    let newDisplayed = [...displayedItems];
+    let indexTab = index;
+    for (let i = 0; i < tabTotal; i++) {
+      const newActiveKey = `newTab${newTabIndex.current++}`;
+      newPanes.push({
+        label: `Relation ${indexTab + 1}`,
+        children: <TabContent index={indexTab} />,
+        key: newActiveKey,
+      });
 
-    const newDisplayed = [...displayedItems];
-    newDisplayed.push({
-      label: `Relation ${items.length + 1}`,
-      children: <DisplayedTabContent index={index} />,
-      key: newActiveKey,
-      closable: false,
-    });
-
+      newDisplayed.push({
+        label: `Relation ${indexTab + 1}`,
+        children: <DisplayedTabContent index={indexTab} />,
+        key: newActiveKey,
+        closable: false,
+      });
+      indexTab++;
+      setActiveKey(newActiveKey);
+    }
+    setIndex(index + 1);
     setItems(newPanes);
     setDisplayedItems(newDisplayed);
-    setActiveKey(newActiveKey);
-    setIndex((prevState) => prevState + 1);
-    console.log('add tab');
+    // console.log('add tab');
   };
 
   const remove = (targetKey: TargetKey) => {
@@ -278,7 +264,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
     action: 'add' | 'remove',
   ) => {
     if (action === 'add') {
-      add();
+      add(1);
     } else {
       remove(targetKey);
     }
@@ -289,9 +275,9 @@ const AdditionalInformationForm: React.FC<Props> = ({
     setEverWorked(e.target.value);
   };
 
-  const [disease, setdisease] = useState<string>('you-choose');
+  const [disease, setDisease] = useState<string>('you-choose');
   const diseaseChange = (e: RadioChangeEvent) => {
-    setdisease(e.target.value);
+    setDisease(e.target.value);
   };
 
   const [haveRelation, setHaveRelation] = useState<string>('you-choose');
@@ -320,42 +306,56 @@ const AdditionalInformationForm: React.FC<Props> = ({
   const [loopTotal, setLoopTotal] = useState(0);
 
   useEffect(() => {
-    let everWorkedAnswer: string;
-    let everWorkedAnswer2: string;
+    let everWorkedAnswer: string | Dayjs;
+    let everWorkedAnswer2: string | Dayjs;
     let medicalCondition: string;
-    let medicalCondition2: string;
+    let medicalCondition2: string | Dayjs;
     let colleagueName: string;
     let colleagueName2: string;
     if (additionalInformation) {
-      if (additionalInformation?.candidate_questions[1]?.answer === ',') {
+      if (
+        additionalInformation?.candidate_questions[1]?.answer === ',' ||
+        additionalInformation?.candidate_questions[1]?.answer === 'no'
+      ) {
         everWorkedAnswer = 'No';
+        setEverWorked('No');
       } else {
         let words = additionalInformation?.candidate_questions[1]?.answer;
         const separatedArray = words.split(',');
-        everWorkedAnswer = dayjs(separatedArray[0]).format('MM');
-        everWorkedAnswer2 = dayjs(separatedArray[1]).format('YYYY');
+        everWorkedAnswer = dayjs(separatedArray[0]).format('YYYY-MM');
+        everWorkedAnswer2 = dayjs(separatedArray[1]).format('YYYY-MM');
+        setEverWorked('Yes');
       }
 
-      if (additionalInformation?.candidate_questions[2]?.answer === ',') {
+      if (
+        additionalInformation?.candidate_questions[2]?.answer === ',' ||
+        additionalInformation?.candidate_questions[2]?.answer === 'no'
+      ) {
         medicalCondition = 'No';
+        setDisease('No');
       } else {
         let words = additionalInformation?.candidate_questions[2]?.answer;
         const separatedArray = words.split(',');
         medicalCondition = separatedArray[0];
         medicalCondition2 = dayjs(separatedArray[1]).format('YYYY');
+        setDisease('Yes');
       }
 
-      if (additionalInformation?.candidate_questions[3]?.answer === ',') {
+      if (
+        additionalInformation?.candidate_questions[3]?.answer === ',' ||
+        additionalInformation?.candidate_questions[3]?.answer === 'no'
+      ) {
         colleagueName = 'No';
+        setHaveRelation('No');
       } else {
         let words = additionalInformation?.candidate_questions[3]?.answer;
         const separatedArray = words.split(',');
         colleagueName = separatedArray[0];
         colleagueName2 = separatedArray[1];
+        setHaveRelation('Yes');
       }
     }
 
-    const families = additionalInformation?.families;
     type familyField = {
       [id: string]: {
         relation?: string;
@@ -366,9 +366,10 @@ const AdditionalInformationForm: React.FC<Props> = ({
     };
     let familiesField: familyField;
     if (additionalInformation) {
+      const families = additionalInformation?.families;
       familiesField = families.reduce((acc: any, item: any, index: number) => {
         acc[index] = {
-          relation: item.relationStatus,
+          relation: item.relation,
           name: item.name,
           gender: item.gender,
           dateOfBirth: dayjs(item.dateOfBirth),
@@ -377,47 +378,66 @@ const AdditionalInformationForm: React.FC<Props> = ({
       }, {});
     }
 
-    setInitFieldsValue((prevState) => ({
-      ...prevState,
-      families: familiesField,
-      everWorkedOption: everWorkedAnswer,
-      diseaseOption: medicalCondition,
-      relationOption: colleagueName,
-      others: {
-        emergencyContactName: additionalInformation?.emergency_contacts?.name,
-        emergencyContactPhoneNumber:
-          additionalInformation?.emergency_contacts?.phoneNumber,
-        emergencyContactRelation:
-          additionalInformation?.emergency_contacts?.relationStatus,
-        noticePeriod: additionalInformation?.candidate_questions[0]?.answer,
-        everWorkedMonth: everWorkedAnswer,
-        everWorkedYear: everWorkedAnswer2,
-        diseaseName: medicalCondition,
-        diseaseYear: medicalCondition2,
-        relationName: colleagueName,
-        relationPosition: colleagueName2,
-      },
-    }));
+    if (source && additionalInformation) {
+      setInitFieldsValue((prevState) => ({
+        ...prevState,
+        families: familiesField,
+        everWorkedOption: everWorkedAnswer === 'No' ? 'No' : 'Yes',
+        diseaseOption: medicalCondition === 'No' ? 'No' : 'Yes',
+        relationOption: colleagueName === 'No' ? 'No' : 'Yes',
+        others: {
+          emergencyContactName: additionalInformation?.emergency_contacts?.name,
+          emergencyContactPhoneNumber:
+            additionalInformation?.emergency_contacts?.phoneNumber,
+          emergencyContactRelation:
+            additionalInformation?.emergency_contacts?.relationStatus,
+          source: source,
+          everWorkedMonth:
+            everWorkedAnswer === 'No' ? '' : dayjs(everWorkedAnswer),
+          everWorkedYear:
+            everWorkedAnswer2 === 'No' ? '' : dayjs(everWorkedAnswer2),
+          diseaseName: medicalCondition,
+          diseaseYear:
+            medicalCondition2 === 'No' ? '' : dayjs(medicalCondition2),
+          relationName: colleagueName,
+          relationPosition: colleagueName2,
+        },
+      }));
+      form.setFieldsValue(initFieldsValue);
+    }
+    console.log('function - (additional) - initFieldsValue: ', initFieldsValue);
 
-    if (additionalInformation) {
-      setRelationTotal(additionalInformation.families.length);
-      if (additionalInformation.families.length > 1) {
-        add();
+    if (loopTotal < 1 && additionalInformation && initFieldsValue) {
+      if (additionalInformation.families.length > 0) {
+        setRelationTotal(additionalInformation.families.length);
+        add(additionalInformation.families.length);
         setLoopTotal((prevState) => prevState + 1);
       }
     }
   }, [additionalInformation]);
 
-  useEffect(() => {
-    if (loopTotal <= relationTotal && additionalInformation) {
-      add();
-    }
-  }, [relationTotal]);
+  // useEffect(() => {
+  //   if (loopTotal < relationTotal && additionalInformation) {
+  //     add();
+  //   }
+  // }, [relationTotal]);
 
+  // console.log('(additional) - initFieldsValue: ', initFieldsValue);
+
+  // useEffect(() => {
+  //   console.log(
+  //     'useEffect - (additional) - initFieldsValue: ',
+  //     initFieldsValue,
+  //   );
+  //   form.setFieldsValue(initFieldsValue);
+  // }, [additionalInformation]);
   useEffect(() => {
-    console.log('initFieldsValue: ', initFieldsValue);
+    console.log(
+      'useEffect2 - (additional) - initFieldsValue: ',
+      initFieldsValue,
+    );
     form.setFieldsValue(initFieldsValue);
-  }, [additionalInformation]);
+  }, [initFieldsValue]);
   return (
     <>
       <div>
@@ -533,16 +553,46 @@ const AdditionalInformationForm: React.FC<Props> = ({
             </div>
             <div className="col-3">
               <div className="input-group-meta position-relative mb-15">
+                <label className="fw-bold">Source*</label>
+                <Form.Item<FieldType>
+                  name={['others', 'source']}
+                  className="mb-0"
+                >
+                  {editState && (
+                    <Select
+                      className="w-100"
+                      placeholder="Select Source"
+                      showSearch
+                      mode="tags"
+                      maxCount={1}
+                      filterOption={(input, option) =>
+                        (option?.label.toLowerCase() ?? '').includes(input)
+                      }
+                      filterSort={(optionA, optionB) =>
+                        (optionA?.label ?? '')
+                          .toLowerCase()
+                          .localeCompare((optionB?.label ?? '').toLowerCase())
+                      }
+                      /* Fetched Data */
+                      options={[
+                        { value: 'Partnership', label: 'Partnership' },
+                        { value: 'Jobstreet', label: 'Jobstreet' },
+                        { value: 'Job Fair', label: 'Job Fair' },
+                      ]}
+                    />
+                  )}
+                  {!editState && (
+                    <p className="mb-0">{initFieldsValue?.others?.source}</p>
+                  )}
+                </Form.Item>
+              </div>
+            </div>
+            {/* <div className="col-3">
+              <div className="input-group-meta position-relative mb-15">
                 <label className="fw-bold">How long your notice period?*</label>
                 <Form.Item<FieldType>
                   name={['others', 'noticePeriod']}
                   className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please input your notice period!',
-                  //   },
-                  // ]}
                 >
                   {editState && (
                     <Select
@@ -572,7 +622,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
                   )}
                 </Form.Item>
               </div>
-            </div>
+            </div> */}
             <div className="col-12">
               <div className="input-group-meta position-relative mb-15">
                 <label className="fw-bold">
@@ -605,12 +655,12 @@ const AdditionalInformationForm: React.FC<Props> = ({
                   {!editState && (
                     <p className="mb-0">
                       {initFieldsValue?.others?.everWorkedMonth !== 'No'
-                        ? `${initFieldsValue?.others?.everWorkedMonth}, ${initFieldsValue?.others?.everWorkedYear}`
+                        ? `${dayjs(initFieldsValue?.others?.everWorkedMonth).format('YYYY-MM')}, ${dayjs(initFieldsValue?.others?.everWorkedYear).format('YYYY-MM')}`
                         : 'No'}
                     </p>
                   )}
                 </Form.Item>
-                {everWorked === 'Yes' && (
+                {editState && everWorked === 'Yes' && (
                   <div className="row mt-2">
                     <div className="col-3">
                       <Form.Item<FieldType>
@@ -687,12 +737,12 @@ const AdditionalInformationForm: React.FC<Props> = ({
                   {!editState && (
                     <p className="mb-0">
                       {initFieldsValue?.others?.diseaseName !== 'No'
-                        ? `${initFieldsValue?.others?.diseaseName}, ${initFieldsValue?.others?.diseaseYear}`
+                        ? `${initFieldsValue?.others?.diseaseName}, ${dayjs(initFieldsValue?.others?.diseaseYear).format('YYYY')}`
                         : 'No'}
                     </p>
                   )}
                 </Form.Item>
-                {disease === 'Yes' && (
+                {editState && disease === 'Yes' && (
                   <div className="row mt-2">
                     <div className="col-3">
                       <Form.Item<FieldType>
@@ -772,7 +822,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
                     </p>
                   )}
                 </Form.Item>
-                {haveRelation === 'Yes' && (
+                {editState && haveRelation === 'Yes' && (
                   <div className="row mt-2">
                     <div className="col-3">
                       <Form.Item<FieldType>

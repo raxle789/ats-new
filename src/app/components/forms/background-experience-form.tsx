@@ -38,6 +38,9 @@ type FieldType = {
       currentSalary?: number;
     };
   };
+  others?: {
+    noticePeriod?: string;
+  };
 };
 
 type MasterData = {
@@ -90,41 +93,17 @@ type MasterData = {
 type Props = {
   experiences?: any;
   masterData?: MasterData | null;
+  noticePeriod?: string;
   errors?: any;
 };
 
 const BackgroundExperienceForm: React.FC<Props> = ({
   experiences,
   masterData,
+  noticePeriod,
   errors,
 }) => {
   const [form] = Form.useForm();
-  // const [masterData, setMasterData] = useState<MasterData | null>(null);
-  // const [experiences, setExperiences] = useState<any | null>(null);
-  // console.info('typeof Experiences: ', experiences);
-
-  // const fetchData = async () => {
-  //   await Promise.all([
-  //     fetchJobFunctions(setMasterData),
-  //     jobJobLevels(setMasterData),
-  //     lineIndutries(setMasterData),
-  //   ]);
-  // };
-
-  // const fetchExperiences = async () => {
-  //   const experiencesData = await getCandidateExperiences();
-  //   if (!experiencesData.success) {
-  //     return message.error(experiencesData.message);
-  //   }
-  //   return setExperiences(experiencesData.data);
-  // };
-
-  /* ACTIONS */
-  // useEffect(() => {
-  //   fetchExperiences();
-  //   fetchData();
-  // }, []);
-
   const [editState, setEditState] = useState(false);
 
   const [expValue, setExpValue] = useState<string>('Professional');
@@ -508,7 +487,9 @@ const BackgroundExperienceForm: React.FC<Props> = ({
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Current Salary (gross Monthly)*</label>
-            <p className="mb-0">{experiences?.experiences[expIdx]?.salary}</p>
+            <p className="mb-0">
+              {Number(experiences?.experiences[expIdx]?.salary)}
+            </p>
           </div>
         </div>
         <div className="col-6">
@@ -534,28 +515,31 @@ const BackgroundExperienceForm: React.FC<Props> = ({
     setActiveExpKey(newActiveKey);
   };
 
-  const addExp = () => {
-    const newActiveKey = `newTab${newExpTabIdx.current++}`;
-    const newPanes = [...expItems];
-    newPanes.push({
-      label: `Experience ${expItems.length + 1}`,
-      children: <ExpTabContent expIdx={expIdx} />,
-      key: newActiveKey,
-    });
+  const addExp = (tabTotal: number) => {
+    let newPanes = [...expItems];
+    let newDisplayed = [...displayedItems];
+    let index = expIdx;
+    for (let i = 0; i < tabTotal; i++) {
+      const newActiveKey = `newTab${newExpTabIdx.current++}`;
+      newPanes.push({
+        label: `Experience ${index + 1}`,
+        children: <ExpTabContent expIdx={index} />,
+        key: newActiveKey,
+      });
 
-    const newDisplayed = [...displayedItems];
-    newDisplayed.push({
-      label: `Experience ${expItems.length + 1}`,
-      children: <DisplayedTabContent expIdx={expIdx} />,
-      key: newActiveKey,
-      closable: false,
-    });
-
+      newDisplayed.push({
+        label: `Experience ${index + 1}`,
+        children: <DisplayedTabContent expIdx={index} />,
+        key: newActiveKey,
+        closable: false,
+      });
+      index++;
+      setActiveExpKey(newActiveKey);
+    }
+    // console.log('addExp');
+    setExpIdx(index);
     setExpItems(newPanes);
     setDisplayedItems(newDisplayed);
-    setActiveExpKey(newActiveKey);
-    setExpIdx(expIdx + 1);
-    console.log('addExp');
   };
 
   const removeExp = (targetKey: TargetKey) => {
@@ -588,7 +572,7 @@ const BackgroundExperienceForm: React.FC<Props> = ({
     action: 'add' | 'remove',
   ) => {
     if (action === 'add') {
-      addExp();
+      addExp(1);
     } else {
       removeExp(targetKey);
     }
@@ -635,19 +619,25 @@ const BackgroundExperienceForm: React.FC<Props> = ({
                   startYear: dayjs(exp?.start_at),
                   endYear: dayjs(exp?.end_at),
                   // currentYear: exp?.is_currently, // ganti status
-                  currentSalary: exp?.salary,
+                  currentSalary: Number(exp?.salary),
                 };
                 return acc;
               },
               {},
             ),
           },
+          others: {
+            noticePeriod: noticePeriod,
+          },
         }));
-        console.log('transformed experiences: ', initFieldsValue);
+        console.log(
+          'function - (experience) - initFieldsValue: ',
+          initFieldsValue,
+        );
         setExpValue('Professional');
         setExpTotal(experiences.experiences.length);
-        if (expValue === 'Professional') {
-          addExp();
+        if (loopTotal < 1 && expValue === 'Professional') {
+          addExp(experiences.experiences.length);
           setLoopTotal((prevState) => prevState + 1);
         }
       } else {
@@ -662,15 +652,25 @@ const BackgroundExperienceForm: React.FC<Props> = ({
     }
   }, [experiences]);
 
-  useEffect(() => {
-    if (loopTotal <= expTotal && expValue === 'Professional') {
-      addExp();
-    }
-  }, [expTotal]);
+  // console.log('expTotal: ', expTotal);
+  // console.log('loopTotal: ', loopTotal);
+  // console.log('displayedItems: ', displayedItems);
+  // console.log('expIdx: ', expIdx);
+  // useEffect(() => {
+  //   if (loopTotal < expTotal && expValue === 'Professional') {
+  //     console.log('tambah tab exp dari useEffect: ');
+  //     addExp();
+  //     console.log('loopTotal useEffect: ', loopTotal);
+  //   }
+  // }, [expTotal]);
 
   useEffect(() => {
+    console.log(
+      'useEffect - (experience) - initFieldsValue: ',
+      initFieldsValue,
+    );
     form.setFieldsValue(initFieldsValue);
-  }, [experiences]);
+  }, [initFieldsValue]);
   return (
     <>
       <div>
@@ -765,7 +765,7 @@ const BackgroundExperienceForm: React.FC<Props> = ({
               <div className="input-group-meta position-relative mb-15">
                 <label className="fw-bold">How long your notice period?*</label>
                 <Form.Item<FieldType>
-                  // name={['others', 'noticePeriod']}
+                  name={['others', 'noticePeriod']}
                   className="mb-0"
                   // validateStatus={
                   //   errors && errors?.others?.noticePeriod ? 'error' : ''
@@ -794,7 +794,7 @@ const BackgroundExperienceForm: React.FC<Props> = ({
                   )}
                   {!editState && (
                     // <p className="mb-0">{experiences?.expectedSalary}</p>
-                    <p className="mb-0">-</p>
+                    <p className="mb-0">{noticePeriod}</p>
                   )}
                 </Form.Item>
               </div>

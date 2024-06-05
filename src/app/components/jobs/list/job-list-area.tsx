@@ -1,8 +1,8 @@
 'use server';
 
 import React from 'react';
-import { getUserSession } from '@/libs/Sessions';
-import Pagination from '@/ui/pagination';
+// import { getUserSession } from '@/libs/Sessions';
+// import Pagination from '@/ui/pagination';
 import {
   getAllJobVacancyData,
   candidateApplyJobVacancy,

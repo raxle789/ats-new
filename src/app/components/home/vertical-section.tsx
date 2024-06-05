@@ -3,15 +3,15 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 // internal
-import logo from '@/assets/images/logo/logo_03.png';
-import logo_2 from '@/assets/images/logo/logo_04.png';
-import logo_w from '@/assets/images/logo/logo_06.png';
-import shape from '@/assets/images/shape/shape_28.svg';
+// import logo from '@/assets/images/logo/logo_03.png';
+// import logo_2 from '@/assets/images/logo/logo_04.png';
+// import logo_w from '@/assets/images/logo/logo_06.png';
+// import shape from '@/assets/images/shape/shape_28.svg';
 import ED from '@/assets/images/home/ED.png';
 import EFN from '@/assets/images/home/EFN.png';
 import EBW from '@/assets/images/home/EBW.png';
 import EAL from '@/assets/images/home/EAL.png';
-import vertical_line from '@/assets/images/vertical-line.jpg';
+// import vertical_line from '@/assets/images/vertical-line.jpg';
 import PartnersSlider from '../partners/partners-slider';
 
 const VerticalSection = () => {

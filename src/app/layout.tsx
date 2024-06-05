@@ -8,6 +8,8 @@ import Script from 'next/script';
 import AppSession from '../libs/Sessions/AppSession';
 import ErrorBoundary from '@/ui/error-boundary';
 import ErrorPageArea from './error';
+import LoadingArea from './loading';
+import { Suspense } from 'react';
 
 const gordita = localFont({
   src: [
@@ -69,7 +71,9 @@ export default function RootLayout({
       >
         <ErrorBoundary fallback={<ErrorPageArea />}>
           <Providers>
-            <AppSession>{children}</AppSession>
+            <AppSession>
+              <Suspense fallback={<LoadingArea />}>{children}</Suspense>
+            </AppSession>
           </Providers>
         </ErrorBoundary>
         <BackToTopCom />

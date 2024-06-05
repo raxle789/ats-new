@@ -128,48 +128,6 @@ const PersonalDataForm: React.FC<Props> = ({
   const editOnChange = () => {
     setEditState(!editState);
   };
-  /* Master Data */
-  // const [masterData, setMasterData] = useState<MasterData | null>(null);
-  // const [profileData, setProfileData] = useState<any | null>(null);
-  // const [errors, setErrors] = useState<string>('');
-  /* Fetch Form Data */
-  // const fetchProfileData = async () => {
-  //   const profileData = await getCandidateProfile();
-  //   console.info('client:profile-data -> ', profileData);
-  //   if (!profileData.success) {
-  //     return setErrors(profileData.message);
-  //   }
-  //   return setProfileData(profileData.data);
-  // };
-  // const fetchData = async () => {
-  //   await Promise.all([
-  //     fetchCities(setMasterData),
-  //     fetchEthnicity(setMasterData),
-  //     fetchCountries(setMasterData),
-  //   ]);
-  // };
-
-  // const [pdf, setPDF] = useState<string | File>('');
-  // const [pageNumber, setPageNumber] = useState<number>(1);
-  // function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
-  //   setPageNumber(numPages);
-  // }
-
-  // const fetchCVDocument = async () => {
-  //   console.log('Begin fetch documents...');
-  //   const cv = await getOnePDF();
-  //   console.log('Got cv: ', cv);
-  //   console.log('getting cv: ', cv);
-  //   if (cv) {
-  //     const pdfFile = await fetch(cv.data as string);
-  //     const blobFile = await pdfFile.blob();
-  //     const newFile = new File([blobFile], 'pdf-cv', {
-  //       type: 'application/pdf',
-  //     });
-  //     console.info('NEW FILE: ', newFile);
-  //     return setPDF(cv.data as string);
-  //   }
-  // };
 
   const sanitizePhoneNumber = (input: string) => {
     let numericInput = input.replace(/\D/g, '');
@@ -284,14 +242,7 @@ const PersonalDataForm: React.FC<Props> = ({
     }
   };
 
-  // useLayoutEffect(() => {
-  //   fetchData();
-  // }, []);
-  // useEffect(() => {
-  //   fetchProfileData()
-  // }, [editState]);
   useEffect(() => {
-    // fetchProfileData();
     form.setFieldsValue({
       profile: {
         email: profileData?.users?.email,
@@ -697,7 +648,9 @@ const PersonalDataForm: React.FC<Props> = ({
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">{profileData?.addresses[0]?.street}</p>
+                    <p className="mb-0">
+                      {profileData?.addresses[0]?.street || '-'}
+                    </p>
                   )}
                 </Form.Item>
               </div>
