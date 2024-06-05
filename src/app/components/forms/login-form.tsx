@@ -59,22 +59,31 @@ const LoginForm: React.FC<LoginFormProps> = ({
      */
     const checkingCaptcha = await GReCaptchaV2Check(token);
     console.log('result checking captcha: ', checkingCaptcha);
+    /**
+     * Bug verify captcha on every fail login
+     */
     if(!checkingCaptcha.success) {
       setSpinning(false);
       return message.error('Please verify that captcha!');
-    }
+    };
     const authorizing = await userAuth(values);
     /* check and directing user stage */
     if (authorizing.success && 'data' in authorizing) {
       console.info('directing user to otp form or fill form...');
-      router.push('/dashboard/user/stages');
+      setTimeout(() => {
+        router.push('/dashboard/user/stages');
+      }, 1000);
       return dispatch(setRegisterStep(authorizing.data?.stage as number));
-    }
+    };
 
     if (authorizing.success === false) {
       alert(authorizing.message);
       return setSpinning(false);
-    }
+    };
+
+    if(authorizing.success && 'is_admin' in authorizing)  {
+      return router.push("/dashboard/ta");
+    };
     console.info('user required data is completed...');
     message.success(authorizing.message);
     /* Directing to job list */

@@ -112,7 +112,7 @@ const CERTIFICATIONS = z.array(z.object({
     certificationName: z.coerce.string(), // idk whether coerce to string or number and if value can't be parsed into a number, store to certificates table first
     institution: z.string(),
     monthIssue: z.coerce.date(),
-    yearIssue: z.coerce.date(),
+    // yearIssue: z.coerce.date(),
 }));
 
 const SKILLS = z.array(z.any()).refine(skills => skills.length > 0, { message: 'Please select or provide at least one skill', path: ['skill'] }).default([]);

@@ -3,9 +3,9 @@ import React, { useRef } from 'react';
 import Image, { StaticImageData } from 'next/image';
 import Slider from 'react-slick';
 // internal
-import user_1 from '@/assets/images/assets/img_14.jpg';
-import user_2 from '@/assets/images/assets/img_15.jpg';
-import user_3 from '@/assets/images/assets/img_14.jpg';
+// import user_1 from '@/assets/images/assets/img_14.jpg';
+// import user_2 from '@/assets/images/assets/img_15.jpg';
+// import user_3 from '@/assets/images/assets/img_14.jpg';
 import jonathan from '@/assets/images/home/jonathan.png';
 import saras from '@/assets/images/home/saras.png';
 import septi from '@/assets/images/home/septi.png';
@@ -78,13 +78,6 @@ const FeedbackFive = () => {
   const sliderNext = () => {
     sliderRef.current?.slickNext();
   };
-
-  // const feedbackContent = (item: any) => {
-  //   return (
-
-  //   );
-  // };
-
   return (
     <section className="feedback-section-five position-relative mt-180 xl-mt-150 pt-90 md-pt-60 pb-130 xl-pb-100 md-pb-70">
       <div className="container">

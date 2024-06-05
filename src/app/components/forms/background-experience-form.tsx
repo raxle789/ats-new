@@ -10,16 +10,13 @@ import {
   InputNumber,
   message,
 } from 'antd';
-import type {
-  FormProps,
-  RadioChangeEvent,
-} from 'antd';
+import type { FormProps, RadioChangeEvent } from 'antd';
 // import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
 // import { getExperiences } from '@/libs/Candidate/retrieve-data';
 import dayjs, { Dayjs } from 'dayjs';
-import { fetchJobFunctions, jobJobLevels, lineIndutries } from '@/libs/Fetch';
-import { getCandidateExperiences } from '@/libs/Candidate/retrieve-data';
+// import { fetchJobFunctions, jobJobLevels, lineIndutries } from '@/libs/Fetch';
+// import { getCandidateExperiences } from '@/libs/Candidate/retrieve-data';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 const { TextArea } = Input;
@@ -41,9 +38,24 @@ type FieldType = {
       currentSalary?: number;
     };
   };
+  others?: {
+    noticePeriod?: string;
+  };
 };
 
 type MasterData = {
+  citys?: {
+    value: string;
+    label: string;
+  }[];
+  ethnicity?: {
+    value: string;
+    label: string;
+  }[];
+  countries?: {
+    value: string;
+    label: string;
+  }[];
   job_levels?: {
     value: number;
     label: string;
@@ -56,45 +68,48 @@ type MasterData = {
     value: number;
     label: string;
   }[];
+  education_levels?: {
+    value: string;
+    label: string;
+  }[];
+  education_majors?: {
+    value: string;
+    label: string;
+  }[];
+  education_institutions?: {
+    value: string;
+    label: string;
+  }[];
+  certificates_name?: {
+    value: number;
+    label: string;
+  }[];
+  skills?: {
+    value: number;
+    label: string;
+  }[];
 };
 
-const BackgroundExperienceForm = () => {
+type Props = {
+  experiences?: any;
+  masterData?: MasterData | null;
+  noticePeriod?: string;
+  errors?: any;
+};
+
+const BackgroundExperienceForm: React.FC<Props> = ({
+  experiences,
+  masterData,
+  noticePeriod,
+  errors,
+}) => {
   const [form] = Form.useForm();
-  const [masterData, setMasterData] = useState<MasterData | null>(null);
-  const [experiences, setExperiences] = useState<any | null>(null);
-  console.info('typeof Experiences: ', experiences);
-
-  const fetchData = async () => {
-    await Promise.all([
-      fetchJobFunctions(setMasterData),
-      jobJobLevels(setMasterData),
-      lineIndutries(setMasterData)
-    ]);
-  };
-
-  const fetchExperiences = async () => {
-    const experiencesData = await getCandidateExperiences();
-    if(!experiencesData.success) {
-      return message.error(experiencesData.message);
-    };
-    return setExperiences(experiencesData.data);
-  };
-
-  /* ACTIONS */
-  useEffect(() => {
-    /* Candidate data */
-    fetchExperiences();
-    /* Master data */
-    fetchData();
-  }, []);
-
-  const [editState, setEditState] = useState(false)
+  const [editState, setEditState] = useState(false);
 
   const [expValue, setExpValue] = useState<string>('Professional');
   const onChangeExp = (e: RadioChangeEvent) => {
     setExpValue(e.target.value);
   };
-
 
   const editOnChange = () => {
     setEditState(!editState);
@@ -215,15 +230,36 @@ const BackgroundExperienceForm = () => {
                 showSearch
                 placeholder="Your Position Level"
                 optionFilterProp="children"
-                filterOption={(input, option) =>
-                  (option?.label.toLowerCase() ?? '').includes(input)
-                }
+                // filterOption={(input, option) =>
+                //   (option?.label.toLowerCase() ?? '').includes(input)
+                // }
                 filterSort={(optionA, optionB) =>
                   (optionA?.label ?? '')
                     .toLowerCase()
                     .localeCompare((optionB?.label ?? '').toLowerCase())
                 }
-                options={masterData?.job_levels}
+                // options={masterData?.job_levels}
+                options={[
+                  { value: 'Director', label: 'Director' },
+                  { value: 'VP', label: 'VP' },
+                  {
+                    value: 'General Manager',
+                    label: 'General Manager',
+                  },
+                  { value: 'Manager', label: 'Manager' },
+                  {
+                    value: 'Assistant Manager',
+                    label: 'Assistant Manager',
+                  },
+                  {
+                    value: 'Supervisor',
+                    label: 'Supervisor',
+                  },
+                  {
+                    value: 'Staff',
+                    label: 'Staff',
+                  },
+                ]}
               />
             </Form.Item>
           </div>
@@ -373,13 +409,6 @@ const BackgroundExperienceForm = () => {
   };
 
   const DisplayedTabContent: React.FC<Tprops2> = ({ expIdx }) => {
-    // const [yearState, setYearState] = useState<{ [key: string]: boolean }>({});
-    // const handleCheckboxChange: any = (e: any, expIdx: number) => {
-    //   setYearState((prevState) => ({
-    //     ...prevState,
-    //     [expIdx.toString()]: e.target.checked,
-    //   }));
-    // };
     return (
       <div key={expIdx} className="row">
         <div className="col-6">
@@ -444,57 +473,35 @@ const BackgroundExperienceForm = () => {
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">End Year*</label>
             <p className="mb-0">
-              {dayjs(experiences?.experiences[expIdx]?.end_at).format(
+              {/* {dayjs(experiences?.experiences[expIdx]?.end_at).format(
                 'MM/YYYY',
-              )}
+              )} */}
+              {dayjs(experiences?.experiences[expIdx]?.end_at).isValid()
+                ? dayjs(experiences?.experiences[expIdx]?.end_at).format(
+                    'MM/YYYY',
+                  )
+                : 'Now'}
             </p>
           </div>
         </div>
-        {/* <div className="col-2">
-      <div className="input-group-meta position-relative mb-15">
-        <Form.Item<FieldType>
-          name={['experience', expIdx.toString(), 'currentYear']}
-          className="pt-15"
-        >
-          <Checkbox
-            onChange={(e) => handleCheckboxChange(e, expIdx)}
-          >
-            Current
-          </Checkbox>
-        </Form.Item>
-      </div>
-    </div> */}
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Current Salary (gross Monthly)*</label>
-            <p className="mb-0">{experiences?.experiences[expIdx]?.salary}</p>
+            <p className="mb-0">
+              {Number(experiences?.experiences[expIdx]?.salary)}
+            </p>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Expected Salary (gross Monthly)*</label>
-            <p className="mb-0">{experiences?.expected_salary}</p>
+            <p className="mb-0">{experiences?.expectedSalary}</p>
           </div>
         </div>
       </div>
     );
   };
 
-  // const initExpItems = [
-  //   {
-  //     label: 'Experience 1',
-  //     children: <ExpTabContent expIdx={expIdx} />,
-  //     key: '1',
-  //   },
-  // ];
-  // const displayedInit = [
-  //   {
-  //     label: 'Experience 1',
-  //     children: <DisplayedTabContent expIdx={expIdx} />,
-  //     key: '1',
-  //     closable: false,
-  //   },
-  // ];
   const initExpItems: any[] = [];
   const displayedInit: any[] = [];
 
@@ -508,29 +515,31 @@ const BackgroundExperienceForm = () => {
     setActiveExpKey(newActiveKey);
   };
 
-  const addExp = () => {
-    console.log('expIdx: ', expIdx);
-    const newActiveKey = `newTab${newExpTabIdx.current++}`;
-    const newPanes = [...expItems];
-    newPanes.push({
-      label: `Experience ${expItems.length + 1}`,
-      children: <ExpTabContent expIdx={expIdx} />,
-      key: newActiveKey,
-    });
+  const addExp = (tabTotal: number) => {
+    let newPanes = [...expItems];
+    let newDisplayed = [...displayedItems];
+    let index = expIdx;
+    for (let i = 0; i < tabTotal; i++) {
+      const newActiveKey = `newTab${newExpTabIdx.current++}`;
+      newPanes.push({
+        label: `Experience ${index + 1}`,
+        children: <ExpTabContent expIdx={index} />,
+        key: newActiveKey,
+      });
 
-    const newDisplayed = [...displayedItems];
-    newDisplayed.push({
-      label: `Experience ${expItems.length + 1}`,
-      children: <DisplayedTabContent expIdx={expIdx} />,
-      key: newActiveKey,
-      closable: false,
-    });
-
+      newDisplayed.push({
+        label: `Experience ${index + 1}`,
+        children: <DisplayedTabContent expIdx={index} />,
+        key: newActiveKey,
+        closable: false,
+      });
+      index++;
+      setActiveExpKey(newActiveKey);
+    }
+    // console.log('addExp');
+    setExpIdx(index);
     setExpItems(newPanes);
     setDisplayedItems(newDisplayed);
-    setActiveExpKey(newActiveKey);
-    setExpIdx(expIdx + 1);
-    console.log('addExp');
   };
 
   const removeExp = (targetKey: TargetKey) => {
@@ -563,7 +572,7 @@ const BackgroundExperienceForm = () => {
     action: 'add' | 'remove',
   ) => {
     if (action === 'add') {
-      addExp();
+      addExp(1);
     } else {
       removeExp(targetKey);
     }
@@ -587,6 +596,7 @@ const BackgroundExperienceForm = () => {
   };
 
   const [expTotal, setExpTotal] = useState(0);
+  const [loopTotal, setLoopTotal] = useState(0);
   const [initFieldsValue, setInitFieldsValue] = useState({});
 
   useEffect(() => {
@@ -596,7 +606,7 @@ const BackgroundExperienceForm = () => {
           ...prevState,
           expOption: expValue,
           experience: {
-            expectedSalary: 0,
+            expectedSalary: experiences?.expectedSalary,
             ...experiences?.experiences?.reduce(
               (acc: any, exp: any, index: number) => {
                 acc[index] = {
@@ -609,42 +619,58 @@ const BackgroundExperienceForm = () => {
                   startYear: dayjs(exp?.start_at),
                   endYear: dayjs(exp?.end_at),
                   // currentYear: exp?.is_currently, // ganti status
-                  currentSalary: exp?.salary,
+                  currentSalary: Number(exp?.salary),
                 };
                 return acc;
               },
               {},
             ),
           },
+          others: {
+            noticePeriod: noticePeriod,
+          },
         }));
-        console.log('transformed experiences: ', initFieldsValue);
+        console.log(
+          'function - (experience) - initFieldsValue: ',
+          initFieldsValue,
+        );
         setExpValue('Professional');
         setExpTotal(experiences.experiences.length);
+        if (loopTotal < 1 && expValue === 'Professional') {
+          addExp(experiences.experiences.length);
+          setLoopTotal((prevState) => prevState + 1);
+        }
+      } else {
+        setInitFieldsValue((prevState) => ({
+          ...prevState,
+          expOption: expValue,
+          experience: {
+            expectedSalary: experiences?.expectedSalary,
+          },
+        }));
       }
     }
   }, [experiences]);
 
-  useEffect(() => {
-    if (expValue === 'Professional') {
-      const loopTotal = expTotal - displayedItems.length;
-      // console.log('expTotal: ', expTotal);
-      // console.log('panjang display item: ', displayedItems.length);
-      // console.log('expIdx: ', expIdx);
-      console.log('loopTotal: ', loopTotal);
-      for (let i = 0; i < loopTotal; i++) {
-        console.log('i: ', i);
-        addExp();
-      }
-    }
-  }, [expValue, expTotal]);
+  // console.log('expTotal: ', expTotal);
+  // console.log('loopTotal: ', loopTotal);
+  // console.log('displayedItems: ', displayedItems);
+  // console.log('expIdx: ', expIdx);
+  // useEffect(() => {
+  //   if (loopTotal < expTotal && expValue === 'Professional') {
+  //     console.log('tambah tab exp dari useEffect: ');
+  //     addExp();
+  //     console.log('loopTotal useEffect: ', loopTotal);
+  //   }
+  // }, [expTotal]);
 
   useEffect(() => {
+    console.log(
+      'useEffect - (experience) - initFieldsValue: ',
+      initFieldsValue,
+    );
     form.setFieldsValue(initFieldsValue);
-  }, [experiences]);
-
-  useEffect(() => {
-    // if()
-  }, [experiences]);
+  }, [initFieldsValue]);
   return (
     <>
       <div>
@@ -671,10 +697,7 @@ const BackgroundExperienceForm = () => {
             {editState && (
               <div className="col-12">
                 <div className="input-group-meta position-relative mb-15">
-                  <Form.Item<FieldType>
-                    name="expOption"
-                    className="mb-0"
-                  >
+                  <Form.Item<FieldType> name="expOption" className="mb-0">
                     <Radio.Group onChange={onChangeExp} value={expValue}>
                       <Radio className="d-flex" value="Fresh Graduate">
                         Fresh Graduate
@@ -737,6 +760,45 @@ const BackgroundExperienceForm = () => {
                 items={displayedItems}
               />
             )}
+
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-15">
+                <label className="fw-bold">How long your notice period?*</label>
+                <Form.Item<FieldType>
+                  name={['others', 'noticePeriod']}
+                  className="mb-0"
+                  // validateStatus={
+                  //   errors && errors?.others?.noticePeriod ? 'error' : ''
+                  // }
+                  // help={errors?.others?.noticePeriod?._errors.toString()}
+                >
+                  {editState && (
+                    <Select
+                      className="w-100"
+                      placeholder="Your Notice Period"
+                      options={[
+                        { value: 'Ready join now', label: 'Ready join now' },
+                        {
+                          value: 'Less than 1 month',
+                          label: 'Less than 1 month',
+                        },
+                        { value: '1 month', label: '1 month' },
+                        { value: '2 months', label: '2 months' },
+                        { value: '3 months', label: '3 months' },
+                        {
+                          value: 'More than 3 months',
+                          label: 'More than 3 months',
+                        },
+                      ]}
+                    />
+                  )}
+                  {!editState && (
+                    // <p className="mb-0">{experiences?.expectedSalary}</p>
+                    <p className="mb-0">{noticePeriod}</p>
+                  )}
+                </Form.Item>
+              </div>
+            </div>
 
             {editState && (
               <div className="button-group d-inline-flex align-items-center mt-30 mb-0">

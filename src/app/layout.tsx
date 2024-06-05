@@ -6,6 +6,10 @@ import BackToTopCom from './components/common/back-to-top-com';
 import { Providers } from '@/redux/provider';
 import Script from 'next/script';
 import AppSession from '../libs/Sessions/AppSession';
+import ErrorBoundary from '@/ui/error-boundary';
+import ErrorPageArea from './error';
+import LoadingArea from './loading';
+import { Suspense } from 'react';
 
 const gordita = localFont({
   src: [
@@ -65,9 +69,13 @@ export default function RootLayout({
         suppressHydrationWarning={true}
         className={`${gordita.variable} ${garamond.variable} `}
       >
-        <Providers>
-          <AppSession>{children}</AppSession>
-        </Providers>
+        <ErrorBoundary fallback={<ErrorPageArea />}>
+          <Providers>
+            <AppSession>
+              <Suspense fallback={<LoadingArea />}>{children}</Suspense>
+            </AppSession>
+          </Providers>
+        </ErrorBoundary>
         <BackToTopCom />
 
         <Script src="./node_modules/reflect-metadata/Reflect.js"></Script>

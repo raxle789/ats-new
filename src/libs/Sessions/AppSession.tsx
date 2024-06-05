@@ -1,12 +1,16 @@
-"use client";
+'use client';
 
-import { useContext, useState, createContext, useEffect } from "react";
-import { getUserSession } from ".";
-import { getCookie, getCookies } from "cookies-next";
+import { useContext, createContext } from 'react';
+// import { getUserSession } from ".";
+import { getCookies } from 'cookies-next';
 
 const SessionContext = createContext<any>(undefined);
 
-export default function AppSession({ children } : { children: React.ReactNode }) {
+export default function AppSession({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   // const [session, setSession] = useState<any>();
 
   /* GET BOTH -> Server and Client Session */
@@ -20,7 +24,7 @@ export default function AppSession({ children } : { children: React.ReactNode })
       {children}
     </SessionContext.Provider>
   );
-};
+}
 
 export function useAppSessionContext() {
   return useContext(SessionContext);

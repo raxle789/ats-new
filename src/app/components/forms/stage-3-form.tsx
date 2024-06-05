@@ -73,9 +73,12 @@ import {
   fetchEthnicity,
   fetchJobFunctions,
   fetchSkills,
+  fetchSources,
   jobJobLevels,
   lineIndutries,
 } from '@/libs/Fetch';
+import dynamic from 'next/dynamic';
+// import TermsConditionsModal from '../common/popup/terms-conditions-modal';
 // import { type } from '../../../libs/Authentication/permissions';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
@@ -186,15 +189,17 @@ export type FieldType = {
     emergencyContactName?: string;
     emergencyContactPhoneNumber?: string;
     emergencyContactRelation?: string;
-    noticePeriod: string;
-    everWorkedMonth: string;
-    everWorkedYear: string;
-    diseaseName: string;
-    diseaseYear: string;
-    relationName: string;
-    relationPosition: string;
+    noticePeriod?: string;
+    source?: string;
+    everWorkedMonth?: string;
+    everWorkedYear?: string;
+    diseaseName?: string;
+    diseaseYear?: string;
+    relationName?: string;
+    relationPosition?: string;
     uploadCV?: string;
   };
+  termsCheckbox?: boolean;
 };
 
 export type MasterData = {
@@ -242,9 +247,17 @@ export type MasterData = {
     value: number;
     label: string;
   }[];
+  sources?: {
+    value: number;
+    label: string;
+  }[];
 };
 
 const Stage3Form = () => {
+  const DynamicModal = dynamic(
+    () => import('../common/popup/terms-conditions-modal'),
+    { ssr: false },
+  );
   /* Calling Session-Context */
   const session = useAppSessionContext();
   const regSessionValue = session[`${regSession}`];
@@ -279,9 +292,15 @@ const Stage3Form = () => {
       fetchJobFunctions(setMasterData),
       jobJobLevels(setMasterData),
       lineIndutries(setMasterData),
+      fetchSources(setMasterData)
     ]);
   };
   /* END OF ACTIONS */
+
+  const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const handleTermsModal = () => {
+    setIsTermsOpen(true);
+  };
 
   const handleBeforeUpload = (file: FileType) => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -441,6 +460,7 @@ const Stage3Form = () => {
               <DatePicker
                 className="w-100"
                 placeholder="Select Date"
+                format={'DD-MMM-YYYY'}
                 onChange={onChangeDate}
               />
             </Form.Item>
@@ -559,7 +579,7 @@ const Stage3Form = () => {
             </Form.Item>
           </div>
         </div>
-        <div className="col-6">
+        <div className="col-4">
           <div className="input-group-meta position-relative mb-15">
             <label>Issue Date</label>
             <div className="d-flex align-items-center">
@@ -571,9 +591,13 @@ const Stage3Form = () => {
                 ]}
                 className="mb-0 me-2"
               >
-                <DatePicker placeholder="Select Month" picker="month" />
+                <DatePicker
+                  className="w-100"
+                  placeholder="Select Date"
+                  picker="month"
+                />
               </Form.Item>
-              <Form.Item<FieldType>
+              {/* <Form.Item<FieldType>
                 name={[
                   'certification',
                   certificationIdx.toString(),
@@ -582,7 +606,7 @@ const Stage3Form = () => {
                 className="mb-0"
               >
                 <DatePicker placeholder="Select Year" picker="year" />
-              </Form.Item>
+              </Form.Item> */}
             </div>
           </div>
         </div>
@@ -719,7 +743,9 @@ const Stage3Form = () => {
       <div key={expIdx} className="row">
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
-            <label>Job Title*</label>
+            <label>
+              Job Title<span style={{ color: '#ff1818' }}>*</span>
+            </label>
             <Form.Item<FieldType>
               name={['experience', expIdx.toString(), 'jobTitle']}
               className="mb-0"
@@ -736,7 +762,9 @@ const Stage3Form = () => {
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
-            <label>Job Function*</label>
+            <label>
+              Job Function<span style={{ color: '#ff1818' }}>*</span>
+            </label>
             <Form.Item<FieldType>
               name={['experience', expIdx.toString(), 'jobFunction']}
               className="mb-0"
@@ -767,7 +795,9 @@ const Stage3Form = () => {
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
-            <label>Line Industry*</label>
+            <label>
+              Line Industry<span style={{ color: '#ff1818' }}>*</span>
+            </label>
             <Form.Item<FieldType>
               name={['experience', expIdx.toString(), 'lineIndustry']}
               className="mb-0"
@@ -798,7 +828,9 @@ const Stage3Form = () => {
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
-            <label>Position Level*</label>
+            <label>
+              Position Level<span style={{ color: '#ff1818' }}>*</span>
+            </label>
             <Form.Item<FieldType>
               name={['experience', expIdx.toString(), 'positionLevel']}
               className="mb-0"
@@ -817,19 +849,42 @@ const Stage3Form = () => {
                 filterOption={(input, option) =>
                   (option?.label.toLowerCase() ?? '').includes(input)
                 }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? '')
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? '').toLowerCase())
-                }
-                options={masterData?.job_levels}
+                // filterSort={(optionA, optionB) =>
+                //   (optionA?.label ?? '')
+                //     .toLowerCase()
+                //     .localeCompare((optionB?.label ?? '').toLowerCase())
+                // }
+                // options={masterData?.job_levels}
+                options={[
+                  { value: 'Director', label: 'Director' },
+                  { value: 'VP', label: 'VP' },
+                  {
+                    value: 'General Manager',
+                    label: 'General Manager',
+                  },
+                  { value: 'Manager', label: 'Manager' },
+                  {
+                    value: 'Assistant Manager',
+                    label: 'Assistant Manager',
+                  },
+                  {
+                    value: 'Supervisor',
+                    label: 'Supervisor',
+                  },
+                  {
+                    value: 'Staff',
+                    label: 'Staff',
+                  },
+                ]}
               />
             </Form.Item>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
-            <label>Company Name*</label>
+            <label>
+              Company Name<span style={{ color: '#ff1818' }}>*</span>
+            </label>
             <Form.Item<FieldType>
               name={['experience', expIdx.toString(), 'compName']}
               className="mb-0"
@@ -862,7 +917,9 @@ const Stage3Form = () => {
         </div>
         <div className="col-5">
           <div className="input-group-meta position-relative mb-15">
-            <label>Start Year*</label>
+            <label>
+              Start Year<span style={{ color: '#ff1818' }}>*</span>
+            </label>
             <Form.Item<FieldType>
               name={['experience', expIdx.toString(), 'startYear']}
               className="mb-0"
@@ -883,7 +940,9 @@ const Stage3Form = () => {
         </div>
         <div className="col-5">
           <div className="input-group-meta position-relative mb-15">
-            <label>End Year*</label>
+            <label>
+              End Year<span style={{ color: '#ff1818' }}>*</span>
+            </label>
             <Form.Item<FieldType>
               name={['experience', expIdx.toString(), 'endYear']}
               className="mb-0"
@@ -917,7 +976,10 @@ const Stage3Form = () => {
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
-            <label>Current Salary (gross Monthly)*</label>
+            <label>
+              Current Salary (gross Monthly)
+              <span style={{ color: '#ff1818' }}>*</span>
+            </label>
             <Form.Item<FieldType>
               name={['experience', expIdx.toString(), 'currentSalary']}
               className="mb-0"
@@ -938,7 +1000,10 @@ const Stage3Form = () => {
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
-            <label>Expected Salary (gross Monthly)*</label>
+            <label>
+              Expected Salary (gross Monthly)
+              <span style={{ color: '#ff1818' }}>*</span>
+            </label>
             <Form.Item<FieldType>
               name={['experience', 'expectedSalary']}
               className="mb-0"
@@ -1050,8 +1115,29 @@ const Stage3Form = () => {
   };
   const [spinning, setSpinning] = useState(false);
 
+  const sanitizePhoneNumber = (input: string) => {
+    let numericInput = input.replace(/\D/g, '');
+    if (numericInput.length > 0 && numericInput[0] === '0') {
+      numericInput = '0' + numericInput.slice(1);
+    }
+    form.setFieldsValue({
+      profile: {
+        phoneNumber: numericInput,
+      },
+    });
+  };
+
+  const sanitizeFullname = (input: string) => {
+    let nameInput = input.replace(/[^a-zA-Z\s]/g, '');
+    form.setFieldsValue({
+      profile: {
+        fullname: nameInput,
+      },
+    });
+  };
+
   /* ACTIONS */
-  const handleOk = async () => {
+  const handleOk: any = async () => {
     setIsModalOpen(false);
     setSpinning(true);
     const values = form.getFieldsValue();
@@ -1060,6 +1146,10 @@ const Stage3Form = () => {
      * Transform File object into ready to store file.
      * @return transformed file base64 or zodErrors
      */
+    if (typeof values.termsCheckbox === 'undefined' || !values.termsCheckbox) {
+      setSpinning(false);
+      return message.error('You have to agree the terms & conditions');
+    }
     const transformedDocuments = await ManipulateDocuments({
       profilePhoto: profilePhoto ? profilePhoto[0]?.originFileObj : null,
       curriculumVitae: values.others?.uploadCV
@@ -1163,7 +1253,9 @@ const Stage3Form = () => {
           <label className="fw-bold">Profile</label>
           <div className="col-4">
             <div className="input-group-meta position-relative mb-15">
-              <label>Upload Photo*</label>
+              <label>
+                Upload Photo<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name={['profile', 'uploadPhoto']}
                 className="mb-0"
@@ -1212,7 +1304,10 @@ const Stage3Form = () => {
           </div>
           <div className="col-4">
             <div className="input-group-meta position-relative mb-0">
-              <label>Full Name (as per ID/Passport)*</label>
+              <label>
+                Full Name (as per ID/Passport)
+                <span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name={['profile', 'fullname']}
                 // validateStatus={errors && errors.profile ? 'error' : ''}
@@ -1222,11 +1317,14 @@ const Stage3Form = () => {
                   placeholder="Your Full Name"
                   defaultValue={regSessionDecoded.user?.name ?? ''}
                   value={regSessionDecoded.user?.name ?? ''}
+                  onChange={(e) => sanitizeFullname(e.target.value)}
                 />
               </Form.Item>
             </div>
             <div className="input-group-meta position-relative mb-0">
-              <label>Email*</label>
+              <label>
+                Email<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name={['profile', 'email']}
                 // validateStatus={errors && errors.email ? 'error' : ''}
@@ -1242,7 +1340,9 @@ const Stage3Form = () => {
           </div>
           <div className="col-4">
             <div className="input-group-meta position-relative mb-0">
-              <label>Phone Number*</label>
+              <label>
+                Phone Number<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name={['profile', 'phoneNumber']}
                 // validateStatus={errors && errors.phoneNumber ? 'error' : ''}
@@ -1251,11 +1351,14 @@ const Stage3Form = () => {
                 <Input
                   placeholder="Your Phone Number"
                   defaultValue={regSessionDecoded.candidate?.phone_number ?? ''}
+                  onChange={(e) => sanitizePhoneNumber(e.target.value)}
                 />
               </Form.Item>
             </div>
             <div className="input-group-meta position-relative mb-0">
-              <label>Date of Birth*</label>
+              <label>
+                Date of Birth<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name={['profile', 'dateOfBirth']}
                 // validateStatus={errors && errors.dateOfBirth ? 'error' : ''}
@@ -1266,6 +1369,7 @@ const Stage3Form = () => {
                   defaultValue={dayjs(
                     `${regSessionDecoded.candidate?.date_of_birth ?? '-'}`,
                   )}
+                  format={'DD-MMM-YYYY'}
                   placeholder="Select Date"
                 />
               </Form.Item>
@@ -1273,7 +1377,9 @@ const Stage3Form = () => {
           </div>
           <div className="col-4">
             <div className="input-group-meta position-relative mb-15">
-              <label>Place of Birth*</label>
+              <label>
+                Place of Birth<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name={['profile', 'placeOfBirth']}
                 className="mb-0"
@@ -1312,7 +1418,9 @@ const Stage3Form = () => {
           </div>
           <div className="col-4">
             <div className="input-group-meta position-relative mb-15">
-              <label>Gender*</label>
+              <label>
+                Gender<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name={['profile', 'gender']}
                 className="mb-0"
@@ -1340,7 +1448,9 @@ const Stage3Form = () => {
           </div>
           <div className="col-4">
             <div className="input-group-meta position-relative mb-15">
-              <label>Religion*</label>
+              <label>
+                Religion<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name={['profile', 'religion']}
                 className="mb-0"
@@ -1400,7 +1510,9 @@ const Stage3Form = () => {
           </div>
           <div className="col-4">
             <div className="input-group-meta position-relative mb-15">
-              <label>Ethnicity*</label>
+              <label>
+                Ethnicity<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name={['profile', 'ethnicity']}
                 className="mb-0"
@@ -1466,7 +1578,9 @@ const Stage3Form = () => {
           </div>
           <div className="col-4">
             <div className="input-group-meta position-relative mb-15">
-              <label>Marital Status*</label>
+              <label>
+                Marital Status<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name={['profile', 'maritalStatus']}
                 className="mb-0"
@@ -1521,7 +1635,10 @@ const Stage3Form = () => {
           <label className="fw-bold mt-5">Address</label>
           <div className="col-12">
             <div className="input-group-meta position-relative mb-15">
-              <label>Permanent Address (as per ID/Passport)*</label>
+              <label>
+                Permanent Address (as per ID/Passport)
+                <span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name={['address', 'permanentAddress']}
                 className="mb-0"
@@ -1542,7 +1659,9 @@ const Stage3Form = () => {
           </div>
           <div className="col-4">
             <div className="input-group-meta position-relative mb-15">
-              <label>Country*</label>
+              <label>
+                Country<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name={['address', 'country']}
                 className="mb-0"
@@ -1579,7 +1698,9 @@ const Stage3Form = () => {
           </div>
           <div className="col-4">
             <div className="input-group-meta position-relative mb-15">
-              <label>City*</label>
+              <label>
+                City<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name={['address', 'city']}
                 className="mb-0"
@@ -1616,7 +1737,9 @@ const Stage3Form = () => {
           </div>
           <div className="col-4">
             <div className="input-group-meta position-relative mb-15">
-              <label>Zip Code*</label>
+              <label>
+                Zip Code<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name={['address', 'zipCode']}
                 className="mb-0"
@@ -1787,7 +1910,9 @@ const Stage3Form = () => {
             <>
               <div className="col-3">
                 <div className="input-group-meta position-relative mb-15">
-                  <label>Education Level*</label>
+                  <label>
+                    Education Level<span style={{ color: '#ff1818' }}>*</span>
+                  </label>
                   <Form.Item<FieldType>
                     name={['education', 'educationLevel']}
                     className="mb-0"
@@ -1809,14 +1934,43 @@ const Stage3Form = () => {
                       placeholder="Your Education Level"
                       onChange={onChangeEdu}
                       /* Fetched Data */
-                      options={masterData?.education_levels}
+                      // options={masterData?.education_levels}
+                      options={[
+                        {
+                          value: 'Others',
+                          label: 'Others',
+                        },
+                        {
+                          value: 'PROFESI',
+                          label: 'PROFESI',
+                        },
+                        {
+                          value: 'S3/Doktor',
+                          label: 'S3/Doktor',
+                        },
+                        {
+                          value: 'S2/Magister',
+                          label: 'S2/Magister',
+                        },
+                        {
+                          value: 'S1/Sarjana',
+                          label: 'S1/Sarjana',
+                        },
+                        { value: 'D4', label: 'D4' },
+                        { value: 'D3', label: 'D3' },
+                        { value: 'D2', label: 'D2' },
+                        { value: 'D1', label: 'D1' },
+                        { value: 'SMA/SMK', label: 'SMA/SMK' },
+                      ]}
                     />
                   </Form.Item>
                 </div>
               </div>
               <div className="col-3">
                 <div className="input-group-meta position-relative mb-15">
-                  <label>Education Major*</label>
+                  <label>
+                    Education Major<span style={{ color: '#ff1818' }}>*</span>
+                  </label>
                   <Form.Item<FieldType>
                     name={['education', 'educationMajor']}
                     className="mb-0"
@@ -1858,7 +2012,9 @@ const Stage3Form = () => {
               </div>
               <div className="col-3">
                 <div className="input-group-meta position-relative mb-15">
-                  <label>Start Year*</label>
+                  <label>
+                    Start Year<span style={{ color: '#ff1818' }}>*</span>
+                  </label>
                   <Form.Item<FieldType>
                     name={['education', 'startEduYear']}
                     className="mb-0"
@@ -1885,7 +2041,9 @@ const Stage3Form = () => {
               </div>
               <div className="col-3">
                 <div className="input-group-meta position-relative mb-15">
-                  <label>End Year*</label>
+                  <label>
+                    End Year<span style={{ color: '#ff1818' }}>*</span>
+                  </label>
                   <Form.Item<FieldType>
                     name={['education', 'endEduYear']}
                     className="mb-0"
@@ -1910,7 +2068,10 @@ const Stage3Form = () => {
               </div>
               <div className="col-6">
                 <div className="input-group-meta position-relative mb-15">
-                  <label>School/University Name*</label>
+                  <label>
+                    School/University Name
+                    <span style={{ color: '#ff1818' }}>*</span>
+                  </label>
                   <Form.Item<FieldType>
                     name={['education', 'schoolName']}
                     className="mb-0"
@@ -1949,7 +2110,9 @@ const Stage3Form = () => {
               </div>
               <div className="col-3">
                 <div className="input-group-meta position-relative mb-15">
-                  <label>City*</label>
+                  <label>
+                    City<span style={{ color: '#ff1818' }}>*</span>
+                  </label>
                   <Form.Item<FieldType>
                     name={['education', 'cityOfSchool']}
                     className="mb-0"
@@ -1988,7 +2151,9 @@ const Stage3Form = () => {
               </div>
               <div className="col-3">
                 <div className="input-group-meta position-relative mb-15">
-                  <label>GPA*</label>
+                  <label>
+                    GPA<span style={{ color: '#ff1818' }}>*</span>
+                  </label>
                   <Form.Item<FieldType>
                     name={['education', 'gpa']}
                     className="mb-0"
@@ -2047,7 +2212,10 @@ const Stage3Form = () => {
           <label className="fw-bold mt-5">Skill</label>
           <div className="col-12">
             <div className="input-group-meta position-relative mb-15">
-              <label>What skills do you have?*</label>
+              <label>
+                What skills do you have?
+                <span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name="skills"
                 className="mb-0"
@@ -2229,7 +2397,10 @@ const Stage3Form = () => {
           {expValue === 'Fresh Graduate' && (
             <div className="col-6">
               <div className="input-group-meta position-relative mb-15">
-                <label>Expected Salary (gross Monthly)*</label>
+                <label>
+                  Expected Salary (gross Monthly)
+                  <span style={{ color: '#ff1818' }}>*</span>
+                </label>
                 <Form.Item<FieldType>
                   name={['experience', 'expectedSalary']}
                   className="mb-0"
@@ -2261,6 +2432,39 @@ const Stage3Form = () => {
               items={expItems}
             />
           )}
+
+          <div className="col-6">
+            <div className="input-group-meta position-relative mb-15">
+              <label>
+                How long your notice period?
+                <span style={{ color: '#ff1818' }}>*</span>
+              </label>
+              <Form.Item<FieldType>
+                name={['others', 'noticePeriod']}
+                className="mb-0"
+                validateStatus={
+                  errors && errors?.others?.noticePeriod ? 'error' : ''
+                }
+                help={errors?.others?.noticePeriod?._errors.toString()}
+              >
+                <Select
+                  className="w-100"
+                  placeholder="Your Notice Period"
+                  options={[
+                    { value: 'Ready join now', label: 'Ready join now' },
+                    { value: 'Less than 1 month', label: 'Less than 1 month' },
+                    { value: '1 month', label: '1 month' },
+                    { value: '2 months', label: '2 months' },
+                    { value: '3 months', label: '3 months' },
+                    {
+                      value: 'More than 3 months',
+                      label: 'More than 3 months',
+                    },
+                  ]}
+                />
+              </Form.Item>
+            </div>
+          </div>
 
           <label className="fw-bold mt-5">Others</label>
           <div className="col-3">
@@ -2308,29 +2512,45 @@ const Stage3Form = () => {
           </div>
           <div className="col-3">
             <div className="input-group-meta position-relative mb-15">
-              <label>How long your notice period?*</label>
+              <label>
+                Source<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
-                name={['others', 'noticePeriod']}
+                name={['others', 'source']}
                 className="mb-0"
-                validateStatus={
-                  errors && errors?.others?.noticePeriod ? 'error' : ''
-                }
-                help={errors?.others?.noticePeriod?._errors.toString()}
+                rules={[{
+                  required: true,
+                  message: 'Please select source'
+                }]}
+                // validateStatus={
+                //   errors &&
+                //   errors.education &&
+                //   errors.education.cityOfSchool
+                //     ? 'error'
+                //     : ''
+                // }
+                // help={
+                //   errors &&
+                //   errors.education &&
+                //   errors.education.cityOfSchool?._errors.toString()
+                // }
               >
                 <Select
                   className="w-100"
-                  placeholder="Your Notice Period"
-                  options={[
-                    { value: 'Ready join now', label: 'Ready join now' },
-                    { value: 'Less than 1 month', label: 'Less than 1 month' },
-                    { value: '1 month', label: '1 month' },
-                    { value: '2 months', label: '2 months' },
-                    { value: '3 months', label: '3 months' },
-                    {
-                      value: 'More than 3 months',
-                      label: 'More than 3 months',
-                    },
-                  ]}
+                  placeholder="Select Source"
+                  showSearch
+                  mode="tags"
+                  maxCount={1}
+                  filterOption={(input, option) =>
+                    (option?.label.toLowerCase() ?? '').includes(input)
+                  }
+                  filterSort={(optionA, optionB) =>
+                    (optionA?.label ?? '')
+                      .toLowerCase()
+                      .localeCompare((optionB?.label ?? '').toLowerCase())
+                  }
+                  /* Fetched Data */
+                  options={masterData?.sources}
                 />
               </Form.Item>
             </div>
@@ -2338,7 +2558,8 @@ const Stage3Form = () => {
           <div className="col-12">
             <div className="input-group-meta position-relative mb-15">
               <label>
-                Have you ever worked in Erajaya group of companies?*
+                Have you ever worked in Erajaya group of companies?
+                <span style={{ color: '#ff1818' }}>*</span>
               </label>
               <Form.Item<FieldType>
                 name="everWorkedOption"
@@ -2391,7 +2612,7 @@ const Stage3Form = () => {
             <div className="input-group-meta position-relative mb-15">
               <label>
                 Do you have any prior medical conditions, illnesses, or
-                congenital diseases?*
+                congenital diseases?<span style={{ color: '#ff1818' }}>*</span>
               </label>
               <Form.Item<FieldType>
                 name="diseaseOption"
@@ -2438,7 +2659,8 @@ const Stage3Form = () => {
             <div className="input-group-meta position-relative mb-15">
               <label>
                 Do you have any friends, colleague, relative or family who is
-                working at Erajaya Group Companies?*
+                working at Erajaya Group Companies?
+                <span style={{ color: '#ff1818' }}>*</span>
               </label>
               <Form.Item<FieldType>
                 name="relationOption"
@@ -2479,7 +2701,9 @@ const Stage3Form = () => {
           </div>
           <div className="col-12">
             <div className="input-group-meta position-relative mb-15">
-              <label>Upload CV*</label>
+              <label>
+                Upload CV<span style={{ color: '#ff1818' }}>*</span>
+              </label>
               <Form.Item<FieldType>
                 name={['others', 'uploadCV']}
                 className="mb-0"
@@ -2503,6 +2727,28 @@ const Stage3Form = () => {
             </div>
           </div>
 
+          <div className="col-12">
+            <div className="input-group-meta position-relative mb-0">
+              <Form.Item<FieldType> name="termsCheckbox" className="mb-0">
+                <div className="d-flex align-items-center">
+                  <Checkbox>
+                    <p className="mb-0">
+                      By checking this box, I agree to the{' '}
+                      <Button
+                        type="link"
+                        onClick={handleTermsModal}
+                        style={{ padding: '0px', margin: '0px' }}
+                      >
+                        terms and conditions
+                      </Button>
+                      .
+                    </p>
+                  </Checkbox>
+                </div>
+              </Form.Item>
+            </div>
+          </div>
+
           <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
             <button type="submit" className="dash-btn-two tran3s me-3">
               Submit
@@ -2522,6 +2768,9 @@ const Stage3Form = () => {
         </Modal>
       </Form>
 
+      {/* start modal */}
+      <DynamicModal isOpen={isTermsOpen} setIsOpenModal={setIsTermsOpen} />
+      {/* end modal */}
       <Spin fullscreen spinning={spinning} />
     </>
   );

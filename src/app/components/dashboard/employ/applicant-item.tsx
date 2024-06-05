@@ -75,7 +75,7 @@ const ApplicantItem = ({
                   <span>Last Position</span>
                   <div>{item?.candidateLastPosition ?? '-'}</div>
                 </div>
-                <div className="candidate-info mt-5">
+                {/* <div className="candidate-info mt-5">
                   <ul className="candidate-skills style-none d-flex align-items-center">
                     {item?.candidateSkills
                       ? item?.candidateSkills
@@ -90,7 +90,7 @@ const ApplicantItem = ({
                       </li>
                     )}
                   </ul>
-                </div>
+                </div> */}
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6">

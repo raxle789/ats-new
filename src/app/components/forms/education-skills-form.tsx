@@ -8,7 +8,7 @@ import {
   Divider,
   Space,
   Button,
-  Checkbox,
+  // Checkbox,
   InputNumber,
   message,
 } from 'antd';
@@ -16,8 +16,8 @@ import type { FormProps, CheckboxProps, InputRef } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import dayjs, { Dayjs } from 'dayjs';
-import { getEducationSkills } from '@/libs/Candidate/retrieve-data';
-import { fetchCertificates, fetchCities, fetchEducatioMajors, fetchEducationInstitutios, fetchEducationLevels, fetchSkills } from '@/libs/Fetch';
+// import { getEducationSkills } from '@/libs/Candidate/retrieve-data';
+// import { fetchCertificates, fetchCities, fetchEducatioMajors, fetchEducationInstitutios, fetchEducationLevels, fetchSkills } from '@/libs/Fetch';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 let languageIndex = 0;
@@ -48,7 +48,7 @@ type FieldType = {
   language?: {
     [id: string]: {
       name?: string;
-      level?: string;
+      proficiency?: string;
     };
   };
 };
@@ -56,6 +56,26 @@ type FieldType = {
 type MasterData = {
   citys?: {
     value: string;
+    label: string;
+  }[];
+  ethnicity?: {
+    value: string;
+    label: string;
+  }[];
+  countries?: {
+    value: string;
+    label: string;
+  }[];
+  job_levels?: {
+    value: number;
+    label: string;
+  }[];
+  job_functions?: {
+    value: number;
+    label: string;
+  }[];
+  line_industries?: {
+    value: number;
     label: string;
   }[];
   education_levels?: {
@@ -80,39 +100,19 @@ type MasterData = {
   }[];
 };
 
-const EducationSkillsForm = () => {
+type Props = {
+  educationAndSkill?: any;
+  masterData?: MasterData | null;
+  errors?: any;
+};
+
+const EducationSkillsForm: React.FC<Props> = ({
+  educationAndSkill,
+  masterData,
+  errors,
+}) => {
   const [form] = Form.useForm();
-  const [masterData, setMasterData] = useState<MasterData | null>(null);
   const [editState, setEditState] = useState(false);
-  const [educationAndSkill, setEducationAndSkill] = useState<any>(null);
-  console.log('EDUCATION SKILLS: ', educationAndSkill);
-
-  const fetchData = async () => {
-    await Promise.all([
-      fetchCities(setMasterData),
-      fetchEducationLevels(setMasterData),
-      fetchEducatioMajors(setMasterData),
-      fetchEducationInstitutios(setMasterData),
-      fetchCertificates(setMasterData),
-      fetchSkills(setMasterData)
-    ]);
-  };
-
-  const fetchEducationSkills = async () => {
-    const educationSkillsData = await getEducationSkills();
-    if(!educationSkillsData.success) {
-      return message.error(educationSkillsData.message);
-    };
-    return setEducationAndSkill(educationSkillsData.data);
-  };
-
-  useEffect(() => {
-    /* Candidate Data */
-    fetchEducationSkills();
-
-    /* Master Data */
-    fetchData();
-  }, []);
 
   const editOnChange = () => {
     setEditState(!editState);
@@ -185,18 +185,8 @@ const EducationSkillsForm = () => {
                 ]}
                 className="mb-0 me-2"
               >
-                <DatePicker placeholder="Select Month" picker="month" />
+                <DatePicker placeholder="Select Date" picker="month" />
               </Form.Item>
-              {/* <Form.Item<FieldType>
-                name={[
-                  'certification',
-                  certificationIdx.toString(),
-                  'yearIssue',
-                ]}
-                className="mb-0"
-              >
-                <DatePicker placeholder="Select Year" picker="year" />
-              </Form.Item> */}
             </div>
           </div>
         </div>
@@ -215,10 +205,7 @@ const EducationSkillsForm = () => {
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Name (Certification/Licence)</label>
             <p className="mb-0">
-              {
-                educationAndSkill?.certifications[certificationIdx]
-                  ?.certificates?.name
-              }
+              {educationAndSkill?.certifications[certificationIdx]?.name}
             </p>
           </div>
         </div>
@@ -264,29 +251,32 @@ const EducationSkillsForm = () => {
     setActiveCertifKey(newActiveKey);
   };
 
-  const addCertif = (index: number) => {
-    const newActiveKey = `newTab${newCertifTabIndex.current++}`;
-    const newPanes = [...certifItems];
-    newPanes.push({
-      label: `Certification ${certifItems.length + 1}`,
-      children: <CertifTabContent certificationIdx={index} />,
-      key: newActiveKey,
-    });
+  const addCertif = (tabTotal: number) => {
+    let newPanes = [...certifItems];
+    let newDisplayed = [...displayedItems];
+    let index = certificationIdx;
+    for (let i = 0; i < tabTotal; i++) {
+      const newActiveKey = `newTab${newCertifTabIndex.current++}`;
+      newPanes.push({
+        label: `Certification ${index + 1}`,
+        children: <CertifTabContent certificationIdx={index} />,
+        key: newActiveKey,
+      });
 
-    const newDisplayed = [...displayedItems];
-    newDisplayed.push({
-      label: `Certification ${certifItems.length + 1}`,
-      children: <DisplayedTabContent certificationIdx={index} />,
-      key: newActiveKey,
-      closable: false,
-    });
-
-    console.log('certificationIdx', certificationIdx);
+      newDisplayed.push({
+        label: `Certification ${index + 1}`,
+        children: <DisplayedTabContent certificationIdx={index} />,
+        key: newActiveKey,
+        closable: false,
+      });
+      index++;
+      setActiveCertifKey(newActiveKey);
+    }
+    // console.log('certificationIdx', certificationIdx);
+    setCertificationIdx(index);
     setCertifItems(newPanes);
     setDisplayedItems(newDisplayed);
-    setActiveCertifKey(newActiveKey);
-    // setCertificationIdx(certificationIdx + 1);
-    console.log('addCertif');
+    // console.log('addCertif');
   };
 
   const removeCertif = (targetKey: TargetKey) => {
@@ -318,24 +308,21 @@ const EducationSkillsForm = () => {
     targetKey: React.MouseEvent | React.KeyboardEvent | string,
     action: 'add' | 'remove',
   ) => {
-    let currentIdx = certificationIdx;
     if (action === 'add') {
-      addCertif(currentIdx);
-      currentIdx++;
-      setCertificationIdx(currentIdx);
+      addCertif(1);
     } else {
       removeCertif(targetKey);
     }
   };
 
-  const [formalCheck, setFormalCheck] = useState<boolean>(true);
-  const handleFormalCheck: CheckboxProps['onChange'] = (e) => {
-    setFormalCheck(e.target.checked);
-  };
-  const [certificationCheck, setCertificationCheck] = useState<boolean>(true);
-  const handleCertificationCheck: CheckboxProps['onChange'] = (e) => {
-    setCertificationCheck(e.target.checked);
-  };
+  // const [formalCheck, setFormalCheck] = useState<boolean>(true);
+  // const handleFormalCheck: CheckboxProps['onChange'] = (e) => {
+  //   setFormalCheck(e.target.checked);
+  // };
+  // const [certificationCheck, setCertificationCheck] = useState<boolean>(true);
+  // const handleCertificationCheck: CheckboxProps['onChange'] = (e) => {
+  //   setCertificationCheck(e.target.checked);
+  // };
 
   const [eduLevel, setEduLevel] = useState<string>('');
   const onChangeEdu = (value: string) => {
@@ -391,6 +378,7 @@ const EducationSkillsForm = () => {
   };
 
   const [certifTotal, setCertifTotal] = useState(0);
+  const [loopTotal, setLoopTotal] = useState(0);
   const [certifState, setCertifState] = useState('not-certified');
   const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
 
@@ -404,7 +392,7 @@ const EducationSkillsForm = () => {
     const languagesData = educationAndSkill?.languages;
     type LanguageField = {
       language: {
-        [key: string]: { name: string; level: string };
+        [key: string]: { name: string; proficiency: string };
       };
     };
     let languageField: LanguageField = {
@@ -434,9 +422,9 @@ const EducationSkillsForm = () => {
       certificationsField = certifications.reduce(
         (acc: any, item: any, index: number) => {
           acc[index] = {
-            certificationName: item.certificates.name,
-            institution: item.institutionName,
-            monthIssue: dayjs(new Date(item.issuedDate)),
+            certificationName: item?.name,
+            institution: item?.institutionName,
+            monthIssue: dayjs(new Date(item?.issuedDate)),
           };
           return acc;
         },
@@ -465,39 +453,35 @@ const EducationSkillsForm = () => {
         certification: certificationsField,
       }));
 
-      // if (certifications.length > 0) {
-      //   setCertifState('certified');
-      //   setCertifTotal(educationAndSkill.certifications.length);
-      // }
-      console.log('initFieldsValue: ', initFieldsValue);
-      console.log('certifTotal: ', certifTotal);
-      console.log('certifState: ', certifState);
-      form.setFieldsValue(initFieldsValue);
+      console.log(
+        'function - (education) - initFieldsValue: ',
+        initFieldsValue,
+      );
+      if (loopTotal < 1 && certifications) {
+        if (certifications.length > 0) {
+          setCertifState('certified');
+          setCertifTotal(educationAndSkill.certifications.length);
+          addCertif(educationAndSkill.certifications.length);
+          setLoopTotal((prevState) => prevState + 1);
+        }
+      }
     }
   }, [educationAndSkill]);
 
-  useEffect(() => {
-    // if (certifState === 'certified') {
-    //   const loopTotal = certifTotal - displayedItems.length + 1;
-    //   console.log('loopTotal: ', loopTotal);
-    //   for (let i = 0; i < loopTotal; i++) {
-    //     console.log('i: ', i);
-    //     addCertif();
-    //   }
-    // }
-    if (certifState === 'certified') {
-      let currentIdx = certificationIdx;
-      for (let i = 0; i < certifTotal - displayedItems.length + 1; i++) {
-        addCertif(currentIdx);
-        currentIdx++;
-      }
-      setCertificationIdx(currentIdx);
-    }
-  }, [certifState, certifTotal]);
+  console.log('certifTotal: ', certifTotal);
+  console.log('certifState: ', certifState);
+  console.log('certificationIdx: ', certificationIdx);
+
+  // useEffect(() => {
+  //   if (loopTotal < certifTotal && certifState === 'certified') {
+  //     addCertif();
+  //   }
+  // }, [certifTotal]);
 
   useEffect(() => {
-    console.log('certificationIdx useEffect: ', certificationIdx);
-  }, [certificationIdx]);
+    console.log('useEffect - (education) - initFieldsValue: ', initFieldsValue);
+    form.setFieldsValue(initFieldsValue);
+  }, [initFieldsValue]);
   return (
     <>
       <div>
@@ -537,7 +521,7 @@ const EducationSkillsForm = () => {
                   )}
                   {!editState && (
                     <p className="mb-0">
-                      {educationAndSkill?.educations?.level}
+                      {educationAndSkill?.education?.edu_level}
                     </p>
                   )}
                 </Form.Item>
@@ -574,7 +558,7 @@ const EducationSkillsForm = () => {
                   )}
                   {!editState && (
                     <p className="mb-0">
-                      {educationAndSkill?.educations?.major}
+                      {educationAndSkill?.education?.edu_major}
                     </p>
                   )}
                 </Form.Item>
@@ -597,7 +581,9 @@ const EducationSkillsForm = () => {
                   )}
                   {!editState && (
                     <p className="mb-0">
-                      {educationAndSkill?.educations?.start_year}
+                      {dayjs(educationAndSkill?.education?.start_year).format(
+                        'YYYY',
+                      ) || 'Invalid Date'}
                     </p>
                   )}
                 </Form.Item>
@@ -620,7 +606,9 @@ const EducationSkillsForm = () => {
                   )}
                   {!editState && (
                     <p className="mb-0">
-                      {educationAndSkill?.educations?.end_year}
+                      {dayjs(educationAndSkill?.education?.end_year).format(
+                        'YYYY',
+                      ) || 'Invalid Date'}
                     </p>
                   )}
                 </Form.Item>
@@ -657,7 +645,7 @@ const EducationSkillsForm = () => {
                   )}
                   {!editState && (
                     <p className="mb-0">
-                      {educationAndSkill?.educations?.university_name}
+                      {educationAndSkill?.education?.university_name}
                     </p>
                   )}
                 </Form.Item>
@@ -689,9 +677,7 @@ const EducationSkillsForm = () => {
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">
-                      {educationAndSkill?.educations?.cityOfSchool}
-                    </p>
+                    <p className="mb-0">{educationAndSkill?.education?.city}</p>
                   )}
                 </Form.Item>
               </div>
@@ -714,12 +700,15 @@ const EducationSkillsForm = () => {
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">{educationAndSkill?.educations?.gpa}</p>
+                    <p className="mb-0">{educationAndSkill?.education?.gpa}</p>
                   )}
                 </Form.Item>
               </div>
             </div>
 
+            <label className="fw-bold mt-5 sub-section-profile">
+              Certification
+            </label>
             {editState && certifState === 'certified' && (
               <Tabs
                 type="editable-card"
@@ -742,11 +731,8 @@ const EducationSkillsForm = () => {
             <label className="fw-bold mt-5 sub-section-profile">Skill</label>
             <div className="col-12">
               <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">What skills do you have?*</label>
-                <Form.Item<FieldType>
-                  name="skills"
-                  className="mb-0"
-                >
+                <label className="fw-bold">What skills do you have?</label>
+                <Form.Item<FieldType> name="skills" className="mb-0">
                   {editState && (
                     <Select
                       className="w-100"
@@ -839,7 +825,7 @@ const EducationSkillsForm = () => {
                   <div className="col-6">
                     <div className="input-group-meta position-relative mb-15">
                       <Form.Item<FieldType>
-                        name={['language', index.toString(), 'level']}
+                        name={['language', index.toString(), 'proficiency']}
                         className="mb-0"
                       >
                         {editState && (
@@ -877,7 +863,7 @@ const EducationSkillsForm = () => {
                               {initFieldsValue &&
                                 initFieldsValue.language &&
                                 initFieldsValue.language[index.toString()]
-                                  ?.level}
+                                  ?.proficiency}
                             </p>
                           </>
                         )}

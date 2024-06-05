@@ -5,15 +5,48 @@ import { v4 as uuidV4 } from 'uuid';
 import prisma from "@/root/prisma";
 
 export async function GET(request: NextRequest) {
-  const session = request.cookies.get('_ERAHC-AUTH');
-  const candidateSkills = await prisma.candidateSkills.findMany({
-    include: {
-      candidates: true,
-      skills: true
-    }
-  });
+  // const session = request.cookies.get('_ERAHC-AUTH');
+  const experiences = await prisma.working_experiences.findMany();
+  // const roles = await prisma.userRoles.findMany({
+  //   where: {
+  //     userId: 77550
+  //   },
+  //   select: {
+  //     roles: {
+  //       select: {
+  //         name: true
+  //       }
+  //     }
+  //   }
+  // });
+  // const user = await prisma.users.findUnique({
+  //   where: {
+  //     email: 'tahsamarliah@gmail.com',
+  //   },
+  //   include: {
+  //     userRoles: { // empty array.
+  //       include: {
+  //         roles: {
+  //           select: {
+  //             name: true
+  //           }
+  //         }
+  //       }
+  //     },
+  //     candidates: { // null.
+  //       select: {
+  //         gender: true
+  //       }
+  //     }
+  //   }
+  // });
   return NextResponse.json({
-    candidate_skills: candidateSkills
+    data: experiences.map(experience => {
+      return {
+        ...experience,
+        salary: Number(experience.salary)
+      }
+    })
   });
   // if(session) {
     // const serverSession = cookies().get(session.value);

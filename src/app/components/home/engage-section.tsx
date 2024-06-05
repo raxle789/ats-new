@@ -1,10 +1,6 @@
 'use client';
 import Link from 'next/link';
 import React from 'react';
-// import Image, { StaticImageData } from 'next/image';
-// import icon_1 from '@/assets/images/icon/icon_37.svg';
-// import icon_2 from '@/assets/images/icon/icon_38.svg';
-// import icon_3 from '@/assets/images/icon/icon_39.svg';
 
 const EngageSection = () => {
   return (

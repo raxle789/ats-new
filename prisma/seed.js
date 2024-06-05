@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 
 const { PrismaClient } = require('@prisma/client');
+// const bcrypt = require('bcrypt');
 
 const moment = require('moment');
 

@@ -3,7 +3,6 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 // internal
-import contoh from '@/assets/images/carousel-contoh.jpg';
 import carousel1 from '@/assets/images/home/carousel1.jpg';
 import carousel2 from '@/assets/images/home/carousel2.jpg';
 import carousel3 from '@/assets/images/home/carousel3.jpeg';
@@ -13,13 +12,6 @@ import carousel6 from '@/assets/images/home/carousel6.jpg';
 import carousel7 from '@/assets/images/home/carousel7.jpg';
 import carousel8 from '@/assets/images/home/carousel8.jpg';
 import carousel9 from '@/assets/images/home/carousel9.jpg';
-// import banner_1 from '@/assets/images/assets/banner_img_01.jpg';
-// import banner_2 from '@/assets/images/assets/banner_img_02.jpg';
-// import shape_1 from '@/assets/images/shape/shape_01.svg';
-// import shape_2 from '@/assets/images/shape/shape_02.svg';
-// import shape_3 from '@/assets/images/shape/shape_03.svg';
-// import main_img from '@/assets/images/assets/img_01.jpg';
-// import SearchForm from '../forms/search-form';
 
 const SpiritSection = () => {
   return (

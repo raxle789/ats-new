@@ -17,16 +17,14 @@ import type {
   UploadProps,
   UploadFile,
 } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { AiOutlinePlus } from 'react-icons/ai';
 import { MdOutlineModeEdit } from 'react-icons/md';
-import {
-  getCandidateProfile,
-} from '@/libs/Candidate/retrieve-data';
-import { loading, success } from '@/utils/message';
+// import { getCandidateProfile } from '@/libs/Candidate/retrieve-data';
+// import { loading, success } from '@/utils/message';
 import dayjs, { Dayjs } from 'dayjs';
 import { convertToPlainObject, fileToBase64 } from '@/libs/Registration/utils';
 import { updateCandidateProfile } from '@/libs/Candidate/actions';
-import { fetchCities, fetchCountries, fetchEthnicity } from '@/libs/Fetch';
+// import { fetchCities, fetchCountries, fetchEthnicity } from '@/libs/Fetch';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
@@ -67,7 +65,7 @@ export type FieldType = {
   };
 };
 
-export type MasterData = {
+type MasterData = {
   citys?: {
     value: string;
     label: string;
@@ -80,58 +78,77 @@ export type MasterData = {
     value: string;
     label: string;
   }[];
+  job_levels?: {
+    value: number;
+    label: string;
+  }[];
+  job_functions?: {
+    value: number;
+    label: string;
+  }[];
+  line_industries?: {
+    value: number;
+    label: string;
+  }[];
+  education_levels?: {
+    value: string;
+    label: string;
+  }[];
+  education_majors?: {
+    value: string;
+    label: string;
+  }[];
+  education_institutions?: {
+    value: string;
+    label: string;
+  }[];
+  certificates_name?: {
+    value: number;
+    label: string;
+  }[];
+  skills?: {
+    value: number;
+    label: string;
+  }[];
 };
 
-const PersonalDataForm = () => {
+type Props = {
+  profileData?: any;
+  masterData?: MasterData | null;
+  errors?: any;
+};
+
+const PersonalDataForm: React.FC<Props> = ({
+  profileData,
+  masterData,
+  errors,
+}) => {
   const [form] = Form.useForm();
   const [editState, setEditState] = useState(false);
   const editOnChange = () => {
     setEditState(!editState);
   };
-  /* Master Data */
-  const [masterData, setMasterData] = useState<MasterData | null>(null);
-  const [profileData, setProfileData] = useState<any | null>(null);
-  const [errors, setErrors] = useState<string>('');
-  /* Fetch Form Data */
-  const fetchProfileData = async () => {
-    const profileData = await getCandidateProfile();
-    console.info('client:profile-data -> ', profileData);
-    if(!profileData.success) {
-      return setErrors(profileData.message);
-    };
-    return setProfileData(profileData.data);
-  };
-  const fetchData = async () => {
-    await Promise.all([
-      fetchCities(setMasterData),
-      fetchEthnicity(setMasterData),
-      fetchCountries(setMasterData),
-    ]);
+
+  const sanitizePhoneNumber = (input: string) => {
+    let numericInput = input.replace(/\D/g, '');
+    if (numericInput.length > 0 && numericInput[0] === '0') {
+      numericInput = '0' + numericInput.slice(1);
+    }
+    form.setFieldsValue({
+      profile: {
+        phoneNumber: numericInput,
+      },
+    });
   };
 
-  const [pdf, setPDF] = useState<string | File>('');
-
-  const [pageNumber, setPageNumber] = useState<number>(1);
-
-  function onDocumentLoadSuccess({ numPages }: { numPages: number }): void {
-    setPageNumber(numPages);
-  }
-
-  // const fetchCVDocument = async () => {
-  //   console.log('Begin fetch documents...');
-  //   const cv = await getOnePDF();
-  //   console.log('Got cv: ', cv);
-  //   console.log('getting cv: ', cv);
-  //   if (cv) {
-  //     const pdfFile = await fetch(cv.data as string);
-  //     const blobFile = await pdfFile.blob();
-  //     const newFile = new File([blobFile], 'pdf-cv', {
-  //       type: 'application/pdf',
-  //     });
-  //     console.info('NEW FILE: ', newFile);
-  //     return setPDF(cv.data as string);
-  //   }
-  // };
+  const sanitizeFullname = (input: string) => {
+    let nameInput = input.replace(/[^a-zA-Z\s]/g, '');
+    form.setFieldsValue({
+      profile: {
+        fullname: nameInput,
+      },
+    });
+  };
 
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState('');
@@ -165,15 +182,15 @@ const PersonalDataForm = () => {
     setFileList(newFileList);
   };
 
-  const [country, setCountry] = useState<string>('');
-  const handleChangeCountry = (value: string) => {
-    setCountry(value);
-  };
+  // const [country, setCountry] = useState<string>('');
+  // const handleChangeCountry = (value: string) => {
+  //   setCountry(value);
+  // };
 
-  const [marriedValue, setMarriedValue] = useState<string>('');
-  const handleChangeMarried = (value: string) => {
-    setMarriedValue(value);
-  };
+  // const [marriedValue, setMarriedValue] = useState<string>('');
+  // const handleChangeMarried = (value: string) => {
+  //   setMarriedValue(value);
+  // };
 
   const [addressCheck, setAddressCheck] = useState<boolean>(false);
   const handleAddressCheck: CheckboxProps['onChange'] = (e) => {
@@ -225,14 +242,7 @@ const PersonalDataForm = () => {
     }
   };
 
-  useLayoutEffect(() => {
-    fetchData();
-  }, []);
-  // useEffect(() => {
-  //   fetchProfileData()
-  // }, [editState]);
   useEffect(() => {
-    fetchProfileData();
     form.setFieldsValue({
       profile: {
         email: profileData?.users?.email,
@@ -258,8 +268,7 @@ const PersonalDataForm = () => {
         zipCode: profileData?.addresses[0]?.zipCode,
         currentAddress: profileData?.addresses[0]?.currentAddres,
       },
-    },);
-
+    });
   }, [editState]);
   return (
     <>
@@ -314,10 +323,11 @@ const PersonalDataForm = () => {
                             style={{ border: 0, background: 'none' }}
                             type="button"
                           >
-                            <PlusOutlined
+                            <AiOutlinePlus style={{ fontSize: '14px' }} />
+                            {/* <PlusOutlined
                               onPointerEnterCapture={''}
                               onPointerLeaveCapture={''}
-                            />
+                            /> */}
                             <div style={{ marginTop: 8 }}>Upload</div>
                           </button>
                         )}
@@ -345,13 +355,12 @@ const PersonalDataForm = () => {
                 <label className="fw-bold">
                   Full Name (as per ID/Passport)*
                 </label>
-                <Form.Item<FieldType>
-                  name={['profile', 'fullname']}
-                >
+                <Form.Item<FieldType> name={['profile', 'fullname']}>
                   {editState && (
                     <Input
                       placeholder="Your Full Name"
                       disabled={!editState}
+                      onChange={(e) => sanitizeFullname(e.target.value)}
                     />
                   )}
                   {!editState && (
@@ -361,19 +370,10 @@ const PersonalDataForm = () => {
               </div>
               <div className="input-group-meta position-relative mb-0">
                 <label className="fw-bold">Email*</label>
-                <Form.Item<FieldType>
-                  name={['profile', 'email']}
-                >
-                  {editState && (
-                    <Input
-                      placeholder="Your Email"
-                      disabled
-                    />
-                  )}
+                <Form.Item<FieldType> name={['profile', 'email']}>
+                  {editState && <Input placeholder="Your Email" disabled />}
                   {!editState && (
-                    <p className="mb-0">
-                      {profileData?.users?.email}
-                    </p>
+                    <p className="mb-0">{profileData?.users?.email}</p>
                   )}
                 </Form.Item>
               </div>
@@ -381,39 +381,33 @@ const PersonalDataForm = () => {
             <div className="col-4">
               <div className="input-group-meta position-relative mb-0">
                 <label className="fw-bold">Phone Number*</label>
-                <Form.Item<FieldType>
-                  name={['profile', 'phoneNumber']}
-                >
+                <Form.Item<FieldType> name={['profile', 'phoneNumber']}>
                   {editState && (
                     <Input
                       placeholder="Your Phone Number"
                       disabled={!editState}
+                      onChange={(e) => sanitizePhoneNumber(e.target.value)}
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">
-                      {profileData?.phone_number}
-                    </p>
+                    <p className="mb-0">{profileData?.phone_number}</p>
                   )}
                 </Form.Item>
               </div>
               <div className="input-group-meta position-relative mb-0">
                 <label className="fw-bold">Date of Birth*</label>
-                <Form.Item<FieldType>
-                  name={['profile', 'dateOfBirth']}
-                >
+                <Form.Item<FieldType> name={['profile', 'dateOfBirth']}>
                   {editState && (
                     <DatePicker
                       className="w-100"
                       placeholder="Select Date"
                       disabled={!editState}
+                      format={'DD-MMM-YYYY'}
                     />
                   )}
                   {!editState && (
                     <p className="mb-0">
-                      {dayjs(profileData?.date_of_birth).format(
-                        'YYYY-MM-DD',
-                      )}
+                      {dayjs(profileData?.date_of_birth).format('DD-MM-YYYY')}
                     </p>
                   )}
                 </Form.Item>
@@ -469,9 +463,7 @@ const PersonalDataForm = () => {
                       disabled={!editState}
                     />
                   )}
-                  {!editState && (
-                    <p className="mb-0">{profileData?.gender}</p>
-                  )}
+                  {!editState && <p className="mb-0">{profileData?.gender}</p>}
                 </Form.Item>
               </div>
             </div>
@@ -500,27 +492,27 @@ const PersonalDataForm = () => {
                       options={[
                         {
                           value: 'Islam',
-                          label: 'ISLAM',
+                          label: 'Islam',
                         },
                         {
                           value: 'Buddha',
-                          label: 'BUDDHA',
+                          label: 'Buddha',
                         },
                         {
                           value: 'Hindu',
-                          label: 'HINDU',
+                          label: 'Hindu',
                         },
                         {
                           value: 'Kristen Katholik',
-                          label: 'KRISTEN KATHOLIK',
+                          label: 'Kristen Katholik',
                         },
                         {
                           value: 'Kristen Protestan',
-                          label: 'KRISTEN PROTESTAN',
+                          label: 'Kristen Protestan',
                         },
                         {
                           value: 'Konghucu',
-                          label: 'KONGHUCU',
+                          label: 'Konghucu',
                         },
                       ]}
                     />
@@ -602,7 +594,7 @@ const PersonalDataForm = () => {
                       showSearch
                       placeholder="Your Marital Status"
                       optionFilterProp="children"
-                      onChange={handleChangeMarried}
+                      // onChange={handleChangeMarried}
                       filterOption={(input, option) =>
                         (option?.label ?? '').includes(input)
                       }
@@ -633,9 +625,7 @@ const PersonalDataForm = () => {
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">
-                      {profileData?.maritalStatus}
-                    </p>
+                    <p className="mb-0">{profileData?.maritalStatus}</p>
                   )}
                 </Form.Item>
               </div>
@@ -657,7 +647,11 @@ const PersonalDataForm = () => {
                       disabled={!editState}
                     />
                   )}
-                  {!editState && <p className="mb-0">{profileData?.addresses[0]?.street}</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {profileData?.addresses[0]?.street || '-'}
+                    </p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -674,7 +668,7 @@ const PersonalDataForm = () => {
                       showSearch
                       placeholder="Your Country"
                       optionFilterProp="children"
-                      onChange={handleChangeCountry}
+                      // onChange={handleChangeCountry}
                       filterOption={(input, option) =>
                         (option?.label.toLowerCase() ?? '').includes(input)
                       }
@@ -720,7 +714,9 @@ const PersonalDataForm = () => {
                       options={masterData?.citys}
                     />
                   )}
-                  {!editState && <p className="mb-0">{profileData?.addresses[0]?.city}</p>}
+                  {!editState && (
+                    <p className="mb-0">{profileData?.addresses[0]?.city}</p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -743,38 +739,46 @@ const PersonalDataForm = () => {
             <div className="col-4">
               <div className="input-group-meta position-relative mb-15">
                 <label className="fw-bold">RT</label>
-                <Form.Item<FieldType>
-                  name={['address', 'rt']}
-                  className="mb-0"
-                >
+                <Form.Item<FieldType> name={['address', 'rt']} className="mb-0">
                   {editState && (
                     <Input
                       placeholder="Your RT"
                       disabled={
-                        !editState || profileData?.addresses[0]?.country !== 'Indonesia'
+                        !editState ||
+                        profileData?.addresses[0]?.country !== 'Indonesia'
                       }
                     />
                   )}
-                  {!editState && <p className="mb-0">{Boolean(profileData?.addresses[0]?.rt) ? profileData?.addresses[0]?.rt : '-'}</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {Boolean(profileData?.addresses[0]?.rt)
+                        ? profileData?.addresses[0]?.rt
+                        : '-'}
+                    </p>
+                  )}
                 </Form.Item>
               </div>
             </div>
             <div className="col-4">
               <div className="input-group-meta position-relative mb-15">
                 <label className="fw-bold">RW</label>
-                <Form.Item<FieldType>
-                  name={['address', 'rw']}
-                  className="mb-0"
-                >
+                <Form.Item<FieldType> name={['address', 'rw']} className="mb-0">
                   {editState && (
                     <Input
                       placeholder="Your RW"
                       disabled={
-                        !editState || profileData?.addresses[0]?.country !== 'Indonesia'
+                        !editState ||
+                        profileData?.addresses[0]?.country !== 'Indonesia'
                       }
                     />
                   )}
-                  {!editState && <p className="mb-0">{Boolean(profileData?.addresses[0]?.rw) ? profileData?.addresses[0]?.rw : '-'}</p>}
+                  {!editState && (
+                    <p className="mb-0">
+                      {Boolean(profileData?.addresses[0]?.rw)
+                        ? profileData?.addresses[0]?.rw
+                        : '-'}
+                    </p>
+                  )}
                 </Form.Item>
               </div>
             </div>
@@ -789,12 +793,17 @@ const PersonalDataForm = () => {
                     <Input
                       placeholder="Your Subdistrict"
                       disabled={
-                        !editState || profileData?.addresses[0]?.country !== 'Indonesia'
+                        !editState ||
+                        profileData?.addresses[0]?.country !== 'Indonesia'
                       }
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">{Boolean(profileData?.addresses[0]?.subdistrict) ? profileData?.addresses[0]?.subdistrict : '-'}</p>
+                    <p className="mb-0">
+                      {Boolean(profileData?.addresses[0]?.subdistrict)
+                        ? profileData?.addresses[0]?.subdistrict
+                        : '-'}
+                    </p>
                   )}
                 </Form.Item>
               </div>
@@ -810,12 +819,17 @@ const PersonalDataForm = () => {
                     <Input
                       placeholder="Your Village"
                       disabled={
-                        !editState || profileData?.addresses[0]?.country !== 'Indonesia'
+                        !editState ||
+                        profileData?.addresses[0]?.country !== 'Indonesia'
                       }
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">{Boolean(profileData?.addresses[0]?.village)? profileData?.addresses[0]?.village  : '-'}</p>
+                    <p className="mb-0">
+                      {Boolean(profileData?.addresses[0]?.village)
+                        ? profileData?.addresses[0]?.village
+                        : '-'}
+                    </p>
                   )}
                 </Form.Item>
               </div>
@@ -828,7 +842,11 @@ const PersonalDataForm = () => {
                       <Checkbox
                         onChange={handleAddressCheck}
                         disabled={!editState}
-                        checked={profileData?.addresses[0]?.currentAddress === null ? true : false}
+                        checked={
+                          profileData?.addresses[0]?.currentAddress === null
+                            ? true
+                            : false
+                        }
                       >
                         Same as Permanent Address
                       </Checkbox>
@@ -852,9 +870,7 @@ const PersonalDataForm = () => {
                   )}
                   {!editState && (
                     <p className="mb-0">
-                      {
-                        profileData?.addresses[0]?.currentAddress ?? '-'
-                      }
+                      {profileData?.addresses[0]?.currentAddress ?? '-'}
                     </p>
                   )}
                 </Form.Item>

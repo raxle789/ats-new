@@ -71,6 +71,7 @@ export async function GET(request: NextRequest) {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
+          body: URLSearchParamsBody
         },
       );
       const response: TypeOpenIDToken = await requestAuthToken.json();

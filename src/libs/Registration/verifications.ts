@@ -102,6 +102,7 @@ export async function compareOTP(clientOTP: string, email: string) {
           ...regSession.candidate,
           is_email_verified: true,
         },
+        roles: regSession.roles
       },
       undefined,
     );

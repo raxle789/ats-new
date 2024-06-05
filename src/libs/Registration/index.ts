@@ -31,7 +31,7 @@ export async function TrialTestFunction(
   documemts: object[],
 ) {
   console.log('Submitted Values 2: ', submittedValues1);
-  const { expectedSalary, ...restOfExperiences } = submittedValues1.experience; // give this type of experiences.
+  const { expectedSalary, ...restOfExperiences } = { ...submittedValues1.experience }; // give this type of experiences.
   const transformedSubmittedValues = {
     ...submittedValues1,
     families: transformToArrayOfObject(submittedValues1.families),
@@ -144,6 +144,7 @@ export async function RegisterPhase1(
               phone_number: createCandidate.phone_number,
               date_of_birth: createCandidate.date_of_birth,
             },
+            roles: [] // empty roles if user only register on a phase 1
           },
           undefined,
         );
@@ -260,6 +261,13 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
           updated_at: new Date(Date.now())
         }
       });
+      console.info('assigning role...');
+      await tx.userRoles.create({
+        data: {
+          roleId: 3,
+          userId: regSession.user.id
+        }
+      });
       console.info('updating candidate...');
       await tx.candidates.update({
         where: {
@@ -273,7 +281,8 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
           religion: validatedInputData.profile.religion,
           ethnicity: validatedInputData.profile.ethnicity,
           blood_type: validatedInputData.profile.bloodType,
-          maritalStatus: validatedInputData.profile.maritalStatus
+          maritalStatus: validatedInputData.profile.maritalStatus,
+          sourceId: Number(submittedValues2.others?.source?.toString())
         }
       });
       console.info('storing address...');
@@ -354,7 +363,8 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
             /* Return if the value already number */
             return {
               id_of_candidate: regSession.candidate.id,
-              id_of_certificate: Number(certification.certificationName.toString()), // it's should be a number
+              id_of_certificate: Number(certification.certificationName), // it's should be a number
+              // id_of_certificate: Number(certification.certificationName.toString()), // it's should be a number
               institutionName: certification.institution,
               issuedDate: certification.monthIssue,
               created_at: new Date(Date.now())
@@ -554,13 +564,31 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
         });
       };
 
+      console.info('getting roles...');
+      const roles = await tx.userRoles.findMany({
+        where: {
+          userId: regSession.user.id,
+        },
+        select: {
+          roles: {
+            select: {
+              name: true
+            },
+          },
+        },
+      });
+      console.info("roles \t:", roles);
+      const listOfRoles = roles.map(role => role.roles.name);
+
       /* Final transaction return */
       return {
         success: true,
-        data: null,
+        data: listOfRoles,
         errors: null,
         message: 'Register phase 2 successfully'
       }
+    }, {
+      timeout: 20000
     });
     console.info('closing database connection...');
     /* Close prisma.connection */
@@ -573,7 +601,8 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
       },
       candidate: {
         id: regSession.candidate.id
-      }
+      },
+      roles: doRegisterPhase2.data
     });
     console.info('deleting register session...');
     /* Delete register session */

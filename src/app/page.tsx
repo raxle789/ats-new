@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
-import { Document, Page } from 'react-pdf';
-import prisma from '@/lib/services/connection/db';
+// import { Document, Page } from 'react-pdf';
+// import prisma from '@/lib/services/connection/db';
 // import { registerAssessment } from '@/lib/action/job-vacancies/job-vacancy-details/job-vacancy-details-assessment/action';
 // import * as crypto from '@/lib/utils/utils';
 // import CryptoJS from 'crypto-js';
@@ -11,8 +11,8 @@ import HeroBannerSix from './components/hero-banners/hero-banner-six';
 // import CategorySectionSix from './components/category/category-section-6';
 import { TrendingJobs } from './components/category/category-section-3';
 import { JobListItems } from './components/jobs/list/job-list-one';
-import BlogFour from './components/blogs/blog-four';
-import SpiritSection from './components/home/spirit-section';
+// import BlogFour from './components/blogs/blog-four';
+// import SpiritSection from './components/home/spirit-section';
 // import EngageSection from './components/home/engage-section';
 import VerticalSection from './components/home/vertical-section';
 // import FancyBannerThree from './components/fancy-banner/fancy-banner-3';
@@ -37,12 +37,16 @@ export default async function Home() {
   const DynamicCategory = dynamic(
     () => import('./components/category/category-section-6'),
   );
+  const DynamicSpirit = dynamic(
+    () => import('./components/home/spirit-section'),
+  );
   const DynamicFeedback = dynamic(
     () => import('./components/feedBacks/feedback-five'),
   );
   const DynamicEngage = dynamic(
     () => import('./components/home/engage-section'),
   );
+  const DynamicBlog = dynamic(() => import('./components/blogs/blog-four'));
   const DynamicFooter = dynamic(() => import('@/layouts/footers/footer-one'));
   // const data = await getAllApplicantDataByJobVacancyId(2, 0, 10);
 
@@ -153,7 +157,7 @@ export default async function Home() {
         {/* job list items end */}
 
         {/* spirit words start */}
-        <SpiritSection />
+        <DynamicSpirit />
         {/* spirit words end */}
 
         {/* text feature start */}
@@ -169,7 +173,7 @@ export default async function Home() {
         {/* feedback end */}
 
         {/* blog start */}
-        <BlogFour />
+        <DynamicBlog />
         {/* blog end */}
 
         {/* engage section start */}

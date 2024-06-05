@@ -1,6 +1,6 @@
 'use server';
 
-export async function formatToRupiah(value) {
+export async function formatToRupiah(value: number) {
   if (!isNaN(value)) {
     const formatter = new Intl.NumberFormat('id-ID', {
       style: 'currency',
