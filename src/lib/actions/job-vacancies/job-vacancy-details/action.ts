@@ -2,6 +2,7 @@
 
 import {
   getAllApplicantByJobVacancyId,
+  getApplicantByCandidateId,
   getInterviewByCandidateStateId,
   assignApplicant,
   requestAssessment,

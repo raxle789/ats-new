@@ -22,6 +22,7 @@ const InterviewListItem = ({
   insertInterview,
   resendEmail,
   handleApplicant,
+  encryptObject,
 }) => {
   const router = useRouter();
 
@@ -130,28 +131,30 @@ const InterviewListItem = ({
         </Popover>
       </div>
       <div className="wrapper">
-        {applicantData?.map((item) => (
-          <InterviewItem
-            key={item?.candidateId}
-            item={item}
-            status={status}
-            checkboxState={checkbox}
-            checkboxAllValue={checkboxAllValue}
-            setCheckbox={setCheckbox}
-            setCheckboxAllValue={setCheckboxAllValue}
-            jobVacancyId={jobVacancyId}
-            api={api}
-            router={router}
-            setLoading={setLoading}
-            handleApplicant={handleApplicant}
-            typeData={typeData}
-            interviewerData={interviewerData}
-            messageTemplateData={messageTemplateData}
-            placeData={placeData}
-            insertInterview={insertInterview}
-            resendEmail={resendEmail}
-          />
-        ))}
+        {applicantData &&
+          applicantData?.map((item) => (
+            <InterviewItem
+              key={item?.candidateId}
+              item={item}
+              status={status}
+              checkboxState={checkbox}
+              checkboxAllValue={checkboxAllValue}
+              setCheckbox={setCheckbox}
+              setCheckboxAllValue={setCheckboxAllValue}
+              jobVacancyId={jobVacancyId}
+              api={api}
+              router={router}
+              setLoading={setLoading}
+              handleApplicant={handleApplicant}
+              typeData={typeData}
+              interviewerData={interviewerData}
+              messageTemplateData={messageTemplateData}
+              placeData={placeData}
+              insertInterview={insertInterview}
+              resendEmail={resendEmail}
+              encryptObject={encryptObject}
+            />
+          ))}
       </div>
     </>
   );

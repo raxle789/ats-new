@@ -2,6 +2,11 @@
 
 import {
   getAllInterviewType,
+  getInterviewByCandidateStateId,
+  getAllInterviewResultStatus,
+  getAllInterviewResultCategory,
+  requestAssessment,
+  getApplicantByCandidateId,
   updateInterviewInterviewer,
   getInterviewById,
   updateInterview,
@@ -12,11 +17,13 @@ import {
   getAllInterviewMessageTemplate,
   getAllInterviewer,
 } from '@/lib/services/job-vacancies/service';
+import * as utils from '../utils';
 import { sendEmail } from '@/lib/services/messages/email/service';
 import moment from 'moment';
 import _ from 'lodash';
 import {
   validateCandidateIdAndJobVacancyId,
+  validateInterviewResultData,
   validateInterviewerNik,
   validateInterviewId,
   validateInterviewSchema,
@@ -343,4 +350,102 @@ export async function resendEmail(
   //   interviewerNik,
   //   interviewId,
   // });
+}
+
+export async function getInterviewResultData(
+  candidateId,
+  jobVacancyId,
+  interviewerNik,
+) {
+  const data = await (async () => {
+    const decryptedCandidateId = await crypto.decryptData(candidateId);
+
+    // console.info(decryptedCandidateId);
+
+    const decryptedJobVacancyId = await crypto.decryptData(jobVacancyId);
+
+    // const decryptedInterviewId = await crypto.decryptData(interviewId);
+
+    if (decryptedCandidateId) {
+      const validate = validateInterviewResultData.safeParse({
+        candidateId: decryptedCandidateId,
+        jobVacancyId: decryptedJobVacancyId,
+        interviewerNik: interviewerNik,
+      });
+
+      if (validate.success) {
+        const applicantData = await getApplicantByCandidateId(
+          validate?.data?.candidateId,
+          validate?.data?.jobVacancyId,
+        );
+
+        // console.info(applicantData);
+
+        if (applicantData && !_.isEmpty(applicantData)) {
+          const assessmentData = await requestAssessment(
+            'detail',
+            null,
+            applicantData?.candidateStates[0]?.candidateStateAssessments
+              ?.remoteId,
+          );
+
+          // console.info(applicantData?.candidateStates[0]);
+
+          // console.info(assessmentData);
+
+          const newData = {
+            applicantName: applicantData?.users.name,
+            applicantAge: await utils.calculateAge(
+              applicantData?.date_of_birth,
+            ),
+            applicantMaritalStatus: applicantData?.maritalStatus,
+            applicantLastEducationLevel: applicantData?.educations?.edu_level,
+            applicantLastPositionLevel:
+              (await utils.getLastPosition(
+                applicantData?.working_experiences,
+              )) ?? 'Fresh Graduate',
+            applicantSource: applicantData?.sources?.name,
+            applicantAssessmentResult: assessmentData?.candidate?.status_label,
+            applicantDiscProfile: '-',
+            applicantCv: applicantData?.documents?.length
+              ? applicantData?.documents
+                  ?.filter(
+                    (item) =>
+                      item?.document_types?.document_name ===
+                      'curriculum-vitae',
+                  )[0]
+                  .file_base?.toString()
+              : null,
+            interviewResultCategories: await getAllInterviewResultCategory(),
+            interviewResultStatus: await getAllInterviewResultStatus(),
+            reschedulers: [
+              {
+                value: applicantData?.id,
+                label: `By ${applicantData?.users?.name} (Candidate)`,
+              },
+              {
+                value: validate?.data?.interviewerNik,
+                label: `By ${await getInterviewerNameByNik(
+                  validate?.data?.interviewerNik,
+                )} (User)`,
+              },
+            ],
+            interviewHistory: await getInterviewByCandidateStateId(
+              applicantData?.candidateStates[0]?.id,
+            ),
+          };
+
+          return newData;
+        }
+
+        return {};
+      }
+
+      return {};
+    }
+
+    return {};
+  })();
+
+  return data;
 }

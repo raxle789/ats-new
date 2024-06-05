@@ -2065,6 +2065,31 @@ export async function createInterview(
         });
 
         if (interviewData && !_.isEmpty(interviewData)) {
+          // console.info(interviewData);
+
+          // console.info(interviewers);
+
+          // const interviewInterviewersData = await (async () => {
+          //   let count = 0;
+
+          //   if (interviewers && interviewers.length) {
+          //     for (let i = 0; i < interviewers?.length; i++) {
+          //       const data = await tx.interviewInterviewers.create({
+          //         data: {
+          //           interviewId: interviewData.id,
+          //           interviewerNIK: interviewers[i],
+          //         },
+          //       });
+
+          //       if (data && !_.isEmpty(data)) {
+          //         count++;
+          //       }
+          //     }
+          //   }
+
+          //   return count;
+          // })();
+
           const interviewInterviewersData =
             await tx.interviewInterviewers.createMany({
               data: interviewers.map((nik) => {
@@ -2176,7 +2201,7 @@ export async function getInterviewByCandidateStateId(candidateStateId) {
             const data = {
               ...interview,
               interviewers:
-                await tx.$queryRaw`SELECT employee.EmpNIK AS interviewerNik, employee.EmpName AS interviewerName, ii.interview_result_id AS interviewResult, ii.is_email_sent AS isEmailSent FROM interview_interviewers AS ii LEFT JOIN MASTER_ERA.dbo.ERA_MasterEmployeeAttr AS employee ON ii.interviewer_nik = employee.EmpNIK WHERE ii.interview_id = ${interview.value} ORDER BY employee.EmpName ASC`,
+                await tx.$queryRaw`SELECT employee.EmpNIK AS interviewerNik, employee.EmpName AS interviewerName, irs.name AS interviewResult, ii.is_email_sent AS isEmailSent FROM (((interview_interviewers AS ii LEFT JOIN MASTER_ERA.dbo.ERA_MasterEmployeeAttr AS employee ON ii.interviewer_nik = employee.EmpNIK) LEFT JOIN interview_results AS ir ON ii.interview_result_id = ir.id)LEFT JOIN interview_result_status AS irs ON ir.statusId = irs.id) WHERE ii.interview_id = ${interview.value} ORDER BY employee.EmpName ASC`,
             };
 
             return data;
@@ -2299,6 +2324,174 @@ export async function getInterviewById(interviewId) {
         },
         interviewInterviewers: true,
       },
+    });
+
+    return data;
+  } catch (e) {
+    console.log(e);
+
+    return {};
+  }
+}
+
+export async function getApplicantByCandidateId(candidateId, jobVacancyId) {
+  try {
+    const data = await prisma.candidates.findUnique({
+      where: {
+        id: candidateId,
+        AND: [
+          {
+            id: candidateId,
+          },
+          {
+            candidateStates: {
+              some: {
+                jobVacancyId: jobVacancyId,
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        users: true,
+        educations: true,
+        working_experiences: true,
+        sources: {
+          select: {
+            name: true,
+          },
+        },
+        candidateStates: {
+          include: {
+            candidateStateAssessments: true,
+          },
+        },
+        documents: {
+          select: {
+            file_base: true,
+            document_types: {
+              select: {
+                document_name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // console.info(data);
+
+    return data;
+  } catch (e) {
+    console.log(e);
+
+    return {};
+  }
+}
+
+export async function getAllInterviewResultCategory() {
+  try {
+    const data = await prisma.categories.findMany({
+      select: {
+        name: true,
+        description: true,
+      },
+    });
+
+    return data;
+  } catch (e) {
+    console.log(e);
+
+    return [];
+  }
+}
+
+export async function getAllInterviewResultStatus() {
+  try {
+    const data = await prisma.interviewResultStatus.findMany({
+      select: {
+        id: true,
+        name: true,
+        isComment: true,
+      },
+    });
+
+    return data;
+  } catch (e) {
+    console.log(e);
+
+    return [];
+  }
+}
+
+export async function createInterviewResult(
+  interviewId,
+  interviewerNik,
+  { status, comment, interviewResultCategory },
+) {
+  try {
+    const data = prisma.$transaction(async (tx) => {
+      const interviewResultData = await tx.interviewResults.create({
+        data: {
+          statusId: status,
+          comment: comment,
+        },
+      });
+
+      if (interviewResultData && !_.isEmpty(interviewResultData)) {
+        const interviewResultCategoryData = await Promise.all(
+          interviewResultCategory?.map(async (data) => {
+            const newData = await tx.interviewResultCategories.create({
+              data: {
+                interviewResultId: interviewResultData.id,
+                categoryId: data.id,
+                score: data.score,
+                comment: data.comment,
+              },
+            });
+
+            return newData;
+          }),
+        );
+
+        if (
+          interviewResultCategoryData &&
+          interviewResultCategoryData?.length
+        ) {
+          const interviewInterviewerData =
+            await tx.interviewInterviewers.update({
+              where: {
+                interviewId_interviewerNIK: {
+                  interviewId: interviewId,
+                  interviewerNIK: interviewerNik,
+                },
+              },
+              data: {
+                interviewResultId: interviewResultData.id,
+              },
+            });
+
+          if (
+            interviewInterviewerData &&
+            !_.isEmpty(interviewInterviewerData)
+          ) {
+            return interviewResultData;
+          }
+
+          return {};
+        }
+
+        return {};
+
+        // const interviewResultCategoryData = await tx.interviewResultCategories.create({
+        //   data: {
+        //     interviewResultId: interviewResultData.id,
+        //     categoryId:
+        //   },
+        // });
+      }
+
+      return {};
     });
 
     return data;

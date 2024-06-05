@@ -210,3 +210,25 @@ export const validateInterviewerNik = z.object({
     .trim()
     .length(9, { message: 'Interviewer NIK Must Contain 9 Numbers!' }),
 });
+
+export const validateInterviewResultData = z.object({
+  candidateId: z
+    .number({
+      required_error: 'Candidate Id Required!',
+      invalid_type_error: 'Candidate Id Must Be A Number!',
+    })
+    .int(),
+  jobVacancyId: z
+    .number({
+      required_error: 'Job Vacancy Id Required!',
+      invalid_type_error: 'Job Vacancy Id Must Be A Number!',
+    })
+    .int(),
+  interviewerNik: z.coerce
+    .string({
+      required_error: 'Interviewer NIK Required!',
+      invalid_type_error: 'Interviewer NIK Must Be A String!',
+    })
+    .trim()
+    .length(9, { message: 'Interviewer NIK Must Contain 9 Numbers!' }),
+});

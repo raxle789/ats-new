@@ -33,6 +33,7 @@ const InterviewHistoryModal: React.FC<IProps> = ({
     <>
       <Modal
         title="Interview History Candidate"
+        maskClosable={false}
         centered
         open={isOpen}
         onCancel={handleCancel}

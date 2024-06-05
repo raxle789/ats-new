@@ -102,3 +102,16 @@ export async function convertObjectToFormData(value) {
 
   return formData;
 }
+
+export async function calculateAge(dateOfBirth) {
+  if (
+    moment(dateOfBirth).isValid() &&
+    moment(dateOfBirth, 'YYYY-MM-DD').isBefore(moment())
+  ) {
+    const age = moment().diff(moment(dateOfBirth, 'YYYY-MM-DD'), 'years');
+
+    return age;
+  }
+
+  return 0;
+}

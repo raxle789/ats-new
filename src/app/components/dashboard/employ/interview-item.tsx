@@ -1,6 +1,9 @@
 'use client';
 
-import React, { SetStateAction, useState } from 'react';
+import React, { SetStateAction, useState, useEffect } from 'react';
+import { Status } from '@/status/interview-status';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
 import * as messages from '@/utils/message';
 import * as confirmations from '@/utils/confirmation';
 import moment from 'moment';
@@ -66,22 +69,86 @@ const InterviewItem = ({
   placeData,
   insertInterview,
   resendEmail,
+  encryptObject,
 }) => {
-  const [isOpenModal, setIsOpenModal] = useState(false);
+  const pathname = usePathname();
 
-  const showModal = () => {
-    setIsOpenModal(true);
-  };
+  const [isOpenModal, setIsOpenModal] = useState(false);
 
   const [interviewValue, setInterviewValue] = useState(0);
 
   const [buttonDisabled, setButtonDisabled] = useState({});
 
+  const [encryptedInterviewResultData, setEncryptedInterviewResultData] =
+    useState('');
+
+  useEffect(() => {
+    const interviewResultData = {
+      candidateId: item?.candidateId,
+      interviewId: item?.candidateInterviews[interviewValue]?.value,
+    };
+
+    encryptObject(interviewResultData).then((res) =>
+      setEncryptedInterviewResultData(res),
+    );
+  }, [interviewValue]);
+
+  const showModal = () => {
+    setIsOpenModal(true);
+  };
+
   const handleInterviewChange = (value) => {
     setInterviewValue(
       item?.candidateInterviews?.findIndex((data) => data?.value === value),
     );
+
+    // setInterviewResultData({
+    //   ...interviewResultData,
+    //   candidateId: item?.candidateId,
+    //   jobVacancyId: jobVacancyId,
+    //   interviewId: value,
+    // });
+
+    // crypto
+    //   .encryptObject({
+    //     candidateId: item?.candidateId,
+    //     jobVacancyId: jobVacancyId,
+    //     interviewId: value,
+    //   })
+    //   .then((res) => {
+    //     if (res) {
+    //       setInterviewResultData(res);
+    //     } else {
+    //       setInterviewResultData('');
+    //     }
+    //   })
+    //   .catch((e) => console.log('Error Setting Interview Result Data: ', e));
   };
+
+  // function handleInterviewResultData(interviewerNik) {
+  //   crypto
+  //     .encryptObject({
+  //       ...interviewResultData,
+  //       interviewerNik: interviewerNik,
+  //     })
+  //     .then((res) => {
+  //       if (res) {
+  //         // console.info(res);
+
+  //         setInterviewResultData({
+  //           ...interviewResultData,
+  //           encryptedInterviewResultData: res,
+  //         });
+  //       }
+  //     })
+  //     .catch((e) => console.log('Error Setting Interview Result Data: ', e));
+
+  //   console.info(interviewResultData?.encryptedInterviewResultData);
+
+  //   router.push(
+  //     `${pathname}/result/${interviewResultData?.encryptedInterviewResultData}`,
+  //   );
+  // }
 
   const onChangeCheckbox = (index: number) => {
     setCheckbox((prevState: any) => ({
@@ -390,26 +457,39 @@ const InterviewItem = ({
                             </p>
                           </div>
                           <div className="col-lg-3">
-                            {!data?.interviewResult && (
-                              <Tag color="#1e87f0" style={{ color: 'white' }}>
-                                Waiting
-                              </Tag>
-                            )}
-                            {data?.interviewResult === 'Hire' && (
-                              <Tag color="#29d259" style={{ color: 'white' }}>
-                                Hire
-                              </Tag>
-                            )}
-                            {data?.interviewResult === 'Reject' && (
-                              <Tag color="#ff2730" style={{ color: 'white' }}>
-                                Reject
-                              </Tag>
-                            )}
-                            {data?.interviewResult === 'Keep In View' && (
-                              <Tag color="#f0f000" style={{ color: 'white' }}>
-                                Keep In View
-                              </Tag>
-                            )}
+                            <Link
+                              href={{
+                                pathname: `${pathname}/result/${data?.interviewerNik}`,
+                                query: { q: encryptedInterviewResultData },
+                              }}
+                            >
+                              {!data?.interviewResult && (
+                                <Tag color="#1e87f0" style={{ color: 'white' }}>
+                                  {Status.WAITING}
+                                </Tag>
+                              )}
+                              {data?.interviewResult === Status.HIRE && (
+                                <Tag color="#29d259" style={{ color: 'white' }}>
+                                  {Status.HIRE}
+                                </Tag>
+                              )}
+                              {data?.interviewResult === Status.REJECT && (
+                                <Tag color="#ff2730" style={{ color: 'white' }}>
+                                  {Status.REJECT}
+                                </Tag>
+                              )}
+                              {data?.interviewResult ===
+                                Status.KEEP_IN_VIEW && (
+                                <Tag color="#f0f000" style={{ color: 'white' }}>
+                                  {Status.KEEP_IN_VIEW}
+                                </Tag>
+                              )}
+                              {data?.interviewResult === Status.RESCHEDULE && (
+                                <Tag color="#f0f000" style={{ color: 'white' }}>
+                                  {Status.RESCHEDULE}
+                                </Tag>
+                              )}
+                            </Link>
                             {
                               /* {!data?.isEmailSent &&  */
                               <Button

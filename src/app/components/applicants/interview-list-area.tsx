@@ -1,6 +1,7 @@
 'use server';
 
 import InterviewListItem from './interview-list-item';
+import { encryptObject } from '@/lib/utils/utils';
 import { handleApplicant } from '../message/confirm';
 import {
   getAllInterviewTypeData,
@@ -35,6 +36,8 @@ const InterviewListArea = async ({ params, searchParams, status }) => {
       return [];
     }
   })();
+
+  // console.info(applicantData.data[0].candidateInterviews[0]);
 
   const typeData = await (async () => {
     const data = await getAllInterviewTypeData();
@@ -88,6 +91,7 @@ const InterviewListArea = async ({ params, searchParams, status }) => {
       insertInterview={insertInterview}
       resendEmail={resendEmail}
       handleApplicant={handleApplicant}
+      encryptObject={encryptObject}
     />
   );
 };

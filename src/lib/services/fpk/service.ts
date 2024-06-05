@@ -9,7 +9,7 @@ import prisma from '../connection/db';
 export const newData = async () => {
   const data = await prisma.documents.findUnique({
     where: {
-      id: 10,
+      id: 14,
     },
   });
 
