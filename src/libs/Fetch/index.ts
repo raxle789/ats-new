@@ -223,3 +223,23 @@ export async function lineIndutries(setMasterData: React.Dispatch<React.SetState
     };
   };
 };
+
+export async function fetchSources(setMasterData: React.Dispatch<React.SetStateAction<MasterData | null>>): Promise<void> {
+  try {
+    const sources = await fetch("/api/client-data/sources", {
+      method: "GET",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    const sourcesData = await sources.json();
+    setMasterData((prevState) => ({
+      ...prevState,
+      sources: sourcesData
+    }));
+  } catch (error) {
+    if(error instanceof TypeError) {
+      message.error(`${error.message}, cause: ${error.cause}`);
+    };
+  };
+};

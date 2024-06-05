@@ -46,7 +46,9 @@ const RegisterForm = () => {
     }
     console.info(doRegisterPhase1);
     message.success(doRegisterPhase1.message);
-    router.replace('/dashboard/user/stages');
+    setTimeout(() => {
+      router.replace('/dashboard/user/stages');
+    }, 1500);
     setSpinning(false);
   };
   /**

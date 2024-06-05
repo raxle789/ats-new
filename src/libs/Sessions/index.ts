@@ -59,7 +59,7 @@ export async function setUserSession(
       const authExpires =
         isRememberOn === 'on'
           ? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-          : new Date(Date.now() * 5 * 60 * 1000);
+          : new Date(Date.now() + 5 * 60 * 60 * 1000);
       const encryptedAuthSession = Jwt.EncryptSession(payload);
       /* set-session -> server */
       // cookies().set(authSessionName, encryptedAuthSession as string, { expires: authExpires, httpOnly: true });

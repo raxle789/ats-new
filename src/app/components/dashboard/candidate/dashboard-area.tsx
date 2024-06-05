@@ -14,6 +14,7 @@ import { Alert, Button, Tag } from 'antd';
 // import { getAppliedJobs } from '@/libs/Candidate/retrieve-data';
 import Paragraph from 'antd/es/typography/Paragraph';
 import { useRouter } from 'next/navigation';
+import { getAppliedJobs } from '@/libs/Candidate/retrieve-data';
 
 // card item
 export function CardItem({
@@ -47,22 +48,23 @@ export function CardItem({
 // }
 const DashboardArea = () => {
   const job_items = [...job_data.reverse().slice(0, 5)];
-  const [appliedJobs, setAppliedJobs] = useState<any | []>([]);
+  const [appliedJobs, setAppliedJobs] = useState<any>([]);
   const [error, setError] = useState<string>('');
   const router = useRouter();
 
-  // const getAppliedJobsData = async () => {
-  //   const appliedJobsSData = await getAppliedJobs();
-  //   if (appliedJobsSData.success) {
-  //     if (typeof appliedJobsSData.data === 'string')
-  //       return setError(appliedJobsSData.data);
-  //     return setAppliedJobs(appliedJobsSData.data);
-  //   }
-  //   return setError(appliedJobsSData.message as string);
-  // };
+  const getAppliedJobsData = async () => {
+    const appliedJobsSData = await getAppliedJobs();
+    console.info("Applied Jobs \t: ", appliedJobsSData);
+    if (appliedJobsSData.success) {
+      // if (typeof appliedJobsSData.data === 'string')
+      //   return setError(appliedJobsSData.data);
+      return setAppliedJobs(appliedJobsSData.data);
+    };
+    return setError(appliedJobsSData.message as string);
+  };
 
   useEffect(() => {
-    // getAppliedJobsData();
+    getAppliedJobsData();
   }, []);
 
   return (
@@ -154,7 +156,7 @@ const DashboardArea = () => {
                     className="job-item-list d-flex align-items-center"
                     // style={{ border: '1px solid black' }}
                   >
-                    <div>
+                    {/* <div>
                       <Image
                         src={job_items[0].logo}
                         alt="logo"
@@ -162,7 +164,7 @@ const DashboardArea = () => {
                         height={40}
                         className="lazy-img logo"
                       />
-                    </div>
+                    </div> */}
                     <div className="job-title">
                       <h6 className="mb-5">
                         <a
@@ -190,7 +192,7 @@ const DashboardArea = () => {
                       </Tag>
                       <div className="meta row">
                         <span className="col-lg-5">
-                          {job.jobVacancies.positionLevels.name}
+                          {/* {job.jobVacancies.positionLevels.name} */}
                         </span>
                         <span className="col-lg-7">
                           {job.jobVacancies.employmentStatusName}
