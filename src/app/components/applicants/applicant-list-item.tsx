@@ -1,17 +1,36 @@
 'use client';
-
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import * as messages from '@/utils/message';
-import * as confirmations from '@/utils/confirmation';
-import { Checkbox, Popover, Spin, Modal, message } from 'antd';
+// import * as messages from '@/utils/message';
+// import * as confirmations from '@/utils/confirmation';
+import { Checkbox, Popover, Spin, message } from 'antd';
 import type { CheckboxProps } from 'antd';
 import ActionCheckboxPipeline from '../common/popup/action-checkbox-pipeline';
 import ApplicantItem from '../dashboard/employ/applicant-item';
+// const { confirm } = Modal;
 
-const { confirm } = Modal;
+type Props = {
+  status?: string | any;
+  applicantData?: any;
+  jobVacancyId?: number;
+  handleApplicant?: (
+    handleType:
+      | 'assignAssessment'
+      | 'detailAssessment'
+      | 'resendAssessment'
+      | 'assignInterview'
+      | 'resendCandidateInterviewInvitation',
+    candidateId: number,
+    jobVacancyId: number,
+    interviewId: number | null,
+    api: any,
+    router: any,
+    setLoading: (loading: boolean) => void,
+    status: string,
+  ) => void;
+};
 
-const ApplicantListItem = ({
+const ApplicantListItem: React.FC<Props> = ({
   status,
   applicantData,
   jobVacancyId,
@@ -39,32 +58,42 @@ const ApplicantListItem = ({
   };
 
   useEffect(() => {
-    const countTrueValues = Object.values(checkbox).reduce(
-      (acc, curr) => acc + (curr ? 1 : 0),
-      0,
-    );
-    if (countTrueValues > 1) {
-      setPopOverState(true);
-    } else {
-      setPopOverState(false);
+    if (applicantData) {
+      const countTrueValues = Object.values(checkbox).reduce(
+        (acc, curr) => acc + (curr ? 1 : 0),
+        0,
+      );
+      if (
+        countTrueValues > 1 ||
+        (applicantData.length === 1 && countTrueValues === 1)
+      ) {
+        setPopOverState(true);
+      } else {
+        setPopOverState(false);
+      }
     }
   }, [checkbox]);
 
   useEffect(() => {
     if (applicantData) {
       initialCheckboxState = applicantData?.reduce(
-        (acc: { [key: string]: boolean }, _: any, index: string) => {
+        (acc: { [key: string]: boolean }, item: any, _: string) => {
           return {
             ...acc,
-            [index]: false,
+            [item?.candidateId]: false,
           };
         },
         {},
       );
 
       setCheckbox(initialCheckboxState);
+      console.log('Applicant Data: ', applicantData);
+      console.log('initial Checkbox: ', initialCheckboxState);
     }
   }, [applicantData]);
+
+  console.log('(global) checkbox: ', checkbox);
+  console.log('(global) checkboxAllValue: ', checkboxAllValue);
 
   // function handleApplicant(handleType: 'assignAssessment', candidateId) {
   //   switch (handleType) {
@@ -104,7 +133,6 @@ const ApplicantListItem = ({
   //     }
   //   }
   // }
-
   return (
     <>
       {contextHolder}
