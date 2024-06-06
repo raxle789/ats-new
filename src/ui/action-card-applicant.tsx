@@ -1,11 +1,14 @@
 'use client';
-
-import React, { useState } from 'react';
-import { handleApplicant } from '@/app/components/message/confirm';
+import React from 'react';
+// import { handleApplicant } from '@/app/components/message/confirm';
 import { Status } from '@/status/applicant-status';
-import { useAppSelector } from '@/redux/hook';
-import { useRouter } from 'next/navigation';
-import CreateInterviewModal from '../app/components/common/popup/create-interview-modal';
+// import { useAppSelector } from '@/redux/hook';
+// import { useRouter } from 'next/navigation';
+// import CreateInterviewModal from '../app/components/common/popup/create-interview-modal';
+
+type ActionProp = {
+  props?: any;
+};
 
 const ActionApplicant = (props) => {
   // const currentStep = useAppSelector((state) => state.applicantStep.step);

@@ -1,5 +1,4 @@
 'use client';
-
 import React, { SetStateAction } from 'react';
 import img_2 from '@/assets/images/candidates/img_02.jpg';
 import ActionApplicant from '../../../../ui/action-card-applicant';
@@ -8,7 +7,48 @@ import { useAppDispatch } from '@/redux/hook';
 import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
 import { Checkbox } from 'antd';
 
-const ApplicantItem = ({
+type Props = {
+  item?:
+    | {
+        candidateId?: string;
+        candidatePhoto?: string;
+        candidateName?: string;
+        candidateLastPosition?: string;
+        candidateLastEducation?: string;
+        candidateExpectedSalary?: string;
+        candidateYearOfExperience?: number;
+        candidateStatus?: string;
+        candidateSkills?: string[];
+        candidateScore?: string;
+      }
+    | any;
+  status?: string | any;
+  checkboxState?: { [key: string]: boolean };
+  checkboxAllValue?: boolean;
+  setCheckbox?: React.Dispatch<SetStateAction<{ [key: string]: boolean }>>;
+  setCheckboxAllValue?: React.Dispatch<boolean>;
+  jobVacancyId?: number;
+  api?: any;
+  router?: any;
+  setLoading?: any;
+  handleApplicant?: (
+    handleType:
+      | 'assignAssessment'
+      | 'detailAssessment'
+      | 'resendAssessment'
+      | 'assignInterview'
+      | 'resendCandidateInterviewInvitation',
+    candidateId: number,
+    jobVacancyId: number,
+    interviewId: number | null,
+    api: any,
+    router: any,
+    setLoading: (loading: boolean) => void,
+    status: string,
+  ) => void | any;
+};
+
+const ApplicantItem: React.FC<Props> = ({
   item,
   status,
   checkboxState,
@@ -26,14 +66,16 @@ const ApplicantItem = ({
     dispatch(setIsOpen(true));
   };
 
-  const onChangeCheckbox = (index: number) => {
-    setCheckbox((prevState: any) => ({
-      ...prevState,
-      [index]: !prevState[index],
-    }));
+  const onChangeCheckbox = (index: string) => {
+    if (setCheckbox && setCheckboxAllValue && checkboxState) {
+      setCheckbox((prevState: any) => ({
+        ...prevState,
+        [index]: !prevState[index],
+      }));
 
-    if (checkboxAllValue || !checkboxState[index]) {
-      setCheckboxAllValue(false);
+      if (checkboxAllValue || !checkboxState[index]) {
+        setCheckboxAllValue(false);
+      }
     }
   };
   return (
@@ -43,8 +85,8 @@ const ApplicantItem = ({
           <div className="checkbox-pipeline-action">
             <Checkbox
               className="me-2"
-              checked={checkboxState[item.id]}
-              onChange={() => onChangeCheckbox(item.id)}
+              checked={checkboxState && checkboxState[item?.candidateId]}
+              onChange={() => onChangeCheckbox(item?.candidateId)}
             ></Checkbox>
           </div>
           <a href="#" className="rounded-circle">

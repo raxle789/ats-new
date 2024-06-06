@@ -1,8 +1,13 @@
 'use client';
 
 import { Skeleton, List } from 'antd';
+import React from 'react';
 
-const EmployJobDetailSkeleton = ({ rows }) => {
+type Props = {
+  rows: number;
+};
+
+const EmployJobDetailSkeleton: React.FC<Props> = ({ rows }) => {
   return (
     <>
       <List

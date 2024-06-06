@@ -1,27 +1,24 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   Input,
+  InputNumber,
   Form,
   Select,
   DatePicker,
   Tabs,
   Radio,
-  // Upload,
-  // Button,
   message,
 } from 'antd';
 import type { FormProps, RadioChangeEvent } from 'antd';
-// import { UploadOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
-// import { getAdditionalInformations } from '@/libs/Candidate/retrieve-data';
 import dayjs, { Dayjs } from 'dayjs';
-// import { getAdditionalInformations } from '@/libs/Candidate/retrieve-data';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
 type FieldType = {
   families?: {
     [id: string]: {
+      id?: number;
       relation?: string;
       name?: string;
       gender?: string;
@@ -83,6 +80,16 @@ const AdditionalInformationForm: React.FC<Props> = ({
   const TabContent: React.FC<Tprops1> = ({ index }) => {
     return (
       <div key={index} className="row">
+        <div className="col-6 d-none">
+          <div className="input-group-meta position-relative mb-15">
+            <Form.Item<FieldType>
+              name={['families', index.toString(), 'id']}
+              className="mb-0"
+            >
+              <InputNumber />
+            </Form.Item>
+          </div>
+        </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Relation</label>
@@ -158,6 +165,11 @@ const AdditionalInformationForm: React.FC<Props> = ({
   const DisplayedTabContent: React.FC<Tprops2> = ({ index }) => {
     return (
       <div key={index} className="row">
+        <div className="col-6 d-none">
+          <div className="input-group-meta position-relative mb-15">
+            <p className="mb-0">{additionalInformation?.families[index]?.id}</p>
+          </div>
+        </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Relation</label>
@@ -285,9 +297,18 @@ const AdditionalInformationForm: React.FC<Props> = ({
     setHaveRelation(e.target.value);
   };
 
-  const handleSubmit: FormProps<FieldType>['onFinish'] = (values) => {
+  const handleSubmit: FormProps<FieldType>['onFinish'] = () => {
     if (editState) {
       // jalankan simpan data
+      let values = form.getFieldsValue();
+      values = {
+        ...values,
+        families: {
+          ...initFieldsValue?.families,
+          ...values?.families,
+        },
+      };
+      console.log('submittedValueFamilies: ', values);
     }
   };
 
@@ -358,6 +379,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
 
     type familyField = {
       [id: string]: {
+        id?: number;
         relation?: string;
         name?: string;
         gender?: string;
@@ -369,6 +391,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
       const families = additionalInformation?.families;
       familiesField = families.reduce((acc: any, item: any, index: number) => {
         acc[index] = {
+          id: item.id,
           relation: item.relation,
           name: item.name,
           gender: item.gender,
