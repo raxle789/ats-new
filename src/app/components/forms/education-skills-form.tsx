@@ -44,7 +44,7 @@ type FieldType = {
       yearIssue?: string | Dayjs;
     };
   };
-  skills?: string;
+  skills?: string[];
   language?: {
     [id: string]: {
       name?: string;
@@ -383,11 +383,11 @@ const EducationSkillsForm: React.FC<Props> = ({
   const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
 
   useEffect(() => {
-    const skillsArray = educationAndSkill?.skills;
-    let skillsString: string;
-    if (skillsArray) {
-      skillsString = skillsArray.join('\n');
-    }
+    // const skillsArray = educationAndSkill?.skills;
+    // let skillsString: string;
+    // if (skillsArray) {
+    //   skillsString = skillsArray.join('\n');
+    // }
 
     const languagesData = educationAndSkill?.languages;
     type LanguageField = {
@@ -448,7 +448,7 @@ const EducationSkillsForm: React.FC<Props> = ({
             ? dayjs(new Date(educationAndSkill?.education?.end_year, 0))
             : dayjs(new Date(Date.now()), 'YYYYMMDD'),
         },
-        skills: skillsString,
+        skills: educationAndSkill?.skills,
         language: languageField.language,
         certification: certificationsField,
       }));
@@ -755,7 +755,11 @@ const EducationSkillsForm: React.FC<Props> = ({
                     />
                   )}
                   {!editState && (
-                    <p className="mb-0">{initFieldsValue?.skills}</p>
+                    <div>
+                      {initFieldsValue?.skills?.map((item, _) => (
+                        <p className="mb-0">{item}</p>
+                      ))}
+                    </div>
                   )}
                 </Form.Item>
               </div>
