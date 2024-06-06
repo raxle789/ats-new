@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import ImageNext from 'next/image';
 import {
   Input,
@@ -19,12 +19,9 @@ import type {
 } from 'antd';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { MdOutlineModeEdit } from 'react-icons/md';
-// import { getCandidateProfile } from '@/libs/Candidate/retrieve-data';
-// import { loading, success } from '@/utils/message';
 import dayjs, { Dayjs } from 'dayjs';
 import { convertToPlainObject, fileToBase64 } from '@/libs/Registration/utils';
 import { updateCandidateProfile } from '@/libs/Candidate/actions';
-// import { fetchCities, fetchCountries, fetchEthnicity } from '@/libs/Fetch';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;

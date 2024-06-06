@@ -11,12 +11,8 @@ import {
   message,
 } from 'antd';
 import type { FormProps, RadioChangeEvent } from 'antd';
-// import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
-// import { getExperiences } from '@/libs/Candidate/retrieve-data';
 import dayjs, { Dayjs } from 'dayjs';
-// import { fetchJobFunctions, jobJobLevels, lineIndutries } from '@/libs/Fetch';
-// import { getCandidateExperiences } from '@/libs/Candidate/retrieve-data';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 const { TextArea } = Input;
@@ -26,6 +22,7 @@ type FieldType = {
   experience?: {
     expectedSalary?: number;
     [id: string]: {
+      id?: number;
       jobTitle?: string;
       jobFunction?: string;
       lineIndustry?: string;
@@ -133,6 +130,16 @@ const BackgroundExperienceForm: React.FC<Props> = ({
     const [jobDescValue, setJobDescValue] = useState<string>('');
     return (
       <div key={expIdx} className="row">
+        <div className="col-6 d-none">
+          <div className="input-group-meta position-relative mb-15">
+            <Form.Item<FieldType>
+              name={['experience', expIdx.toString(), 'id']}
+              className="mb-0"
+            >
+              <InputNumber />
+            </Form.Item>
+          </div>
+        </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Job Title*</label>
@@ -411,6 +418,11 @@ const BackgroundExperienceForm: React.FC<Props> = ({
   const DisplayedTabContent: React.FC<Tprops2> = ({ expIdx }) => {
     return (
       <div key={expIdx} className="row">
+        <div className="col-6 d-none">
+          <div className="input-group-meta position-relative mb-15">
+            <p className="mb-0">{experiences?.experiences[expIdx]?.id}</p>
+          </div>
+        </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Job Title*</label>
@@ -579,13 +591,20 @@ const BackgroundExperienceForm: React.FC<Props> = ({
     }
   };
 
-  const handleSubmit: FormProps<FieldType>['onFinish'] = async () => {
+  const [expTotal, setExpTotal] = useState(0);
+  const [loopTotal, setLoopTotal] = useState(0);
+  const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
+
+  const handleSubmit: FormProps<FieldType>['onFinish'] = () => {
     if (editState) {
-      const values = form.getFieldsValue()
-      const plainObjectValues = JSON.parse(JSON.stringify(values));
-      console.info("Submitted Values \t:", plainObjectValues);
-      console.info("Arr or Obj \t: ", Object.values(plainObjectValues.experience));
-    };
+      // jalankan simpan data
+      let values = form.getFieldsValue();
+      values = {
+        ...values,
+        experience: { ...initFieldsValue?.experience, ...values?.experience },
+      };
+      console.log('submittedValueExperience: ', values);
+    }
   };
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
@@ -599,10 +618,6 @@ const BackgroundExperienceForm: React.FC<Props> = ({
     }
   };
 
-  const [expTotal, setExpTotal] = useState(0);
-  const [loopTotal, setLoopTotal] = useState(0);
-  const [initFieldsValue, setInitFieldsValue] = useState({});
-
   useEffect(() => {
     if (experiences) {
       if ('experiences' in experiences) {
@@ -614,6 +629,7 @@ const BackgroundExperienceForm: React.FC<Props> = ({
             ...experiences?.experiences?.reduce(
               (acc: any, exp: any, index: number) => {
                 acc[index] = {
+                  id: exp?.id,
                   jobTitle: exp?.job_title,
                   jobFunction: exp?.job_function,
                   lineIndustry: exp?.line_industry,
@@ -698,7 +714,7 @@ const BackgroundExperienceForm: React.FC<Props> = ({
               Working Experience
             </label>
 
-            {editState && (
+            {/* {editState && (
               <div className="col-12">
                 <div className="input-group-meta position-relative mb-15">
                   <Form.Item<FieldType> name="expOption" className="mb-0">
@@ -713,7 +729,7 @@ const BackgroundExperienceForm: React.FC<Props> = ({
                   </Form.Item>
                 </div>
               </div>
-            )}
+            )} */}
             {expValue === 'Fresh Graduate' && (
               <div className="col-6">
                 <div className="input-group-meta position-relative mb-15">

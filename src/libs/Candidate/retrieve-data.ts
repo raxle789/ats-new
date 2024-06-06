@@ -203,7 +203,7 @@ export async function getAdditionalInformations(): Promise<TypeFetchReturned> {
 
 /**
  * @description Test
- * @returns 
+ * @returns
  */
 export async function getCandidateDocuments() {
   const authSession = await getUserSession('auth');
@@ -226,15 +226,15 @@ export async function getCandidateDocuments() {
       data: null,
       message: 'Fetching Error: There is a problem with database connection: ',
     };
-  };
-};
+  }
+}
 
 export async function getAppliedJobs(): Promise<TypeFetchReturned> {
   const authSession = await getUserSession('auth');
   try {
     const appliedJobData = await prisma.candidateStates.findMany({
       where: {
-        candidateId: authSession.candidate.id
+        candidateId: authSession.candidate.id,
       },
       select: {
         id: true,
@@ -247,22 +247,22 @@ export async function getAppliedJobs(): Promise<TypeFetchReturned> {
             verticalCode: true,
             publishedDate: true,
             expiredDate: true,
-          }
+          },
         },
       },
     });
-    console.log('APPLIED \t:',appliedJobData);
+    console.log('APPLIED \t:', appliedJobData);
     return {
       success: true,
       data: appliedJobData,
-      message: 'Data Fetched:'
-    }
+      message: 'Data Fetched:',
+    };
   } catch (error) {
     console.info('Fetching Error: ', error);
     return {
       success: false,
       data: null,
-      message: 'Fetching Error: There is a problem with database connection: '
+      message: 'Fetching Error: There is a problem with database connection: ',
     };
   }
 }

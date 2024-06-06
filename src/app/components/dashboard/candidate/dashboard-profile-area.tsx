@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { Tabs, message } from 'antd';
+import React, { useEffect, useState, Suspense } from 'react';
+import { Tabs } from 'antd';
+import { message } from 'antd';
 import type { TabsProps } from 'antd';
 import PersonalDataForm from '../../forms/personal-data-form';
 import BackgroundExperienceForm from '../../forms/background-experience-form';
@@ -21,6 +22,7 @@ import { getCandidateProfile } from '@/libs/Candidate/retrieve-data';
 import { getCandidateExperiences } from '@/libs/Candidate/retrieve-data';
 import { getEducationSkills } from '@/libs/Candidate/retrieve-data';
 import { getAdditionalInformations } from '@/libs/Candidate/retrieve-data';
+import EmployJobDetailSkeleton from '../../loadings/employ-job-detail-skeleton';
 
 type MasterData = {
   citys?: {
@@ -202,34 +204,42 @@ const DashboardProfileArea = () => {
       <div className="bg-white card-box border-20">
         <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
         {keyState === '1' && (
-          <PersonalDataForm
-            profileData={profileData}
-            masterData={masterData}
-            errors={errors}
-          />
+          <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
+            <PersonalDataForm
+              profileData={profileData}
+              masterData={masterData}
+              errors={errors}
+            />
+          </Suspense>
         )}
         {keyState === '2' && (
-          <BackgroundExperienceForm
-            experiences={experiences}
-            masterData={masterData}
-            noticePeriod={noticePeriod}
-            errors={errors}
-          />
+          <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
+            <BackgroundExperienceForm
+              experiences={experiences}
+              masterData={masterData}
+              noticePeriod={noticePeriod}
+              errors={errors}
+            />
+          </Suspense>
         )}
         {keyState === '3' && (
-          <EducationSkillsForm
-            educationAndSkill={educationAndSkill}
-            masterData={masterData}
-            errors={errors}
-          />
+          <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
+            <EducationSkillsForm
+              educationAndSkill={educationAndSkill}
+              masterData={masterData}
+              errors={errors}
+            />
+          </Suspense>
         )}
         {keyState === '4' && (
-          <AdditionalInformationForm
-            additionalInformation={additionalInformation}
-            source={source}
-            masterData={masterData}
-            errors={errors}
-          />
+          <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
+            <AdditionalInformationForm
+              additionalInformation={additionalInformation}
+              source={source}
+              masterData={masterData}
+              errors={errors}
+            />
+          </Suspense>
         )}
         {keyState === '5' && <DocumentForm />}
       </div>

@@ -8,16 +8,13 @@ import {
   Divider,
   Space,
   Button,
-  // Checkbox,
   InputNumber,
   message,
 } from 'antd';
-import type { FormProps, CheckboxProps, InputRef } from 'antd';
+import type { FormProps, InputRef } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import dayjs, { Dayjs } from 'dayjs';
-// import { getEducationSkills } from '@/libs/Candidate/retrieve-data';
-// import { fetchCertificates, fetchCities, fetchEducatioMajors, fetchEducationInstitutios, fetchEducationLevels, fetchSkills } from '@/libs/Fetch';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 let languageIndex = 0;
@@ -37,6 +34,7 @@ type FieldType = {
   };
   certification?: {
     [id: string]: {
+      id?: number;
       certificationName?: string;
       institution?: string;
       issueDate?: string | Dayjs;
@@ -127,6 +125,16 @@ const EducationSkillsForm: React.FC<Props> = ({
   const CertifTabContent: React.FC<Tprops1> = ({ certificationIdx }) => {
     return (
       <div key={certificationIdx} className="row">
+        <div className="col-12 d-none">
+          <div className="input-group-meta position-relative mb-15">
+            <Form.Item<FieldType>
+              name={['certification', certificationIdx.toString(), 'id']}
+              className="mb-0"
+            >
+              <InputNumber />
+            </Form.Item>
+          </div>
+        </div>
         <div className="col-12">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Name (Certification/Licence)</label>
@@ -201,6 +209,13 @@ const EducationSkillsForm: React.FC<Props> = ({
   const DisplayedTabContent: React.FC<Tprops2> = ({ certificationIdx }) => {
     return (
       <div key={certificationIdx} className="row">
+        <div className="col-12 d-none">
+          <div className="input-group-meta position-relative mb-15">
+            <p className="mb-0">
+              {educationAndSkill?.certifications[certificationIdx]?.id}
+            </p>
+          </div>
+        </div>
         <div className="col-12">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Name (Certification/Licence)</label>
@@ -360,9 +375,23 @@ const EducationSkillsForm: React.FC<Props> = ({
     }, 0);
   };
 
-  const handleSubmit: FormProps<FieldType>['onFinish'] = (values) => {
+  const [certifTotal, setCertifTotal] = useState(0);
+  const [loopTotal, setLoopTotal] = useState(0);
+  const [certifState, setCertifState] = useState('not-certified');
+  const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
+
+  const handleSubmit: FormProps<FieldType>['onFinish'] = () => {
     if (editState) {
       // jalankan simpan data
+      let values = form.getFieldsValue();
+      values = {
+        ...values,
+        certification: {
+          ...initFieldsValue?.certification,
+          ...values?.certification,
+        },
+      };
+      console.log('submittedValueEducation: ', values);
     }
   };
 
@@ -376,11 +405,6 @@ const EducationSkillsForm: React.FC<Props> = ({
       message.error(`Failed: ${errorMessage}`);
     }
   };
-
-  const [certifTotal, setCertifTotal] = useState(0);
-  const [loopTotal, setLoopTotal] = useState(0);
-  const [certifState, setCertifState] = useState('not-certified');
-  const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
 
   useEffect(() => {
     // const skillsArray = educationAndSkill?.skills;
@@ -412,6 +436,7 @@ const EducationSkillsForm: React.FC<Props> = ({
     const certifications = educationAndSkill?.certifications;
     type certiField = {
       [key: string]: {
+        id?: number;
         certificationName?: string;
         institution?: string;
         monthIssue?: string;
@@ -422,6 +447,7 @@ const EducationSkillsForm: React.FC<Props> = ({
       certificationsField = certifications.reduce(
         (acc: any, item: any, index: number) => {
           acc[index] = {
+            id: item?.id,
             certificationName: item?.name,
             institution: item?.institutionName,
             monthIssue: dayjs(new Date(item?.issuedDate)),
