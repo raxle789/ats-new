@@ -63,7 +63,12 @@ interface FieldType {
 
 const desc = ['Poor', 'Fair', 'Good', 'Excellent'];
 
-const InterviewResultItem = ({ interviewResultData }) => {
+const InterviewResultItem = ({
+  interviewResultData,
+  insertInterviewResult,
+  params,
+  searchParams,
+}) => {
   // UseState
   const [form] = Form.useForm();
 
@@ -101,7 +106,7 @@ const InterviewResultItem = ({ interviewResultData }) => {
     // console.log('radio checked', e.target.value);
     setInterviewResultStatusValue(
       interviewResultData?.interviewResultStatus?.findIndex(
-        (item) => item?.id === e.target.value,
+        (item) => item?.name === e.target.value,
       ),
     );
   }
@@ -114,19 +119,17 @@ const InterviewResultItem = ({ interviewResultData }) => {
     //   resultInfo: { ...values.resultInfo, scoreTotal: scoreTotal },
     // };
 
-    console.info(values);
+    insertInterviewResult(params, searchParams, values);
   }
 
-  const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
-    errorInfo,
-  ) => {
-    if (errorInfo.errorFields && errorInfo.errorFields.length > 0) {
-      const errorMessage = errorInfo.errorFields
-        .map((field) => field.errors.join(', '))
-        .join('; ');
-      message.error(`Failed: ${errorMessage}`);
-    }
-  };
+  // function onFinishFailed(errorInfo) {
+  //   if (errorInfo.errorFields && errorInfo.errorFields.length > 0) {
+  //     // const errorMessage = errorInfo.errorFields
+  //     //   .map((field) => field.errors.join(', '))
+  //     //   .join('; ');
+  //     // message.error(`Failed: ${errorMessage}`);
+  //   }
+  // }
 
   // UseEffect
   // useEffect(() => {
@@ -350,8 +353,9 @@ const InterviewResultItem = ({ interviewResultData }) => {
           <div className="col-6">
             <Form
               form={form}
+              scrollToFirstError={true}
               onFinish={handleSubmit}
-              onFinishFailed={onFinishFailed}
+              // onFinishFailed={onFinishFailed}
             >
               <div className="row">
                 {interviewResultData?.interviewResultCategories?.length &&
@@ -369,14 +373,26 @@ const InterviewResultItem = ({ interviewResultData }) => {
                                 <Form.Item
                                   name={`${_.camelCase(item?.name)}Rate`}
                                   className="mt-2 mb-0"
+                                  rules={[
+                                    {
+                                      required: true,
+                                      message: `Please Select Rate For ${item?.name}!`,
+                                    },
+                                  ]}
                                 >
                                   <div>
                                     <Rate
                                       tooltips={desc}
+                                      allowClear={true}
                                       onChange={(value) =>
-                                        handleRatingClick(1, value)
+                                        form.setFieldValue(
+                                          `${_.camelCase(item?.name)}Rate`,
+                                          value,
+                                        )
                                       }
-                                      value={rating[1]}
+                                      value={form.getFieldValue(
+                                        `${_.camelCase(item?.name)}Rate`,
+                                      )}
                                       count={4}
                                     />
                                   </div>
@@ -386,10 +402,30 @@ const InterviewResultItem = ({ interviewResultData }) => {
                                 <Form.Item
                                   name={`${_.camelCase(item?.name)}Comment`}
                                   className="mb-0"
+                                  rules={[
+                                    ({ getFieldValue }) => ({
+                                      transform: (value) => {
+                                        return value?.trim();
+                                      },
+                                      validator: (rule, value) => {
+                                        const rate = getFieldValue(
+                                          `${_.camelCase(item?.name)}Rate`,
+                                        );
+
+                                        if (rate <= 1 && !value) {
+                                          return Promise.reject(
+                                            `Please Input Comment For ${item?.name}!`,
+                                          );
+                                        } else {
+                                          return Promise.resolve();
+                                        }
+                                      },
+                                    }),
+                                  ]}
                                 >
                                   <TextArea
                                     placeholder="Comment"
-                                    autoSize={{ minRows: 3, maxRows: 5 }}
+                                    autoSize={{ minRows: 3 }}
                                   />
                                 </Form.Item>
                               </div>
@@ -863,18 +899,27 @@ const InterviewResultItem = ({ interviewResultData }) => {
                   <div className="col-12 mt-3">
                     <div className="input-group-meta position-relative mb-15">
                       <label>Result for Position</label>
-                      <Form.Item name="status" className="mb-0">
+                      <Form.Item
+                        name="status"
+                        className="mb-0"
+                        rules={[
+                          {
+                            required: true,
+                            message: 'Please Select Interview Result!',
+                          },
+                        ]}
+                      >
                         <Radio.Group
                           onChange={handleInterviewResultStatus}
                           value={
                             interviewResultData?.interviewResultStatus[
                               interviewResultStatusValue
-                            ]?.id
+                            ]?.name
                           }
                         >
                           {interviewResultData?.interviewResultStatus?.map(
                             (item, index) => (
-                              <Radio key={index} value={item?.id}>
+                              <Radio key={index} value={item?.name}>
                                 {item?.name}
                               </Radio>
                             ),
@@ -892,10 +937,22 @@ const InterviewResultItem = ({ interviewResultData }) => {
                         interviewResultData?.interviewResultStatus[
                           interviewResultStatusValue
                         ]?.name !== 'Reschedule' && (
-                          <Form.Item name="statusDescription" className="mb-0">
+                          <Form.Item
+                            name="reason"
+                            className="mb-0"
+                            rules={[
+                              {
+                                transform: (value) => {
+                                  return value?.trim();
+                                },
+                                required: true,
+                                message: `Please Input Reason For ${interviewResultData?.interviewResultStatus[interviewResultStatusValue]?.name}!`,
+                              },
+                            ]}
+                          >
                             <TextArea
-                              placeholder="Comment"
-                              autoSize={{ minRows: 3, maxRows: 5 }}
+                              placeholder="Reason"
+                              autoSize={{ minRows: 3 }}
                             />
                           </Form.Item>
                         )}
@@ -908,12 +965,13 @@ const InterviewResultItem = ({ interviewResultData }) => {
                           rules={[
                             {
                               required: true,
-                              message: 'Please input!',
+                              message: "Please Select Rescheduler's Name!",
                             },
                           ]}
                         >
                           <Select
                             className="w-100"
+                            allowClear
                             placeholder="Select"
                             options={interviewResultData?.reschedulers}
                           />

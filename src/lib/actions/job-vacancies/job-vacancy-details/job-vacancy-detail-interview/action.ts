@@ -2,6 +2,7 @@
 
 import {
   getAllInterviewType,
+  createInterviewResult,
   getInterviewByCandidateStateId,
   getAllInterviewResultStatus,
   getAllInterviewResultCategory,
@@ -23,6 +24,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import {
   validateCandidateIdAndJobVacancyId,
+  validateInterviewResultSchema,
   validateInterviewResultData,
   validateInterviewerNik,
   validateInterviewId,
@@ -366,7 +368,7 @@ export async function getInterviewResultData(
 
     // const decryptedInterviewId = await crypto.decryptData(interviewId);
 
-    if (decryptedCandidateId) {
+    if (decryptedCandidateId && decryptedJobVacancyId && interviewerNik) {
       const validate = validateInterviewResultData.safeParse({
         candidateId: decryptedCandidateId,
         jobVacancyId: decryptedJobVacancyId,
@@ -420,11 +422,11 @@ export async function getInterviewResultData(
             interviewResultStatus: await getAllInterviewResultStatus(),
             reschedulers: [
               {
-                value: applicantData?.id,
+                value: `${applicantData?.id}#candidate`,
                 label: `By ${applicantData?.users?.name} (Candidate)`,
               },
               {
-                value: validate?.data?.interviewerNik,
+                value: `${validate?.data?.interviewerNik}#user`,
                 label: `By ${await getInterviewerNameByNik(
                   validate?.data?.interviewerNik,
                 )} (User)`,
@@ -448,4 +450,42 @@ export async function getInterviewResultData(
   })();
 
   return data;
+}
+
+export async function insertInterviewResult(params, searchParams, values) {
+  const decryptedQuery = await crypto.decryptObject(searchParams?.q);
+
+  if (
+    !_.isEmpty(decryptedQuery) &&
+    decryptedQuery?.candidateId &&
+    params?.id &&
+    decryptedQuery?.interviewId &&
+    params?.interviewerNik
+  ) {
+    const decryptedCandidateId = await crypto.decryptData(
+      decryptedQuery?.candidateId,
+    );
+
+    const decryptedJobVacancyId = await crypto.decryptData(params?.id);
+
+    if (decryptedCandidateId && decryptedJobVacancyId) {
+      // console.info(values);
+
+      const validate = validateInterviewResultSchema.safeParse({
+        candidateId: decryptedCandidateId,
+        jobVacancyId: decryptedJobVacancyId,
+        interviewId: decryptedQuery?.interviewId,
+        interviewerNik: params?.interviewerNik,
+        ...values,
+      });
+
+      if (validate.success) {
+        // console.info(validate.data);
+
+        const response = await createInterviewResult(validate?.data);
+      } else {
+        console.log(validate.error);
+      }
+    }
+  }
 }
