@@ -6,14 +6,20 @@ import moment from 'moment';
 import * as cheerio from 'cheerio';
 
 export async function encryptData(data) {
-  const encryptedData = encodeURIComponent(
-    CryptoJS.Rabbit.encrypt(
-      String(data),
-      process.env.NEXT_PUBLIC_SECRET_KEY,
-    ).toString(),
-  );
+  try {
+    const encryptedData = encodeURIComponent(
+      CryptoJS.Rabbit.encrypt(
+        String(data),
+        process.env.NEXT_PUBLIC_SECRET_KEY,
+      ).toString(),
+    );
 
-  return encryptedData;
+    return encryptedData;
+  } catch (e) {
+    console.log(e);
+
+    return '';
+  }
 }
 
 export async function decryptData(data) {

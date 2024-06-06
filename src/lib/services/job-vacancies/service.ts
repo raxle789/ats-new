@@ -2201,7 +2201,7 @@ export async function getInterviewByCandidateStateId(candidateStateId) {
             const data = {
               ...interview,
               interviewers:
-                await tx.$queryRaw`SELECT employee.EmpNIK AS interviewerNik, employee.EmpName AS interviewerName, irs.name AS interviewResult, ii.is_email_sent AS isEmailSent FROM (((interview_interviewers AS ii LEFT JOIN MASTER_ERA.dbo.ERA_MasterEmployeeAttr AS employee ON ii.interviewer_nik = employee.EmpNIK) LEFT JOIN interview_results AS ir ON ii.interview_result_id = ir.id)LEFT JOIN interview_result_status AS irs ON ir.statusId = irs.id) WHERE ii.interview_id = ${interview.value} ORDER BY employee.EmpName ASC`,
+                await tx.$queryRaw`SELECT employee.EmpNIK AS interviewerNik, employee.EmpName AS interviewerName, irs.name AS interviewResult, ii.is_email_sent AS isEmailSent FROM (((interview_interviewers AS ii LEFT JOIN MASTER_ERA.dbo.ERA_MasterEmployeeAttr AS employee ON ii.interviewer_nik = employee.EmpNIK) LEFT JOIN interview_results AS ir ON ii.interview_result_id = ir.id)LEFT JOIN interview_result_status AS irs ON ir.statusName = irs.name) WHERE ii.interview_id = ${interview.value} ORDER BY employee.EmpName ASC`,
             };
 
             return data;
@@ -2336,21 +2336,14 @@ export async function getInterviewById(interviewId) {
 
 export async function getApplicantByCandidateId(candidateId, jobVacancyId) {
   try {
-    const data = await prisma.candidates.findUnique({
+    const data = await prisma.candidates.findFirst({
       where: {
-        id: candidateId,
-        AND: [
-          {
-            id: candidateId,
+        candidateStates: {
+          some: {
+            candidateId: candidateId,
+            jobVacancyId: jobVacancyId,
           },
-          {
-            candidateStates: {
-              some: {
-                jobVacancyId: jobVacancyId,
-              },
-            },
-          },
-        ],
+        },
       },
       include: {
         users: true,
@@ -2424,17 +2417,13 @@ export async function getAllInterviewResultStatus() {
   }
 }
 
-export async function createInterviewResult(
-  interviewId,
-  interviewerNik,
-  { status, comment, interviewResultCategory },
-) {
+export async function createInterviewResult({}) {
   try {
     const data = prisma.$transaction(async (tx) => {
       const interviewResultData = await tx.interviewResults.create({
         data: {
-          statusId: status,
-          comment: comment,
+          statusName: status,
+          reason: comment,
         },
       });
 
