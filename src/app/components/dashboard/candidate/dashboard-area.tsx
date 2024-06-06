@@ -56,8 +56,6 @@ const DashboardArea = () => {
     const appliedJobsSData = await getAppliedJobs();
     console.info("Applied Jobs \t: ", appliedJobsSData);
     if (appliedJobsSData.success) {
-      // if (typeof appliedJobsSData.data === 'string')
-      //   return setError(appliedJobsSData.data);
       return setAppliedJobs(appliedJobsSData.data);
     };
     return setError(appliedJobsSData.message as string);

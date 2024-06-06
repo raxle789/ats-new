@@ -2,50 +2,66 @@
 
 import prisma from "@/root/prisma";
 import { getUserSession } from "../Sessions";
+import { TypeReturnedServerAction } from "../Registration";
 
-export async function updateCandidateProfile(submittedValue: any) {
-  const regSession = await getUserSession('auth');
-  console.info('reg-session-data', regSession);
+export async function updateCandidateProfile(submittedValue: any): Promise<TypeReturnedServerAction> {
+  console.info('Submitted Value Data \t:', submittedValue);
+  const authSession = await getUserSession('auth');
+  console.info('reg-session-data', authSession);
   try {
     const updateProfile = await prisma.$transaction(async (tx) => {
-      await tx.$queryRaw`
-        UPDATE dbo.documents
-        SET original_name = ${submittedValue.profile.uploadPhoto.original_name},
-            byte_size = ${submittedValue.profile.uploadPhoto.byte_size},
-            file_base = ${Buffer.from(submittedValue.profile.uploadPhoto.file_base)}
-        WHERE candidate_id = ${regSession.candidate.id}`;
+      console.info("is user update profile photo?...")
+      if(submittedValue.profilePicture) {
+        console.info("updating profile picture...");
+        await tx.documents.updateMany({
+          where: {
+            candidate_id: authSession.candidate.id,
+            documentTypeId: 1 // specify document type
+          },
+          data: {
+            original_name: submittedValue.profilePicture.original_name,
+            byte_size: submittedValue.profilePicture.byte_size,
+            file_base: Buffer.from(submittedValue.profilePicture.file_base),
+            updated_at: new Date(Date.now()),
+          }
+        });
+      };
+      console.info('updating user data...');
       await tx.users.update({
         where: {
-          id: regSession.user.id
+          id: authSession.user.id
         },
         data: {
+          name: submittedValue.profile.fullname,
           email: submittedValue.profile.email,
-          name: submittedValue.profile.fullname
+          updated_at: new Date(Date.now()),
         }
       });
+      console.info('updating candidate data...');
       await tx.candidates.update({
         where: {
-          id: regSession.candidate.id,
+          id: authSession.candidate.id
         },
         data: {
           blood_type: submittedValue.profile.bloodType,
-          date_of_birth: submittedValue.profile.dateOfBirth,
+          date_of_birth: new Date(`${submittedValue.profile.dateOfBirth}`),
           ethnicity: submittedValue.profile.ethnicity,
           gender: submittedValue.profile.gender,
           maritalStatus: submittedValue.profile.maritalStatus,
           phone_number: submittedValue.profile.phoneNumber,
           birthCity: submittedValue.profile.placeOfBirth,
-          religion: submittedValue.profile.religion,
+          religion: submittedValue.profile.religion
         }
       });
+      console.info('updating address data...');
       await tx.addresses.updateMany({
         where: {
-          candidateId: regSession.candidate.id
+          id_of_candidate: authSession.candidate.id
         },
         data: {
           city: submittedValue.address.city,
           country: submittedValue.address.country,
-          currentAddress: submittedValue.address.currentAddress ?? null,
+          currentAddress: submittedValue.address.currentAddress ?? '',
           street: submittedValue.address.permanentAddress,
           rt: submittedValue.address.rt,
           rw: submittedValue.address.rw,
@@ -54,9 +70,12 @@ export async function updateCandidateProfile(submittedValue: any) {
           zipCode: submittedValue.address.zipCode
         }
       });
+      console.info('finish:')
       return {
         success: true,
-        message: 'Updated successfully'
+        data: null,
+        errors: null,
+        message: "Data updated successfully:"
       };
     });
     return updateProfile;
@@ -64,6 +83,8 @@ export async function updateCandidateProfile(submittedValue: any) {
     console.info('error updating: ', error);
     return {
       success: false,
+      data: null,
+      errors: error,
       message: 'Error updating profile'
     };
   }

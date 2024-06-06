@@ -519,6 +519,7 @@ const BackgroundExperienceForm: React.FC<Props> = ({
     let newPanes = [...expItems];
     let newDisplayed = [...displayedItems];
     let index = expIdx;
+    // let newActiveKey: string;
     for (let i = 0; i < tabTotal; i++) {
       const newActiveKey = `newTab${newExpTabIdx.current++}`;
       newPanes.push({
@@ -578,10 +579,13 @@ const BackgroundExperienceForm: React.FC<Props> = ({
     }
   };
 
-  const handleSubmit: FormProps<FieldType>['onFinish'] = (values) => {
+  const handleSubmit: FormProps<FieldType>['onFinish'] = async () => {
     if (editState) {
-      // jalankan simpan data
-    }
+      const values = form.getFieldsValue()
+      const plainObjectValues = JSON.parse(JSON.stringify(values));
+      console.info("Submitted Values \t:", plainObjectValues);
+      console.info("Arr or Obj \t: ", Object.values(plainObjectValues.experience));
+    };
   };
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
