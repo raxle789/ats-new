@@ -5,7 +5,15 @@ import AssessmentListArea from '@/app/components/applicants/assessment-list-area
 
 export const revalidate = 0;
 
-const EmployDashboardJobDetailAssessment = ({ params, searchParams }) => {
+type Props = {
+  params: any;
+  searchParams: any;
+};
+
+const EmployDashboardJobDetailAssessment: React.FC<Props> = ({
+  params,
+  searchParams,
+}) => {
   return (
     <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
       <AssessmentListArea

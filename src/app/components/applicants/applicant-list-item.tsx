@@ -138,20 +138,21 @@ const ApplicantListItem: React.FC<Props> = ({
       {contextHolder}
 
       <Spin spinning={loading} fullscreen />
-
-      <div className="card-checkbox">
-        <Popover
-          content={<ActionCheckboxPipeline />}
-          trigger="click"
-          open={popOverState}
-          placement="right"
-        >
-          <Checkbox
-            onChange={onChangeCheckboxAll}
-            checked={checkboxAllValue}
-          ></Checkbox>
-        </Popover>
-      </div>
+      {applicantData.length > 0 && (
+        <div className="card-checkbox">
+          <Popover
+            content={<ActionCheckboxPipeline />}
+            trigger="click"
+            open={popOverState}
+            placement="right"
+          >
+            <Checkbox
+              onChange={onChangeCheckboxAll}
+              checked={checkboxAllValue}
+            ></Checkbox>
+          </Popover>
+        </div>
+      )}
       <div className="wrapper">
         {applicantData?.map((item: any) => (
           <ApplicantItem

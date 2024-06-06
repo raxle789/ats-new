@@ -2,11 +2,21 @@
 
 import AssessmentListItem from './assessment-list-item';
 import { handleApplicant } from '../message/confirm';
-import JobAssessmentResultArea from '../dashboard/employ/job-assessment-result-area';
-import { registerAssessment } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-assessment/action';
+// import JobAssessmentResultArea from '../dashboard/employ/job-assessment-result-area';
+// import { registerAssessment } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-assessment/action';
 import { getAllApplicantDataByJobVacancyIdAndStateName } from '@/lib/actions/job-vacancies/job-vacancy-details/action';
 
-const AssessmentListArea = async ({ params, searchParams, status }) => {
+type Props = {
+  params?: any;
+  searchParams?: any;
+  status?: string | any;
+};
+
+const AssessmentListArea: React.FC<Props> = async ({
+  params,
+  searchParams,
+  status,
+}) => {
   const page = searchParams?.page ?? '1';
 
   const perPage = searchParams?.perPage ?? '10';
@@ -15,7 +25,23 @@ const AssessmentListArea = async ({ params, searchParams, status }) => {
 
   const offset = (Number(page) - 1) * Number(perPage);
 
-  const applicantData = await (async () => {
+  type fieldData = {
+    data: {
+      candidateId: string;
+      candidatePhoto: string | null;
+      candidateName: string | undefined;
+      candidateLastPosition: string;
+      candidateLastEducation: string | null;
+      candidateExpectedSalary: string | number;
+      candidateYearOfExperience: string | number;
+      candidateStatus: string | null;
+      candidateSkills: string[];
+      candidateScore: string;
+    }[];
+    total: number;
+  };
+
+  const applicantData: never[] | fieldData | any = await (async () => {
     if (params?.id) {
       return await getAllApplicantDataByJobVacancyIdAndStateName(
         params?.id,
