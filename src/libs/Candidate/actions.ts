@@ -365,6 +365,24 @@ export async function updateAdditionalInformations(submittedValue: any): Promise
             relationStatus: submittedValue.others.emergencyContactRelation
           }
         });
+      } else {
+        console.info('add a new emergency contact...');
+        const emergencyContact = await tx.emergencyContacts.create({
+          data: {
+            name: submittedValue.others.emergencyContactName,
+            phoneNumber: submittedValue.others.emergencyContactPhoneNumber,
+            relationStatus: submittedValue.others.emergencyContactRelation
+          }
+        });
+        console.info('updating emergency contact id on candidate table...');
+        await tx.candidates.update({
+          where: {
+            id: authSession.candidate.id
+          },
+          data: {
+            emengencyContactId: emergencyContact.id
+          }
+        });
       };
 
       console.info('updating source ...');
