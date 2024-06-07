@@ -6,15 +6,9 @@ import { Status } from '@/status/applicant-status';
 // import { useRouter } from 'next/navigation';
 // import CreateInterviewModal from '../app/components/common/popup/create-interview-modal';
 
-type ActionProp = {
-  props?: any;
-};
-
 const ActionApplicant = (props) => {
   // const currentStep = useAppSelector((state) => state.applicantStep.step);
-
   // const [isModalOpen, setIsOpenModal] = useState(false);
-
   return (
     <>
       <ul className="dropdown-menu dropdown-menu-end">
@@ -125,7 +119,7 @@ const ActionApplicant = (props) => {
           </button>
         </li>
         <li>
-          <button className="applicant-action" type="button">
+          <button className="applicant-action red-action" type="button">
             Blacklist
           </button>
         </li>

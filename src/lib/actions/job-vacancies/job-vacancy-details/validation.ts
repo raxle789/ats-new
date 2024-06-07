@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { Status } from '@/status/interview-status';
 import moment from 'moment';
 
 export const validateJobVacancyId = z.object({
@@ -232,3 +233,355 @@ export const validateInterviewResultData = z.object({
     .trim()
     .length(9, { message: 'Interviewer NIK Must Contain 9 Numbers!' }),
 });
+
+export const validateInterviewResultSchema = z
+  .object({
+    candidateId: z
+      .number({
+        required_error: 'Candidate Id Required!',
+        invalid_type_error: 'Candidate Id Must Be A Number!',
+      })
+      .int(),
+    jobVacancyId: z
+      .number({
+        required_error: 'Job Vacancy Id Required!',
+        invalid_type_error: 'Job Vacancy Id Must Be A Number!',
+      })
+      .int(),
+    interviewId: z
+      .number({
+        required_error: 'Interview Id Required!',
+        invalid_type_error: 'Interview Id Must Be A Number!',
+      })
+      .int(),
+    interviewerNik: z.coerce
+      .string({
+        required_error: 'Interviewer NIK Required!',
+        invalid_type_error: 'Interviewer NIK Must Be A String!',
+      })
+      .trim()
+      .length(9, { message: 'Interviewer NIK Must Contain 9 Numbers!' }),
+    educationBackgroundRate: z
+      .number({
+        required_error: 'Education Background Rate Required!',
+        invalid_type_error: 'Education Background Rate Must Be A Number!',
+      })
+      .int()
+      .min(1, { message: 'Education Background Rate Must Be 1 - 4!' })
+      .max(4, { message: 'Education Background Rate Must Be 1 - 4!' }),
+    educationBackgroundComment: z.coerce
+      .string({
+        required_error: 'Education Background Comment Required!',
+        invalid_type_error: 'Education Background Comment Must Be A String!',
+      })
+      .trim()
+      .default(''),
+    workingExperienceRate: z
+      .number({
+        required_error: 'Working Experience Rate Required!',
+        invalid_type_error: 'Working Experience Rate Must Be A Number!',
+      })
+      .int()
+      .min(1, { message: 'Working Experience Rate Must Be 1 - 4!' })
+      .max(4, { message: 'Working Experience Rate Must Be 1 - 4!' }),
+    workingExperienceComment: z.coerce
+      .string({
+        required_error: 'Working Experience Comment Required!',
+        invalid_type_error: 'Working Experience Comment Must Be A String!',
+      })
+      .trim()
+      .default(''),
+    communicationSkillsRate: z
+      .number({
+        required_error: 'Communication Skills Rate Required!',
+        invalid_type_error: 'Communication Skills Rate Must Be A Number!',
+      })
+      .int()
+      .min(1, { message: 'Communication Skills Rate Must Be 1 - 4!' })
+      .max(4, { message: 'Communication Skills Rate Must Be 1 - 4!' }),
+    communicationSkillsComment: z.coerce
+      .string({
+        required_error: 'Communication Skills Comment Required!',
+        invalid_type_error: 'Communication Skills Comment Must Be A String!',
+      })
+      .trim()
+      .default(''),
+    qualityOrientedRate: z
+      .number({
+        required_error: 'Quality Oriented Rate Required!',
+        invalid_type_error: 'Quality Oriented Rate Must Be A Number!',
+      })
+      .int()
+      .min(1, { message: 'Quality Oriented Rate Must Be 1 - 4!' })
+      .max(4, { message: 'Quality Oriented Rate Must Be 1 - 4!' }),
+    qualityOrientedComment: z.coerce
+      .string({
+        required_error: 'Quality Oriented Comment Required!',
+        invalid_type_error: 'Quality Oriented Comment Must Be A String!',
+      })
+      .trim()
+      .default(''),
+    achievementOrientedRate: z
+      .number({
+        required_error: 'Achievement Oriented Rate Required!',
+        invalid_type_error: 'Achievement Oriented Rate Must Be A Number!',
+      })
+      .int()
+      .min(1, { message: 'Achievement Oriented Rate Must Be 1 - 4!' })
+      .max(4, { message: 'Achievement Oriented Rate Must Be 1 - 4!' }),
+    achievementOrientedComment: z.coerce
+      .string({
+        required_error: 'Achievement Oriented Comment Required!',
+        invalid_type_error: 'Achievement Oriented Comment Must Be A String!',
+      })
+      .trim()
+      .default(''),
+    developingOthersRate: z
+      .number({
+        required_error: 'Developing Others Rate Required!',
+        invalid_type_error: 'Developing Others Rate Must Be A Number!',
+      })
+      .int()
+      .min(1, { message: 'Developing Others Rate Must Be 1 - 4!' })
+      .max(4, { message: 'Developing Others Rate Must Be 1 - 4!' }),
+    developingOthersComment: z.coerce
+      .string({
+        required_error: 'Developing Others Comment Required!',
+        invalid_type_error: 'Developing Others Comment Must Be A String!',
+      })
+      .trim()
+      .default(''),
+    creativeAgilityRate: z
+      .number({
+        required_error: 'Creative Agility Rate Required!',
+        invalid_type_error: 'Creative Agility Rate Must Be A Number!',
+      })
+      .int()
+      .min(1, { message: 'Creative Agility Rate Must Be 1 - 4!' })
+      .max(4, { message: 'Creative Agility Rate Must Be 1 - 4!' }),
+    creativeAgilityComment: z.coerce
+      .string({
+        required_error: 'Creative Agility Comment Required!',
+        invalid_type_error: 'Creative Agility Comment Must Be A String!',
+      })
+      .trim()
+      .default(''),
+    leadingOthersRate: z
+      .number({
+        required_error: 'Leading Others Rate Required!',
+        invalid_type_error: 'Leading Others Rate Must Be A Number!',
+      })
+      .int()
+      .min(1, { message: 'Leading Others Rate Must Be 1 - 4!' })
+      .max(4, { message: 'Leading Others Rate Must Be 1 - 4!' }),
+    leadingOthersComment: z.coerce
+      .string({
+        required_error: 'Leading Others Comment Required!',
+        invalid_type_error: 'Leading Others Comment Must Be A String!',
+      })
+      .trim()
+      .default(''),
+    strategicThinkingRate: z
+      .number({
+        required_error: 'Strategic Thinking Rate Required!',
+        invalid_type_error: 'Strategic Thinking Rate Must Be A Number!',
+      })
+      .int()
+      .min(1, { message: 'Strategic Thinking Rate Must Be 1 - 4!' })
+      .max(4, { message: 'Strategic Thinking Rate Must Be 1 - 4!' }),
+    strategicThinkingComment: z.coerce
+      .string({
+        required_error: 'Strategic Thinking Comment Required!',
+        invalid_type_error: 'Strategic Thinking Comment Must Be A String!',
+      })
+      .trim()
+      .default(''),
+    reliablePartnerRate: z
+      .number({
+        required_error: 'Reliable Partner Rate Required!',
+        invalid_type_error: 'Reliable Partner Rate Must Be A Number!',
+      })
+      .int()
+      .min(1, { message: 'Reliable Partner Rate Must Be 1 - 4' })
+      .max(4, { message: 'Reliable Partner Rate Must Be 1 - 4' }),
+    reliablePartnerComment: z.coerce
+      .string({
+        required_error: 'Reliable Partner Comment Required!',
+        invalid_type_error: 'Reliable Partner Comment Must Be A String!',
+      })
+      .trim()
+      .default(''),
+    technologySavvyRate: z
+      .number({
+        required_error: 'Technology Savvy Rate Required!',
+        invalid_type_error: 'Technology Savvy Rate Must Be A Number!',
+      })
+      .int()
+      .min(1, { message: 'Technology Savvy Rate Must Be 1 - 4!' })
+      .max(4, { message: 'Technology Savvy Rate Must Be 1 - 4!' }),
+    technologySavvyComment: z.coerce
+      .string({
+        required_error: 'Technology Savvy Comment Required!',
+        invalid_type_error: 'Technology Savvy Comment Must Be A String!',
+      })
+      .trim()
+      .default(''),
+    status: z.nativeEnum(Status, {
+      required_error: 'Status Required!',
+      invalid_type_error: 'Status Must Be A Valid Status!',
+    }),
+    reason: z.coerce
+      .string({
+        required_error: 'Reason Required!',
+        invalid_type_error: 'Reason Must Be A String!',
+      })
+      .trim()
+      .default(''),
+    rescheduler: z.coerce
+      .string({
+        required_error: 'Rescheduler Required!',
+        invalid_type_error: 'Rescheduler NIK Must Be A String!',
+      })
+      .trim()
+      // .transform((val, ctx) => {
+      //   if (val) {
+      //     if (val?.toLowerCase()?.includes('candidate')) {
+      //       return {
+      //         rescheduler: val?.split('#')[1],
+      //         candidateReschedulerId: val?.split('#')[0],
+      //       };
+      //     } else if (val?.toLowerCase()?.includes('user')) {
+      //       return {
+      //         rescheduler: val?.split('#')[1],
+      //         userReschedulerNik: val?.split('#')[0],
+      //       };
+      //     }
+      //   }
+
+      //   ctx.addIssue({
+      //     code: z.ZodIssueCode.custom,
+      //     message: 'Rescheduler Must Be A Valid Rescheduler!',
+      //   });
+
+      //   return z.NEVER;
+      // })
+      .default('')
+      .transform((val) => {
+        if (val) {
+          if (val?.toLowerCase()?.includes('candidate')) {
+            return {
+              rescheduler: val?.split('#')[1],
+              candidateReschedulerId: Number(val?.split('#')[0]),
+              userReschedulerNik: '',
+            };
+          } else if (val?.toLowerCase()?.includes('user')) {
+            return {
+              rescheduler: val?.split('#')[1],
+              candidateReschedulerId: 0,
+              userReschedulerNik: val?.split('#')[0],
+            };
+          }
+        }
+
+        return {
+          rescheduler: '',
+          candidateReschedulerId: 0,
+          userReschedulerNik: '',
+        };
+      }),
+  })
+  .superRefine((val, ctx) => {
+    if (val?.educationBackgroundRate <= 1 && !val?.educationBackgroundComment) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Education Background Comment Required!',
+      });
+    }
+
+    if (val?.workingExperienceRate <= 1 && !val?.workingExperienceComment) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Working Experience Comment Required!',
+      });
+    }
+
+    if (val?.communicationSkillsRate <= 1 && !val?.communicationSkillsComment) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Communication Skills Comment Required!',
+      });
+    }
+
+    if (val?.qualityOrientedRate <= 1 && !val?.qualityOrientedComment) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Quality Oriented Comment Required!',
+      });
+    }
+
+    if (val?.achievementOrientedRate <= 1 && !val?.achievementOrientedComment) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Achievement Oriented Comment Required!',
+      });
+    }
+
+    if (val?.developingOthersRate <= 1 && !val?.developingOthersComment) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Developing Others Comment Required!',
+      });
+    }
+
+    if (val?.creativeAgilityRate <= 1 && !val?.creativeAgilityComment) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Creative Agility Comment Required!',
+      });
+    }
+
+    if (val?.leadingOthersRate <= 1 && !val?.leadingOthersComment) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Leading Others Comment Required!',
+      });
+    }
+
+    if (val?.strategicThinkingRate <= 1 && !val?.strategicThinkingComment) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Strategic Thinking Comment Required!',
+      });
+    }
+
+    if (val?.reliablePartnerRate <= 1 && !val?.reliablePartnerComment) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Reliable Partner Comment Required!',
+      });
+    }
+
+    if (val?.technologySavvyRate <= 1 && !val?.technologySavvyComment) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Technology Savvy Comment Required!',
+      });
+    }
+
+    if (
+      (val?.status === Status.REJECT || val?.status === Status.KEEP_IN_VIEW) &&
+      !val?.reason
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Reason Required!',
+      });
+    }
+
+    if (val?.status === Status.RESCHEDULE && !val?.rescheduler) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Rescheduler Required!',
+      });
+    }
+  });

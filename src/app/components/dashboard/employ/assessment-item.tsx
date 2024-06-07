@@ -1,16 +1,56 @@
 'use client';
-
 import React, { SetStateAction } from 'react';
 import AssessmentResultModal from '../../common/popup/assessment-result-modal';
 import { useState } from 'react';
 import img_2 from '@/assets/images/candidates/img_02.jpg';
 import ActionApplicant from '../../../../ui/action-card-applicant';
 import Image from 'next/image';
-import { useAppDispatch } from '@/redux/hook';
-import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
+// import { useAppDispatch } from '@/redux/hook';
+// import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
 import { Checkbox } from 'antd';
 
-const AssessmentItem = ({
+type Props = {
+  item?:
+    | {
+        candidateId?: string;
+        candidatePhoto?: string;
+        candidateName?: string;
+        candidateLastPosition?: string;
+        candidateLastEducation?: string;
+        candidateExpectedSalary?: string;
+        candidateYearOfExperience?: number;
+        candidateStatus?: string;
+        candidateSkills?: string[];
+        candidateScore?: string;
+      }
+    | any;
+  status?: string | any;
+  checkboxState?: { [key: string]: boolean };
+  checkboxAllValue?: boolean;
+  setCheckbox?: React.Dispatch<SetStateAction<{ [key: string]: boolean }>>;
+  setCheckboxAllValue?: React.Dispatch<boolean>;
+  jobVacancyId?: number;
+  api?: any;
+  router?: any;
+  setLoading?: any;
+  handleApplicant?: (
+    handleType:
+      | 'assignAssessment'
+      | 'detailAssessment'
+      | 'resendAssessment'
+      | 'assignInterview'
+      | 'resendCandidateInterviewInvitation',
+    candidateId: number,
+    jobVacancyId: number,
+    interviewId: number | null,
+    api: any,
+    router: any,
+    setLoading: (loading: boolean) => void,
+    status: string,
+  ) => void | any;
+};
+
+const AssessmentItem: React.FC<Props> = ({
   item,
   status,
   checkboxState,
@@ -25,14 +65,16 @@ const AssessmentItem = ({
 }) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
 
-  const onChangeCheckbox = (index: number) => {
-    setCheckbox((prevState: any) => ({
-      ...prevState,
-      [index]: !prevState[index],
-    }));
+  const onChangeCheckbox = (index: string) => {
+    if (setCheckbox && setCheckboxAllValue && checkboxState) {
+      setCheckbox((prevState: any) => ({
+        ...prevState,
+        [index]: !prevState[index],
+      }));
 
-    if (checkboxAllValue || !checkboxState[index]) {
-      setCheckboxAllValue(false);
+      if (checkboxAllValue || !checkboxState[index]) {
+        setCheckboxAllValue(false);
+      }
     }
   };
 
@@ -54,8 +96,8 @@ const AssessmentItem = ({
             <div className="checkbox-pipeline-action">
               <Checkbox
                 className="me-2"
-                checked={checkboxState[item.id]}
-                onChange={() => onChangeCheckbox(item.id)}
+                checked={checkboxState && checkboxState[item?.candidateId]}
+                onChange={() => onChangeCheckbox(item?.candidateId)}
               ></Checkbox>
             </div>
             <a href="#" className="rounded-circle">
@@ -86,12 +128,12 @@ const AssessmentItem = ({
                     <span>Last Position</span>
                     <div>{item?.candidateLastPosition ?? '-'}</div>
                   </div>
-                  <div className="candidate-info mt-5">
+                  {/* <div className="candidate-info mt-5">
                     <ul className="candidate-skills style-none d-flex align-items-center">
                       {item?.candidateSkills
                         ? item?.candidateSkills
                             .slice(0, 4)
-                            .map((s, i) => <li key={i}>{s}</li>)
+                            .map((s: string, i: number) => <li key={i}>{s}</li>)
                         : null}
                       {item?.candidateSkills?.length > 4 && (
                         <li className="more">
@@ -101,7 +143,7 @@ const AssessmentItem = ({
                         </li>
                       )}
                     </ul>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div className="col-lg-4 col-md-4 col-sm-6">

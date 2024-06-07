@@ -229,6 +229,21 @@ async function main() {
         sourceId: 2,
       },
     });
+    const emergencyContact = await tx.emergencyContacts.create({
+      data: {
+        name: 'Daniel Al-Fatih',
+        phoneNumber: '087699807765',
+        relationStatus: 'Enemies',
+      },
+    });
+    await tx.candidates.update({
+      where: {
+        id: candidate.id,
+      },
+      data: {
+        emengencyContactId: emergencyContact.id,
+      },
+    });
     await tx.addresses.create({
       data: {
         id_of_candidate: candidate.id,
@@ -244,16 +259,36 @@ async function main() {
         createdAt: new Date(Date.now()),
       },
     });
-    await tx.families.create({
-      data: {
-        id_of_candidate: candidate.id,
-        name: 'Fatih Al-Maksiat',
-        dateOfBirth: new Date(Date.now()),
-        createdAt: new Date(Date.now()),
-        updatedAt: new Date(Date.now()),
-        gender: 'Male',
-        relation: 'Father',
-      },
+    await tx.families.createMany({
+      data: [
+        {
+          id_of_candidate: candidate.id,
+          name: 'Fatih Al-Maksiat',
+          dateOfBirth: new Date(Date.now()),
+          createdAt: new Date(Date.now()),
+          updatedAt: new Date(Date.now()),
+          gender: 'Male',
+          relation: 'Father',
+        },
+        {
+          id_of_candidate: candidate.id,
+          name: 'Danil Mukbang',
+          dateOfBirth: new Date(Date.now()),
+          createdAt: new Date(Date.now()),
+          updatedAt: new Date(Date.now()),
+          gender: 'Male',
+          relation: 'Sibling',
+        },
+        {
+          id_of_candidate: candidate.id,
+          name: 'Daniela Kuncoro',
+          dateOfBirth: new Date(Date.now()),
+          createdAt: new Date(Date.now()),
+          updatedAt: new Date(Date.now()),
+          gender: 'Female',
+          relation: 'Mother',
+        },
+      ],
     });
     await tx.educations.create({
       data: {
@@ -267,20 +302,46 @@ async function main() {
         id_of_candidate: candidate.id,
       },
     });
-    await tx.certifications.create({
-      data: {
-        id_of_candidate: candidate.id,
-        id_of_certificate: 4,
-        institutionName: 'Pondok Al-Fatih',
-        issuedDate: new Date(Date.now()),
-        created_at: new Date(Date.now()),
-      },
+    await tx.certifications.createMany({
+      data: [
+        {
+          id_of_candidate: candidate.id,
+          id_of_certificate: 4,
+          institutionName: 'Pondok Al-Fatih',
+          issuedDate: new Date(Date.now()),
+          created_at: new Date(Date.now()),
+        },
+        {
+          id_of_candidate: candidate.id,
+          id_of_certificate: 8,
+          institutionName: 'Danil cuti',
+          issuedDate: new Date(Date.now()),
+          created_at: new Date(Date.now()),
+        },
+        {
+          id_of_candidate: candidate.id,
+          id_of_certificate: 15,
+          institutionName: 'Bukit Golf Danil',
+          issuedDate: new Date(Date.now()),
+          created_at: new Date(Date.now()),
+        },
+      ],
     });
-    await tx.candidateSkills.create({
-      data: {
-        id_of_candidate: candidate.id,
-        id_of_skill: 7,
-      },
+    await tx.candidateSkills.createMany({
+      data: [
+        {
+          id_of_candidate: candidate.id,
+          id_of_skill: 7,
+        },
+        {
+          id_of_candidate: candidate.id,
+          id_of_skill: 14,
+        },
+        {
+          id_of_candidate: candidate.id,
+          id_of_skill: 19,
+        },
+      ],
     });
     await tx.languages.create({
       data: {
@@ -290,21 +351,51 @@ async function main() {
         createdAt: new Date(Date.now()),
       },
     });
-    await tx.working_experiences.create({
-      data: {
-        id_of_candidate: candidate.id,
-        company_name: 'Sidokare Dev',
-        line_industry: 'Technology',
-        job_title: 'Senior Developer',
-        job_level: 'Assistant Manager',
-        job_function: 'IT & Software',
-        job_description: '',
-        salary: 8000000,
-        start_at: new Date(Date.now()),
-        end_at: new Date(Date.now()),
-        status: '-',
-        created_at: new Date(Date.now()),
-      },
+    await tx.working_experiences.createMany({
+      data: [
+        {
+          id_of_candidate: candidate.id,
+          company_name: 'Sidokare Dev',
+          line_industry: 'Technology',
+          job_title: 'Senior Developer',
+          job_level: 'Assistant Manager',
+          job_function: 'IT & Software',
+          job_description: '',
+          salary: 8000000,
+          start_at: new Date(Date.now()),
+          end_at: new Date(Date.now()),
+          status: '-',
+          created_at: new Date(Date.now()),
+        },
+        {
+          id_of_candidate: candidate.id,
+          company_name: 'BMW',
+          line_industry: 'Automotive',
+          job_title: 'Engineer',
+          job_level: 'Manager',
+          job_function: 'IT & Software',
+          job_description: '',
+          salary: 9000000,
+          start_at: new Date(Date.now()),
+          end_at: new Date(Date.now()),
+          status: '-',
+          created_at: new Date(Date.now()),
+        },
+        {
+          id_of_candidate: candidate.id,
+          company_name: 'Adobe',
+          line_industry: 'Art',
+          job_title: 'Senior Designer',
+          job_level: 'Assistant Manager',
+          job_function: 'Art',
+          job_description: '',
+          salary: 6000000,
+          start_at: new Date(Date.now()),
+          end_at: new Date(Date.now()),
+          status: '-',
+          created_at: new Date(Date.now()),
+        },
+      ],
     });
     await tx.candidateQuestions.createMany({
       data: [

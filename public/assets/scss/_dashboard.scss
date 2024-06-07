@@ -1128,6 +1128,7 @@
         font-size: 14px;
         color: #6a6a6a;
         background: #fff;
+        text-align: left;
         img {
           display: inline-block;
           vertical-align: -1px;
@@ -1137,6 +1138,7 @@
       .applicant-action {
         width: 100%;
       }
+
       // .applicant-action {
       //   padding: 0 15px;
       //   line-height: 34px;
@@ -1153,14 +1155,18 @@
         background-color: $color-two;
         color: white;
       }
-      li:nth-last-child(2) .applicant-action:hover {
+      li .red-action:hover {
         background-color: #ff5b5b;
         color: white;
       }
-      li:last-child .applicant-action:hover {
-        background-color: #ff5b5b;
-        color: white;
-      }
+      // li:nth-last-child(2) .applicant-action:hover {
+      //   background-color: #ff5b5b;
+      //   color: white;
+      // }
+      // li:last-child .applicant-action:hover {
+      //   background-color: #ff5b5b;
+      //   color: white;
+      // }
     }
     .action-btn {
       padding: 8px;

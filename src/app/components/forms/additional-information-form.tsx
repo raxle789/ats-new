@@ -12,6 +12,7 @@ import {
 import type { FormProps, RadioChangeEvent } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import dayjs, { Dayjs } from 'dayjs';
+import EmployJobDetailSkeleton from '../loadings/employ-job-detail-skeleton';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
@@ -29,6 +30,7 @@ type FieldType = {
   diseaseOption?: string;
   relationOption?: string;
   others?: {
+    emergencyContactId?: number;
     emergencyContactName?: string;
     emergencyContactPhoneNumber?: string;
     emergencyContactRelation?: string;
@@ -226,12 +228,14 @@ const AdditionalInformationForm: React.FC<Props> = ({
     for (let i = 0; i < tabTotal; i++) {
       const newActiveKey = `newTab${newTabIndex.current++}`;
       newPanes.push({
+        familyId: additionalInformation?.families[indexTab]?.id,
         label: `Relation ${indexTab + 1}`,
         children: <TabContent index={indexTab} />,
         key: newActiveKey,
       });
 
       newDisplayed.push({
+        familyId: additionalInformation?.families[indexTab]?.id,
         label: `Relation ${indexTab + 1}`,
         children: <DisplayedTabContent index={indexTab} />,
         key: newActiveKey,
@@ -240,7 +244,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
       indexTab++;
       setActiveKey(newActiveKey);
     }
-    setIndex(index + 1);
+    setIndex(indexTab);
     setItems(newPanes);
     setDisplayedItems(newDisplayed);
     // console.log('add tab');
@@ -308,7 +312,26 @@ const AdditionalInformationForm: React.FC<Props> = ({
           ...values?.families,
         },
       };
+
+      let filteredFamilies: any = {};
+      for (const key in values.families) {
+        const familyIdMatch = values.families[key].id;
+        if (items.some((familyId) => familyId.familyId === familyIdMatch)) {
+          filteredFamilies[key] = values.families[key];
+        }
+      }
+
+      values = {
+        ...values,
+        families: { ...filteredFamilies },
+        others: {
+          ...values.others,
+          emergencyContactId: additionalInformation?.emergency_contact?.id,
+        },
+      };
       console.log('submittedValueFamilies: ', values);
+      console.log('submittedTabs: ', items);
+      console.log('filteredFamilies: ', filteredFamilies);
     }
   };
 
@@ -409,11 +432,12 @@ const AdditionalInformationForm: React.FC<Props> = ({
         diseaseOption: medicalCondition === 'No' ? 'No' : 'Yes',
         relationOption: colleagueName === 'No' ? 'No' : 'Yes',
         others: {
-          emergencyContactName: additionalInformation?.emergency_contacts?.name,
+          emergencyContactId: additionalInformation?.emergency_contact?.id,
+          emergencyContactName: additionalInformation?.emergency_contact?.name,
           emergencyContactPhoneNumber:
-            additionalInformation?.emergency_contacts?.phoneNumber,
+            additionalInformation?.emergency_contact?.phoneNumber,
           emergencyContactRelation:
-            additionalInformation?.emergency_contacts?.relationStatus,
+            additionalInformation?.emergency_contact?.relationStatus,
           source: source,
           everWorkedMonth:
             everWorkedAnswer === 'No' ? '' : dayjs(everWorkedAnswer),
@@ -463,154 +487,156 @@ const AdditionalInformationForm: React.FC<Props> = ({
   }, [initFieldsValue]);
   return (
     <>
-      <div>
-        <div className="mb-25">
-          <button
-            className="d-flex align-items-center justify-content-center edit-btn-form"
-            onClick={editOnChange}
+      {additionalInformation === null && <EmployJobDetailSkeleton rows={2} />}
+      {additionalInformation !== null && (
+        <div>
+          <div className="mb-25">
+            <button
+              className="d-flex align-items-center justify-content-center edit-btn-form"
+              onClick={editOnChange}
+            >
+              <MdOutlineModeEdit className="edit-form-icon" />
+            </button>
+          </div>
+          <Form
+            name="background-experience-form"
+            variant="filled"
+            form={form}
+            onFinish={handleSubmit}
+            onFinishFailed={onFinishFailed}
           >
-            <MdOutlineModeEdit className="edit-form-icon" />
-          </button>
-        </div>
-        <Form
-          name="background-experience-form"
-          variant="filled"
-          form={form}
-          onFinish={handleSubmit}
-          onFinishFailed={onFinishFailed}
-        >
-          <div className="row">
-            <label className="fw-bold sub-section-profile">
-              Family Structure
-            </label>
-            {editState && (
-              <Tabs
-                type="editable-card"
-                onChange={onChangeTabs}
-                activeKey={activeKey}
-                onEdit={onEdit}
-                items={items}
-              />
-            )}
-            {!editState && (
-              <Tabs
-                type="editable-card"
-                hideAdd
-                onChange={onChangeTabs}
-                activeKey={activeKey}
-                items={displayedItems}
-              />
-            )}
+            <div className="row">
+              <label className="fw-bold sub-section-profile">
+                Family Structure
+              </label>
+              {editState && (
+                <Tabs
+                  type="editable-card"
+                  onChange={onChangeTabs}
+                  activeKey={activeKey}
+                  onEdit={onEdit}
+                  items={items}
+                />
+              )}
+              {!editState && (
+                <Tabs
+                  type="editable-card"
+                  hideAdd
+                  onChange={onChangeTabs}
+                  activeKey={activeKey}
+                  items={displayedItems}
+                />
+              )}
 
-            <label className="fw-bold mt-5 sub-section-profile">Others</label>
-            <div className="col-3">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">Emergency Contact Relation</label>
-                <Form.Item<FieldType>
-                  name={['others', 'emergencyContactRelation']}
-                  className="mb-0"
-                >
-                  {editState && (
-                    <Select
-                      className="w-100"
-                      placeholder="Your Emergency Contact Relation"
-                      options={[
-                        { value: 'Father', label: 'Father' },
-                        { value: 'Mother', label: 'Mother' },
-                        { value: 'Sibling', label: 'Sibling' },
-                        { value: 'Spouse', label: 'Spouse' },
-                        { value: 'Children', label: 'Children' },
-                      ]}
-                      disabled={!editState}
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">
-                      {initFieldsValue?.others?.emergencyContactRelation}
-                    </p>
-                  )}
-                </Form.Item>
+              <label className="fw-bold mt-5 sub-section-profile">Others</label>
+              <div className="col-3">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">Emergency Contact Relation</label>
+                  <Form.Item<FieldType>
+                    name={['others', 'emergencyContactRelation']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Select
+                        className="w-100"
+                        placeholder="Your Emergency Contact Relation"
+                        options={[
+                          { value: 'Father', label: 'Father' },
+                          { value: 'Mother', label: 'Mother' },
+                          { value: 'Sibling', label: 'Sibling' },
+                          { value: 'Spouse', label: 'Spouse' },
+                          { value: 'Children', label: 'Children' },
+                        ]}
+                        disabled={!editState}
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">
+                        {initFieldsValue?.others?.emergencyContactRelation}
+                      </p>
+                    )}
+                  </Form.Item>
+                </div>
               </div>
-            </div>
-            <div className="col-3">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">Name</label>
-                <Form.Item<FieldType>
-                  name={['others', 'emergencyContactName']}
-                  className="mb-0"
-                >
-                  {editState && (
-                    <Input
-                      placeholder="Your Emergency Contact Name"
-                      disabled={!editState}
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">
-                      {initFieldsValue?.others?.emergencyContactName}
-                    </p>
-                  )}
-                </Form.Item>
+              <div className="col-3">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">Name</label>
+                  <Form.Item<FieldType>
+                    name={['others', 'emergencyContactName']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Input
+                        placeholder="Your Emergency Contact Name"
+                        disabled={!editState}
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">
+                        {initFieldsValue?.others?.emergencyContactName}
+                      </p>
+                    )}
+                  </Form.Item>
+                </div>
               </div>
-            </div>
-            <div className="col-3">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">Phone Number</label>
-                <Form.Item<FieldType>
-                  name={['others', 'emergencyContactPhoneNumber']}
-                  className="mb-0"
-                >
-                  {editState && (
-                    <Input
-                      placeholder="Your Emergency Contact Phone Number"
-                      disabled={!editState}
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">
-                      {initFieldsValue?.others?.emergencyContactPhoneNumber}
-                    </p>
-                  )}
-                </Form.Item>
+              <div className="col-3">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">Phone Number</label>
+                  <Form.Item<FieldType>
+                    name={['others', 'emergencyContactPhoneNumber']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Input
+                        placeholder="Your Emergency Contact Phone Number"
+                        disabled={!editState}
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">
+                        {initFieldsValue?.others?.emergencyContactPhoneNumber}
+                      </p>
+                    )}
+                  </Form.Item>
+                </div>
               </div>
-            </div>
-            <div className="col-3">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">Source*</label>
-                <Form.Item<FieldType>
-                  name={['others', 'source']}
-                  className="mb-0"
-                >
-                  {editState && (
-                    <Select
-                      className="w-100"
-                      placeholder="Select Source"
-                      showSearch
-                      mode="tags"
-                      maxCount={1}
-                      filterOption={(input, option) =>
-                        (option?.label.toLowerCase() ?? '').includes(input)
-                      }
-                      filterSort={(optionA, optionB) =>
-                        (optionA?.label ?? '')
-                          .toLowerCase()
-                          .localeCompare((optionB?.label ?? '').toLowerCase())
-                      }
-                      /* Fetched Data */
-                      options={[
-                        { value: 'Partnership', label: 'Partnership' },
-                        { value: 'Jobstreet', label: 'Jobstreet' },
-                        { value: 'Job Fair', label: 'Job Fair' },
-                      ]}
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">{initFieldsValue?.others?.source}</p>
-                  )}
-                </Form.Item>
+              <div className="col-3">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">Source*</label>
+                  <Form.Item<FieldType>
+                    name={['others', 'source']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Select
+                        className="w-100"
+                        placeholder="Select Source"
+                        showSearch
+                        mode="tags"
+                        maxCount={1}
+                        filterOption={(input, option) =>
+                          (option?.label.toLowerCase() ?? '').includes(input)
+                        }
+                        filterSort={(optionA, optionB) =>
+                          (optionA?.label ?? '')
+                            .toLowerCase()
+                            .localeCompare((optionB?.label ?? '').toLowerCase())
+                        }
+                        /* Fetched Data */
+                        options={[
+                          { value: 'Partnership', label: 'Partnership' },
+                          { value: 'Jobstreet', label: 'Jobstreet' },
+                          { value: 'Job Fair', label: 'Job Fair' },
+                        ]}
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">{initFieldsValue?.others?.source}</p>
+                    )}
+                  </Form.Item>
+                </div>
               </div>
-            </div>
-            {/* <div className="col-3">
+              {/* <div className="col-3">
               <div className="input-group-meta position-relative mb-15">
                 <label className="fw-bold">How long your notice period?*</label>
                 <Form.Item<FieldType>
@@ -646,250 +672,251 @@ const AdditionalInformationForm: React.FC<Props> = ({
                 </Form.Item>
               </div>
             </div> */}
-            <div className="col-12">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">
-                  Have you ever worked in Erajaya group of companies?*
-                </label>
-                <Form.Item<FieldType>
-                  name="everWorkedOption"
-                  className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please choose!',
-                  //   },
-                  // ]}
-                >
-                  {editState && (
-                    <Radio.Group
-                      onChange={everWorkedChange}
-                      value={everWorked}
-                      disabled={!editState}
-                    >
-                      <Radio className="d-flex" value="No">
-                        No
-                      </Radio>
-                      <Radio className="d-flex" value="Yes">
-                        Yes
-                      </Radio>
-                    </Radio.Group>
-                  )}
-                  {!editState && (
-                    <p className="mb-0">
-                      {initFieldsValue?.others?.everWorkedMonth !== 'No'
-                        ? `${dayjs(initFieldsValue?.others?.everWorkedMonth).format('YYYY-MM')}, ${dayjs(initFieldsValue?.others?.everWorkedYear).format('YYYY-MM')}`
-                        : 'No'}
-                    </p>
-                  )}
-                </Form.Item>
-                {editState && everWorked === 'Yes' && (
-                  <div className="row mt-2">
-                    <div className="col-3">
-                      <Form.Item<FieldType>
-                        name={['others', 'everWorkedMonth']}
-                        className="mb-0"
-                        // rules={[
-                        //   {
-                        //     required: true,
-                        //     message: 'Please input year!',
-                        //   },
-                        // ]}
+              <div className="col-12">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">
+                    Have you ever worked in Erajaya group of companies?*
+                  </label>
+                  <Form.Item<FieldType>
+                    name="everWorkedOption"
+                    className="mb-0"
+                    // rules={[
+                    //   {
+                    //     required: true,
+                    //     message: 'Please choose!',
+                    //   },
+                    // ]}
+                  >
+                    {editState && (
+                      <Radio.Group
+                        onChange={everWorkedChange}
+                        value={everWorked}
+                        disabled={!editState}
                       >
-                        <DatePicker
-                          className="w-100"
-                          placeholder="Start Year"
-                          picker="month"
-                          disabled={!editState}
-                        />
-                      </Form.Item>
+                        <Radio className="d-flex" value="No">
+                          No
+                        </Radio>
+                        <Radio className="d-flex" value="Yes">
+                          Yes
+                        </Radio>
+                      </Radio.Group>
+                    )}
+                    {!editState && (
+                      <p className="mb-0">
+                        {initFieldsValue?.others?.everWorkedMonth !== 'No'
+                          ? `${dayjs(initFieldsValue?.others?.everWorkedMonth).format('YYYY-MM')}, ${dayjs(initFieldsValue?.others?.everWorkedYear).format('YYYY-MM')}`
+                          : 'No'}
+                      </p>
+                    )}
+                  </Form.Item>
+                  {editState && everWorked === 'Yes' && (
+                    <div className="row mt-2">
+                      <div className="col-3">
+                        <Form.Item<FieldType>
+                          name={['others', 'everWorkedMonth']}
+                          className="mb-0"
+                          // rules={[
+                          //   {
+                          //     required: true,
+                          //     message: 'Please input year!',
+                          //   },
+                          // ]}
+                        >
+                          <DatePicker
+                            className="w-100"
+                            placeholder="Start Year"
+                            picker="month"
+                            disabled={!editState}
+                          />
+                        </Form.Item>
+                      </div>
+                      <div className="col-3">
+                        <Form.Item<FieldType>
+                          name={['others', 'everWorkedYear']}
+                          className="mb-0"
+                          // rules={[
+                          //   {
+                          //     required: true,
+                          //     message: 'Please input year!',
+                          //   },
+                          // ]}
+                        >
+                          <DatePicker
+                            className="w-100"
+                            placeholder="End Year"
+                            picker="month"
+                            disabled={!editState}
+                          />
+                        </Form.Item>
+                      </div>
                     </div>
-                    <div className="col-3">
-                      <Form.Item<FieldType>
-                        name={['others', 'everWorkedYear']}
-                        className="mb-0"
-                        // rules={[
-                        //   {
-                        //     required: true,
-                        //     message: 'Please input year!',
-                        //   },
-                        // ]}
-                      >
-                        <DatePicker
-                          className="w-100"
-                          placeholder="End Year"
-                          picker="month"
-                          disabled={!editState}
-                        />
-                      </Form.Item>
-                    </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-            <div className="col-12">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">
-                  Do you have any prior medical conditions, illnesses, or
-                  congenital diseases?*
-                </label>
-                <Form.Item<FieldType>
-                  name="diseaseOption"
-                  className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please choose!',
-                  //   },
-                  // ]}
-                >
-                  {editState && (
-                    <Radio.Group
-                      onChange={diseaseChange}
-                      value={disease}
-                      disabled={!editState}
-                    >
-                      <Radio className="d-flex" value="No">
-                        No
-                      </Radio>
-                      <Radio className="d-flex" value="Yes">
-                        Yes
-                      </Radio>
-                    </Radio.Group>
-                  )}
-                  {!editState && (
-                    <p className="mb-0">
-                      {initFieldsValue?.others?.diseaseName !== 'No'
-                        ? `${initFieldsValue?.others?.diseaseName}, ${dayjs(initFieldsValue?.others?.diseaseYear).format('YYYY')}`
-                        : 'No'}
-                    </p>
-                  )}
-                </Form.Item>
-                {editState && disease === 'Yes' && (
-                  <div className="row mt-2">
-                    <div className="col-3">
-                      <Form.Item<FieldType>
-                        name={['others', 'diseaseName']}
-                        className="mb-0"
-                        // rules={[
-                        //   {
-                        //     required: true,
-                        //     message: 'Please input medical condition!',
-                        //   },
-                        // ]}
+              <div className="col-12">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">
+                    Do you have any prior medical conditions, illnesses, or
+                    congenital diseases?*
+                  </label>
+                  <Form.Item<FieldType>
+                    name="diseaseOption"
+                    className="mb-0"
+                    // rules={[
+                    //   {
+                    //     required: true,
+                    //     message: 'Please choose!',
+                    //   },
+                    // ]}
+                  >
+                    {editState && (
+                      <Radio.Group
+                        onChange={diseaseChange}
+                        value={disease}
+                        disabled={!editState}
                       >
-                        <Input
-                          placeholder="Medical Condition"
-                          disabled={!editState}
-                        />
-                      </Form.Item>
+                        <Radio className="d-flex" value="No">
+                          No
+                        </Radio>
+                        <Radio className="d-flex" value="Yes">
+                          Yes
+                        </Radio>
+                      </Radio.Group>
+                    )}
+                    {!editState && (
+                      <p className="mb-0">
+                        {initFieldsValue?.others?.diseaseName !== 'No'
+                          ? `${initFieldsValue?.others?.diseaseName}, ${dayjs(initFieldsValue?.others?.diseaseYear).format('YYYY')}`
+                          : 'No'}
+                      </p>
+                    )}
+                  </Form.Item>
+                  {editState && disease === 'Yes' && (
+                    <div className="row mt-2">
+                      <div className="col-3">
+                        <Form.Item<FieldType>
+                          name={['others', 'diseaseName']}
+                          className="mb-0"
+                          // rules={[
+                          //   {
+                          //     required: true,
+                          //     message: 'Please input medical condition!',
+                          //   },
+                          // ]}
+                        >
+                          <Input
+                            placeholder="Medical Condition"
+                            disabled={!editState}
+                          />
+                        </Form.Item>
+                      </div>
+                      <div className="col-3">
+                        <Form.Item<FieldType>
+                          name={['others', 'diseaseYear']}
+                          className="mb-0"
+                          // rules={[
+                          //   {
+                          //     required: true,
+                          //     message: 'Please input year!',
+                          //   },
+                          // ]}
+                        >
+                          <DatePicker
+                            className="w-100"
+                            placeholder="Select Year"
+                            picker="year"
+                            disabled={!editState}
+                          />
+                        </Form.Item>
+                      </div>
                     </div>
-                    <div className="col-3">
-                      <Form.Item<FieldType>
-                        name={['others', 'diseaseYear']}
-                        className="mb-0"
-                        // rules={[
-                        //   {
-                        //     required: true,
-                        //     message: 'Please input year!',
-                        //   },
-                        // ]}
-                      >
-                        <DatePicker
-                          className="w-100"
-                          placeholder="Select Year"
-                          picker="year"
-                          disabled={!editState}
-                        />
-                      </Form.Item>
-                    </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-            <div className="col-12">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">
-                  Do you have any friends, colleague, relative or family who is
-                  working at Erajaya Group Companies?*
-                </label>
-                <Form.Item<FieldType>
-                  name="relationOption"
-                  className="mb-0"
-                  // rules={[
-                  //   {
-                  //     required: true,
-                  //     message: 'Please choose!',
-                  //   },
-                  // ]}
-                >
-                  {editState && (
-                    <Radio.Group
-                      onChange={haveRelationChange}
-                      value={haveRelation}
-                      disabled={!editState}
-                    >
-                      <Radio className="d-flex" value="No">
-                        No
-                      </Radio>
-                      <Radio className="d-flex" value="Yes">
-                        Yes
-                      </Radio>
-                    </Radio.Group>
-                  )}
-                  {!editState && (
-                    <p className="mb-0">
-                      {initFieldsValue?.others?.relationName !== 'No'
-                        ? `${initFieldsValue?.others?.relationName}, ${initFieldsValue?.others?.relationPosition}`
-                        : 'No'}
-                    </p>
-                  )}
-                </Form.Item>
-                {editState && haveRelation === 'Yes' && (
-                  <div className="row mt-2">
-                    <div className="col-3">
-                      <Form.Item<FieldType>
-                        name={['others', 'relationName']}
-                        className="mb-0"
-                        // rules={[
-                        //   {
-                        //     required: true,
-                        //     message: 'Please input name!',
-                        //   },
-                        // ]}
+              <div className="col-12">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">
+                    Do you have any friends, colleague, relative or family who
+                    is working at Erajaya Group Companies?*
+                  </label>
+                  <Form.Item<FieldType>
+                    name="relationOption"
+                    className="mb-0"
+                    // rules={[
+                    //   {
+                    //     required: true,
+                    //     message: 'Please choose!',
+                    //   },
+                    // ]}
+                  >
+                    {editState && (
+                      <Radio.Group
+                        onChange={haveRelationChange}
+                        value={haveRelation}
+                        disabled={!editState}
                       >
-                        <Input placeholder="Name" disabled={!editState} />
-                      </Form.Item>
+                        <Radio className="d-flex" value="No">
+                          No
+                        </Radio>
+                        <Radio className="d-flex" value="Yes">
+                          Yes
+                        </Radio>
+                      </Radio.Group>
+                    )}
+                    {!editState && (
+                      <p className="mb-0">
+                        {initFieldsValue?.others?.relationName !== 'No'
+                          ? `${initFieldsValue?.others?.relationName}, ${initFieldsValue?.others?.relationPosition}`
+                          : 'No'}
+                      </p>
+                    )}
+                  </Form.Item>
+                  {editState && haveRelation === 'Yes' && (
+                    <div className="row mt-2">
+                      <div className="col-3">
+                        <Form.Item<FieldType>
+                          name={['others', 'relationName']}
+                          className="mb-0"
+                          // rules={[
+                          //   {
+                          //     required: true,
+                          //     message: 'Please input name!',
+                          //   },
+                          // ]}
+                        >
+                          <Input placeholder="Name" disabled={!editState} />
+                        </Form.Item>
+                      </div>
+                      <div className="col-3">
+                        <Form.Item<FieldType>
+                          name={['others', 'relationPosition']}
+                          className="mb-0"
+                          // rules={[
+                          //   {
+                          //     required: true,
+                          //     message: 'Please input position!',
+                          //   },
+                          // ]}
+                        >
+                          <Input placeholder="Position" disabled={!editState} />
+                        </Form.Item>
+                      </div>
                     </div>
-                    <div className="col-3">
-                      <Form.Item<FieldType>
-                        name={['others', 'relationPosition']}
-                        className="mb-0"
-                        // rules={[
-                        //   {
-                        //     required: true,
-                        //     message: 'Please input position!',
-                        //   },
-                        // ]}
-                      >
-                        <Input placeholder="Position" disabled={!editState} />
-                      </Form.Item>
-                    </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
 
-            {editState && (
-              <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
-                <button type="submit" className="dash-btn-two tran3s me-3">
-                  Submit
-                </button>
-              </div>
-            )}
-          </div>
-        </Form>
-      </div>
+              {editState && (
+                <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
+                  <button type="submit" className="dash-btn-two tran3s me-3">
+                    Submit
+                  </button>
+                </div>
+              )}
+            </div>
+          </Form>
+        </div>
+      )}
     </>
   );
 };

@@ -22,6 +22,7 @@ import { MdOutlineModeEdit } from 'react-icons/md';
 import dayjs, { Dayjs } from 'dayjs';
 import { convertToPlainObject, fileToBase64 } from '@/libs/Registration/utils';
 import { updateCandidateProfile } from '@/libs/Candidate/actions';
+import EmployJobDetailSkeleton from '../loadings/employ-job-detail-skeleton';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
@@ -264,621 +265,644 @@ const PersonalDataForm: React.FC<Props> = ({
   }, [editState]);
   return (
     <>
-      <div>
-        <div className="mb-25">
-          <button
-            className="d-flex align-items-center justify-content-center edit-btn-form"
-            onClick={editOnChange}
+      {profileData === null && <EmployJobDetailSkeleton rows={2} />}
+      {profileData !== null && (
+        <div>
+          <div className="mb-25">
+            <button
+              className="d-flex align-items-center justify-content-center edit-btn-form"
+              onClick={editOnChange}
+            >
+              <MdOutlineModeEdit className="edit-form-icon" />
+            </button>
+          </div>
+          <Form
+            name="personal-data-form"
+            variant="filled"
+            form={form}
+            onFinish={handleSubmit}
+            onFinishFailed={onFinishFailed}
           >
-            <MdOutlineModeEdit className="edit-form-icon" />
-          </button>
-        </div>
-        <Form
-          name="personal-data-form"
-          variant="filled"
-          form={form}
-          onFinish={handleSubmit}
-          onFinishFailed={onFinishFailed}
-        >
-          <div className="row">
-            <label className="fw-bold sub-section-profile">Profile</label>
-            <div className="col-4">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">Upload Photo*</label>
-                {!editState && (
-                  <ImageNext
-                    // src={previewImage}
-                    src={profileData?.documents}
-                    alt="Profile"
-                    width={60}
-                    height={60}
-                  />
-                )}
-                <Form.Item<FieldType>
-                  name={['profile', 'uploadPhoto']}
-                  className="mb-0"
-                >
-                  {editState && (
-                    <div>
-                      <Upload
-                        action=""
-                        listType="picture-circle"
-                        fileList={fileList}
-                        beforeUpload={handleBeforeUpload}
-                        onPreview={handlePreview}
-                        onChange={handleChange}
-                        accept="image/*"
-                        disabled={!editState}
-                      >
-                        {!fileList[0] && (
-                          <button
-                            style={{ border: 0, background: 'none' }}
-                            type="button"
-                          >
-                            <AiOutlinePlus style={{ fontSize: '14px' }} />
-                            {/* <PlusOutlined
+            <div className="row">
+              <label className="fw-bold sub-section-profile">Profile</label>
+              <div className="col-4">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">Upload Photo*</label>
+                  {!editState && (
+                    <ImageNext
+                      // src={previewImage}
+                      src={profileData?.documents}
+                      alt="Profile"
+                      width={60}
+                      height={60}
+                    />
+                  )}
+                  <Form.Item<FieldType>
+                    name={['profile', 'uploadPhoto']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <div>
+                        <Upload
+                          action=""
+                          listType="picture-circle"
+                          fileList={fileList}
+                          beforeUpload={handleBeforeUpload}
+                          onPreview={handlePreview}
+                          onChange={handleChange}
+                          accept="image/*"
+                          disabled={!editState}
+                        >
+                          {!fileList[0] && (
+                            <button
+                              style={{ border: 0, background: 'none' }}
+                              type="button"
+                            >
+                              <AiOutlinePlus style={{ fontSize: '14px' }} />
+                              {/* <PlusOutlined
                               onPointerEnterCapture={''}
                               onPointerLeaveCapture={''}
                             /> */}
-                            <div style={{ marginTop: 8 }}>Upload</div>
-                          </button>
+                              <div style={{ marginTop: 8 }}>Upload</div>
+                            </button>
+                          )}
+                        </Upload>
+                        {previewImage && (
+                          <Image
+                            wrapperStyle={{ display: 'none' }}
+                            preview={{
+                              visible: previewOpen,
+                              onVisibleChange: (visible) =>
+                                setPreviewOpen(visible),
+                              afterOpenChange: (visible) =>
+                                !visible && setPreviewImage(''),
+                            }}
+                            src={previewImage}
+                          />
                         )}
-                      </Upload>
-                      {previewImage && (
-                        <Image
-                          wrapperStyle={{ display: 'none' }}
-                          preview={{
-                            visible: previewOpen,
-                            onVisibleChange: (visible) =>
-                              setPreviewOpen(visible),
-                            afterOpenChange: (visible) =>
-                              !visible && setPreviewImage(''),
-                          }}
-                          src={previewImage}
-                        />
-                      )}
-                    </div>
-                  )}
-                </Form.Item>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="input-group-meta position-relative mb-0">
-                <label className="fw-bold">
-                  Full Name (as per ID/Passport)*
-                </label>
-                <Form.Item<FieldType> name={['profile', 'fullname']}>
-                  {editState && (
-                    <Input
-                      placeholder="Your Full Name"
-                      disabled={!editState}
-                      onChange={(e) => sanitizeFullname(e.target.value)}
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">{profileData?.users?.name}</p>
-                  )}
-                </Form.Item>
-              </div>
-              <div className="input-group-meta position-relative mb-0">
-                <label className="fw-bold">Email*</label>
-                <Form.Item<FieldType> name={['profile', 'email']}>
-                  {editState && <Input placeholder="Your Email" disabled />}
-                  {!editState && (
-                    <p className="mb-0">{profileData?.users?.email}</p>
-                  )}
-                </Form.Item>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="input-group-meta position-relative mb-0">
-                <label className="fw-bold">Phone Number*</label>
-                <Form.Item<FieldType> name={['profile', 'phoneNumber']}>
-                  {editState && (
-                    <Input
-                      placeholder="Your Phone Number"
-                      disabled={!editState}
-                      onChange={(e) => sanitizePhoneNumber(e.target.value)}
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">{profileData?.phone_number}</p>
-                  )}
-                </Form.Item>
-              </div>
-              <div className="input-group-meta position-relative mb-0">
-                <label className="fw-bold">Date of Birth*</label>
-                <Form.Item<FieldType> name={['profile', 'dateOfBirth']}>
-                  {editState && (
-                    <DatePicker
-                      className="w-100"
-                      placeholder="Select Date"
-                      disabled={!editState}
-                      format={'DD-MMM-YYYY'}
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">
-                      {dayjs(profileData?.date_of_birth).format('DD-MM-YYYY')}
-                    </p>
-                  )}
-                </Form.Item>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">Place of Birth*</label>
-                <Form.Item<FieldType>
-                  name={['profile', 'placeOfBirth']}
-                  className="mb-0"
-                >
-                  {editState && (
-                    <Select
-                      className="w-100"
-                      showSearch
-                      placeholder="Your place of birth"
-                      optionFilterProp="children"
-                      filterOption={(input, option) =>
-                        (option?.label.toLowerCase() ?? '').includes(input)
-                      }
-                      filterSort={(optionA, optionB) =>
-                        (optionA?.label ?? '')
-                          .toLowerCase()
-                          .localeCompare((optionB?.label ?? '').toLowerCase())
-                      }
-                      disabled={!editState}
-                      /* Feted Data */
-                      options={masterData?.citys}
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">{profileData?.birthCity}</p>
-                  )}
-                </Form.Item>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">Gender*</label>
-                <Form.Item<FieldType>
-                  name={['profile', 'gender']}
-                  className="mb-0"
-                >
-                  {editState && (
-                    <Select
-                      className="w-100"
-                      placeholder="Your Gender"
-                      options={[
-                        { value: 'Male', label: 'Male' },
-                        { value: 'Female', label: 'Female' },
-                      ]}
-                      disabled={!editState}
-                    />
-                  )}
-                  {!editState && <p className="mb-0">{profileData?.gender}</p>}
-                </Form.Item>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">Religion*</label>
-                <Form.Item<FieldType>
-                  name={['profile', 'religion']}
-                  className="mb-0"
-                >
-                  {editState && (
-                    <Select
-                      className="w-100"
-                      showSearch
-                      placeholder="Your Religion"
-                      optionFilterProp="children"
-                      filterOption={(input, option) =>
-                        (option?.label.toLowerCase() ?? '').includes(input)
-                      }
-                      filterSort={(optionA, optionB) =>
-                        (optionA?.label ?? '')
-                          .toLowerCase()
-                          .localeCompare((optionB?.label ?? '').toLowerCase())
-                      }
-                      disabled={!editState}
-                      options={[
-                        {
-                          value: 'Islam',
-                          label: 'Islam',
-                        },
-                        {
-                          value: 'Buddha',
-                          label: 'Buddha',
-                        },
-                        {
-                          value: 'Hindu',
-                          label: 'Hindu',
-                        },
-                        {
-                          value: 'Kristen Katholik',
-                          label: 'Kristen Katholik',
-                        },
-                        {
-                          value: 'Kristen Protestan',
-                          label: 'Kristen Protestan',
-                        },
-                        {
-                          value: 'Konghucu',
-                          label: 'Konghucu',
-                        },
-                      ]}
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">{profileData?.religion}</p>
-                  )}
-                </Form.Item>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">Ethnicity*</label>
-                <Form.Item<FieldType>
-                  name={['profile', 'ethnicity']}
-                  className="mb-0"
-                >
-                  {editState && (
-                    <Select
-                      className="w-100"
-                      showSearch
-                      placeholder="Your Ethnicity"
-                      optionFilterProp="children"
-                      filterOption={(input, option) =>
-                        (option?.label.toLowerCase() ?? '').includes(input)
-                      }
-                      filterSort={(optionA, optionB) =>
-                        (optionA?.label ?? '')
-                          .toLowerCase()
-                          .localeCompare((optionB?.label ?? '').toLowerCase())
-                      }
-                      disabled={!editState}
-                      /* Fetched Data */
-                      options={masterData?.ethnicity}
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">{profileData?.ethnicity}</p>
-                  )}
-                </Form.Item>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">Blood Type</label>
-                <Form.Item<FieldType>
-                  name={['profile', 'bloodType']}
-                  className="mb-0"
-                >
-                  {editState && (
-                    <Select
-                      className="w-100"
-                      placeholder="Your Blood Type"
-                      options={[
-                        { value: 'A', label: 'A' },
-                        { value: 'B', label: 'B' },
-                        { value: 'AB', label: 'AB' },
-                        { value: 'O', label: 'O' },
-                      ]}
-                      disabled={!editState}
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">{profileData?.blood_type}</p>
-                  )}
-                </Form.Item>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">Marital Status*</label>
-                <Form.Item<FieldType>
-                  name={['profile', 'maritalStatus']}
-                  className="mb-0"
-                >
-                  {editState && (
-                    <Select
-                      className="w-100"
-                      showSearch
-                      placeholder="Your Marital Status"
-                      optionFilterProp="children"
-                      // onChange={handleChangeMarried}
-                      filterOption={(input, option) =>
-                        (option?.label ?? '').includes(input)
-                      }
-                      filterSort={(optionA, optionB) =>
-                        (optionA?.label ?? '')
-                          .toLowerCase()
-                          .localeCompare((optionB?.label ?? '').toLowerCase())
-                      }
-                      disabled={!editState}
-                      options={[
-                        {
-                          value: 'Single',
-                          label: 'Single',
-                        },
-                        {
-                          value: 'Married',
-                          label: 'Married',
-                        },
-                        {
-                          value: 'Divorced',
-                          label: 'Divorced',
-                        },
-                        {
-                          value: 'Widow/Widower',
-                          label: 'Widow/Widower',
-                        },
-                      ]}
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">{profileData?.maritalStatus}</p>
-                  )}
-                </Form.Item>
-              </div>
-            </div>
-
-            <label className="fw-bold mt-5 sub-section-profile">Address</label>
-            <div className="col-12">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">
-                  Permanent Address (as per ID/Passport)*
-                </label>
-                <Form.Item<FieldType>
-                  name={['address', 'permanentAddress']}
-                  className="mb-0"
-                >
-                  {editState && (
-                    <Input
-                      placeholder="Your Permanent Address"
-                      disabled={!editState}
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">
-                      {profileData?.addresses[0]?.street || '-'}
-                    </p>
-                  )}
-                </Form.Item>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">Country*</label>
-                <Form.Item<FieldType>
-                  name={['address', 'country']}
-                  className="mb-0"
-                >
-                  {editState && (
-                    <Select
-                      className="w-100"
-                      showSearch
-                      placeholder="Your Country"
-                      optionFilterProp="children"
-                      // onChange={handleChangeCountry}
-                      filterOption={(input, option) =>
-                        (option?.label.toLowerCase() ?? '').includes(input)
-                      }
-                      filterSort={(optionA, optionB) =>
-                        (optionA?.label ?? '')
-                          .toLowerCase()
-                          .localeCompare((optionB?.label ?? '').toLowerCase())
-                      }
-                      disabled={!editState}
-                      /* Fetched Data */
-                      options={masterData?.countries}
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">{profileData?.addresses[0]?.country}</p>
-                  )}
-                </Form.Item>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">City*</label>
-                <Form.Item<FieldType>
-                  name={['address', 'city']}
-                  className="mb-0"
-                >
-                  {editState && (
-                    <Select
-                      className="w-100"
-                      showSearch
-                      placeholder="Your City"
-                      optionFilterProp="children"
-                      filterOption={(input, option) =>
-                        (option?.label.toLowerCase() ?? '').includes(input)
-                      }
-                      filterSort={(optionA, optionB) =>
-                        (optionA?.label ?? '')
-                          .toLowerCase()
-                          .localeCompare((optionB?.label ?? '').toLowerCase())
-                      }
-                      disabled={!editState}
-                      /* Fetched Data */
-                      options={masterData?.citys}
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">{profileData?.addresses[0]?.city}</p>
-                  )}
-                </Form.Item>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">Zip Code*</label>
-                <Form.Item<FieldType>
-                  name={['address', 'zipCode']}
-                  className="mb-0"
-                >
-                  {editState && (
-                    <Input placeholder="Your Zip Code" disabled={!editState} />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">{profileData?.addresses[0]?.zipCode}</p>
-                  )}
-                </Form.Item>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">RT</label>
-                <Form.Item<FieldType> name={['address', 'rt']} className="mb-0">
-                  {editState && (
-                    <Input
-                      placeholder="Your RT"
-                      disabled={
-                        !editState ||
-                        profileData?.addresses[0]?.country !== 'Indonesia'
-                      }
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">
-                      {Boolean(profileData?.addresses[0]?.rt)
-                        ? profileData?.addresses[0]?.rt
-                        : '-'}
-                    </p>
-                  )}
-                </Form.Item>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">RW</label>
-                <Form.Item<FieldType> name={['address', 'rw']} className="mb-0">
-                  {editState && (
-                    <Input
-                      placeholder="Your RW"
-                      disabled={
-                        !editState ||
-                        profileData?.addresses[0]?.country !== 'Indonesia'
-                      }
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">
-                      {Boolean(profileData?.addresses[0]?.rw)
-                        ? profileData?.addresses[0]?.rw
-                        : '-'}
-                    </p>
-                  )}
-                </Form.Item>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">Subdistrict</label>
-                <Form.Item<FieldType>
-                  name={['address', 'subdistrict']}
-                  className="mb-0"
-                >
-                  {editState && (
-                    <Input
-                      placeholder="Your Subdistrict"
-                      disabled={
-                        !editState ||
-                        profileData?.addresses[0]?.country !== 'Indonesia'
-                      }
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">
-                      {Boolean(profileData?.addresses[0]?.subdistrict)
-                        ? profileData?.addresses[0]?.subdistrict
-                        : '-'}
-                    </p>
-                  )}
-                </Form.Item>
-              </div>
-            </div>
-            <div className="col-4">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">Village</label>
-                <Form.Item<FieldType>
-                  name={['address', 'village']}
-                  className="mb-0"
-                >
-                  {editState && (
-                    <Input
-                      placeholder="Your Village"
-                      disabled={
-                        !editState ||
-                        profileData?.addresses[0]?.country !== 'Indonesia'
-                      }
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">
-                      {Boolean(profileData?.addresses[0]?.village)
-                        ? profileData?.addresses[0]?.village
-                        : '-'}
-                    </p>
-                  )}
-                </Form.Item>
-              </div>
-            </div>
-            {editState && (
-              <div className="col-12">
-                <div className="input-group-meta position-relative mb-0">
-                  <Form.Item<FieldType> name="addressCheckbox" className="mb-2">
-                    <div className="d-flex align-items-center pt-10">
-                      <Checkbox
-                        onChange={handleAddressCheck}
-                        disabled={!editState}
-                        checked={
-                          profileData?.addresses[0]?.currentAddress === null
-                            ? true
-                            : false
-                        }
-                      >
-                        Same as Permanent Address
-                      </Checkbox>
-                    </div>
+                      </div>
+                    )}
                   </Form.Item>
                 </div>
               </div>
-            )}
-            <div className="col-12">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">Current Address (Domicile)</label>
-                <Form.Item<FieldType>
-                  name={['address', 'currentAddress']}
-                  className="mb-0"
-                >
-                  {editState && (
-                    <Input
-                      disabled={addressCheck || !editState}
-                      placeholder="Your Current Address"
-                    />
-                  )}
-                  {!editState && (
-                    <p className="mb-0">
-                      {profileData?.addresses[0]?.currentAddress ?? '-'}
-                    </p>
-                  )}
-                </Form.Item>
+              <div className="col-4">
+                <div className="input-group-meta position-relative mb-0">
+                  <label className="fw-bold">
+                    Full Name (as per ID/Passport)*
+                  </label>
+                  <Form.Item<FieldType> name={['profile', 'fullname']}>
+                    {editState && (
+                      <Input
+                        placeholder="Your Full Name"
+                        disabled={!editState}
+                        onChange={(e) => sanitizeFullname(e.target.value)}
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">{profileData?.users?.name}</p>
+                    )}
+                  </Form.Item>
+                </div>
+                <div className="input-group-meta position-relative mb-0">
+                  <label className="fw-bold">Email*</label>
+                  <Form.Item<FieldType> name={['profile', 'email']}>
+                    {editState && <Input placeholder="Your Email" disabled />}
+                    {!editState && (
+                      <p className="mb-0">{profileData?.users?.email}</p>
+                    )}
+                  </Form.Item>
+                </div>
               </div>
-            </div>
+              <div className="col-4">
+                <div className="input-group-meta position-relative mb-0">
+                  <label className="fw-bold">Phone Number*</label>
+                  <Form.Item<FieldType> name={['profile', 'phoneNumber']}>
+                    {editState && (
+                      <Input
+                        placeholder="Your Phone Number"
+                        disabled={!editState}
+                        onChange={(e) => sanitizePhoneNumber(e.target.value)}
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">{profileData?.phone_number}</p>
+                    )}
+                  </Form.Item>
+                </div>
+                <div className="input-group-meta position-relative mb-0">
+                  <label className="fw-bold">Date of Birth*</label>
+                  <Form.Item<FieldType> name={['profile', 'dateOfBirth']}>
+                    {editState && (
+                      <DatePicker
+                        className="w-100"
+                        placeholder="Select Date"
+                        disabled={!editState}
+                        format={'DD-MMM-YYYY'}
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">
+                        {dayjs(profileData?.date_of_birth).format('DD-MM-YYYY')}
+                      </p>
+                    )}
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="col-4">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">Place of Birth*</label>
+                  <Form.Item<FieldType>
+                    name={['profile', 'placeOfBirth']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Select
+                        className="w-100"
+                        showSearch
+                        placeholder="Your place of birth"
+                        optionFilterProp="children"
+                        filterOption={(input, option) =>
+                          (option?.label.toLowerCase() ?? '').includes(input)
+                        }
+                        filterSort={(optionA, optionB) =>
+                          (optionA?.label ?? '')
+                            .toLowerCase()
+                            .localeCompare((optionB?.label ?? '').toLowerCase())
+                        }
+                        disabled={!editState}
+                        /* Feted Data */
+                        options={masterData?.citys}
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">{profileData?.birthCity}</p>
+                    )}
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="col-4">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">Gender*</label>
+                  <Form.Item<FieldType>
+                    name={['profile', 'gender']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Select
+                        className="w-100"
+                        placeholder="Your Gender"
+                        options={[
+                          { value: 'Male', label: 'Male' },
+                          { value: 'Female', label: 'Female' },
+                        ]}
+                        disabled={!editState}
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">{profileData?.gender}</p>
+                    )}
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="col-4">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">Religion*</label>
+                  <Form.Item<FieldType>
+                    name={['profile', 'religion']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Select
+                        className="w-100"
+                        showSearch
+                        placeholder="Your Religion"
+                        optionFilterProp="children"
+                        filterOption={(input, option) =>
+                          (option?.label.toLowerCase() ?? '').includes(input)
+                        }
+                        filterSort={(optionA, optionB) =>
+                          (optionA?.label ?? '')
+                            .toLowerCase()
+                            .localeCompare((optionB?.label ?? '').toLowerCase())
+                        }
+                        disabled={!editState}
+                        options={[
+                          {
+                            value: 'Islam',
+                            label: 'Islam',
+                          },
+                          {
+                            value: 'Buddha',
+                            label: 'Buddha',
+                          },
+                          {
+                            value: 'Hindu',
+                            label: 'Hindu',
+                          },
+                          {
+                            value: 'Kristen Katholik',
+                            label: 'Kristen Katholik',
+                          },
+                          {
+                            value: 'Kristen Protestan',
+                            label: 'Kristen Protestan',
+                          },
+                          {
+                            value: 'Konghucu',
+                            label: 'Konghucu',
+                          },
+                        ]}
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">{profileData?.religion}</p>
+                    )}
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="col-4">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">Ethnicity*</label>
+                  <Form.Item<FieldType>
+                    name={['profile', 'ethnicity']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Select
+                        className="w-100"
+                        showSearch
+                        placeholder="Your Ethnicity"
+                        optionFilterProp="children"
+                        filterOption={(input, option) =>
+                          (option?.label.toLowerCase() ?? '').includes(input)
+                        }
+                        filterSort={(optionA, optionB) =>
+                          (optionA?.label ?? '')
+                            .toLowerCase()
+                            .localeCompare((optionB?.label ?? '').toLowerCase())
+                        }
+                        disabled={!editState}
+                        /* Fetched Data */
+                        options={masterData?.ethnicity}
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">{profileData?.ethnicity}</p>
+                    )}
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="col-4">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">Blood Type</label>
+                  <Form.Item<FieldType>
+                    name={['profile', 'bloodType']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Select
+                        className="w-100"
+                        placeholder="Your Blood Type"
+                        options={[
+                          { value: 'A', label: 'A' },
+                          { value: 'B', label: 'B' },
+                          { value: 'AB', label: 'AB' },
+                          { value: 'O', label: 'O' },
+                        ]}
+                        disabled={!editState}
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">{profileData?.blood_type}</p>
+                    )}
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="col-4">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">Marital Status*</label>
+                  <Form.Item<FieldType>
+                    name={['profile', 'maritalStatus']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Select
+                        className="w-100"
+                        showSearch
+                        placeholder="Your Marital Status"
+                        optionFilterProp="children"
+                        // onChange={handleChangeMarried}
+                        filterOption={(input, option) =>
+                          (option?.label ?? '').includes(input)
+                        }
+                        filterSort={(optionA, optionB) =>
+                          (optionA?.label ?? '')
+                            .toLowerCase()
+                            .localeCompare((optionB?.label ?? '').toLowerCase())
+                        }
+                        disabled={!editState}
+                        options={[
+                          {
+                            value: 'Single',
+                            label: 'Single',
+                          },
+                          {
+                            value: 'Married',
+                            label: 'Married',
+                          },
+                          {
+                            value: 'Divorced',
+                            label: 'Divorced',
+                          },
+                          {
+                            value: 'Widow/Widower',
+                            label: 'Widow/Widower',
+                          },
+                        ]}
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">{profileData?.maritalStatus}</p>
+                    )}
+                  </Form.Item>
+                </div>
+              </div>
 
-            {editState && (
-              <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
-                <button type="submit" className="dash-btn-two tran3s me-3">
-                  Submit
-                </button>
+              <label className="fw-bold mt-5 sub-section-profile">
+                Address
+              </label>
+              <div className="col-12">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">
+                    Permanent Address (as per ID/Passport)*
+                  </label>
+                  <Form.Item<FieldType>
+                    name={['address', 'permanentAddress']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Input
+                        placeholder="Your Permanent Address"
+                        disabled={!editState}
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">
+                        {profileData?.addresses[0]?.street || '-'}
+                      </p>
+                    )}
+                  </Form.Item>
+                </div>
               </div>
-            )}
-          </div>
-        </Form>
-      </div>
+              <div className="col-4">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">Country*</label>
+                  <Form.Item<FieldType>
+                    name={['address', 'country']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Select
+                        className="w-100"
+                        showSearch
+                        placeholder="Your Country"
+                        optionFilterProp="children"
+                        // onChange={handleChangeCountry}
+                        filterOption={(input, option) =>
+                          (option?.label.toLowerCase() ?? '').includes(input)
+                        }
+                        filterSort={(optionA, optionB) =>
+                          (optionA?.label ?? '')
+                            .toLowerCase()
+                            .localeCompare((optionB?.label ?? '').toLowerCase())
+                        }
+                        disabled={!editState}
+                        /* Fetched Data */
+                        options={masterData?.countries}
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">
+                        {profileData?.addresses[0]?.country}
+                      </p>
+                    )}
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="col-4">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">City*</label>
+                  <Form.Item<FieldType>
+                    name={['address', 'city']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Select
+                        className="w-100"
+                        showSearch
+                        placeholder="Your City"
+                        optionFilterProp="children"
+                        filterOption={(input, option) =>
+                          (option?.label.toLowerCase() ?? '').includes(input)
+                        }
+                        filterSort={(optionA, optionB) =>
+                          (optionA?.label ?? '')
+                            .toLowerCase()
+                            .localeCompare((optionB?.label ?? '').toLowerCase())
+                        }
+                        disabled={!editState}
+                        /* Fetched Data */
+                        options={masterData?.citys}
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">{profileData?.addresses[0]?.city}</p>
+                    )}
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="col-4">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">Zip Code*</label>
+                  <Form.Item<FieldType>
+                    name={['address', 'zipCode']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Input
+                        placeholder="Your Zip Code"
+                        disabled={!editState}
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">
+                        {profileData?.addresses[0]?.zipCode}
+                      </p>
+                    )}
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="col-4">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">RT</label>
+                  <Form.Item<FieldType>
+                    name={['address', 'rt']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Input
+                        placeholder="Your RT"
+                        disabled={
+                          !editState ||
+                          profileData?.addresses[0]?.country !== 'Indonesia'
+                        }
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">
+                        {Boolean(profileData?.addresses[0]?.rt)
+                          ? profileData?.addresses[0]?.rt
+                          : '-'}
+                      </p>
+                    )}
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="col-4">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">RW</label>
+                  <Form.Item<FieldType>
+                    name={['address', 'rw']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Input
+                        placeholder="Your RW"
+                        disabled={
+                          !editState ||
+                          profileData?.addresses[0]?.country !== 'Indonesia'
+                        }
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">
+                        {Boolean(profileData?.addresses[0]?.rw)
+                          ? profileData?.addresses[0]?.rw
+                          : '-'}
+                      </p>
+                    )}
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="col-4">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">Subdistrict</label>
+                  <Form.Item<FieldType>
+                    name={['address', 'subdistrict']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Input
+                        placeholder="Your Subdistrict"
+                        disabled={
+                          !editState ||
+                          profileData?.addresses[0]?.country !== 'Indonesia'
+                        }
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">
+                        {Boolean(profileData?.addresses[0]?.subdistrict)
+                          ? profileData?.addresses[0]?.subdistrict
+                          : '-'}
+                      </p>
+                    )}
+                  </Form.Item>
+                </div>
+              </div>
+              <div className="col-4">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">Village</label>
+                  <Form.Item<FieldType>
+                    name={['address', 'village']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Input
+                        placeholder="Your Village"
+                        disabled={
+                          !editState ||
+                          profileData?.addresses[0]?.country !== 'Indonesia'
+                        }
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">
+                        {Boolean(profileData?.addresses[0]?.village)
+                          ? profileData?.addresses[0]?.village
+                          : '-'}
+                      </p>
+                    )}
+                  </Form.Item>
+                </div>
+              </div>
+              {editState && (
+                <div className="col-12">
+                  <div className="input-group-meta position-relative mb-0">
+                    <Form.Item<FieldType>
+                      name="addressCheckbox"
+                      className="mb-2"
+                    >
+                      <div className="d-flex align-items-center pt-10">
+                        <Checkbox
+                          onChange={handleAddressCheck}
+                          disabled={!editState}
+                          checked={
+                            profileData?.addresses[0]?.currentAddress === null
+                              ? true
+                              : false
+                          }
+                        >
+                          Same as Permanent Address
+                        </Checkbox>
+                      </div>
+                    </Form.Item>
+                  </div>
+                </div>
+              )}
+              <div className="col-12">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">Current Address (Domicile)</label>
+                  <Form.Item<FieldType>
+                    name={['address', 'currentAddress']}
+                    className="mb-0"
+                  >
+                    {editState && (
+                      <Input
+                        disabled={addressCheck || !editState}
+                        placeholder="Your Current Address"
+                      />
+                    )}
+                    {!editState && (
+                      <p className="mb-0">
+                        {profileData?.addresses[0]?.currentAddress ?? '-'}
+                      </p>
+                    )}
+                  </Form.Item>
+                </div>
+              </div>
+
+              {editState && (
+                <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
+                  <button type="submit" className="dash-btn-two tran3s me-3">
+                    Submit
+                  </button>
+                </div>
+              )}
+            </div>
+          </Form>
+        </div>
+      )}
     </>
   );
 };

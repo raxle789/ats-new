@@ -2,16 +2,36 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import * as messages from '@/utils/message';
-import * as confirmations from '@/utils/confirmation';
+// import * as messages from '@/utils/message';
+// import * as confirmations from '@/utils/confirmation';
 import AssessmentItem from '../dashboard/employ/assessment-item';
-import { Checkbox, Popover, Spin, Modal, message } from 'antd';
+import { Checkbox, Popover, Spin, message } from 'antd';
 import type { CheckboxProps } from 'antd';
 import ActionCheckboxPipeline from '../common/popup/action-checkbox-pipeline';
+// const { confirm } = Modal;
 
-const { confirm } = Modal;
+type Props = {
+  status?: string | any;
+  applicantData?: any;
+  jobVacancyId?: number;
+  handleApplicant?: (
+    handleType:
+      | 'assignAssessment'
+      | 'detailAssessment'
+      | 'resendAssessment'
+      | 'assignInterview'
+      | 'resendCandidateInterviewInvitation',
+    candidateId: number,
+    jobVacancyId: number,
+    interviewId: number | null,
+    api: any,
+    router: any,
+    setLoading: (loading: boolean) => void,
+    status: string,
+  ) => void;
+};
 
-const AssessmentListItem = ({
+const AssessmentListItem: React.FC<Props> = ({
   status,
   applicantData,
   jobVacancyId,
@@ -23,21 +43,11 @@ const AssessmentListItem = ({
 
   const [loading, setLoading] = useState(false);
 
-  const initialCheckboxState = applicantData?.reduce(
-    (acc: { [key: string]: boolean }, _: any, index: string) => {
-      return {
-        ...acc,
-        [index]: false,
-      };
-    },
-    {},
-  );
+  let initialCheckboxState: { [key: string]: boolean };
 
   const [checkboxAllValue, setCheckboxAllValue] = useState(false);
 
-  const [checkbox, setCheckbox] = useState<{ [key: string]: boolean }>(
-    initialCheckboxState,
-  );
+  const [checkbox, setCheckbox] = useState<{ [key: string]: boolean }>({});
 
   const [popOverState, setPopOverState] = useState(false);
 
@@ -54,16 +64,39 @@ const AssessmentListItem = ({
   };
 
   useEffect(() => {
-    const countTrueValues = Object.values(checkbox).reduce(
-      (acc, curr) => acc + (curr ? 1 : 0),
-      0,
-    );
-    if (countTrueValues > 1) {
-      setPopOverState(true);
-    } else {
-      setPopOverState(false);
+    if (applicantData) {
+      const countTrueValues = Object.values(checkbox).reduce(
+        (acc, curr) => acc + (curr ? 1 : 0),
+        0,
+      );
+      if (
+        countTrueValues > 1 ||
+        (applicantData.length === 1 && countTrueValues === 1)
+      ) {
+        setPopOverState(true);
+      } else {
+        setPopOverState(false);
+      }
     }
   }, [checkbox]);
+
+  useEffect(() => {
+    if (applicantData) {
+      initialCheckboxState = applicantData?.reduce(
+        (acc: { [key: string]: boolean }, item: any, _: string) => {
+          return {
+            ...acc,
+            [item?.candidateId]: false,
+          };
+        },
+        {},
+      );
+
+      setCheckbox(initialCheckboxState);
+      console.log('Applicant Data: ', applicantData);
+      console.log('initial Checkbox: ', initialCheckboxState);
+    }
+  }, [applicantData]);
 
   // function handleApplicant(handleType: 'assignAssessment', candidateId) {
   //   switch (handleType) {
@@ -109,37 +142,55 @@ const AssessmentListItem = ({
       {contextHolder}
 
       <Spin spinning={loading} fullscreen />
-
-      <div className="card-checkbox">
-        <Popover
-          content={<ActionCheckboxPipeline />}
-          trigger="click"
-          open={popOverState}
-          placement="right"
-        >
-          <Checkbox
-            onChange={onChangeCheckboxAll}
-            checked={checkboxAllValue}
-          ></Checkbox>
-        </Popover>
-      </div>
+      {applicantData.length > 0 && (
+        <div className="card-checkbox">
+          <Popover
+            content={<ActionCheckboxPipeline />}
+            trigger="click"
+            open={popOverState}
+            placement="right"
+          >
+            <Checkbox
+              onChange={onChangeCheckboxAll}
+              checked={checkboxAllValue}
+            ></Checkbox>
+          </Popover>
+        </div>
+      )}
       <div className="wrapper">
-        {applicantData?.map((item) => (
-          <AssessmentItem
-            key={item?.candidateId}
-            item={item}
-            status={status}
-            checkboxState={checkbox}
-            checkboxAllValue={checkboxAllValue}
-            setCheckbox={setCheckbox}
-            setCheckboxAllValue={setCheckboxAllValue}
-            jobVacancyId={jobVacancyId}
-            api={api}
-            router={router}
-            setLoading={setLoading}
-            handleApplicant={handleApplicant}
-          />
-        ))}
+        {applicantData?.map(
+          (
+            item:
+              | {
+                  candidateId: string;
+                  candidatePhoto: string | null;
+                  candidateName: string | undefined;
+                  candidateLastPosition: string;
+                  candidateLastEducation: string | null;
+                  candidateExpectedSalary: string | number;
+                  candidateYearOfExperience: string | number;
+                  candidateStatus: string | null;
+                  candidateSkills: string[];
+                  candidateScore: string;
+                }
+              | any,
+          ) => (
+            <AssessmentItem
+              key={item?.candidateId}
+              item={item}
+              status={status}
+              checkboxState={checkbox}
+              checkboxAllValue={checkboxAllValue}
+              setCheckbox={setCheckbox}
+              setCheckboxAllValue={setCheckboxAllValue}
+              jobVacancyId={jobVacancyId}
+              api={api}
+              router={router}
+              setLoading={setLoading}
+              handleApplicant={handleApplicant}
+            />
+          ),
+        )}
       </div>
     </>
   );
