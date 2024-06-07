@@ -302,9 +302,6 @@ export async function updateEducationSkills(submittedValue: any): Promise<TypeRe
       await tx.languages.createMany({
         data: languagesReadyToStore
       });
-      /**
-       * Store skill and languages
-       */
 
       return {
         success: true,
@@ -322,6 +319,179 @@ export async function updateEducationSkills(submittedValue: any): Promise<TypeRe
       data: null,
       errors: error,
       message: 'Error updating education and skills!'
+    };
+  };
+};
+
+export async function updateAdditionalInformations(submittedValue: any): Promise<TypeReturnedServerAction> {
+  console.info("Submitted SOURCE Values \t:", submittedValue.others.source);
+  const authSession = await getUserSession('auth');
+  console.info('reg-session-data', authSession);
+  try {
+    const updateAdditionalInformations = await prisma.$transaction(async (tx) => {
+      console.info('deleting candidate families...');
+      await tx.families.deleteMany({
+        where: {
+          id_of_candidate: authSession.candidate.id
+        }
+      });
+      console.info('re-storing candidate families...');
+      const familiesReadyToStore = Object.values(submittedValue.families).map((family: any) => {
+        return {
+          id_of_candidate: authSession.candidate.id,
+          name: family.name,
+          relation: family.relation,
+          gender: family.gender,
+          dateOfBirth: new Date(family.dateOfBirth),
+          createdAt: new Date(Date.now())
+        };
+      });
+      await tx.families.createMany({
+        data: familiesReadyToStore
+      });
+
+      /**
+       * Only update emergency when the value exists
+       */
+      if(submittedValue.others.emergencyContactId) {
+        console.info('updating existing emergency contact...');
+        await tx.emergencyContacts.update({
+          where: {
+            id: submittedValue.others.emergencyContactId
+          },
+          data: {
+            name: submittedValue.others.emergencyContactName,
+            phoneNumber: submittedValue.others.emergencyContactPhoneNumber,
+            relationStatus: submittedValue.others.emergencyContactRelation
+          }
+        });
+      };
+
+      console.info('updating source ...');
+      await tx.candidates.update({
+        where: {
+          id: authSession.candidate.id
+        },
+        data: {
+          sourceId: Number(submittedValue.others.source)
+        }
+      });
+
+      /**
+       * Update on each questions, and check if option yes or no
+       */
+      console.info('checking on each questions...');
+      if(submittedValue.everWorkedOption === 'Yes') {
+        await tx.candidateQuestions.deleteMany({
+          where: {
+            questionId: 2,
+            candidateId: authSession.candidate.id,
+          }
+        });
+        console.info('storing ever worked with yes...');
+        await tx.candidateQuestions.create({
+          data: {
+            candidateId: authSession.candidate.id,
+            questionId: 2,
+            answer: [submittedValue.others.everWorkedMonth, submittedValue.others.everWorkedYear].toString()
+          }
+        });
+      } else {
+        await tx.candidateQuestions.deleteMany({
+          where: {
+            questionId: 2,
+            candidateId: authSession.candidate.id,
+          }
+        });
+        console.info('storing ever worked with no...');
+        await tx.candidateQuestions.create({
+          data: {
+            candidateId: authSession.candidate.id,
+            questionId: 2,
+            answer: 'no'
+          }
+        });
+      };
+
+      if(submittedValue.diseaseOption === 'Yes') {
+        await tx.candidateQuestions.deleteMany({
+          where: {
+            questionId: 3,
+            candidateId: authSession.candidate.id,
+          }
+        });
+        console.info('storing disease with yes...');
+        await tx.candidateQuestions.create({
+          data: {
+            candidateId: authSession.candidate.id,
+            questionId: 3,
+            answer: [submittedValue.others.diseaseName, submittedValue.others.diseaseYear].toString()
+          }
+        });
+      } else {
+        await tx.candidateQuestions.deleteMany({
+          where: {
+            questionId: 3,
+            candidateId: authSession.candidate.id,
+          }
+        });
+        console.info('storing disease with no...');
+        await tx.candidateQuestions.create({
+          data: {
+            candidateId: authSession.candidate.id,
+            questionId: 3,
+            answer: 'no'
+          }
+        });
+      };
+
+      if(submittedValue.relationOption === 'Yes') {
+        await tx.candidateQuestions.deleteMany({
+          where: {
+            questionId: 4,
+            candidateId: authSession.candidate.id,
+          }
+        });
+        console.info('storing rerlation with yes...');
+        await tx.candidateQuestions.create({
+          data: {
+            candidateId: authSession.candidate.id,
+            questionId: 4,
+            answer: [submittedValue.others.relationName, submittedValue.others.relationPosition].toString()
+          }
+        });
+      } else {
+        await tx.candidateQuestions.deleteMany({
+          where: {
+            questionId: 4,
+            candidateId: authSession.candidate.id,
+          }
+        });
+        console.info('storing relation with no...');
+        await tx.candidateQuestions.create({
+          data: {
+            candidateId: authSession.candidate.id,
+            questionId: 4,
+            answer: 'no'
+          }
+        });
+      };
+
+      return {
+        success: true,
+        data: null,
+        errors: null,
+        message: 'Additional Information updated successfully:'
+      };
+    });
+    return updateAdditionalInformations;
+  } catch (error) {
+    console.info("Error \t:", error);
+    return {
+      success: false,
+      data: null,
+      errors: error,
+      message: 'Error updating additional information!'
     };
   };
 };
