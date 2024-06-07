@@ -92,6 +92,8 @@ type Props = {
   experiences?: any;
   masterData?: MasterData | null;
   noticePeriod?: string;
+  submitCounter?: number;
+  setSubmitCounter?: React.Dispatch<number>;
   errors?: any;
 };
 
@@ -99,6 +101,8 @@ const BackgroundExperienceForm: React.FC<Props> = ({
   experiences,
   masterData,
   noticePeriod,
+  submitCounter,
+  setSubmitCounter,
   errors,
 }) => {
   const [form] = Form.useForm();
@@ -621,6 +625,10 @@ const BackgroundExperienceForm: React.FC<Props> = ({
       console.log('submittedValueExperience: ', values);
       // console.log('submittedTabs: ', expItems);
       // console.log('filteredExperience: ', filteredExperience);
+
+      // if (submitCounter && setSubmitCounter) {
+      //   setSubmitCounter(submitCounter + 1);
+      // }
     }
   };
 

@@ -51,6 +51,8 @@ type Props = {
   additionalInformation?: any;
   source?: string;
   masterData?: MasterData | null;
+  submitCounter?: number;
+  setSubmitCounter?: React.Dispatch<number>;
   errors?: any;
 };
 
@@ -58,6 +60,8 @@ const AdditionalInformationForm: React.FC<Props> = ({
   additionalInformation,
   source,
   masterData,
+  submitCounter,
+  setSubmitCounter,
   errors,
 }) => {
   const [form] = Form.useForm();
@@ -332,6 +336,10 @@ const AdditionalInformationForm: React.FC<Props> = ({
       console.log('submittedValueFamilies: ', values);
       console.log('submittedTabs: ', items);
       console.log('filteredFamilies: ', filteredFamilies);
+
+      // if (submitCounter && setSubmitCounter) {
+      //   setSubmitCounter(submitCounter + 1);
+      // }
     }
   };
 

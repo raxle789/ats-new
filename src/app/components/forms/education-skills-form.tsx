@@ -103,12 +103,16 @@ type MasterData = {
 type Props = {
   educationAndSkill?: any;
   masterData?: MasterData | null;
+  submitCounter?: number;
+  setSubmitCounter?: React.Dispatch<number>;
   errors?: any;
 };
 
 const EducationSkillsForm: React.FC<Props> = ({
   educationAndSkill,
   masterData,
+  submitCounter,
+  setSubmitCounter,
   errors,
 }) => {
   const [form] = Form.useForm();
@@ -417,6 +421,10 @@ const EducationSkillsForm: React.FC<Props> = ({
       console.log('submittedValueEducation: ', values);
       console.log('submittedTabs: ', certifItems);
       console.log('filteredCertification: ', filteredCertification);
+
+      // if (submitCounter && setSubmitCounter) {
+      //   setSubmitCounter(submitCounter + 1);
+      // }
     }
   };
 
@@ -519,8 +527,6 @@ const EducationSkillsForm: React.FC<Props> = ({
       }
     }
   }, [educationAndSkill]);
-
-  certifTotal;
 
   console.log('certifTotal: ', certifTotal);
   console.log('certifState: ', certifState);

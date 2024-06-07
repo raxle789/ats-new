@@ -113,12 +113,16 @@ type MasterData = {
 type Props = {
   profileData?: any;
   masterData?: MasterData | null;
+  submitCounter?: number;
+  setSubmitCounter?: React.Dispatch<number>;
   errors?: any;
 };
 
 const PersonalDataForm: React.FC<Props> = ({
   profileData,
   masterData,
+  submitCounter,
+  setSubmitCounter,
   errors,
 }) => {
   const [form] = Form.useForm();
@@ -225,6 +229,9 @@ const PersonalDataForm: React.FC<Props> = ({
         return message.error(updateProfile.message);
       }
       setEditState(false);
+      // if (submitCounter && setSubmitCounter) {
+      //   setSubmitCounter(submitCounter + 1);
+      // }
       return message.success(updateProfile.message);
     }
   };

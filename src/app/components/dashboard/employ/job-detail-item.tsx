@@ -4,29 +4,35 @@ import {
   useState,
   useRef,
   useEffect,
-  useMemo,
-  ReactNode,
-  cloneElement,
-  lazy,
+  // useEffect,
+  // useMemo,
+  // ReactNode,
+  // cloneElement,
+  // lazy,
 } from 'react';
 import _ from 'lodash';
-import JobDetailWrapper from '../../wrapper/job-detail-wrapper';
-import { registerAssessment } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-assessment/action';
+// import JobDetailWrapper from '../../wrapper/job-detail-wrapper';
+// import { registerAssessment } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-assessment/action';
 import { useRouter, usePathname } from 'next/navigation';
-import * as messages from '@/utils/message';
-import * as confirmations from '@/utils/confirmation';
-import { Spin, Modal, message } from 'antd';
-import Pagination from '@/ui/pagination';
-import SearchBar from '@/ui/search-bar';
+// import * as messages from '@/utils/message';
+// import * as confirmations from '@/utils/confirmation';
+import { Spin, message } from 'antd';
+// import Pagination from '@/ui/pagination';
+// import SearchBar from '@/ui/search-bar';
 import { Status } from '@/status/applicant-status';
 import React from 'react';
-import { Children } from 'react';
+// import { Children } from 'react';
 import ActionDropdownJobDetails from '../candidate/action-dropdown-job-details';
-import ListArea from '../../applicants/list-area';
+// import ListArea from '../../applicants/list-area';
 
-const { confirm } = Modal;
+// const { confirm } = Modal;
 
-const EmployJobDetailItem = ({ jobVacancyData, params }) => {
+type Props = {
+  jobVacancyData?: any;
+  params?: any;
+};
+
+const EmployJobDetailItem: React.FC<Props> = ({ jobVacancyData, params }) => {
   const router = useRouter();
 
   const pathname = usePathname();
@@ -45,15 +51,26 @@ const EmployJobDetailItem = ({ jobVacancyData, params }) => {
     INTERVIEW: `/dashboard/ta/jobs/${params?.id}/${Status.INTERVIEW.toLowerCase()}`,
   };
 
-  function handlePath(status) {
+  function handlePath(status: string) {
     if (status === Status?.APPLICANT) {
       router.replace(path?.APPLICANT);
+      setStatus(Status?.APPLICANT);
     } else if (status === Status?.ASSESSMENT) {
       router.replace(path?.ASSESSMENT);
+      setStatus(Status?.ASSESSMENT);
     } else if (status === Status?.INTERVIEW) {
       router.replace(path?.INTERVIEW);
+      setStatus(Status?.INTERVIEW);
     }
   }
+
+  useEffect(() => {
+    if (pathname === path.ASSESSMENT) {
+      setStatus(Status?.ASSESSMENT);
+    } else if (pathname === path.INTERVIEW) {
+      setStatus(Status?.INTERVIEW);
+    }
+  }, []);
 
   // useEffect(() => {
   //   if (params?.id && jobVacancyData && !_.isEmpty(jobVacancyData)) {
@@ -175,71 +192,72 @@ const EmployJobDetailItem = ({ jobVacancyData, params }) => {
 
       <div className="nav-bar-responsive d-flex align-items-center justify-content-center mb-40 pb-3 overflow-auto">
         <button
-          className="d-flex flex-column align-items-center me-4"
+          className={`d-flex flex-column align-items-center ${status === 'APPLICANT' ? 'btn-pipeline btn-pipeline-active' : 'btn-pipeline'}`}
           onClick={() => handlePath(Status?.APPLICANT)}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span>Applicant</span>
         </button>
         <button
-          className="d-flex flex-column align-items-center me-4"
+          className={`d-flex flex-column align-items-center ${status === 'SHORTLISTED' ? 'btn-pipeline btn-pipeline-active' : 'btn-pipeline'}`}
           onClick={() => handlePath(Status?.APPLICANT)}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span>Shortlisted</span>
         </button>
         <button
-          className="d-flex flex-column align-items-center me-4"
+          className={`d-flex flex-column align-items-center ${status === 'TALENT_POOL' ? 'btn-pipeline btn-pipeline-active' : 'btn-pipeline'}`}
           onClick={() => handlePath(Status?.APPLICANT)}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span className="text-center">Talent Pool</span>
         </button>
         <button
-          className="d-flex flex-column align-items-center me-4"
+          className={`d-flex flex-column align-items-center ${status === 'ASSESSMENT' ? 'btn-pipeline btn-pipeline-active' : 'btn-pipeline'}`}
           onClick={() => handlePath(Status?.ASSESSMENT)}
         >
           <span>{jobVacancyData?.assessment}</span>
           <span>Assessment</span>
         </button>
         <button
-          className="d-flex flex-column align-items-center me-4"
+          className={`d-flex flex-column align-items-center ${status === 'INTERVIEW' ? 'btn-pipeline btn-pipeline-active' : 'btn-pipeline'}`}
           onClick={() => handlePath(Status?.INTERVIEW)}
         >
           <span>{jobVacancyData?.interview}</span>
           <span>Interview</span>
         </button>
         <button
-          className="d-flex flex-column align-items-center me-4"
+          className={`d-flex flex-column align-items-center ${status === 'REF_CHECK' ? 'btn-pipeline btn-pipeline-active' : 'btn-pipeline'}`}
           onClick={() => handlePath(Status?.APPLICANT)}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span className="text-center">Ref Check</span>
         </button>
         <button
-          className="d-flex flex-column align-items-center me-4"
+          className={`d-flex flex-column align-items-center ${status === 'OFFERING' ? 'btn-pipeline btn-pipeline-active' : 'btn-pipeline'}`}
           onClick={() => handlePath(Status?.APPLICANT)}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span>Offering</span>
         </button>
         <button
-          className="d-flex flex-column align-items-center me-4"
+          className={`d-flex flex-column align-items-center ${status === 'MCU' ? 'btn-pipeline btn-pipeline-active' : 'btn-pipeline'}`}
           onClick={() => handlePath(Status?.APPLICANT)}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span>MCU</span>
         </button>
         <button
-          className="d-flex flex-column align-items-center me-4"
+          className={`d-flex flex-column align-items-center ${status === 'AGREEMENT' ? 'btn-pipeline btn-pipeline-active' : 'btn-pipeline'}`}
           onClick={() => handlePath(Status?.APPLICANT)}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span>Agreement</span>
         </button>
         <button
-          className="d-flex flex-column align-items-center"
+          className={`d-flex flex-column align-items-center ${status === 'BOARDING' ? 'btn-pipeline btn-pipeline-active' : 'btn-pipeline'}`}
           onClick={() => handlePath(Status?.APPLICANT)}
+          style={{ marginRight: '0px' }}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span>Boarding</span>

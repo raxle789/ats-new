@@ -103,6 +103,7 @@ const DashboardProfileArea = () => {
   const [source, setSource] = useState<string>('');
   const [noticePeriod, setNoticePeriod] = useState<string>('');
   const [errors, setErrors] = useState<string>('');
+  const [submitCounter, setSubmitCounter] = useState<number>(0);
 
   /* Fetch Form Data */
   const fetchProfileData = async () => {
@@ -167,7 +168,9 @@ const DashboardProfileArea = () => {
     fetchExperiences();
     fetchEducationSkills();
     fetchAdditionalInformations();
+  }, [submitCounter]);
 
+  useEffect(() => {
     /* Master data */
     fetchData();
   }, []);
@@ -206,6 +209,8 @@ const DashboardProfileArea = () => {
           <PersonalDataForm
             profileData={profileData}
             masterData={masterData}
+            submitCounter={submitCounter}
+            setSubmitCounter={setSubmitCounter}
             errors={errors}
           />
         )}
@@ -214,6 +219,8 @@ const DashboardProfileArea = () => {
             experiences={experiences}
             masterData={masterData}
             noticePeriod={noticePeriod}
+            submitCounter={submitCounter}
+            setSubmitCounter={setSubmitCounter}
             errors={errors}
           />
         )}
@@ -221,6 +228,8 @@ const DashboardProfileArea = () => {
           <EducationSkillsForm
             educationAndSkill={educationAndSkill}
             masterData={masterData}
+            submitCounter={submitCounter}
+            setSubmitCounter={setSubmitCounter}
             errors={errors}
           />
         )}
@@ -229,6 +238,8 @@ const DashboardProfileArea = () => {
             additionalInformation={additionalInformation}
             source={source}
             masterData={masterData}
+            submitCounter={submitCounter}
+            setSubmitCounter={setSubmitCounter}
             errors={errors}
           />
         )}
