@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, Suspense } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Tabs } from 'antd';
 import { message } from 'antd';
 import type { TabsProps } from 'antd';
@@ -22,7 +22,6 @@ import { getCandidateProfile } from '@/libs/Candidate/retrieve-data';
 import { getCandidateExperiences } from '@/libs/Candidate/retrieve-data';
 import { getEducationSkills } from '@/libs/Candidate/retrieve-data';
 import { getAdditionalInformations } from '@/libs/Candidate/retrieve-data';
-import EmployJobDetailSkeleton from '../../loadings/employ-job-detail-skeleton';
 
 type MasterData = {
   citys?: {
@@ -204,42 +203,34 @@ const DashboardProfileArea = () => {
       <div className="bg-white card-box border-20">
         <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
         {keyState === '1' && (
-          <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
-            <PersonalDataForm
-              profileData={profileData}
-              masterData={masterData}
-              errors={errors}
-            />
-          </Suspense>
+          <PersonalDataForm
+            profileData={profileData}
+            masterData={masterData}
+            errors={errors}
+          />
         )}
         {keyState === '2' && (
-          <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
-            <BackgroundExperienceForm
-              experiences={experiences}
-              masterData={masterData}
-              noticePeriod={noticePeriod}
-              errors={errors}
-            />
-          </Suspense>
+          <BackgroundExperienceForm
+            experiences={experiences}
+            masterData={masterData}
+            noticePeriod={noticePeriod}
+            errors={errors}
+          />
         )}
         {keyState === '3' && (
-          <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
-            <EducationSkillsForm
-              educationAndSkill={educationAndSkill}
-              masterData={masterData}
-              errors={errors}
-            />
-          </Suspense>
+          <EducationSkillsForm
+            educationAndSkill={educationAndSkill}
+            masterData={masterData}
+            errors={errors}
+          />
         )}
         {keyState === '4' && (
-          <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
-            <AdditionalInformationForm
-              additionalInformation={additionalInformation}
-              source={source}
-              masterData={masterData}
-              errors={errors}
-            />
-          </Suspense>
+          <AdditionalInformationForm
+            additionalInformation={additionalInformation}
+            source={source}
+            masterData={masterData}
+            errors={errors}
+          />
         )}
         {keyState === '5' && <DocumentForm />}
       </div>
