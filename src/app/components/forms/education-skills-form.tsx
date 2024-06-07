@@ -24,6 +24,7 @@ type FieldType = {
   formalCheckbox?: boolean;
   certificationCheckbox?: boolean;
   education?: {
+    id: number;
     educationLevel?: string;
     educationMajor?: string;
     schoolName?: string;
@@ -42,7 +43,7 @@ type FieldType = {
       yearIssue?: string | Dayjs;
     };
   };
-  skills?: string[];
+  skills?: { id: number; name: string; }[];
   language?: {
     [id: string]: {
       name?: string;
@@ -380,9 +381,8 @@ const EducationSkillsForm: React.FC<Props> = ({
   const [certifState, setCertifState] = useState('not-certified');
   const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
 
-  const handleSubmit: FormProps<FieldType>['onFinish'] = () => {
+  const handleSubmit: FormProps<FieldType>['onFinish'] = async () => {
     if (editState) {
-      // jalankan simpan data
       let values = form.getFieldsValue();
       values = {
         ...values,
@@ -391,7 +391,8 @@ const EducationSkillsForm: React.FC<Props> = ({
           ...values?.certification,
         },
       };
-      console.log('submittedValueEducation: ', values);
+      const plainObjectValues = JSON.parse(JSON.stringify(values));
+      console.log('submittedValueEducation: ', plainObjectValues);
     }
   };
 
@@ -448,7 +449,7 @@ const EducationSkillsForm: React.FC<Props> = ({
         (acc: any, item: any, index: number) => {
           acc[index] = {
             id: item?.id,
-            certificationName: item?.name,
+            certificationName: item?.id_of_certificate,
             institution: item?.institutionName,
             monthIssue: dayjs(new Date(item?.issuedDate)),
           };
@@ -462,17 +463,14 @@ const EducationSkillsForm: React.FC<Props> = ({
       setInitFieldsValue((prevState) => ({
         ...prevState,
         education: {
+          id: educationAndSkill?.education?.id,
           educationLevel: educationAndSkill?.education?.edu_level,
           educationMajor: educationAndSkill?.education?.edu_major,
           schoolName: educationAndSkill?.education?.university_name,
           gpa: educationAndSkill?.education?.gpa,
           cityOfSchool: educationAndSkill?.education?.city,
-          startEduYear: educationAndSkill?.education?.start_year
-            ? dayjs(new Date(educationAndSkill?.education?.start_year, 0))
-            : dayjs('20240101', 'YYYYMMDD'),
-          endEduYear: educationAndSkill?.education?.start_year
-            ? dayjs(new Date(educationAndSkill?.education?.end_year, 0))
-            : dayjs(new Date(Date.now()), 'YYYYMMDD'),
+          startEduYear: dayjs(educationAndSkill?.education?.start_year),
+          endEduYear: dayjs(educationAndSkill?.education?.end_year),
         },
         skills: educationAndSkill?.skills,
         language: languageField.language,
@@ -528,6 +526,16 @@ const EducationSkillsForm: React.FC<Props> = ({
         >
           <div className="row">
             <label className="fw-bold sub-section-profile">Education</label>
+            <div className="col-12 d-none">
+              <div className="input-group-meta position-relative mb-15">
+                <Form.Item<FieldType>
+                  name={['education', 'id']}
+                  className="mb-0"
+                >
+                  <InputNumber />
+                </Form.Item>
+              </div>
+            </div>
             <div className="col-3">
               <div className="input-group-meta position-relative mb-15">
                 <label className="fw-bold">Education Level*</label>
@@ -783,7 +791,7 @@ const EducationSkillsForm: React.FC<Props> = ({
                   {!editState && (
                     <div>
                       {initFieldsValue?.skills?.map((item, _) => (
-                        <p className="mb-0">{item}</p>
+                        <p key={_} className="mb-0">{item.name}</p>
                       ))}
                     </div>
                   )}

@@ -13,6 +13,7 @@ import {
 import type { FormProps, RadioChangeEvent } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import dayjs, { Dayjs } from 'dayjs';
+import { updateCandidateExperiences } from '@/libs/Candidate/actions';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 const { TextArea } = Input;
@@ -595,17 +596,22 @@ const BackgroundExperienceForm: React.FC<Props> = ({
   const [loopTotal, setLoopTotal] = useState(0);
   const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
 
-  const handleSubmit: FormProps<FieldType>['onFinish'] = () => {
+  /* ACTIONS */
+  const handleSubmit: FormProps<FieldType>['onFinish'] = async () => {
     if (editState) {
-      // jalankan simpan data
       let values = form.getFieldsValue();
       values = {
         ...values,
         experience: { ...initFieldsValue?.experience, ...values?.experience },
       };
-      console.log('submittedValueExperience: ', values);
-    }
+      const plainObjectValues = JSON.parse(JSON.stringify(values));
+      console.log('submittedValueExperience: ', plainObjectValues);
+      const updating = await updateCandidateExperiences(plainObjectValues);
+      if(!updating.success) return message.error(updating.message);
+      message.success(updating.message);
+    };
   };
+  /* END ACTIONS */
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
     errorInfo,

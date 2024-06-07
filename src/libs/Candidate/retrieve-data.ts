@@ -120,23 +120,13 @@ export async function getEducationSkills(): Promise<TypeFetchReturned> {
           },
         }),
       ]);
-    console.info('certifications \t:', certifications.map(certf => {
-      return {
-        id: certf.id,
-        institutionName: certf.institutionName,
-        issuedDate: certf.issuedDate,
-        name: certf.certificates.name,
-        id_of_certificate: certf.certificates.id
-      }
-    }));
-    // console.info('education: ', education);
-    // console.info('skillss: ', skills);
+
     return {
       success: true,
       data: {
         education: education,
-        skills: skills.map((skill) => skill.skills.name),
-        candidate_skills: skills.map(skill => {
+        // skills: skills.map((skill) => skill.skills.id),
+        skills: skills.map(skill => {
           return {
             id: skill.skills.id,
             name: skill.skills.name
