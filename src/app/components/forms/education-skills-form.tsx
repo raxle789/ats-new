@@ -16,6 +16,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import dayjs, { Dayjs } from 'dayjs';
 import EmployJobDetailSkeleton from '../loadings/employ-job-detail-skeleton';
+import { updateEducationSkills } from '@/libs/Candidate/actions';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 let languageIndex = 0;
@@ -405,6 +406,8 @@ const EducationSkillsForm: React.FC<Props> = ({
         }
       }
 
+
+
       values = {
         ...values,
         education: {
@@ -413,9 +416,12 @@ const EducationSkillsForm: React.FC<Props> = ({
         },
         certification: { ...filteredCertification },
       };
-      console.log('submittedValueEducation: ', values);
-      console.log('submittedTabs: ', certifItems);
-      console.log('filteredCertification: ', filteredCertification);
+      const plainObjectValues = JSON.parse(JSON.stringify(values));
+      console.log('PLAIN OBJECT VALUES \t: ', plainObjectValues);
+      const updating = await updateEducationSkills(plainObjectValues);
+      console.info("Updating Result \t: ", updating);
+      if(!updating.success) return message.error(updating.message);
+      return message.success(updating.message);
     }
   };
 
@@ -495,7 +501,7 @@ const EducationSkillsForm: React.FC<Props> = ({
           startEduYear: dayjs(educationAndSkill?.education?.start_year),
           endEduYear: dayjs(educationAndSkill?.education?.end_year),
         },
-        skills: educationAndSkill?.skills,
+        skills: educationAndSkill?.skills?.map((skill: any) => skill.id),
         language: languageField.language,
         certification: certificationsField,
       }));
@@ -811,8 +817,8 @@ const EducationSkillsForm: React.FC<Props> = ({
                   )}
                   {!editState && (
                     <div>
-                      {initFieldsValue?.skills?.map((item, _) => (
-                        <p key={_} className="mb-0">{item.name}</p>
+                      {educationAndSkill?.skills?.map((item: any) => (
+                        <p key={item.id} className="mb-0">{item.name}</p>
                       ))}
                     </div>
                   )}

@@ -169,11 +169,12 @@ export async function updateCandidateExperiences(submittedValue: any): Promise<T
 };
 
 export async function updateEducationSkills(submittedValue: any): Promise<TypeReturnedServerAction> {
-  console.info('Submitted Value Data \t:', submittedValue);
+  console.info('Submitted Certification Data \t:', submittedValue.certification);
   const authSession = await getUserSession('auth');
   console.info('reg-session-data', authSession);
   try {
     const updateEducationSkills = await prisma.$transaction(async (tx) => {
+      console.info('updating education...');
       await tx.educations.update({
         where: {
           // id: submittedValue.education.id
@@ -191,6 +192,7 @@ export async function updateEducationSkills(submittedValue: any): Promise<TypeRe
           created_at: new Date(Date.now())
         }
       });
+      console.info('deleting certifications...');
       await tx.certifications.deleteMany({
         where: {
           id_of_candidate: authSession.candidate.id
@@ -201,7 +203,7 @@ export async function updateEducationSkills(submittedValue: any): Promise<TypeRe
           if(!Number(certification.certificationName.toString())) {
             const storeCertificate = await tx.certificates.create({
               data: {
-                name: certification.certificationName,
+                name: certification.certificationName.toString(),
                 createdAt: new Date(Date.now())
               }
             });
@@ -232,10 +234,74 @@ export async function updateEducationSkills(submittedValue: any): Promise<TypeRe
       };
 
       const certificationsReadyToStore = await certificationsTransformFunction();
+      console.info('re-storing certifications...');
       await tx.certifications.createMany({
         data: certificationsReadyToStore
       });
 
+      console.info('deleting skills...');
+      await tx.candidateSkills.deleteMany({
+        where: {
+          id_of_candidate: authSession.candidate.id
+        }
+      });
+      console.info('is candidate deleting all skills?...');
+      if(submittedValue.skills.length > 0) {
+        console.info('re-storing skills...');
+        console.info('storing skills...');
+        const skillsTrasformFunction = async () => {
+          const skillsData  = submittedValue.skills.map(async (skill: any) => {
+            if(!Number(skill)) {
+              const storeSkill = await tx.skills.create({
+                data: {
+                  name: skill,
+                  createdAt: new Date(Date.now()),
+                  updatedAt: new Date(Date.now()),
+                }
+              });
+
+              /* Return object with the new stored skill */
+              return {
+                id_of_candidate: authSession.candidate.id,
+                id_of_skill: storeSkill.id
+              };
+            };
+
+            /* Return if value already number */
+            return {
+              id_of_candidate: authSession.candidate.id,
+              id_of_skill: skill
+            };
+          });
+
+          const results = await Promise.all(skillsData);
+          return results;
+        };
+
+        const candidateSkillsReadyToStore = await skillsTrasformFunction();
+        await tx.candidateSkills.createMany({
+          data: candidateSkillsReadyToStore
+        });
+      };
+
+      console.info('deleting candidate languages proficiency...');
+      await tx.languages.deleteMany({
+        where: {
+          id_of_candidate: authSession.candidate.id
+        }
+      });
+      console.info('updating candidate languages proficiency...');
+      const languagesReadyToStore = Object.values(submittedValue.language).map((lang: any) => {
+        return {
+          id_of_candidate: authSession.candidate.id,
+          name: lang.name,
+          proficiency: lang.proficiency,
+          createdAt: new Date(Date.now())
+        };
+      });
+      await tx.languages.createMany({
+        data: languagesReadyToStore
+      });
       /**
        * Store skill and languages
        */

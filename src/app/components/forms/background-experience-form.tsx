@@ -607,6 +607,18 @@ const BackgroundExperienceForm: React.FC<Props> = ({
         ...values,
         experience: { ...initFieldsValue?.experience, ...values?.experience },
       };
+
+      let filteredExperience: any = {};
+      for (const key in values.experience) {
+        const experienceId = values.experience[key].id;
+        if (expItems.some((jobId) => jobId.jobId === experienceId)) {
+          filteredExperience[key] = values.experience[key];
+        };
+      };
+      values = {
+        ...values,
+        experience: { ...filteredExperience },
+      };
       const plainObjectValues = JSON.parse(JSON.stringify(values));
       console.log('submittedValueExperience: ', plainObjectValues);
       const updating = await updateCandidateExperiences(plainObjectValues);
@@ -615,24 +627,6 @@ const BackgroundExperienceForm: React.FC<Props> = ({
     };
   };
   /* END ACTIONS */
-
-      let filteredExperience: any = {};
-      for (const key in plainObjectValues.experience) {
-        const experienceId = plainObjectValues.experience[key].id;
-        if (expItems.some((jobId) => jobId.jobId === experienceId)) {
-          filteredExperience[key] = plainObjectValues.experience[key];
-        }
-      }
-
-      values = {
-        ...plainObjectValues,
-        experience: { ...filteredExperience },
-      };
-      console.log('submittedValueExperience: ', values);
-      // console.log('submittedTabs: ', expItems);
-      // console.log('filteredExperience: ', filteredExperience);
-    }
-  };
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
     errorInfo,
