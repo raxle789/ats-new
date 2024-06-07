@@ -14,6 +14,7 @@ import type { FormProps, RadioChangeEvent } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import dayjs, { Dayjs } from 'dayjs';
 import EmployJobDetailSkeleton from '../loadings/employ-job-detail-skeleton';
+import { updateCandidateExperiences } from '@/libs/Candidate/actions';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 const { TextArea } = Input;
@@ -536,6 +537,7 @@ const BackgroundExperienceForm: React.FC<Props> = ({
     let newPanes = [...expItems];
     let newDisplayed = [...displayedItems];
     let index = expIdx;
+    // let newActiveKey: string;
     for (let i = 0; i < tabTotal; i++) {
       const newActiveKey = `newTab${newExpTabIdx.current++}`;
       newPanes.push({
@@ -601,9 +603,9 @@ const BackgroundExperienceForm: React.FC<Props> = ({
   const [loopTotal, setLoopTotal] = useState(0);
   const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
 
-  const handleSubmit: FormProps<FieldType>['onFinish'] = () => {
+  /* ACTIONS */
+  const handleSubmit: FormProps<FieldType>['onFinish'] = async () => {
     if (editState) {
-      // jalankan simpan data
       let values = form.getFieldsValue();
       values = {
         ...values,
@@ -617,20 +619,18 @@ const BackgroundExperienceForm: React.FC<Props> = ({
           filteredExperience[key] = values.experience[key];
         }
       }
-
       values = {
         ...values,
         experience: { ...filteredExperience },
       };
-      console.log('submittedValueExperience: ', values);
-      // console.log('submittedTabs: ', expItems);
-      // console.log('filteredExperience: ', filteredExperience);
-
-      // if (submitCounter && setSubmitCounter) {
-      //   setSubmitCounter(submitCounter + 1);
-      // }
+      const plainObjectValues = JSON.parse(JSON.stringify(values));
+      console.log('submittedValueExperience: ', plainObjectValues);
+      const updating = await updateCandidateExperiences(plainObjectValues);
+      if (!updating.success) return message.error(updating.message);
+      message.success(updating.message);
     }
   };
+  /* END ACTIONS */
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
     errorInfo,

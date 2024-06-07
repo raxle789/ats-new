@@ -199,42 +199,34 @@ const PersonalDataForm: React.FC<Props> = ({
     setAddressCheck(e.target.checked);
   };
 
+  /* ACTIONS */
   const handleSubmit: FormProps<FieldType>['onFinish'] = async (values) => {
     if (editState) {
-      // jalankan simpan data
       console.log('submitted values: ', values);
-      console.log('file submitted: ', fileList[0].originFileObj);
-      /**
-       * Validate if empty file
-       */
-      const photoBase64 = await fileToBase64(fileList[0].originFileObj as File);
-      const plainValues = convertToPlainObject(values);
-      const manipulatedSubmittedValues = {
-        address: {
-          ...plainValues.address,
-        },
-        profile: {
-          ...plainValues.profile,
-          uploadPhoto: {
-            original_name: fileList[0].originFileObj?.name,
-            byte_size: fileList[0].originFileObj?.size,
-            file_base: photoBase64,
-          },
-        },
-      };
-      const updateProfile = await updateCandidateProfile(
-        manipulatedSubmittedValues,
-      );
-      if (!updateProfile.success) {
-        return message.error(updateProfile.message);
+      const plainObjectValues = JSON.parse(JSON.stringify(values));
+      const photoFile = fileList.length > 0 ? fileList[0].originFileObj : null;
+      console.log('photoFile \t: ', photoFile);
+      let transformedDocument;
+      if (photoFile) {
+        const base64 = await fileToBase64(photoFile);
+        transformedDocument = {
+          original_name: photoFile.name,
+          byte_size: photoFile.size,
+          file_base: base64,
+        };
       }
-      setEditState(false);
-      // if (submitCounter && setSubmitCounter) {
-      //   setSubmitCounter(submitCounter + 1);
-      // }
-      return message.success(updateProfile.message);
+      const submitedValue = {
+        ...plainObjectValues,
+        profilePicture: transformedDocument,
+      };
+      console.info('Submitted Value \t:', submitedValue);
+      const updating = await updateCandidateProfile(submitedValue);
+      console.info('Error \t:', updating);
+      if (!updating.success) return message.error(updating.message);
+      message.success(updating.message);
     }
   };
+  /* END-ACTIONS */
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
     errorInfo,

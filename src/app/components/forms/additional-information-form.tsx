@@ -13,6 +13,8 @@ import type { FormProps, RadioChangeEvent } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import dayjs, { Dayjs } from 'dayjs';
 import EmployJobDetailSkeleton from '../loadings/employ-job-detail-skeleton';
+import { updateAdditionalInformations } from '@/libs/Candidate/actions';
+import { MasterData } from '../dashboard/candidate/dashboard-profile-area';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
@@ -34,7 +36,7 @@ type FieldType = {
     emergencyContactName?: string;
     emergencyContactPhoneNumber?: string;
     emergencyContactRelation?: string;
-    source: string;
+    source?: number;
     everWorkedMonth: string | Dayjs;
     everWorkedYear: string | Dayjs;
     diseaseName: string;
@@ -45,11 +47,11 @@ type FieldType = {
   };
 };
 
-type MasterData = {};
+// type MasterData = {};
 
 type Props = {
   additionalInformation?: any;
-  source?: string;
+  source?: { id?: number; name: string } | null;
   masterData?: MasterData | null;
   submitCounter?: number;
   setSubmitCounter?: React.Dispatch<number>;
@@ -305,9 +307,9 @@ const AdditionalInformationForm: React.FC<Props> = ({
     setHaveRelation(e.target.value);
   };
 
-  const handleSubmit: FormProps<FieldType>['onFinish'] = () => {
+  /* ACTIONS */
+  const handleSubmit: FormProps<FieldType>['onFinish'] = async () => {
     if (editState) {
-      // jalankan simpan data
       let values = form.getFieldsValue();
       values = {
         ...values,
@@ -333,15 +335,15 @@ const AdditionalInformationForm: React.FC<Props> = ({
           emergencyContactId: additionalInformation?.emergency_contact?.id,
         },
       };
-      console.log('submittedValueFamilies: ', values);
-      console.log('submittedTabs: ', items);
-      console.log('filteredFamilies: ', filteredFamilies);
-
-      // if (submitCounter && setSubmitCounter) {
-      //   setSubmitCounter(submitCounter + 1);
-      // }
+      const plainObjectValues = JSON.parse(JSON.stringify(values));
+      console.log('submittedValueFamilies: ', plainObjectValues);
+      // debugger;
+      const updating = await updateAdditionalInformations(plainObjectValues);
+      if (!updating.success) message.error(updating.message);
+      message.success(updating.message);
     }
   };
+  /* END ACTIONS */
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
     errorInfo,
@@ -446,14 +448,14 @@ const AdditionalInformationForm: React.FC<Props> = ({
             additionalInformation?.emergency_contact?.phoneNumber,
           emergencyContactRelation:
             additionalInformation?.emergency_contact?.relationStatus,
-          source: source,
+          source: source?.id,
           everWorkedMonth:
-            everWorkedAnswer === 'No' ? '' : dayjs(everWorkedAnswer),
+            everWorkedAnswer === 'no' ? '' : dayjs(everWorkedAnswer),
           everWorkedYear:
-            everWorkedAnswer2 === 'No' ? '' : dayjs(everWorkedAnswer2),
+            everWorkedAnswer2 === 'no' ? '' : dayjs(everWorkedAnswer2),
           diseaseName: medicalCondition,
           diseaseYear:
-            medicalCondition2 === 'No' ? '' : dayjs(medicalCondition2),
+            medicalCondition2 === 'no' ? '' : dayjs(medicalCondition2),
           relationName: colleagueName,
           relationPosition: colleagueName2,
         },
@@ -631,16 +633,10 @@ const AdditionalInformationForm: React.FC<Props> = ({
                             .localeCompare((optionB?.label ?? '').toLowerCase())
                         }
                         /* Fetched Data */
-                        options={[
-                          { value: 'Partnership', label: 'Partnership' },
-                          { value: 'Jobstreet', label: 'Jobstreet' },
-                          { value: 'Job Fair', label: 'Job Fair' },
-                        ]}
+                        options={masterData?.sources}
                       />
                     )}
-                    {!editState && (
-                      <p className="mb-0">{initFieldsValue?.others?.source}</p>
-                    )}
+                    {!editState && <p className="mb-0">{source?.name}</p>}
                   </Form.Item>
                 </div>
               </div>
@@ -711,7 +707,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
                     )}
                     {!editState && (
                       <p className="mb-0">
-                        {initFieldsValue?.others?.everWorkedMonth !== 'No'
+                        {initFieldsValue?.others?.everWorkedMonth !== 'no'
                           ? `${dayjs(initFieldsValue?.others?.everWorkedMonth).format('YYYY-MM')}, ${dayjs(initFieldsValue?.others?.everWorkedYear).format('YYYY-MM')}`
                           : 'No'}
                       </p>
@@ -793,7 +789,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
                     )}
                     {!editState && (
                       <p className="mb-0">
-                        {initFieldsValue?.others?.diseaseName !== 'No'
+                        {initFieldsValue?.others?.diseaseName !== 'no'
                           ? `${initFieldsValue?.others?.diseaseName}, ${dayjs(initFieldsValue?.others?.diseaseYear).format('YYYY')}`
                           : 'No'}
                       </p>
@@ -873,7 +869,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
                     )}
                     {!editState && (
                       <p className="mb-0">
-                        {initFieldsValue?.others?.relationName !== 'No'
+                        {initFieldsValue?.others?.relationName !== 'no'
                           ? `${initFieldsValue?.others?.relationName}, ${initFieldsValue?.others?.relationPosition}`
                           : 'No'}
                       </p>

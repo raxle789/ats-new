@@ -178,7 +178,9 @@ export async function userAuth(formData: any) {
       };
     };
     console.info('checking long-time period...');
-    if(formData.is_rememberOn === 'on') {
+    // console.info('remember value \t:', formData.is_rememberOn);
+    if(formData.is_rememberOn) {
+      console.info('remember value \t:', formData.is_rememberOn);
       await setUserSession('auth', {
         user: {
           id: userData.id

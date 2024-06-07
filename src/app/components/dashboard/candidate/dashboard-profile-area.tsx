@@ -9,7 +9,7 @@ import BackgroundExperienceForm from '../../forms/background-experience-form';
 import DocumentForm from '../../forms/doc-form';
 import EducationSkillsForm from '../../forms/education-skills-form';
 import AdditionalInformationForm from '../../forms/additional-information-form';
-import { fetchCities, fetchCountries, fetchEthnicity } from '@/libs/Fetch';
+import { fetchCities, fetchCountries, fetchEthnicity, fetchSources } from '@/libs/Fetch';
 import { fetchJobFunctions, jobJobLevels, lineIndutries } from '@/libs/Fetch';
 import {
   fetchCertificates,
@@ -23,7 +23,7 @@ import { getCandidateExperiences } from '@/libs/Candidate/retrieve-data';
 import { getEducationSkills } from '@/libs/Candidate/retrieve-data';
 import { getAdditionalInformations } from '@/libs/Candidate/retrieve-data';
 
-type MasterData = {
+export type MasterData = {
   citys?: {
     value: string;
     label: string;
@@ -68,6 +68,10 @@ type MasterData = {
     value: number;
     label: string;
   }[];
+  sources?: {
+    value: number;
+    label: string;
+  }[];
 };
 
 const DashboardProfileArea = () => {
@@ -100,7 +104,7 @@ const DashboardProfileArea = () => {
   const [experiences, setExperiences] = useState<any | null>(null);
   const [educationAndSkill, setEducationAndSkill] = useState<any>(null);
   const [additionalInformation, setAdditionalInformation] = useState<any>(null);
-  const [source, setSource] = useState<string>('');
+  const [source, setSource] = useState<{id?: number; name: string;} | null>(null);
   const [noticePeriod, setNoticePeriod] = useState<string>('');
   const [errors, setErrors] = useState<string>('');
   const [submitCounter, setSubmitCounter] = useState<number>(0);
@@ -155,6 +159,7 @@ const DashboardProfileArea = () => {
       fetchEducationInstitutios(setMasterData),
       fetchCertificates(setMasterData),
       fetchSkills(setMasterData),
+      fetchSources(setMasterData)
     ]);
   };
 
@@ -183,7 +188,7 @@ const DashboardProfileArea = () => {
 
   useEffect(() => {
     if (profileData) {
-      setSource(profileData?.sources);
+      setSource({ id: profileData?.sourceId, name: profileData?.sources });
     }
   }, [profileData]);
 

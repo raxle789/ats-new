@@ -16,6 +16,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import dayjs, { Dayjs } from 'dayjs';
 import EmployJobDetailSkeleton from '../loadings/employ-job-detail-skeleton';
+import { updateEducationSkills } from '@/libs/Candidate/actions';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 let languageIndex = 0;
@@ -25,7 +26,7 @@ type FieldType = {
   formalCheckbox?: boolean;
   certificationCheckbox?: boolean;
   education?: {
-    id?: number;
+    id: number;
     educationLevel?: string;
     educationMajor?: string;
     schoolName?: string;
@@ -44,7 +45,7 @@ type FieldType = {
       yearIssue?: string | Dayjs;
     };
   };
-  skills?: string[];
+  skills?: { id: number; name: string }[];
   language?: {
     [id: string]: {
       name?: string;
@@ -388,9 +389,8 @@ const EducationSkillsForm: React.FC<Props> = ({
   const [certifState, setCertifState] = useState('not-certified');
   const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
 
-  const handleSubmit: FormProps<FieldType>['onFinish'] = () => {
+  const handleSubmit: FormProps<FieldType>['onFinish'] = async () => {
     if (editState) {
-      // jalankan simpan data
       let values = form.getFieldsValue();
       values = {
         ...values,
@@ -418,13 +418,12 @@ const EducationSkillsForm: React.FC<Props> = ({
         },
         certification: { ...filteredCertification },
       };
-      console.log('submittedValueEducation: ', values);
-      console.log('submittedTabs: ', certifItems);
-      console.log('filteredCertification: ', filteredCertification);
-
-      // if (submitCounter && setSubmitCounter) {
-      //   setSubmitCounter(submitCounter + 1);
-      // }
+      const plainObjectValues = JSON.parse(JSON.stringify(values));
+      console.log('PLAIN OBJECT VALUES \t: ', plainObjectValues);
+      const updating = await updateEducationSkills(plainObjectValues);
+      console.info('Updating Result \t: ', updating);
+      if (!updating.success) return message.error(updating.message);
+      return message.success(updating.message);
     }
   };
 
@@ -481,7 +480,7 @@ const EducationSkillsForm: React.FC<Props> = ({
         (acc: any, item: any, index: number) => {
           acc[index] = {
             id: item?.id,
-            certificationName: item?.name,
+            certificationName: item?.id_of_certificate,
             institution: item?.institutionName,
             monthIssue: dayjs(new Date(item?.issuedDate)),
           };
@@ -501,14 +500,10 @@ const EducationSkillsForm: React.FC<Props> = ({
           schoolName: educationAndSkill?.education?.university_name,
           gpa: educationAndSkill?.education?.gpa,
           cityOfSchool: educationAndSkill?.education?.city,
-          startEduYear: educationAndSkill?.education?.start_year
-            ? dayjs(new Date(educationAndSkill?.education?.start_year, 0))
-            : dayjs('20240101', 'YYYYMMDD'),
-          endEduYear: educationAndSkill?.education?.start_year
-            ? dayjs(new Date(educationAndSkill?.education?.end_year, 0))
-            : dayjs(new Date(Date.now()), 'YYYYMMDD'),
+          startEduYear: dayjs(educationAndSkill?.education?.start_year),
+          endEduYear: dayjs(educationAndSkill?.education?.end_year),
         },
-        skills: educationAndSkill?.skills,
+        skills: educationAndSkill?.skills?.map((skill: any) => skill.id),
         language: languageField.language,
         certification: certificationsField,
       }));
@@ -822,8 +817,10 @@ const EducationSkillsForm: React.FC<Props> = ({
                     )}
                     {!editState && (
                       <div>
-                        {initFieldsValue?.skills?.map((item, _) => (
-                          <p className="mb-0">{item}</p>
+                        {educationAndSkill?.skills?.map((item: any) => (
+                          <p key={item.id} className="mb-0">
+                            {item.name}
+                          </p>
                         ))}
                       </div>
                     )}
