@@ -23,7 +23,7 @@ const slider_setting = {
   dots: false,
   arrows: false,
   centerPadding: '0px',
-  slidesToShow: 7,
+  slidesToShow: 6,
   slidesToScroll: 1,
   autoplay: true,
   autoplaySpeed: 3500,

@@ -553,7 +553,7 @@ const InterviewItem: React.FC<Props> = ({
                               </Tag>
                             )}
                             {data?.interviewResult === Status.RESCHEDULE && (
-                              <Tag color="#f0f000" style={{ color: 'white' }}>
+                              <Tag color="#1e87f0" style={{ color: 'white' }}>
                                 {Status.RESCHEDULE}
                               </Tag>
                             )}

@@ -20,12 +20,12 @@ import type {
 import { AiOutlinePlus } from 'react-icons/ai';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import dayjs, { Dayjs } from 'dayjs';
-import { convertToPlainObject, fileToBase64 } from '@/libs/Registration/utils';
+import { fileToBase64 } from '@/libs/Registration/utils';
 import { updateCandidateProfile } from '@/libs/Candidate/actions';
 import EmployJobDetailSkeleton from '../loadings/employ-job-detail-skeleton';
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
-type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
+// type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
 const getBase64 = (file: FileType): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -112,21 +112,29 @@ type MasterData = {
 
 type Props = {
   profileData?: any;
+  setProfileData?: React.Dispatch<any>;
   masterData?: MasterData | null;
-  submitCounter?: number;
-  setSubmitCounter?: React.Dispatch<number>;
+  submitType?: { type: string; counter: number };
+  setSubmitType?: React.Dispatch<{ type: string; counter: number }>;
   errors?: any;
 };
 
 const PersonalDataForm: React.FC<Props> = ({
   profileData,
+  setProfileData,
   masterData,
-  submitCounter,
-  setSubmitCounter,
+  submitType,
+  setSubmitType,
   errors,
 }) => {
   const [form] = Form.useForm();
   const [editState, setEditState] = useState(false);
+  const [addressCheck, setAddressCheck] = useState<boolean>(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState('');
+  const [profilePhoto, setProfilePhoto] = useState<any>();
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+
   const editOnChange = () => {
     setEditState(!editState);
   };
@@ -151,11 +159,6 @@ const PersonalDataForm: React.FC<Props> = ({
       },
     });
   };
-
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
-  const [profilePhoto, setProfilePhoto] = useState<any>();
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   const handleBeforeUpload = (file: FileType) => {
     const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
@@ -193,8 +196,6 @@ const PersonalDataForm: React.FC<Props> = ({
   // const handleChangeMarried = (value: string) => {
   //   setMarriedValue(value);
   // };
-
-  const [addressCheck, setAddressCheck] = useState<boolean>(false);
   const handleAddressCheck: CheckboxProps['onChange'] = (e) => {
     setAddressCheck(e.target.checked);
   };
@@ -202,6 +203,7 @@ const PersonalDataForm: React.FC<Props> = ({
   /* ACTIONS */
   const handleSubmit: FormProps<FieldType>['onFinish'] = async (values) => {
     if (editState) {
+      message.loading('Please wait');
       console.log('submitted values: ', values);
       const plainObjectValues = JSON.parse(JSON.stringify(values));
       const photoFile = fileList.length > 0 ? fileList[0].originFileObj : null;
@@ -224,6 +226,18 @@ const PersonalDataForm: React.FC<Props> = ({
       console.info('Error \t:', updating);
       if (!updating.success) return message.error(updating.message);
       message.success(updating.message);
+      if (setSubmitType && setProfileData && submitType) {
+        setProfileData(null);
+        // setSubmitType((prevState) => {...prevState, type: 'personal-data', counter: prevState.counter + 1});
+        // let counter = submitType?.counter;
+        const newSubmitType = {
+          ...submitType,
+          type: 'personal-data',
+          counter: submitType?.counter + 1,
+        };
+        setSubmitType(newSubmitType);
+        setEditState(false);
+      }
     }
   };
   /* END-ACTIONS */
