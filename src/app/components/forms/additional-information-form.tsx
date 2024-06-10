@@ -341,6 +341,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
 
       if (setSubmitType && setAdditionalInformation && submitType) {
         setLoopTotal(0);
+        setIndex(0);
         setActiveKey('');
         newTabIndex.current = 0;
         setItems([]);

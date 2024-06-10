@@ -637,6 +637,7 @@ const BackgroundExperienceForm: React.FC<Props> = ({
 
       if (setSubmitType && setExperiences && submitType) {
         setLoopTotal(0);
+        setExpIdx(0);
         setActiveExpKey('');
         newExpTabIdx.current = 0;
         setExpItems([]);

@@ -437,6 +437,8 @@ const PersonalDataForm: React.FC<Props> = ({
                       <Select
                         className="w-100"
                         showSearch
+                        mode="tags"
+                        maxCount={1}
                         placeholder="Your place of birth"
                         optionFilterProp="children"
                         filterOption={(input, option) =>
@@ -718,6 +720,8 @@ const PersonalDataForm: React.FC<Props> = ({
                       <Select
                         className="w-100"
                         showSearch
+                        mode="tags"
+                        maxCount={1}
                         placeholder="Your City"
                         optionFilterProp="children"
                         filterOption={(input, option) =>

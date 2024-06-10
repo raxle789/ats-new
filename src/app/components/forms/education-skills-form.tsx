@@ -426,6 +426,7 @@ const EducationSkillsForm: React.FC<Props> = ({
 
       if (setSubmitType && setEducationAndSkill && submitType) {
         setLoopTotal(0);
+        setCertificationIdx(0);
         setActiveCertifKey('');
         newCertifTabIndex.current = 0;
         setCertifItems([]);
