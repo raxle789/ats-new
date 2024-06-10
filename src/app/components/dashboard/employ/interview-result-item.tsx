@@ -1,11 +1,15 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
+import * as confirmations from '@/utils/confirmation';
+import * as messages from '@/utils/message';
 import _ from 'lodash';
 import { pdfjs } from 'react-pdf';
 import DocumentViewer from '../../documents/pdf-viewer';
 import {
   Form,
+  Modal,
   Input,
   InputNumber,
   Radio,
@@ -19,6 +23,8 @@ import type { RadioChangeEvent, FormProps } from 'antd';
 import InterviewHistoryModal from '../../common/popup/interview-history-modal';
 
 const { TextArea } = Input;
+
+const { confirm } = Modal;
 
 interface FieldType {
   identityInfo?: {
@@ -65,20 +71,32 @@ const desc = ['Poor', 'Fair', 'Good', 'Excellent'];
 
 const InterviewResultItem = ({
   interviewResultData,
-  insertInterviewResult,
+  submitInterviewResult,
   params,
   searchParams,
 }) => {
-  // UseState
+  const router = useRouter();
+
+  const pathname = usePathname();
+
   const [form] = Form.useForm();
 
-  const [radioValues, setRadioValues] = useState<number[]>([]);
+  const [api, contextHolder] = message.useMessage();
 
-  const [scoreTotal, setScoreTotal] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const [formMode, setFormMode] = useState(interviewResultData?.mode);
+
+  // const [radioValues, setRadioValues] = useState<number[]>([]);
+
+  // const [scoreTotal, setScoreTotal] = useState('');
 
   const [rating, setRating] = useState<number[]>([
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ]);
+
+  const [interviewResultCategoriesRate, setInterviewResultCategoriesRate] =
+    useState({});
 
   const [interviewResultStatusValue, setInterviewResultStatusValue] =
     useState(0);
@@ -92,6 +110,54 @@ const InterviewResultItem = ({
   //   setRadioValues(newValues);
   // };
 
+  useEffect(() => {
+    setFormMode(interviewResultData?.mode);
+
+    if (
+      interviewResultData?.interviewResultCategories &&
+      interviewResultData?.interviewResultCategories?.length
+    ) {
+      interviewResultData?.interviewResultCategories?.map((item) => {
+        if (
+          item?.interviewResultCategories &&
+          item?.interviewResultCategories?.length
+        ) {
+          item?.interviewResultCategories?.map((data) => {
+            setInterviewResultCategoriesRate((prev) => ({
+              ...prev,
+              [`${_.camelCase(data?.categoryName)}Rate`]: data?.score ?? 0,
+            }));
+
+            form.setFieldsValue({
+              [`${_.camelCase(data?.categoryName)}Rate`]: data?.score ?? 0,
+              [`${_.camelCase(data?.categoryName)}Comment`]: data?.comment,
+            });
+          });
+        }
+      });
+    }
+
+    if (
+      interviewResultData.interviewResultData &&
+      !_.isEmpty(interviewResultData.interviewResultData)
+    ) {
+      form.setFieldsValue({
+        status: interviewResultData?.interviewResultData?.statusName,
+        reason: interviewResultData?.interviewResultData?.reason,
+        rescheduler:
+          interviewResultData?.interviewResultData?.statusName === 'Reschedule'
+            ? interviewResultData?.interviewResultData?.candidateReschedulerId
+              ? `${interviewResultData?.interviewResultData?.candidateReschedulerId}#candidate`
+              : `${interviewResultData?.interviewResultData?.userReschedulerNIK}#user`
+            : null,
+      });
+
+      handleInterviewResultStatus(
+        interviewResultData?.interviewResultData?.statusName,
+      );
+    }
+  }, [interviewResultData]);
+
   const handleInterviewModal = () => {
     setIsModalOpen(true);
   };
@@ -102,16 +168,70 @@ const InterviewResultItem = ({
     setRating(stateChanged);
   };
 
-  function handleInterviewResultStatus(e) {
+  function handleRateChange(name, value) {
+    form.setFieldValue(name, value);
+
+    setInterviewResultCategoriesRate((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+
+  function handleInterviewResultStatus(status) {
     // console.log('radio checked', e.target.value);
     setInterviewResultStatusValue(
       interviewResultData?.interviewResultStatus?.findIndex(
-        (item) => item?.name === e.target.value,
+        (item) => item?.name === status,
       ),
     );
   }
 
   function handleSubmit(values) {
+    setLoading(true);
+
+    confirm({
+      ...confirmations.submitConfirmation('interviewResult', formMode),
+      onOk() {
+        return new Promise<void>((resolve, reject) => {
+          setTimeout(async () => {
+            const validate = await submitInterviewResult(
+              params,
+              searchParams,
+              values,
+            );
+
+            if (validate?.success) {
+              messages.success(api, validate?.message);
+
+              resolve(
+                new Promise<void>((resolve) => {
+                  setTimeout(() => resolve(router.back()), 1000);
+                }),
+              );
+            } else {
+              messages.error(api, validate?.message);
+
+              form.resetFields();
+
+              router.refresh();
+
+              resolve(setLoading(false));
+            }
+          }, 2000);
+        }).catch((e) =>
+          console.log(
+            `Failed ${formMode} Interview Result For This Candidate: `,
+            e,
+          ),
+        );
+      },
+      onCancel() {
+        router.refresh();
+
+        setLoading(false);
+      },
+    });
+
     // showModal();
     // let values = form.getFieldsValue();
     // values = {
@@ -119,7 +239,7 @@ const InterviewResultItem = ({
     //   resultInfo: { ...values.resultInfo, scoreTotal: scoreTotal },
     // };
 
-    insertInterviewResult(params, searchParams, values);
+    // insertInterviewResult(params, searchParams, values);
   }
 
   // function onFinishFailed(errorInfo) {
@@ -385,14 +505,16 @@ const InterviewResultItem = ({
                                       tooltips={desc}
                                       allowClear={true}
                                       onChange={(value) =>
-                                        form.setFieldValue(
+                                        handleRateChange(
                                           `${_.camelCase(item?.name)}Rate`,
                                           value,
                                         )
                                       }
-                                      value={form.getFieldValue(
-                                        `${_.camelCase(item?.name)}Rate`,
-                                      )}
+                                      value={
+                                        interviewResultCategoriesRate[
+                                          `${_.camelCase(item?.name)}Rate`
+                                        ] ?? 0
+                                      }
                                       count={4}
                                     />
                                   </div>
@@ -910,7 +1032,9 @@ const InterviewResultItem = ({
                         ]}
                       >
                         <Radio.Group
-                          onChange={handleInterviewResultStatus}
+                          onChange={(e) =>
+                            handleInterviewResultStatus(e.target.value)
+                          }
                           value={
                             interviewResultData?.interviewResultStatus[
                               interviewResultStatusValue
@@ -983,7 +1107,7 @@ const InterviewResultItem = ({
 
                 <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
                   <button type="submit" className="dash-btn-two tran3s me-3">
-                    Submit
+                    {formMode === 'create' ? 'Submit' : 'Update'}
                   </button>
                 </div>
               </div>
