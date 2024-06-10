@@ -400,7 +400,7 @@ export async function getInterviewResultData(
           const isUserAlreadyFilledInterviewResult =
             await userAlreadyFilledInterviewResult(interviewId, interviewerNik);
 
-          // console.info(applicantData?.candidateStates[0]);
+          // console.info(applicantData?.candidateStates[0].interviews);
 
           // console.info(assessmentData);
 
@@ -443,9 +443,63 @@ export async function getInterviewResultData(
                 )} (User)`,
               },
             ],
-            interviewHistory: await getInterviewByCandidateStateId(
-              applicantData?.candidateStates[0]?.id,
-            ),
+            interviewHistoryData: await (async () => {
+              if (
+                applicantData?.candidateStates[0]?.interviews &&
+                applicantData?.candidateStates[0]?.interviews?.length
+              ) {
+                return await Promise.all(
+                  applicantData?.candidateStates[0]?.interviews?.map(
+                    async (interview, index) => {
+                      if (interview && !_.isEmpty(interview)) {
+                        interview.dateTime = moment(
+                          interview?.dateTime,
+                          'YYYY-MM-DD',
+                        ).format('dddd DD-MMM-YYYY');
+
+                        if (
+                          interview?.interviewInterviewers &&
+                          interview?.interviewInterviewers?.length
+                        ) {
+                          interview.interviewInterviewers = await Promise.all(
+                            interview?.interviewInterviewers?.map(
+                              async (interviewInterviewer) => {
+                                if (
+                                  interviewInterviewer &&
+                                  !_.isEmpty(interviewInterviewer)
+                                ) {
+                                  // console.info(
+                                  //   await getInterviewerNameByNik(
+                                  //     interviewInterviewer?.interviewerNIK,
+                                  //   ),
+                                  // );
+
+                                  return {
+                                    interviewerName:
+                                      await getInterviewerNameByNik(
+                                        interviewInterviewer?.interviewerNIK,
+                                      ),
+                                    interviewResult:
+                                      interviewInterviewer?.interviewResults
+                                        ?.statusName,
+                                  };
+                                }
+                              },
+                            ),
+                          );
+                        }
+                      }
+
+                      // console.info(interview);
+
+                      return interview;
+                    },
+                  ),
+                );
+              } else {
+                return [];
+              }
+            })(),
             interviewResultData: await getInterviewResult(
               isUserAlreadyFilledInterviewResult,
             ),

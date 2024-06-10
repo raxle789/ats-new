@@ -4,14 +4,15 @@ import { Tag, Tree } from 'antd';
 import type { TreeDataNode, TreeProps } from 'antd';
 import { AiOutlineRight } from 'react-icons/ai';
 
-interface IProps {
-  isOpen: boolean;
-  setIsOpenModal: React.Dispatch<boolean>;
-}
+// interface IProps {
+//   isOpen: boolean;
+//   setIsOpenModal: React.Dispatch<boolean>;
+// }
 
-const InterviewHistoryModal: React.FC<IProps> = ({
+const InterviewHistoryModal = ({
   isOpen,
   setIsOpenModal,
+  interviewHistoryData,
 }) => {
   const treeData: TreeDataNode[] = [
     {
@@ -84,10 +85,12 @@ const InterviewHistoryModal: React.FC<IProps> = ({
   const onSelect: TreeProps['onSelect'] = (selectedKeys, info) => {
     console.log('selected', selectedKeys, info);
   };
+
   return (
     <>
       <Modal
         title="Interview History Candidate"
+        maskClosable={false}
         centered
         open={isOpen}
         onCancel={handleCancel}
@@ -96,7 +99,7 @@ const InterviewHistoryModal: React.FC<IProps> = ({
         wrapClassName="custom-modal-wrapper"
       >
         <div className="overflow-hidden mt-3">
-          <div className="row">
+          {/* <div className="row">
             <p className="col-lg-6 text-start mb-0">(Interview Title)</p>
             <p className="col-lg-6 text-end mb-0">Mon, 08 Apr 2024</p>
             <Tree
@@ -106,8 +109,48 @@ const InterviewHistoryModal: React.FC<IProps> = ({
               onSelect={onSelect}
               treeData={treeData}
             />
-          </div>
-          <div className="row">
+          </div> */}
+          {interviewHistoryData?.length &&
+            interviewHistoryData?.map((item, index) => (
+              <div className="row" key={index}>
+                <p className="col-lg-6 text-start mb-0">{`(${item?.title ?? '-'})`}</p>
+                <p className="col-lg-6 text-end mb-0">
+                  {item?.dateTime ?? '-'}
+                </p>
+                <Tree
+                  showLine
+                  switcherIcon={<AiOutlineRight />}
+                  // defaultExpandedKeys={['0-0']}
+                  onSelect={onSelect}
+                  treeData={[
+                    {
+                      title: 'Interviewer',
+                      key: '0',
+                      children: item?.interviewInterviewers?.map(
+                        (interviewInterviewer, index) => {
+                          return {
+                            title: (
+                              <>
+                                {interviewInterviewer?.interviewerName ?? '-'}
+                                <Tag
+                                  className="ms-1"
+                                  color="#29d259"
+                                  style={{ color: 'white' }}
+                                >
+                                  {interviewInterviewer?.interviewResult ??
+                                    'Waiting'}
+                                </Tag>
+                              </>
+                            ),
+                          };
+                        },
+                      ),
+                    },
+                  ]}
+                />
+              </div>
+            ))}
+          {/* <div className="row">
             <p className="col-lg-6 text-start mb-0">(Interview Title)</p>
             <p className="col-lg-6 text-end mb-0">Mon, 08 Apr 2024</p>
             <Tree
@@ -117,7 +160,7 @@ const InterviewHistoryModal: React.FC<IProps> = ({
               onSelect={onSelect}
               treeData={treeData}
             />
-          </div>
+          </div> */}
         </div>
       </Modal>
     </>

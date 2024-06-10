@@ -40,7 +40,9 @@ const InterviewResultArea = async ({ params, searchParams }) => {
 
   // console.info(params);
 
-  // console.info(interviewResultData.interviewResultData);
+  // console.info(
+  //   interviewResultData.interviewHistoryData[0].interviewInterviewers,
+  // );
 
   return (
     <InterviewResultItem

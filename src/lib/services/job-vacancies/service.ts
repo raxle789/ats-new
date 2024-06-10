@@ -2336,14 +2336,9 @@ export async function getInterviewById(interviewId) {
 
 export async function getApplicantByCandidateId(candidateId, jobVacancyId) {
   try {
-    const data = await prisma.candidates.findFirst({
+    const data = await prisma.candidates.findUnique({
       where: {
-        candidateStates: {
-          some: {
-            candidateId: candidateId,
-            jobVacancyId: jobVacancyId,
-          },
-        },
+        id: candidateId,
       },
       include: {
         users: true,
@@ -2355,8 +2350,28 @@ export async function getApplicantByCandidateId(candidateId, jobVacancyId) {
           },
         },
         candidateStates: {
-          include: {
+          where: {
+            candidateId: candidateId,
+            jobVacancyId: jobVacancyId,
+          },
+          select: {
             candidateStateAssessments: true,
+            interviews: {
+              select: {
+                title: true,
+                dateTime: true,
+                interviewInterviewers: {
+                  select: {
+                    interviewerNIK: true,
+                    interviewResults: {
+                      select: {
+                        statusName: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         },
         documents: {

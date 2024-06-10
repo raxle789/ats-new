@@ -101,7 +101,7 @@ const InterviewResultItem = ({
   const [interviewResultStatusValue, setInterviewResultStatusValue] =
     useState(0);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isOpenModal, setIsOpenModal] = useState(false);
 
   // Functions
   // const onChange = (index: number, e: RadioChangeEvent) => {
@@ -159,7 +159,7 @@ const InterviewResultItem = ({
   }, [interviewResultData]);
 
   const handleInterviewModal = () => {
-    setIsModalOpen(true);
+    setIsOpenModal(true);
   };
 
   const handleRatingClick = (index: number, value: number) => {
@@ -275,6 +275,14 @@ const InterviewResultItem = ({
   // }, []);
   return (
     <>
+      {isOpenModal && (
+        <InterviewHistoryModal
+          isOpen={isOpenModal}
+          setIsOpenModal={setIsOpenModal}
+          interviewHistoryData={interviewResultData?.interviewHistoryData}
+        />
+      )}
+
       <div className="job-fpk-header mb-40 lg-mb-30">
         <div className="d-sm-flex align-items-start justify-content-between mb-40 lg-mb-30">
           <h2 className="main-title m0 flex-grow-1">Interview Report Form</h2>
@@ -1129,10 +1137,10 @@ const InterviewResultItem = ({
       </div>
 
       {/* start modal */}
-      <InterviewHistoryModal
+      {/* <InterviewHistoryModal
         isOpen={isModalOpen}
         setIsOpenModal={setIsModalOpen}
-      />
+      /> */}
       {/* end modal */}
     </>
   );
