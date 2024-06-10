@@ -174,6 +174,22 @@ async function main() {
 
   await prisma.$executeRaw`INSERT INTO categories(name, description) VALUES('Education Background', 'Candidate has an educational/training background that is relevant to the position'), ('Working Experience', 'Candidate has work experience with the skills and qualifications which are the same or similar to the position'), ('Communication Skills', 'Candidate is able to express ideas systematically and clearly'), ('Quality Oriented', 'Candidate demonstrates a focus on quality by striving to meet high performance standards and improve work process'), ('Achievement Oriented', 'Candidate has an orientation towards achieving better work performance that exceeds the company''s standards'), ('Developing Others', 'Candidate is able to encourage themselves and/or others to develop/grow'), ('Creative Agility', 'Candidate is able to identify, propose, and develop the use of new methods, technologies, and systems'), ('Leading Others', 'Candidate is able to manage own tasks and other''s task. Able to manage, monitor, provide feedback, and make decisions appropriately'), ('Strategic Thinking', 'Candidate is able to predict various risk, opportunities and take actions based on the organization''s strategic plan'), ('Reliable Partner', 'Candidate is able to adapt and collaborate with colleagues in their own department and other departments'), ('Technology Savvy', 'Candidate is able to use technology/systems to support work processes')`;
 
+  /**
+   * CV, Ijazah, KTP/Passport, NPWP, KK, Bank BCA, MCU, Vaksin
+   */
+
+  await prisma.document_types.createMany({
+    data: [
+      { document_name: "ijazah" },
+      { document_name: "ktp/passport" },
+      { document_name: "npwp/tax" },
+      { document_name: "kartu-keluarga" },
+      { document_name: "BCA-card" },
+      { document_name: "MCU" },
+      { document_name: "vaksin-certificate" },
+    ]
+  });
+
   const hashed = await bcrypt.hash('super.admin-pass', 10);
 
   await prisma.$transaction(async (tx) => {
