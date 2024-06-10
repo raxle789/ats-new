@@ -15,6 +15,7 @@ const ApplicantListArea: React.FC<Props> = async ({
   searchParams,
   status,
 }) => {
+  // const pathname = usePathname();
   const page = searchParams?.page ?? '1';
   const perPage = searchParams?.perPage ?? '10';
   const searchQuery = searchParams?.query ?? '';

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 // import * as messages from '@/utils/message';
 // import * as confirmations from '@/utils/confirmation';
 import AssessmentItem from '../dashboard/employ/assessment-item';
@@ -13,7 +13,7 @@ import ActionCheckboxPipeline from '../common/popup/action-checkbox-pipeline';
 type Props = {
   status?: string | any;
   applicantData?: any;
-  jobVacancyId?: number;
+  jobVacancyId?: number | any;
   handleApplicant?: (
     handleType:
       | 'assignAssessment'
@@ -22,7 +22,7 @@ type Props = {
       | 'assignInterview'
       | 'resendCandidateInterviewInvitation',
     candidateId: number,
-    jobVacancyId: number,
+    jobVacancyId: number | any,
     interviewId: number | null,
     api: any,
     router: any,
@@ -38,7 +38,7 @@ const AssessmentListItem: React.FC<Props> = ({
   handleApplicant,
 }) => {
   const router = useRouter();
-
+  const pathname = usePathname();
   const [api, contextHolder] = message.useMessage();
 
   const [loading, setLoading] = useState(false);
@@ -149,6 +149,18 @@ const AssessmentListItem: React.FC<Props> = ({
       {contextHolder}
 
       <Spin spinning={loading} fullscreen />
+      <div className="d-flex justify-content-between align-items-center mb-20">
+        <div>
+          <h4 className="sub-main-title">
+            {pathname?.endsWith(jobVacancyId)
+              ? 'APPLICANT'
+              : pathname
+                  ?.split('/')
+                  [pathname?.split('/')?.length - 1]?.toUpperCase() ?? '-'}
+          </h4>
+        </div>
+        {/* <SearchBar /> */}
+      </div>
       {applicantData.length > 0 && (
         <div className="card-checkbox">
           <Popover

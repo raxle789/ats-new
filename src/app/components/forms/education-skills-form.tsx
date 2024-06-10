@@ -17,6 +17,10 @@ import { MdOutlineModeEdit } from 'react-icons/md';
 import dayjs, { Dayjs } from 'dayjs';
 import EmployJobDetailSkeleton from '../loadings/employ-job-detail-skeleton';
 import { updateEducationSkills } from '@/libs/Candidate/actions';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+
+dayjs.extend(localizedFormat);
+dayjs.locale('en');
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 let languageIndex = 0;
@@ -269,7 +273,7 @@ const EducationSkillsForm: React.FC<Props> = ({
                       certificationIdx
                     ]?.issuedDate,
                   ),
-                ).format('YYYY-MM')}
+                ).format('MMMM, YYYY')}
               </p>
             </div>
           </div>
@@ -762,6 +766,8 @@ const EducationSkillsForm: React.FC<Props> = ({
                         className="w-100"
                         placeholder="Your City of School"
                         showSearch
+                        mode="tags"
+                        maxCount={1}
                         filterOption={(input, option) =>
                           (option?.label.toLowerCase() ?? '').includes(input)
                         }

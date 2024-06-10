@@ -72,7 +72,7 @@ type Props = {
   checkboxAllValue?: boolean;
   setCheckbox?: React.Dispatch<SetStateAction<{ [key: string]: boolean }>>;
   setCheckboxAllValue?: React.Dispatch<boolean>;
-  jobVacancyId?: number;
+  jobVacancyId?: number | any;
   api?: any;
   router?: any;
   setLoading?: any;
@@ -84,7 +84,7 @@ type Props = {
       | 'assignInterview'
       | 'resendCandidateInterviewInvitation',
     candidateId: number,
-    jobVacancyId: number,
+    jobVacancyId: number | any,
     interviewId: number | null,
     api: any,
     router: any,

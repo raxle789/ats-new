@@ -23,6 +23,10 @@ import dayjs, { Dayjs } from 'dayjs';
 import { fileToBase64 } from '@/libs/Registration/utils';
 import { updateCandidateProfile } from '@/libs/Candidate/actions';
 import EmployJobDetailSkeleton from '../loadings/employ-job-detail-skeleton';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+
+dayjs.extend(localizedFormat);
+dayjs.locale('en');
 
 type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 // type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
@@ -420,7 +424,9 @@ const PersonalDataForm: React.FC<Props> = ({
                     )}
                     {!editState && (
                       <p className="mb-0">
-                        {dayjs(profileData?.date_of_birth).format('DD-MM-YYYY')}
+                        {dayjs(profileData?.date_of_birth).format(
+                          'D MMMM YYYY',
+                        )}
                       </p>
                     )}
                   </Form.Item>

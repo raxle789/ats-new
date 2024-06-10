@@ -15,6 +15,10 @@ import { MdOutlineModeEdit } from 'react-icons/md';
 import dayjs, { Dayjs } from 'dayjs';
 import EmployJobDetailSkeleton from '../loadings/employ-job-detail-skeleton';
 import { updateCandidateExperiences } from '@/libs/Candidate/actions';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+
+dayjs.extend(localizedFormat);
+dayjs.locale('en');
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 const { TextArea } = Input;
@@ -492,7 +496,7 @@ const BackgroundExperienceForm: React.FC<Props> = ({
             <label className="fw-bold">Start Year*</label>
             <p className="mb-0">
               {dayjs(experiences?.experiences[expIdx]?.start_at).format(
-                'MM/YYYY',
+                'MMMM, YYYY',
               )}
             </p>
           </div>
@@ -506,9 +510,9 @@ const BackgroundExperienceForm: React.FC<Props> = ({
               )} */}
               {dayjs(experiences?.experiences[expIdx]?.end_at).isValid()
                 ? dayjs(experiences?.experiences[expIdx]?.end_at).format(
-                    'MM/YYYY',
+                    'MMMM, YYYY',
                   )
-                : 'Now'}
+                : 'Present'}
             </p>
           </div>
         </div>
