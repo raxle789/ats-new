@@ -93,6 +93,7 @@ const JobVacancyForm = ({
     <>
       <Form
         form={form}
+        scrollToFirstError
         className="bg-white card-box border-20"
         layout="vertical"
         variant="filled"

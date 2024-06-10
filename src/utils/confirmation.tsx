@@ -53,7 +53,12 @@ export function duplicateConfirmation(handleType: 'jobVacancy') {
 }
 
 export function submitConfirmation(
-  handleType: 'jobVacancy' | 'fpk' | 'positionLevelRequirement' | 'interview',
+  handleType:
+    | 'jobVacancy'
+    | 'fpk'
+    | 'positionLevelRequirement'
+    | 'interview'
+    | 'interviewResult',
   mode?: 'create' | 'update',
 ) {
   const confirmation = (() => {
@@ -84,6 +89,18 @@ export function submitConfirmation(
         ...confirmationTemplate,
         content: 'Do you want to create this interview?',
       };
+    } else if (handleType === 'interviewResult') {
+      if (mode === 'create') {
+        return {
+          ...confirmationTemplate,
+          content: 'Do you want to submit interview result for this candidate?',
+        };
+      } else if (mode === 'update') {
+        return {
+          ...confirmationTemplate,
+          content: 'Do you want to update interview result for this candidate?',
+        };
+      }
     }
   })();
 

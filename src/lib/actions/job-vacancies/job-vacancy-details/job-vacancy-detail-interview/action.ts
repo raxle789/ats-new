@@ -2,6 +2,9 @@
 
 import {
   getAllInterviewType,
+  updateInterviewResult,
+  getInterviewResult,
+  userAlreadyFilledInterviewResult,
   createInterviewResult,
   getInterviewByCandidateStateId,
   getAllInterviewResultStatus,
@@ -24,6 +27,7 @@ import moment from 'moment';
 import _ from 'lodash';
 import {
   validateCandidateIdAndJobVacancyId,
+  validateInterviewIdAndInterviewerNik,
   validateInterviewResultSchema,
   validateInterviewResultData,
   validateInterviewerNik,
@@ -357,6 +361,7 @@ export async function resendEmail(
 export async function getInterviewResultData(
   candidateId,
   jobVacancyId,
+  interviewId,
   interviewerNik,
 ) {
   const data = await (async () => {
@@ -372,6 +377,7 @@ export async function getInterviewResultData(
       const validate = validateInterviewResultData.safeParse({
         candidateId: decryptedCandidateId,
         jobVacancyId: decryptedJobVacancyId,
+        interviewId: interviewId,
         interviewerNik: interviewerNik,
       });
 
@@ -390,6 +396,9 @@ export async function getInterviewResultData(
             applicantData?.candidateStates[0]?.candidateStateAssessments
               ?.remoteId,
           );
+
+          const isUserAlreadyFilledInterviewResult =
+            await userAlreadyFilledInterviewResult(interviewId, interviewerNik);
 
           // console.info(applicantData?.candidateStates[0]);
 
@@ -418,7 +427,9 @@ export async function getInterviewResultData(
                   )[0]
                   .file_base?.toString()
               : null,
-            interviewResultCategories: await getAllInterviewResultCategory(),
+            interviewResultCategories: await getAllInterviewResultCategory(
+              isUserAlreadyFilledInterviewResult,
+            ),
             interviewResultStatus: await getAllInterviewResultStatus(),
             reschedulers: [
               {
@@ -434,6 +445,9 @@ export async function getInterviewResultData(
             ],
             interviewHistory: await getInterviewByCandidateStateId(
               applicantData?.candidateStates[0]?.id,
+            ),
+            interviewResultData: await getInterviewResult(
+              isUserAlreadyFilledInterviewResult,
             ),
           };
 
@@ -452,7 +466,7 @@ export async function getInterviewResultData(
   return data;
 }
 
-export async function insertInterviewResult(params, searchParams, values) {
+export async function submitInterviewResult(params, searchParams, values) {
   const decryptedQuery = await crypto.decryptObject(searchParams?.q);
 
   if (
@@ -479,13 +493,94 @@ export async function insertInterviewResult(params, searchParams, values) {
         ...values,
       });
 
-      if (validate.success) {
-        // console.info(validate.data);
+      if (validate?.success) {
+        const data = await utils.formatInterviewResultSchema(validate?.data);
 
-        const response = await createInterviewResult(validate?.data);
+        const isUserAlreadyFilledInterviewResult =
+          await userAlreadyFilledInterviewResult(
+            data.mainData.interviewId,
+            data.mainData.interviewerNik,
+          );
+
+        if (isUserAlreadyFilledInterviewResult) {
+          const response = await updateInterviewResult({
+            ...data,
+            interviewResultId: isUserAlreadyFilledInterviewResult,
+          });
+
+          if (response && !_.isEmpty(response)) {
+            return {
+              success: true,
+              message:
+                'Successfully Update Interview Result For This Candidate',
+            };
+          }
+
+          return {
+            success: false,
+            message: 'Failed Update Interview Result For This Candidate',
+          };
+        } else {
+          const response = await createInterviewResult(data);
+
+          if (response && !_.isEmpty(response)) {
+            return {
+              success: true,
+              message:
+                'Successfully Submit Interview Result For This Candidate',
+            };
+          }
+
+          return {
+            success: false,
+            message: 'Failed Submit Interview Result For This Candidate',
+          };
+        }
       } else {
         console.log(validate.error);
+
+        return {
+          success: false,
+          message: 'Failed Submit Interview Result For This Candidate',
+        };
       }
     }
+
+    return {
+      success: false,
+      message: 'Failed Submit Interview Result For This Candidate',
+    };
   }
+
+  return {
+    success: false,
+    message: 'Failed Submit Interview Result For This Candidate',
+  };
 }
+
+// export async function isUserAlreadyFilledInterviewResult(
+//   interviewId,
+//   interviewerNik,
+// ) {
+//   const validate = validateInterviewIdAndInterviewerNik.safeParse({
+//     interviewId,
+//     interviewerNik,
+//   });
+
+//   if (validate?.success) {
+//     const data = await userAlreadyFilledInterviewResult(
+//       interviewId,
+//       interviewerNik,
+//     );
+
+//     if (data) {
+//       return true;
+//     } else {
+//       return false;
+//     }
+//   } else {
+//     console.log(validate?.error);
+
+//     return false;
+//   }
+// }

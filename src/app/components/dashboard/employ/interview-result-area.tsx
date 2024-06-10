@@ -2,7 +2,7 @@
 
 import {
   getInterviewResultData,
-  insertInterviewResult,
+  submitInterviewResult,
 } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-interview/action';
 import _ from 'lodash';
 import { decryptObject } from '@/lib/utils/utils';
@@ -18,13 +18,21 @@ const InterviewResultArea = async ({ params, searchParams }) => {
       !_.isEmpty(decryptedQuery) &&
       decryptedQuery?.candidateId &&
       params?.id &&
+      decryptedQuery?.interviewId &&
       params?.interviewerNik
     ) {
-      return await getInterviewResultData(
+      const data = await getInterviewResultData(
         decryptedQuery?.candidateId,
         params?.id,
+        decryptedQuery?.interviewId,
         params?.interviewerNik,
       );
+
+      if (data?.interviewResultData?.statusName) {
+        return { ...data, mode: 'update' };
+      } else {
+        return { ...data, mode: 'create' };
+      }
     } else {
       return {};
     }
@@ -32,12 +40,12 @@ const InterviewResultArea = async ({ params, searchParams }) => {
 
   // console.info(params);
 
-  // console.info(interviewResultData);
+  // console.info(interviewResultData.interviewResultData);
 
   return (
     <InterviewResultItem
       interviewResultData={interviewResultData}
-      insertInterviewResult={insertInterviewResult}
+      submitInterviewResult={submitInterviewResult}
       params={params}
       searchParams={searchParams}
     />

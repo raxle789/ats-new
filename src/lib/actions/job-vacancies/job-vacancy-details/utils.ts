@@ -1,6 +1,7 @@
 'use server';
 
 import moment from 'moment';
+import _ from 'lodash';
 
 export async function calculateYearOfExperience(workingExperiences) {
   // console.info(workingExperiences);
@@ -114,4 +115,139 @@ export async function calculateAge(dateOfBirth) {
   }
 
   return 0;
+}
+
+export async function formatInterviewResultSchema(data) {
+  const mainData = { ...data };
+
+  const categoryData = [];
+
+  for (const [key, value] of Object.entries(mainData)) {
+    if (
+      key !== 'candidateId' &&
+      key !== 'jobVacancyId' &&
+      key !== 'interviewId' &&
+      key !== 'interviewerNik' &&
+      key !== 'status' &&
+      key !== 'reason' &&
+      key !== 'rescheduler'
+    ) {
+      if (
+        key?.toLowerCase()?.endsWith('rate') ||
+        key?.toLowerCase()?.endsWith('comment')
+      ) {
+        let categoryDataItem = {};
+
+        const categoryName = _.startCase(key?.replace(/Rate$|Comment$/g, ''));
+
+        const isExist = categoryData?.find(
+          (item) => item?.categoryName === categoryName,
+        );
+
+        if (
+          isExist &&
+          isExist.hasOwnProperty('score') &&
+          !isExist.hasOwnProperty('comment')
+        ) {
+          categoryDataItem = {
+            ...isExist,
+            comment: value,
+          };
+
+          categoryData?.splice(
+            categoryData?.indexOf(isExist),
+            1,
+            categoryDataItem,
+          );
+        } else if (
+          isExist &&
+          !isExist.hasOwnProperty('score') &&
+          isExist.hasOwnProperty('comment')
+        ) {
+          categoryDataItem = {
+            ...isExist,
+            score: value,
+          };
+
+          categoryData?.splice(
+            categoryData?.indexOf(isExist),
+            1,
+            categoryDataItem,
+          );
+        } else {
+          if (!isExist && key?.toLowerCase()?.endsWith('rate')) {
+            categoryDataItem = {
+              ...isExist,
+              categoryName,
+              score: value,
+            };
+
+            categoryData?.push(categoryDataItem);
+          } else if (!isExist && key?.toLowerCase()?.endsWith('comment')) {
+            categoryDataItem = {
+              ...isExist,
+              categoryName,
+              comment: value,
+            };
+
+            categoryData?.push(categoryDataItem);
+          }
+        }
+
+        // if (!isExist) {
+        //   data?.push(categoryData);
+        // } else {
+
+        // const newData = data?.reduce(
+        //   (acc, cur) => {
+        //     if (
+        //       acc?.findIndex(
+        //         (item) => item?.categoryName === categoryName,
+        //       ) !== -1 &&
+        //       key?.toLowerCase()?.endsWith('rate')
+        //     ) {
+        //       return acc?.map((item) => {
+        //         if (item?.categoryName === categoryName) {
+        //           return { ...item, score: value };
+        //         } else {
+        //           return item;
+        //         }
+        //       });
+        //     } else if (
+        //       acc?.findIndex(
+        //         (item) => item?.categoryName === categoryName,
+        //       ) !== -1 &&
+        //       key?.toLowerCase()?.endsWith('comment')
+        //     ) {
+        //       return acc?.map((item) => {
+        //         if (item?.categoryName === categoryName) {
+        //           return { ...item, comment: value };
+        //         } else {
+        //           return item;
+        //         }
+        //       });
+        //     } else {
+        //       if (key?.toLowerCase()?.endsWith('rate')) {
+        //         return [...acc, { ...cur, categoryName, score: value }];
+        //       } else if (key?.toLowerCase()?.endsWith('comment')) {
+        //         return [
+        //           ...acc,
+        //           { ...cur, categoryName, comment: value },
+        //         ];
+        //       }
+        //     }
+        //   },
+        //   [{ categoryName: '', score: 0, comment: '' }],
+        // );
+
+        // data = [...data, ...newData];
+
+        // }
+      }
+
+      delete mainData[key];
+    }
+  }
+
+  return { mainData, categoryData };
 }

@@ -2382,14 +2382,30 @@ export async function getApplicantByCandidateId(candidateId, jobVacancyId) {
   }
 }
 
-export async function getAllInterviewResultCategory() {
+export async function getAllInterviewResultCategory(interviewResultId) {
   try {
-    const data = await prisma.categories.findMany({
-      select: {
-        name: true,
-        description: true,
-      },
-    });
+    const data = await (async () => {
+      if (interviewResultId) {
+        return await prisma.categories.findMany({
+          select: {
+            name: true,
+            description: true,
+            interviewResultCategories: {
+              where: {
+                interviewResultId: interviewResultId,
+              },
+            },
+          },
+        });
+      } else {
+        return await prisma.categories.findMany({
+          select: {
+            name: true,
+            description: true,
+          },
+        });
+      }
+    })();
 
     return data;
   } catch (e) {
@@ -2417,67 +2433,86 @@ export async function getAllInterviewResultStatus() {
   }
 }
 
-export async function createInterviewResult({}) {
+export async function userAlreadyFilledInterviewResult(
+  interviewId,
+  interviewerNik,
+) {
   try {
+    const data = await prisma.interviewInterviewers.findUnique({
+      where: {
+        interviewId_interviewerNIK: {
+          interviewId: interviewId,
+          interviewerNIK: interviewerNik,
+        },
+      },
+      select: {
+        interviewResultId: true,
+      },
+    });
+
+    return data?.interviewResultId;
+  } catch (e) {
+    console.log(e);
+
+    return null;
+  }
+}
+
+export async function createInterviewResult({ mainData, categoryData }) {
+  try {
+    // console.info(mainData);
+
     const data = prisma.$transaction(async (tx) => {
       const interviewResultData = await tx.interviewResults.create({
         data: {
-          statusName: status,
-          reason: comment,
+          statusName: mainData.status,
+          reason: mainData.reason ? mainData.reason : null,
+          rescheduler: mainData.rescheduler.rescheduler
+            ? mainData.rescheduler.rescheduler
+            : null,
+          candidateReschedulerId: mainData.rescheduler.candidateReschedulerId
+            ? mainData.rescheduler.candidateReschedulerId
+            : null,
+          userReschedulerNIK: mainData.rescheduler.userReschedulerNik
+            ? mainData.rescheduler.userReschedulerNik
+            : null,
+          interviewResultCategories: {
+            createMany: {
+              data: categoryData.map((item) => {
+                return {
+                  categoryName: item.categoryName,
+                  score: item.score,
+                  comment: item.comment ? item.comment : null,
+                };
+              }),
+            },
+          },
         },
       });
 
       if (interviewResultData && !_.isEmpty(interviewResultData)) {
-        const interviewResultCategoryData = await Promise.all(
-          interviewResultCategory?.map(async (data) => {
-            const newData = await tx.interviewResultCategories.create({
-              data: {
-                interviewResultId: interviewResultData.id,
-                categoryId: data.id,
-                score: data.score,
-                comment: data.comment,
+        const interviewInterviewersData = await tx.interviewInterviewers.update(
+          {
+            where: {
+              interviewId_interviewerNIK: {
+                interviewId: mainData.interviewId,
+                interviewerNIK: mainData.interviewerNik,
               },
-            });
-
-            return newData;
-          }),
+            },
+            data: {
+              interviewResultId: interviewResultData.id,
+            },
+          },
         );
 
         if (
-          interviewResultCategoryData &&
-          interviewResultCategoryData?.length
+          interviewInterviewersData &&
+          !_.isEmpty(interviewInterviewersData)
         ) {
-          const interviewInterviewerData =
-            await tx.interviewInterviewers.update({
-              where: {
-                interviewId_interviewerNIK: {
-                  interviewId: interviewId,
-                  interviewerNIK: interviewerNik,
-                },
-              },
-              data: {
-                interviewResultId: interviewResultData.id,
-              },
-            });
-
-          if (
-            interviewInterviewerData &&
-            !_.isEmpty(interviewInterviewerData)
-          ) {
-            return interviewResultData;
-          }
-
-          return {};
+          return interviewResultData;
         }
 
         return {};
-
-        // const interviewResultCategoryData = await tx.interviewResultCategories.create({
-        //   data: {
-        //     interviewResultId: interviewResultData.id,
-        //     categoryId:
-        //   },
-        // });
       }
 
       return {};
@@ -2489,4 +2524,109 @@ export async function createInterviewResult({}) {
 
     return {};
   }
+
+  // console.info(mainData);
+}
+
+export async function getInterviewResult(interviewResultId) {
+  try {
+    const data = await prisma.interviewResults.findUnique({
+      where: {
+        id: interviewResultId,
+      },
+      select: {
+        statusName: true,
+        reason: true,
+        rescheduler: true,
+        candidateReschedulerId: true,
+        userReschedulerNIK: true,
+      },
+    });
+
+    return data;
+  } catch (e) {
+    console.log(e);
+
+    return {};
+  }
+}
+
+export async function updateInterviewResult({
+  interviewResultId,
+  mainData,
+  categoryData,
+}) {
+  try {
+    // console.info(mainData);
+
+    const data = prisma.$transaction(async (tx) => {
+      // console.info(interviewResultId);
+
+      const interviewResultData = await tx.interviewResults.update({
+        where: {
+          id: interviewResultId,
+        },
+        data: {
+          statusName: mainData.status,
+          reason: mainData.reason ? mainData.reason : null,
+          rescheduler: mainData.rescheduler.rescheduler
+            ? mainData.rescheduler.rescheduler
+            : null,
+          candidateReschedulerId: mainData.rescheduler.candidateReschedulerId
+            ? mainData.rescheduler.candidateReschedulerId
+            : null,
+          userReschedulerNIK: mainData.rescheduler.userReschedulerNik
+            ? mainData.rescheduler.userReschedulerNik
+            : null,
+          interviewResultCategories: {
+            deleteMany: {},
+            createMany: {
+              data: categoryData.map((item) => {
+                return {
+                  categoryName: item.categoryName,
+                  score: item.score,
+                  comment: item.comment ? item.comment : null,
+                };
+              }),
+            },
+          },
+        },
+      });
+
+      if (interviewResultData && !_.isEmpty(interviewResultData)) {
+        const interviewInterviewersData = await tx.interviewInterviewers.update(
+          {
+            where: {
+              interviewId_interviewerNIK: {
+                interviewId: mainData.interviewId,
+                interviewerNIK: mainData.interviewerNik,
+              },
+            },
+            data: {
+              interviewResultId: interviewResultData.id,
+            },
+          },
+        );
+
+        if (
+          interviewInterviewersData &&
+          !_.isEmpty(interviewInterviewersData)
+        ) {
+          return interviewResultData;
+        }
+
+        return {};
+      }
+
+      return {};
+    });
+
+    return data;
+  } catch (e) {
+    console.log(e);
+
+    return {};
+  }
+
+  // console.info(mainData);
 }
