@@ -15,13 +15,13 @@ const EmployDashboardJobDetailAssessment: React.FC<Props> = ({
   searchParams,
 }) => {
   return (
-    <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
-      <AssessmentListArea
-        params={params}
-        searchParams={searchParams}
-        status={Status?.ASSESSMENT}
-      />
-    </Suspense>
+    // <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
+    <AssessmentListArea
+      params={params}
+      searchParams={searchParams}
+      status={Status?.ASSESSMENT}
+    />
+    // </Suspense>
   );
 };
 

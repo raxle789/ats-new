@@ -15,13 +15,13 @@ const EmployDashboardJobDetailInterview: React.FC<Props> = ({
   searchParams,
 }) => {
   return (
-    <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
-      <InterviewListArea
-        params={params}
-        searchParams={searchParams}
-        status={Status.INTERVIEW}
-      />
-    </Suspense>
+    // <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
+    <InterviewListArea
+      params={params}
+      searchParams={searchParams}
+      status={Status.INTERVIEW}
+    />
+    // </Suspense>
   );
 };
 

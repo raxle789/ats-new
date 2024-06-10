@@ -1,5 +1,8 @@
 'use server';
+
 import ApplicantListItem from './applicant-list-item';
+import { Suspense } from 'react';
+import EmployJobDetailSkeleton from '@/app/components/loadings/employ-job-detail-skeleton';
 import { handleApplicant } from '../message/confirm';
 // import { registerAssessment } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-assessment/action';
 import { getAllApplicantDataByJobVacancyId } from '@/lib/actions/job-vacancies/job-vacancy-details/action';
@@ -50,12 +53,14 @@ const ApplicantListArea: React.FC<Props> = async ({
   })();
 
   return (
+    // <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
     <ApplicantListItem
       status={status}
       applicantData={applicantData?.data}
       jobVacancyId={params?.id}
       handleApplicant={handleApplicant}
     />
+    // </Suspense>
   );
 };
 
