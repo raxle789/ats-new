@@ -5,7 +5,15 @@ import InterviewListArea from '@/app/components/applicants/interview-list-area';
 
 export const revalidate = 0;
 
-const EmployDashboardJobDetailInterview = ({ params, searchParams }) => {
+type Props = {
+  searchParams?: any;
+  params?: any;
+};
+
+const EmployDashboardJobDetailInterview: React.FC<Props> = ({
+  params,
+  searchParams,
+}) => {
   return (
     <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
       <InterviewListArea

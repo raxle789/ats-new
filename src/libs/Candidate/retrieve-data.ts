@@ -42,7 +42,7 @@ export async function getCandidateProfile(): Promise<TypeFetchReturned> {
         },
       },
     });
-    console.info('Candidate Profile \t:', candidateProfileData);
+    // console.info('Candidate Profile \t:', candidateProfileData);
     return {
       success: true,
       data: {
@@ -102,31 +102,36 @@ export async function getEducationSkills(): Promise<TypeFetchReturned> {
         }),
         prisma.candidateSkills.findMany({
           where: { id_of_candidate: authSession.candidate.id },
-          include: { skills: { select: { name: true } } },
+          include: { skills: { select: { id: true, name: true } } },
         }),
         prisma.languages.findMany({
           where: { id_of_candidate: authSession.candidate.id },
-          select: { name: true, proficiency: true },
+          select: { id: true, name: true, proficiency: true },
         }),
         prisma.certifications.findMany({
           where: { id_of_candidate: authSession.candidate.id },
           include: {
             certificates: {
               select: {
+                id: true,
                 name: true,
               },
             },
           },
         }),
       ]);
-    // console.info('certifications \t:', certifications);
-    // console.info('education: ', education);
-    // console.info('skillss: ', skills);
+
     return {
       success: true,
       data: {
         education: education,
-        skills: skills.map((skill) => skill.skills.name),
+        // skills: skills.map((skill) => skill.skills.id),
+        skills: skills.map(skill => {
+          return {
+            id: skill.skills.id,
+            name: skill.skills.name
+          }
+        }),
         languages: languages,
         certifications: certifications.map((certificate) => {
           return {
@@ -134,6 +139,7 @@ export async function getEducationSkills(): Promise<TypeFetchReturned> {
             institutionName: certificate.institutionName,
             issuedDate: certificate.issuedDate,
             name: certificate.certificates.name,
+            id_of_certificate: certificate.certificates.id
           };
         }),
       },

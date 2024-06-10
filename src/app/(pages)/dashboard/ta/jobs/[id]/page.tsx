@@ -5,7 +5,15 @@ import ApplicantListArea from '@/app/components/applicants/applicant-list-area';
 
 export const revalidate = 0;
 
-const EmployDashboardJobDetailApplicant = ({ params, searchParams }) => {
+type Props = {
+  searchParams?: any;
+  params?: any;
+};
+
+const EmployDashboardJobDetailApplicant: React.FC<Props> = ({
+  params,
+  searchParams,
+}) => {
   return (
     <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
       <ApplicantListArea

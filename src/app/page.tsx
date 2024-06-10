@@ -14,11 +14,11 @@ import { JobListItems } from './components/jobs/list/job-list-one';
 // import BlogFour from './components/blogs/blog-four';
 // import SpiritSection from './components/home/spirit-section';
 // import EngageSection from './components/home/engage-section';
-import VerticalSection from './components/home/vertical-section';
+// import VerticalSection from './components/home/vertical-section';
 // import FancyBannerThree from './components/fancy-banner/fancy-banner-3';
 // import EventSection from './components/home/event-section';
 // import VisionSection from './components/home/vision-section';
-import FeatureNine from './components/features/feature-nine';
+// import FeatureNine from './components/features/feature-nine';
 // import FeedbackFive from './components/feedBacks/feedback-five';
 // import FancyBannerSix from './components/fancy-banner/fancy-banner-6';
 // import FooterOne from '@/layouts/footers/footer-one';
@@ -39,6 +39,12 @@ export default async function Home() {
   );
   const DynamicSpirit = dynamic(
     () => import('./components/home/spirit-section'),
+  );
+  const DynamicMotto = dynamic(
+    () => import('./components/features/feature-nine'),
+  );
+  const DynamicVertical = dynamic(
+    () => import('./components/home/vertical-section'),
   );
   const DynamicFeedback = dynamic(
     () => import('./components/feedBacks/feedback-five'),
@@ -161,11 +167,11 @@ export default async function Home() {
         {/* spirit words end */}
 
         {/* text feature start */}
-        <FeatureNine />
+        <DynamicMotto />
         {/* text feature end */}
 
         {/* vertical section start */}
-        <VerticalSection />
+        <DynamicVertical />
         {/* vertical section end */}
 
         {/* feedback start */}

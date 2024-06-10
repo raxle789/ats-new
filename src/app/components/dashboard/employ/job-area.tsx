@@ -1,20 +1,19 @@
 'use server';
-
 import React from 'react';
 import {
   getAllJobVacancyData,
   deleteJobVacancyData,
 } from '@/lib/actions/job-vacancies/action';
-import Link from 'next/link';
+// import Link from 'next/link';
 // import DashboardHeader from '../candidate/dashboard-header';
 import EmployJobItem from './job-item';
-import SearchBar from '@/ui/search-bar';
-import EmployShortSelect from './short-select';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import Pagination from '@/ui/pagination';
+// import SearchBar from '@/ui/search-bar';
+// import EmployShortSelect from './short-select';
+// import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+// import Pagination from '@/ui/pagination';
 // import Image from 'next/image';
 // import search from '@/assets/dashboard/images/icon/icon_10.svg';
-import { useDebouncedCallback } from 'use-debounce';
+// import { useDebouncedCallback } from 'use-debounce';
 
 // const jobData = [
 //   {
@@ -80,16 +79,14 @@ import { useDebouncedCallback } from 'use-debounce';
 // ];
 
 // props type
-type IProps = {
-  setIsOpenSidebar: React.Dispatch<React.SetStateAction<boolean>>;
+type Props = {
+  searchParams: any;
 };
-const EmployJobArea = async ({ searchParams }) => {
+
+const EmployJobArea: React.FC<Props> = async ({ searchParams }) => {
   const page = searchParams?.page ?? '1';
-
   const perPage = searchParams?.perPage ?? '10';
-
   const searchQuery = searchParams?.query ?? '';
-
   const offset = (Number(page) - 1) * Number(perPage);
 
   const jobVacancyData = await getAllJobVacancyData(offset, Number(perPage))

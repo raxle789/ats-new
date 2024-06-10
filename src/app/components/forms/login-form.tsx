@@ -50,8 +50,10 @@ const LoginForm: React.FC<LoginFormProps> = ({
   };
 
   /* ACTIONS */
-  const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+  const onFinish: FormProps<FieldType>['onFinish'] = async () => {
     setSpinning(true);
+    let values = form.getFieldsValue();
+    values = {...values, is_rememberOn: checkedState}
     console.log('Suubmitted data:', values);
     console.info('authorizing user...');
     /**
@@ -111,7 +113,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
       <Form
         name="login-form"
         variant="filled"
-        initialValues={{ remember: true }}
+        form={form}
         onFinish={onFinish}
         onFinishFailed={onFinishFailed}
       >
@@ -184,7 +186,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
           <div className="col-12">
             {/* <div className="agreement-checkbox d-flex justify-content-between align-items-center"> */}
             <div className="">
-              <Form.Item<FieldType> name="is_rememberOn">
+              <Form.Item<FieldType> name="is_rememberOn" initialValue={false}>
                 <Checkbox onChange={onChangeCheckbox} checked={checkedState}>
                   Keep me logged in
                 </Checkbox>

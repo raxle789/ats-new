@@ -5,7 +5,7 @@ import {
   Select,
   DatePicker,
   Tabs,
-  Radio,
+  // Radio,
   Checkbox,
   InputNumber,
   message,
@@ -13,6 +13,8 @@ import {
 import type { FormProps, RadioChangeEvent } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import dayjs, { Dayjs } from 'dayjs';
+import EmployJobDetailSkeleton from '../loadings/employ-job-detail-skeleton';
+import { updateCandidateExperiences } from '@/libs/Candidate/actions';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 const { TextArea } = Input;
@@ -89,21 +91,39 @@ type MasterData = {
 
 type Props = {
   experiences?: any;
+  setExperiences?: React.Dispatch<any>;
   masterData?: MasterData | null;
   noticePeriod?: string;
+  submitType?: { type: string; counter: number };
+  setSubmitType?: React.Dispatch<{ type: string; counter: number }>;
   errors?: any;
 };
 
 const BackgroundExperienceForm: React.FC<Props> = ({
   experiences,
+  setExperiences,
   masterData,
   noticePeriod,
+  submitType,
+  setSubmitType,
   errors,
 }) => {
   const [form] = Form.useForm();
   const [editState, setEditState] = useState(false);
-
   const [expValue, setExpValue] = useState<string>('Professional');
+  const [expIdx, setExpIdx] = useState<number>(0);
+
+  const initExpItems: any[] = [];
+  const displayedInit: any[] = [];
+  const [activeExpKey, setActiveExpKey] = useState('');
+  const [expItems, setExpItems] = useState(initExpItems);
+  const [displayedItems, setDisplayedItems] = useState(displayedInit);
+  const newExpTabIdx = useRef(0);
+
+  const [expTotal, setExpTotal] = useState(0);
+  const [loopTotal, setLoopTotal] = useState(0);
+  const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
+
   const onChangeExp = (e: RadioChangeEvent) => {
     setExpValue(e.target.value);
   };
@@ -112,12 +132,9 @@ const BackgroundExperienceForm: React.FC<Props> = ({
     setEditState(!editState);
   };
 
-  const [expIdx, setExpIdx] = useState<number>(0);
-
   type Tprops1 = {
     expIdx: number;
   };
-
   const ExpTabContent: React.FC<Tprops1> = ({ expIdx }) => {
     const [yearState, setYearState] = useState<{ [key: string]: boolean }>({});
     const handleCheckboxChange: any = (e: any, expIdx: number) => {
@@ -237,14 +254,14 @@ const BackgroundExperienceForm: React.FC<Props> = ({
                 showSearch
                 placeholder="Your Position Level"
                 optionFilterProp="children"
-                // filterOption={(input, option) =>
-                //   (option?.label.toLowerCase() ?? '').includes(input)
-                // }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? '')
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                filterOption={(input, option) =>
+                  (option?.label.toLowerCase() ?? '').includes(input)
                 }
+                // filterSort={(optionA, optionB) =>
+                //   (optionA?.label ?? '')
+                //     .toLowerCase()
+                //     .localeCompare((optionB?.label ?? '').toLowerCase())
+                // }
                 // options={masterData?.job_levels}
                 options={[
                   { value: 'Director', label: 'Director' },
@@ -414,7 +431,6 @@ const BackgroundExperienceForm: React.FC<Props> = ({
   type Tprops2 = {
     expIdx: number;
   };
-
   const DisplayedTabContent: React.FC<Tprops2> = ({ expIdx }) => {
     return (
       <div key={expIdx} className="row">
@@ -500,28 +516,27 @@ const BackgroundExperienceForm: React.FC<Props> = ({
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Current Salary (gross Monthly)*</label>
             <p className="mb-0">
-              {Number(experiences?.experiences[expIdx]?.salary)}
+              {`Rp. ${Number(experiences?.experiences[expIdx]?.salary)}`.replace(
+                /\B(?=(\d{3})+(?!\d))/g,
+                '.',
+              )}
             </p>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Expected Salary (gross Monthly)*</label>
-            <p className="mb-0">{experiences?.expectedSalary}</p>
+            <p className="mb-0">
+              {`Rp. ${experiences?.expectedSalary}`.replace(
+                /\B(?=(\d{3})+(?!\d))/g,
+                '.',
+              )}
+            </p>
           </div>
         </div>
       </div>
     );
   };
-
-  const initExpItems: any[] = [];
-  const displayedInit: any[] = [];
-
-  const [activeExpKey, setActiveExpKey] = useState('');
-  const [expItems, setExpItems] = useState(initExpItems);
-  const [displayedItems, setDisplayedItems] = useState(displayedInit);
-  // const [displayedItems, setDisplayedItems] = useState(null);
-  const newExpTabIdx = useRef(0);
 
   const onChangeExpTabs = (newActiveKey: string) => {
     setActiveExpKey(newActiveKey);
@@ -531,15 +546,18 @@ const BackgroundExperienceForm: React.FC<Props> = ({
     let newPanes = [...expItems];
     let newDisplayed = [...displayedItems];
     let index = expIdx;
+    // let newActiveKey: string;
     for (let i = 0; i < tabTotal; i++) {
       const newActiveKey = `newTab${newExpTabIdx.current++}`;
       newPanes.push({
+        jobId: experiences?.experiences[index]?.id,
         label: `Experience ${index + 1}`,
         children: <ExpTabContent expIdx={index} />,
         key: newActiveKey,
       });
 
       newDisplayed.push({
+        jobId: experiences?.experiences[index]?.id,
         label: `Experience ${index + 1}`,
         children: <DisplayedTabContent expIdx={index} />,
         key: newActiveKey,
@@ -590,21 +608,51 @@ const BackgroundExperienceForm: React.FC<Props> = ({
     }
   };
 
-  const [expTotal, setExpTotal] = useState(0);
-  const [loopTotal, setLoopTotal] = useState(0);
-  const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
-
-  const handleSubmit: FormProps<FieldType>['onFinish'] = () => {
+  /* ACTIONS */
+  const handleSubmit: FormProps<FieldType>['onFinish'] = async () => {
     if (editState) {
-      // jalankan simpan data
+      message.loading('Please wait');
       let values = form.getFieldsValue();
       values = {
         ...values,
         experience: { ...initFieldsValue?.experience, ...values?.experience },
       };
-      console.log('submittedValueExperience: ', values);
+
+      let filteredExperience: any = {};
+      for (const key in values.experience) {
+        const experienceId = values.experience[key].id;
+        if (expItems.some((jobId) => jobId.jobId === experienceId)) {
+          filteredExperience[key] = values.experience[key];
+        }
+      }
+      values = {
+        ...values,
+        experience: { ...filteredExperience },
+      };
+      const plainObjectValues = JSON.parse(JSON.stringify(values));
+      console.log('submittedValueExperience: ', plainObjectValues);
+      const updating = await updateCandidateExperiences(plainObjectValues);
+      if (!updating.success) return message.error(updating.message);
+      message.success(updating.message);
+
+      if (setSubmitType && setExperiences && submitType) {
+        setLoopTotal(0);
+        setActiveExpKey('');
+        newExpTabIdx.current = 0;
+        setExpItems([]);
+        setDisplayedItems([]);
+        setExperiences(null);
+        const newSubmitType = {
+          ...submitType,
+          type: 'experience',
+          counter: submitType?.counter + 1,
+        };
+        setSubmitType(newSubmitType);
+        setEditState(false);
+      }
     }
   };
+  /* END ACTIONS */
 
   const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (
     errorInfo,
@@ -618,7 +666,10 @@ const BackgroundExperienceForm: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    if (experiences) {
+    // console.log('useEffect in(experiences): ', experiences);
+    // console.log('useEffect in(initFieldsValue): ', initFieldsValue);
+    if (experiences && experiences !== null) {
+      // console.log('mulai setInitFieldsValue');
       if ('experiences' in experiences) {
         setInitFieldsValue((prevState) => ({
           ...prevState,
@@ -655,7 +706,13 @@ const BackgroundExperienceForm: React.FC<Props> = ({
         );
         setExpValue('Professional');
         setExpTotal(experiences.experiences.length);
-        if (loopTotal < 1 && expValue === 'Professional') {
+        if (
+          initFieldsValue &&
+          experiences.experiences.length > 0 &&
+          loopTotal < 1 &&
+          expValue === 'Professional'
+        ) {
+          // console.log('tambah tab');
           addExp(experiences.experiences.length);
           setLoopTotal((prevState) => prevState + 1);
         }
@@ -692,28 +749,30 @@ const BackgroundExperienceForm: React.FC<Props> = ({
   }, [initFieldsValue]);
   return (
     <>
-      <div>
-        <div className="mb-25">
-          <button
-            className="d-flex align-items-center justify-content-center edit-btn-form"
-            onClick={editOnChange}
+      {experiences === null && <EmployJobDetailSkeleton rows={2} />}
+      {experiences !== null && (
+        <div>
+          <div className="mb-25">
+            <button
+              className="d-flex align-items-center justify-content-center edit-btn-form"
+              onClick={editOnChange}
+            >
+              <MdOutlineModeEdit className="edit-form-icon" />
+            </button>
+          </div>
+          <Form
+            name="background-experience-form"
+            variant="filled"
+            form={form}
+            onFinish={handleSubmit}
+            onFinishFailed={onFinishFailed}
           >
-            <MdOutlineModeEdit className="edit-form-icon" />
-          </button>
-        </div>
-        <Form
-          name="background-experience-form"
-          variant="filled"
-          form={form}
-          onFinish={handleSubmit}
-          onFinishFailed={onFinishFailed}
-        >
-          <div className="row">
-            <label className="fw-bold sub-section-profile">
-              Working Experience
-            </label>
+            <div className="row">
+              <label className="fw-bold sub-section-profile">
+                Working Experience
+              </label>
 
-            {/* {editState && (
+              {/* {editState && (
               <div className="col-12">
                 <div className="input-group-meta position-relative mb-15">
                   <Form.Item<FieldType> name="expOption" className="mb-0">
@@ -729,106 +788,111 @@ const BackgroundExperienceForm: React.FC<Props> = ({
                 </div>
               </div>
             )} */}
-            {expValue === 'Fresh Graduate' && (
+              {expValue === 'Fresh Graduate' && (
+                <div className="col-6">
+                  <div className="input-group-meta position-relative mb-15">
+                    <label className="fw-bold">
+                      Expected Salary (gross Monthly)*
+                    </label>
+                    <Form.Item<FieldType>
+                      name={['experience', 'expectedSalary']}
+                      className="mb-0"
+                    >
+                      {editState && (
+                        <InputNumber
+                          className="w-100"
+                          min={0}
+                          placeholder="Input Expected Salary"
+                          formatter={(value) =>
+                            `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+                          }
+                          parser={(
+                            value: string | undefined,
+                          ): string | number =>
+                            value!.replace(/\Rp\s?|(\.*)/g, '')
+                          }
+                        />
+                      )}
+                      {!editState && (
+                        <p className="mb-0">{experiences?.expectedSalary}</p>
+                      )}
+                    </Form.Item>
+                  </div>
+                </div>
+              )}
+
+              {editState && expValue === 'Professional' && (
+                <Tabs
+                  type="editable-card"
+                  onChange={onChangeExpTabs}
+                  activeKey={activeExpKey}
+                  onEdit={onEditExp}
+                  items={expItems}
+                />
+              )}
+
+              {!editState && expValue === 'Professional' && (
+                <Tabs
+                  type="editable-card"
+                  hideAdd
+                  onChange={onChangeExpTabs}
+                  activeKey={activeExpKey}
+                  items={displayedItems}
+                />
+              )}
+
               <div className="col-6">
                 <div className="input-group-meta position-relative mb-15">
                   <label className="fw-bold">
-                    Expected Salary (gross Monthly)*
+                    How long your notice period?*
                   </label>
                   <Form.Item<FieldType>
-                    name={['experience', 'expectedSalary']}
+                    name={['others', 'noticePeriod']}
                     className="mb-0"
+                    // validateStatus={
+                    //   errors && errors?.others?.noticePeriod ? 'error' : ''
+                    // }
+                    // help={errors?.others?.noticePeriod?._errors.toString()}
                   >
                     {editState && (
-                      <InputNumber
+                      <Select
                         className="w-100"
-                        min={0}
-                        placeholder="Input Expected Salary"
-                        formatter={(value) =>
-                          `Rp ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-                        }
-                        parser={(value: string | undefined): string | number =>
-                          value!.replace(/\Rp\s?|(\.*)/g, '')
-                        }
+                        placeholder="Your Notice Period"
+                        options={[
+                          { value: 'Ready join now', label: 'Ready join now' },
+                          {
+                            value: 'Less than 1 month',
+                            label: 'Less than 1 month',
+                          },
+                          { value: '1 month', label: '1 month' },
+                          { value: '2 months', label: '2 months' },
+                          { value: '3 months', label: '3 months' },
+                          {
+                            value: 'More than 3 months',
+                            label: 'More than 3 months',
+                          },
+                        ]}
                       />
                     )}
                     {!editState && (
-                      <p className="mb-0">{experiences?.expectedSalary}</p>
+                      // <p className="mb-0">{experiences?.expectedSalary}</p>
+                      <p className="mb-0">{noticePeriod}</p>
                     )}
                   </Form.Item>
                 </div>
               </div>
-            )}
 
-            {editState && expValue === 'Professional' && (
-              <Tabs
-                type="editable-card"
-                onChange={onChangeExpTabs}
-                activeKey={activeExpKey}
-                onEdit={onEditExp}
-                items={expItems}
-              />
-            )}
-
-            {!editState && expValue === 'Professional' && (
-              <Tabs
-                type="editable-card"
-                hideAdd
-                onChange={onChangeExpTabs}
-                activeKey={activeExpKey}
-                items={displayedItems}
-              />
-            )}
-
-            <div className="col-6">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">How long your notice period?*</label>
-                <Form.Item<FieldType>
-                  name={['others', 'noticePeriod']}
-                  className="mb-0"
-                  // validateStatus={
-                  //   errors && errors?.others?.noticePeriod ? 'error' : ''
-                  // }
-                  // help={errors?.others?.noticePeriod?._errors.toString()}
-                >
-                  {editState && (
-                    <Select
-                      className="w-100"
-                      placeholder="Your Notice Period"
-                      options={[
-                        { value: 'Ready join now', label: 'Ready join now' },
-                        {
-                          value: 'Less than 1 month',
-                          label: 'Less than 1 month',
-                        },
-                        { value: '1 month', label: '1 month' },
-                        { value: '2 months', label: '2 months' },
-                        { value: '3 months', label: '3 months' },
-                        {
-                          value: 'More than 3 months',
-                          label: 'More than 3 months',
-                        },
-                      ]}
-                    />
-                  )}
-                  {!editState && (
-                    // <p className="mb-0">{experiences?.expectedSalary}</p>
-                    <p className="mb-0">{noticePeriod}</p>
-                  )}
-                </Form.Item>
-              </div>
+              {editState && (
+                <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
+                  <button type="submit" className="dash-btn-two tran3s me-3">
+                    Submit
+                  </button>
+                </div>
+              )}
             </div>
-
-            {editState && (
-              <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
-                <button type="submit" className="dash-btn-two tran3s me-3">
-                  Submit
-                </button>
-              </div>
-            )}
-          </div>
-        </Form>
-      </div>
+          </Form>
+        </div>
+      )}
     </>
   );
 };

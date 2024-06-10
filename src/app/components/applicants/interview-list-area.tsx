@@ -11,11 +11,22 @@ import {
   getAllInterviewMessageTemplateData,
   getAllInterviewerData,
 } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-interview/action';
-import JobAssessmentResultArea from '../dashboard/employ/job-assessment-result-area';
-import { registerAssessment } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-assessment/action';
+// import JobAssessmentResultArea from '../dashboard/employ/job-assessment-result-area';
+// import { registerAssessment } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-assessment/action';
 import { getAllApplicantDataByJobVacancyIdAndStateName } from '@/lib/actions/job-vacancies/job-vacancy-details/action';
+import React from 'react';
 
-const InterviewListArea = async ({ params, searchParams, status }) => {
+type Props = {
+  params?: any;
+  searchParams?: any;
+  status?: string | any;
+};
+
+const InterviewListArea: React.FC<Props> = async ({
+  params,
+  searchParams,
+  status,
+}) => {
   const page = searchParams?.page ?? '1';
 
   const perPage = searchParams?.perPage ?? '10';
@@ -24,7 +35,23 @@ const InterviewListArea = async ({ params, searchParams, status }) => {
 
   const offset = (Number(page) - 1) * Number(perPage);
 
-  const applicantData = await (async () => {
+  type fieldData = {
+    data: {
+      candidateId: string;
+      candidatePhoto: string | null;
+      candidateName: string | undefined;
+      candidateLastPosition: string;
+      candidateLastEducation: string | null;
+      candidateExpectedSalary: string | number;
+      candidateYearOfExperience: string | number;
+      candidateStatus: string | null;
+      candidateSkills: string[];
+      candidateScore: string;
+    }[];
+    total: number;
+  };
+
+  const applicantData: never[] | fieldData | any = await (async () => {
     if (params?.id) {
       return await getAllApplicantDataByJobVacancyIdAndStateName(
         params?.id,
