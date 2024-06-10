@@ -1,6 +1,15 @@
+import React, { ReactNode } from 'react';
 import EmployJobDetailArea from '@/app/components/dashboard/employ/job-detail-area';
 
-const EmployDashboardJobDetailLayout = ({ children, params }) => {
+type Props = {
+  children?: ReactNode;
+  params?: any;
+};
+
+const EmployDashboardJobDetailLayout: React.FC<Props> = ({
+  children,
+  params,
+}) => {
   return <EmployJobDetailArea params={params}>{children}</EmployJobDetailArea>;
 };
 

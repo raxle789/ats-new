@@ -45,7 +45,7 @@ type FieldType = {
       yearIssue?: string | Dayjs;
     };
   };
-  skills?: { id: number; name: string; }[];
+  skills?: { id: number; name: string }[];
   language?: {
     [id: string]: {
       name?: string;
@@ -103,28 +103,49 @@ type MasterData = {
 
 type Props = {
   educationAndSkill?: any;
+  setEducationAndSkill?: React.Dispatch<any>;
   masterData?: MasterData | null;
+  submitType?: { type: string; counter: number };
+  setSubmitType?: React.Dispatch<{ type: string; counter: number }>;
   errors?: any;
 };
 
 const EducationSkillsForm: React.FC<Props> = ({
   educationAndSkill,
+  setEducationAndSkill,
   masterData,
+  submitType,
+  setSubmitType,
   errors,
 }) => {
   const [form] = Form.useForm();
   const [editState, setEditState] = useState(false);
+  const [certificationIdx, setCertificationIdx] = useState<number>(0);
+  const certifInitItems: any[] = [];
+  const certifDisplayedInit: any[] = [];
+  const [activeCertifKey, setActiveCertifKey] = useState('');
+  const [certifItems, setCertifItems] = useState(certifInitItems);
+  const [displayedItems, setDisplayedItems] = useState(certifDisplayedInit);
+  const newCertifTabIndex = useRef(0);
+
+  const [eduLevel, setEduLevel] = useState<string>('');
+  const [languageItems, setLanguageItems] = useState(['English', 'Mandarin']);
+  const [langTotal, setLangTotal] = useState<number>(1);
+  const [name, setName] = useState('');
+  const inputRef = useRef<InputRef>(null);
+
+  const [certifTotal, setCertifTotal] = useState(0);
+  const [loopTotal, setLoopTotal] = useState(0);
+  const [certifState, setCertifState] = useState('not-certified');
+  const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
 
   const editOnChange = () => {
     setEditState(!editState);
   };
 
-  const [certificationIdx, setCertificationIdx] = useState<number>(0);
-
   type Tprops1 = {
     certificationIdx: number;
   };
-
   const CertifTabContent: React.FC<Tprops1> = ({ certificationIdx }) => {
     return (
       <div key={certificationIdx} className="row">
@@ -158,11 +179,11 @@ const EducationSkillsForm: React.FC<Props> = ({
                 filterOption={(input, option) =>
                   (option?.label.toLowerCase() ?? '').includes(input)
                 }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? '')
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? '').toLowerCase())
-                }
+                // filterSort={(optionA, optionB) =>
+                //   (optionA?.label ?? '')
+                //     .toLowerCase()
+                //     .localeCompare((optionB?.label ?? '').toLowerCase())
+                // }
                 /* Fetched Data */
                 options={masterData?.certificates_name}
               />
@@ -208,7 +229,6 @@ const EducationSkillsForm: React.FC<Props> = ({
   type Tprops2 = {
     certificationIdx: number;
   };
-
   const DisplayedTabContent: React.FC<Tprops2> = ({ certificationIdx }) => {
     return (
       <div key={certificationIdx} className="row">
@@ -257,13 +277,6 @@ const EducationSkillsForm: React.FC<Props> = ({
       </div>
     );
   };
-
-  const certifInitItems: any[] = [];
-  const certifDisplayedInit: any[] = [];
-  const [activeCertifKey, setActiveCertifKey] = useState('');
-  const [certifItems, setCertifItems] = useState(certifInitItems);
-  const [displayedItems, setDisplayedItems] = useState(certifDisplayedInit);
-  const newCertifTabIndex = useRef(0);
 
   const onChangeCertifTabs = (newActiveKey: string) => {
     setActiveCertifKey(newActiveKey);
@@ -344,15 +357,9 @@ const EducationSkillsForm: React.FC<Props> = ({
   //   setCertificationCheck(e.target.checked);
   // };
 
-  const [eduLevel, setEduLevel] = useState<string>('');
   const onChangeEdu = (value: string) => {
     setEduLevel(value);
   };
-
-  const [languageItems, setLanguageItems] = useState(['English', 'Mandarin']);
-  const [langTotal, setLangTotal] = useState<number>(1);
-  const [name, setName] = useState('');
-  const inputRef = useRef<InputRef>(null);
 
   const onLanguageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);
@@ -380,13 +387,9 @@ const EducationSkillsForm: React.FC<Props> = ({
     }, 0);
   };
 
-  const [certifTotal, setCertifTotal] = useState(0);
-  const [loopTotal, setLoopTotal] = useState(0);
-  const [certifState, setCertifState] = useState('not-certified');
-  const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
-
   const handleSubmit: FormProps<FieldType>['onFinish'] = async () => {
     if (editState) {
+      message.loading('Please wait');
       let values = form.getFieldsValue();
       values = {
         ...values,
@@ -406,8 +409,6 @@ const EducationSkillsForm: React.FC<Props> = ({
         }
       }
 
-
-
       values = {
         ...values,
         education: {
@@ -419,9 +420,25 @@ const EducationSkillsForm: React.FC<Props> = ({
       const plainObjectValues = JSON.parse(JSON.stringify(values));
       console.log('PLAIN OBJECT VALUES \t: ', plainObjectValues);
       const updating = await updateEducationSkills(plainObjectValues);
-      console.info("Updating Result \t: ", updating);
-      if(!updating.success) return message.error(updating.message);
-      return message.success(updating.message);
+      console.info('Updating Result \t: ', updating);
+      if (!updating.success) return message.error(updating.message);
+      message.success(updating.message);
+
+      if (setSubmitType && setEducationAndSkill && submitType) {
+        setLoopTotal(0);
+        setActiveCertifKey('');
+        newCertifTabIndex.current = 0;
+        setCertifItems([]);
+        setDisplayedItems([]);
+        setEducationAndSkill(null);
+        const newSubmitType = {
+          ...submitType,
+          type: 'education',
+          counter: submitType?.counter + 1,
+        };
+        setSubmitType(newSubmitType);
+        setEditState(false);
+      }
     }
   };
 
@@ -488,7 +505,7 @@ const EducationSkillsForm: React.FC<Props> = ({
       );
     }
 
-    if (educationAndSkill) {
+    if (educationAndSkill && educationAndSkill !== null) {
       setInitFieldsValue((prevState) => ({
         ...prevState,
         education: {
@@ -510,7 +527,7 @@ const EducationSkillsForm: React.FC<Props> = ({
         'function - (education) - initFieldsValue: ',
         initFieldsValue,
       );
-      if (loopTotal < 1 && certifications) {
+      if (initFieldsValue && loopTotal < 1 && certifications) {
         if (certifications.length > 0) {
           setCertifState('certified');
           setCertifTotal(educationAndSkill.certifications.length);
@@ -520,8 +537,6 @@ const EducationSkillsForm: React.FC<Props> = ({
       }
     }
   }, [educationAndSkill]);
-
-  certifTotal;
 
   console.log('certifTotal: ', certifTotal);
   console.log('certifState: ', certifState);
@@ -573,7 +588,33 @@ const EducationSkillsForm: React.FC<Props> = ({
                         onChange={onChangeEdu}
                         disabled={!editState}
                         /* Fetched Data */
-                        options={masterData?.education_levels}
+                        options={[
+                          {
+                            value: 'Others',
+                            label: 'Others',
+                          },
+                          {
+                            value: 'PROFESI',
+                            label: 'PROFESI',
+                          },
+                          {
+                            value: 'S3/Doktor',
+                            label: 'S3/Doktor',
+                          },
+                          {
+                            value: 'S2/Magister',
+                            label: 'S2/Magister',
+                          },
+                          {
+                            value: 'S1/Sarjana',
+                            label: 'S1/Sarjana',
+                          },
+                          { value: 'D4', label: 'D4' },
+                          { value: 'D3', label: 'D3' },
+                          { value: 'D2', label: 'D2' },
+                          { value: 'D1', label: 'D1' },
+                          { value: 'SMA/SMK', label: 'SMA/SMK' },
+                        ]}
                       />
                     )}
                     {!editState && (
@@ -789,42 +830,44 @@ const EducationSkillsForm: React.FC<Props> = ({
                 />
               )}
 
-            <label className="fw-bold mt-5 sub-section-profile">Skill</label>
-            <div className="col-12">
-              <div className="input-group-meta position-relative mb-15">
-                <label className="fw-bold">What skills do you have?</label>
-                <Form.Item<FieldType> name="skills" className="mb-0">
-                  {editState && (
-                    <Select
-                      className="w-100"
-                      showSearch
-                      mode="tags"
-                      placeholder="Your Skills"
-                      optionFilterProp="children"
-                      // onChange={handleChangeMarried}
-                      filterOption={(input, option) =>
-                        (option?.label.toLowerCase() ?? '').includes(input)
-                      }
-                      filterSort={(optionA, optionB) =>
-                        (optionA?.label ?? '')
-                          .toLowerCase()
-                          .localeCompare((optionB?.label ?? '').toLowerCase())
-                      }
-                      disabled={!editState}
-                      /* Fetched Data */
-                      options={masterData?.skills}
-                    />
-                  )}
-                  {!editState && (
-                    <div>
-                      {educationAndSkill?.skills?.map((item: any) => (
-                        <p key={item.id} className="mb-0">{item.name}</p>
-                      ))}
-                    </div>
-                  )}
-                </Form.Item>
+              <label className="fw-bold mt-5 sub-section-profile">Skill</label>
+              <div className="col-12">
+                <div className="input-group-meta position-relative mb-15">
+                  <label className="fw-bold">What skills do you have?</label>
+                  <Form.Item<FieldType> name="skills" className="mb-0">
+                    {editState && (
+                      <Select
+                        className="w-100"
+                        showSearch
+                        mode="tags"
+                        placeholder="Your Skills"
+                        optionFilterProp="children"
+                        // onChange={handleChangeMarried}
+                        filterOption={(input, option) =>
+                          (option?.label.toLowerCase() ?? '').includes(input)
+                        }
+                        // filterSort={(optionA, optionB) =>
+                        //   (optionA?.label ?? '')
+                        //     .toLowerCase()
+                        //     .localeCompare((optionB?.label ?? '').toLowerCase())
+                        // }
+                        disabled={!editState}
+                        /* Fetched Data */
+                        options={masterData?.skills}
+                      />
+                    )}
+                    {!editState && (
+                      <div>
+                        {educationAndSkill?.skills?.map((item: any) => (
+                          <p key={item.id} className="mb-0">
+                            {item.name}
+                          </p>
+                        ))}
+                      </div>
+                    )}
+                  </Form.Item>
+                </div>
               </div>
-            </div>
 
               <label className="fw-bold mt-5 sub-section-profile">
                 Language

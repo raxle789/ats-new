@@ -71,6 +71,13 @@ const ApplicantListItem: React.FC<Props> = ({
       } else {
         setPopOverState(false);
       }
+
+      if (
+        countTrueValues > 0 &&
+        countTrueValues === Object.keys(checkbox).length
+      ) {
+        setCheckboxAllValue(true);
+      }
     }
   }, [checkbox]);
 

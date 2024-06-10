@@ -51,36 +51,47 @@ type FieldType = {
 
 type Props = {
   additionalInformation?: any;
-  source?: {id?: number; name: string;} | null;
+  setAdditionalInformation?: React.Dispatch<any>;
+  source?: { id?: number; name: string } | null;
   masterData?: MasterData | null;
+  submitType?: { type: string; counter: number };
+  setSubmitType?: React.Dispatch<{ type: string; counter: number }>;
   errors?: any;
 };
 
 const AdditionalInformationForm: React.FC<Props> = ({
   additionalInformation,
+  setAdditionalInformation,
   source,
   masterData,
+  submitType,
+  setSubmitType,
   errors,
 }) => {
   const [form] = Form.useForm();
   const [editState, setEditState] = useState(false);
+  const [index, setIndex] = useState<number>(0);
+  const initialItems: any[] = [];
+  const displayedInit: any[] = [];
+  const [activeKey, setActiveKey] = useState('');
+  const [items, setItems] = useState(initialItems);
+  const [displayedItems, setDisplayedItems] = useState(displayedInit);
+  const newTabIndex = useRef(0);
+
+  const [everWorked, setEverWorked] = useState<string>('you-choose');
+  const [disease, setDisease] = useState<string>('you-choose');
+  const [haveRelation, setHaveRelation] = useState<string>('you-choose');
   const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
+  const [relationTotal, setRelationTotal] = useState(0);
+  const [loopTotal, setLoopTotal] = useState(0);
 
   const editOnChange = () => {
     setEditState(!editState);
-    // if (editState === false) {
-    //   setEverWorked('you-choose');
-    //   setDisease('you-choose');
-    //   setHaveRelation('you-choose');
-    // }
   };
-
-  const [index, setIndex] = useState<number>(0);
 
   type Tprops1 = {
     index: number;
   };
-
   const TabContent: React.FC<Tprops1> = ({ index }) => {
     return (
       <div key={index} className="row">
@@ -165,7 +176,6 @@ const AdditionalInformationForm: React.FC<Props> = ({
   type Tprops2 = {
     index: number;
   };
-
   const DisplayedTabContent: React.FC<Tprops2> = ({ index }) => {
     return (
       <div key={index} className="row">
@@ -211,13 +221,6 @@ const AdditionalInformationForm: React.FC<Props> = ({
       </div>
     );
   };
-
-  const initialItems: any[] = [];
-  const displayedInit: any[] = [];
-  const [activeKey, setActiveKey] = useState('');
-  const [items, setItems] = useState(initialItems);
-  const [displayedItems, setDisplayedItems] = useState(displayedInit);
-  const newTabIndex = useRef(0);
 
   const onChangeTabs = (newActiveKey: string) => {
     setActiveKey(newActiveKey);
@@ -288,17 +291,14 @@ const AdditionalInformationForm: React.FC<Props> = ({
     }
   };
 
-  const [everWorked, setEverWorked] = useState<string>('you-choose');
   const everWorkedChange = (e: RadioChangeEvent) => {
     setEverWorked(e.target.value);
   };
 
-  const [disease, setDisease] = useState<string>('you-choose');
   const diseaseChange = (e: RadioChangeEvent) => {
     setDisease(e.target.value);
   };
 
-  const [haveRelation, setHaveRelation] = useState<string>('you-choose');
   const haveRelationChange = (e: RadioChangeEvent) => {
     setHaveRelation(e.target.value);
   };
@@ -306,6 +306,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
   /* ACTIONS */
   const handleSubmit: FormProps<FieldType>['onFinish'] = async () => {
     if (editState) {
+      message.loading('Please wait');
       let values = form.getFieldsValue();
       values = {
         ...values,
@@ -335,9 +336,25 @@ const AdditionalInformationForm: React.FC<Props> = ({
       console.log('submittedValueFamilies: ', plainObjectValues);
       // debugger;
       const updating = await updateAdditionalInformations(plainObjectValues);
-      if(!updating.success) message.error(updating.message);
+      if (!updating.success) return message.error(updating.message);
       message.success(updating.message);
-    };
+
+      if (setSubmitType && setAdditionalInformation && submitType) {
+        setLoopTotal(0);
+        setActiveKey('');
+        newTabIndex.current = 0;
+        setItems([]);
+        setDisplayedItems([]);
+        setAdditionalInformation(null);
+        const newSubmitType = {
+          ...submitType,
+          type: 'additional',
+          counter: submitType?.counter + 1,
+        };
+        setSubmitType(newSubmitType);
+        setEditState(false);
+      }
+    }
   };
   /* END ACTIONS */
 
@@ -352,9 +369,6 @@ const AdditionalInformationForm: React.FC<Props> = ({
     }
   };
 
-  const [relationTotal, setRelationTotal] = useState(0);
-  const [loopTotal, setLoopTotal] = useState(0);
-
   useEffect(() => {
     let everWorkedAnswer: string | Dayjs;
     let everWorkedAnswer2: string | Dayjs;
@@ -367,13 +381,14 @@ const AdditionalInformationForm: React.FC<Props> = ({
         additionalInformation?.candidate_questions[1]?.answer === ',' ||
         additionalInformation?.candidate_questions[1]?.answer === 'no'
       ) {
-        everWorkedAnswer = 'No';
+        everWorkedAnswer = dayjs();
+        everWorkedAnswer2 = dayjs();
         setEverWorked('No');
       } else {
         let words = additionalInformation?.candidate_questions[1]?.answer;
         const separatedArray = words.split(',');
-        everWorkedAnswer = dayjs(separatedArray[0]).format('YYYY-MM');
-        everWorkedAnswer2 = dayjs(separatedArray[1]).format('YYYY-MM');
+        everWorkedAnswer = dayjs(separatedArray[0]);
+        everWorkedAnswer2 = dayjs(separatedArray[1]);
         setEverWorked('Yes');
       }
 
@@ -381,13 +396,14 @@ const AdditionalInformationForm: React.FC<Props> = ({
         additionalInformation?.candidate_questions[2]?.answer === ',' ||
         additionalInformation?.candidate_questions[2]?.answer === 'no'
       ) {
-        medicalCondition = 'No';
+        medicalCondition = '';
+        medicalCondition2 = dayjs();
         setDisease('No');
       } else {
         let words = additionalInformation?.candidate_questions[2]?.answer;
         const separatedArray = words.split(',');
         medicalCondition = separatedArray[0];
-        medicalCondition2 = dayjs(separatedArray[1]).format('YYYY');
+        medicalCondition2 = dayjs(separatedArray[1]);
         setDisease('Yes');
       }
 
@@ -395,7 +411,8 @@ const AdditionalInformationForm: React.FC<Props> = ({
         additionalInformation?.candidate_questions[3]?.answer === ',' ||
         additionalInformation?.candidate_questions[3]?.answer === 'no'
       ) {
-        colleagueName = 'No';
+        colleagueName = '';
+        colleagueName = '';
         setHaveRelation('No');
       } else {
         let words = additionalInformation?.candidate_questions[3]?.answer;
@@ -434,9 +451,9 @@ const AdditionalInformationForm: React.FC<Props> = ({
       setInitFieldsValue((prevState) => ({
         ...prevState,
         families: familiesField,
-        everWorkedOption: everWorkedAnswer === 'No' ? 'No' : 'Yes',
-        diseaseOption: medicalCondition === 'No' ? 'No' : 'Yes',
-        relationOption: colleagueName === 'No' ? 'No' : 'Yes',
+        everWorkedOption: everWorked === 'No' ? 'No' : 'Yes',
+        diseaseOption: disease === 'No' ? 'No' : 'Yes',
+        relationOption: haveRelation === 'No' ? 'No' : 'Yes',
         others: {
           emergencyContactId: additionalInformation?.emergency_contact?.id,
           emergencyContactName: additionalInformation?.emergency_contact?.name,
@@ -445,26 +462,25 @@ const AdditionalInformationForm: React.FC<Props> = ({
           emergencyContactRelation:
             additionalInformation?.emergency_contact?.relationStatus,
           source: source?.id,
-          everWorkedMonth:
-            everWorkedAnswer === 'no' ? '' : dayjs(everWorkedAnswer),
-          everWorkedYear:
-            everWorkedAnswer2 === 'no' ? '' : dayjs(everWorkedAnswer2),
+          everWorkedMonth: dayjs(everWorkedAnswer),
+          everWorkedYear: dayjs(everWorkedAnswer2),
           diseaseName: medicalCondition,
-          diseaseYear:
-            medicalCondition2 === 'no' ? '' : dayjs(medicalCondition2),
+          diseaseYear: dayjs(medicalCondition2),
           relationName: colleagueName,
           relationPosition: colleagueName2,
         },
       }));
       form.setFieldsValue(initFieldsValue);
-    }
-    console.log('function - (additional) - initFieldsValue: ', initFieldsValue);
-
-    if (loopTotal < 1 && additionalInformation && initFieldsValue) {
-      if (additionalInformation.families.length > 0) {
-        setRelationTotal(additionalInformation.families.length);
-        add(additionalInformation.families.length);
-        setLoopTotal((prevState) => prevState + 1);
+      console.log(
+        'function - (additional) - initFieldsValue: ',
+        initFieldsValue,
+      );
+      if (loopTotal < 1 && initFieldsValue) {
+        if (additionalInformation.families.length > 0) {
+          setRelationTotal(additionalInformation.families.length);
+          add(additionalInformation.families.length);
+          setLoopTotal((prevState) => prevState + 1);
+        }
       }
     }
   }, [additionalInformation]);
@@ -632,9 +648,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
                         options={masterData?.sources}
                       />
                     )}
-                    {!editState && (
-                      <p className="mb-0">{source?.name}</p>
-                    )}
+                    {!editState && <p className="mb-0">{source?.name}</p>}
                   </Form.Item>
                 </div>
               </div>
@@ -705,9 +719,9 @@ const AdditionalInformationForm: React.FC<Props> = ({
                     )}
                     {!editState && (
                       <p className="mb-0">
-                        {initFieldsValue?.others?.everWorkedMonth !== 'no'
-                          ? `${dayjs(initFieldsValue?.others?.everWorkedMonth).format('YYYY-MM')}, ${dayjs(initFieldsValue?.others?.everWorkedYear).format('YYYY-MM')}`
-                          : 'No'}
+                        {everWorked === 'No'
+                          ? 'No'
+                          : `${dayjs(initFieldsValue?.others?.everWorkedMonth).format('YYYY-MM')}, ${dayjs(initFieldsValue?.others?.everWorkedYear).format('YYYY-MM')}`}
                       </p>
                     )}
                   </Form.Item>
@@ -787,9 +801,9 @@ const AdditionalInformationForm: React.FC<Props> = ({
                     )}
                     {!editState && (
                       <p className="mb-0">
-                        {initFieldsValue?.others?.diseaseName !== 'no'
-                          ? `${initFieldsValue?.others?.diseaseName}, ${dayjs(initFieldsValue?.others?.diseaseYear).format('YYYY')}`
-                          : 'No'}
+                        {disease === 'No'
+                          ? 'No'
+                          : `${initFieldsValue?.others?.diseaseName}, ${dayjs(initFieldsValue?.others?.diseaseYear).format('YYYY')}`}
                       </p>
                     )}
                   </Form.Item>
@@ -867,9 +881,9 @@ const AdditionalInformationForm: React.FC<Props> = ({
                     )}
                     {!editState && (
                       <p className="mb-0">
-                        {initFieldsValue?.others?.relationName !== 'no'
-                          ? `${initFieldsValue?.others?.relationName}, ${initFieldsValue?.others?.relationPosition}`
-                          : 'No'}
+                        {haveRelation === 'No'
+                          ? 'No'
+                          : `${initFieldsValue?.others?.relationName}, ${initFieldsValue?.others?.relationPosition}`}
                       </p>
                     )}
                   </Form.Item>

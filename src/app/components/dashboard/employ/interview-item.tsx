@@ -10,10 +10,11 @@ import moment from 'moment';
 import img_2 from '@/assets/images/candidates/img_02.jpg';
 import CreateInterviewModal from '../../common/popup/create-interview-modal';
 import ActionApplicant from '../../../../ui/action-card-applicant';
-import { ICandidate } from '@/data/candidate-data';
+// import { ICandidate } from '@/data/candidate-data';
 import Image from 'next/image';
-import { Tag, Modal, Select, Checkbox, Button } from 'antd';
-import CandidateDetailsModal from '../../common/popup/candidate-details-modal';
+import { Tag, Modal, Popover, Select, Checkbox } from 'antd';
+import ActionResendInterview from '../../common/popup/action-resend-interview';
+// import CandidateDetailsModal from '../../common/popup/candidate-details-modal';
 
 const { confirm } = Modal;
 
@@ -51,7 +52,55 @@ const { confirm } = Modal;
 //   },
 // };
 
-const InterviewItem = ({
+type Props = {
+  item?:
+    | {
+        candidateId?: string;
+        candidatePhoto?: string;
+        candidateName?: string;
+        candidateLastPosition?: string;
+        candidateLastEducation?: string;
+        candidateExpectedSalary?: string;
+        candidateYearOfExperience?: number;
+        candidateStatus?: string;
+        candidateSkills?: string[];
+        candidateScore?: string;
+      }
+    | any;
+  status?: string | any;
+  checkboxState?: { [key: string]: boolean };
+  checkboxAllValue?: boolean;
+  setCheckbox?: React.Dispatch<SetStateAction<{ [key: string]: boolean }>>;
+  setCheckboxAllValue?: React.Dispatch<boolean>;
+  jobVacancyId?: number;
+  api?: any;
+  router?: any;
+  setLoading?: any;
+  handleApplicant?: (
+    handleType:
+      | 'assignAssessment'
+      | 'detailAssessment'
+      | 'resendAssessment'
+      | 'assignInterview'
+      | 'resendCandidateInterviewInvitation',
+    candidateId: number,
+    jobVacancyId: number,
+    interviewId: number | null,
+    api: any,
+    router: any,
+    setLoading: (loading: boolean) => void,
+    status: string,
+  ) => void | any;
+  typeData?: any;
+  interviewerData?: any;
+  messageTemplateData?: any;
+  placeData?: any;
+  insertInterview?: any;
+  resendEmail?: any;
+  encryptObject?: any;
+};
+
+const InterviewItem: React.FC<Props> = ({
   item,
   status,
   checkboxState,
@@ -77,7 +126,9 @@ const InterviewItem = ({
 
   const [interviewValue, setInterviewValue] = useState(0);
 
-  const [buttonDisabled, setButtonDisabled] = useState({});
+  const [buttonDisabled, setButtonDisabled] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   const [encryptedInterviewResultData, setEncryptedInterviewResultData] =
     useState('');
@@ -88,7 +139,7 @@ const InterviewItem = ({
       interviewId: item?.candidateInterviews[interviewValue]?.value,
     };
 
-    encryptObject(interviewResultData).then((res) =>
+    encryptObject(interviewResultData).then((res: SetStateAction<string>) =>
       setEncryptedInterviewResultData(res),
     );
   }, [interviewValue]);
@@ -97,9 +148,11 @@ const InterviewItem = ({
     setIsOpenModal(true);
   };
 
-  const handleInterviewChange = (value) => {
+  const handleInterviewChange = (value: number) => {
     setInterviewValue(
-      item?.candidateInterviews?.findIndex((data) => data?.value === value),
+      item?.candidateInterviews?.findIndex(
+        (data: any) => data?.value === value,
+      ),
     );
 
     // setInterviewResultData({
@@ -150,20 +203,22 @@ const InterviewItem = ({
   //   );
   // }
 
-  const onChangeCheckbox = (index: number) => {
-    setCheckbox((prevState: any) => ({
-      ...prevState,
-      [index]: !prevState[index],
-    }));
+  const onChangeCheckbox = (index: string) => {
+    if (setCheckbox && setCheckboxAllValue && checkboxState) {
+      setCheckbox((prevState: any) => ({
+        ...prevState,
+        [index]: !prevState[index],
+      }));
 
-    if (checkboxAllValue || !checkboxState[index]) {
-      setCheckboxAllValue(false);
+      if (checkboxAllValue || !checkboxState[index]) {
+        setCheckboxAllValue(false);
+      }
     }
   };
 
   function handleResendEmail(
     handleType: 'candidate' | 'interviewer',
-    interviewId,
+    interviewId: number,
     interviewerNik = '',
   ) {
     setLoading(true);
@@ -333,8 +388,8 @@ const InterviewItem = ({
             <div className="checkbox-pipeline-action">
               <Checkbox
                 className="me-2"
-                checked={checkboxState[item.id]}
-                onChange={() => onChangeCheckbox(item.id)}
+                checked={checkboxState && checkboxState[item?.candidateId]}
+                onChange={() => onChangeCheckbox(item?.candidateId)}
               ></Checkbox>
             </div>
             <a href="#" className="rounded-circle">
@@ -365,7 +420,7 @@ const InterviewItem = ({
                     <span>Last Position</span>
                     <div>{item?.candidateLastPosition ?? '-'}</div>
                   </div>
-                  <div className="candidate-info mt-5 mb-65">
+                  {/* <div className="candidate-info mt-5 mb-65">
                     <ul className="candidate-skills style-none d-flex align-items-center">
                       {item?.candidateSkills
                         ? item?.candidateSkills
@@ -380,7 +435,7 @@ const InterviewItem = ({
                         </li>
                       )}
                     </ul>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div className="col-lg-4 col-md-4 col-sm-6">
@@ -445,75 +500,67 @@ const InterviewItem = ({
               <div className="col-lg-4 col-md-4 col-sm-6">
                 <div className="candidate-info">
                   <span>Interviewer</span>
-                  <div>
-                    {item?.candidateInterviews?.length &&
-                      item?.candidateInterviews[
-                        interviewValue
-                      ]?.interviewers?.map((data, index) => (
-                        <div key={index} className="row">
-                          <div className="col-lg-9">
+                  {item?.candidateInterviews?.length &&
+                    item?.candidateInterviews[
+                      interviewValue
+                    ]?.interviewers?.map((data: any, index: number) => (
+                      <div key={index} className="row">
+                        <div className="col-lg-9">
+                          <Popover
+                            content={
+                              <ActionResendInterview
+                                buttonDisabled={buttonDisabled}
+                                handleResendEmail={handleResendEmail}
+                                nik={data?.interviewerNik}
+                                candidateInterviewValue={
+                                  item?.candidateInterviews[interviewValue]
+                                    ?.value
+                                }
+                              />
+                            }
+                            placement="left"
+                          >
                             <p className="d-inline me-3">
                               {data?.interviewerName}
                             </p>
-                          </div>
-                          <div className="col-lg-3">
-                            <Link
-                              href={{
-                                pathname: `${pathname}/result/${data?.interviewerNik}`,
-                                query: { q: encryptedInterviewResultData },
-                              }}
-                            >
-                              {!data?.interviewResult && (
-                                <Tag color="#1e87f0" style={{ color: 'white' }}>
-                                  {Status.WAITING}
-                                </Tag>
-                              )}
-                              {data?.interviewResult === Status.HIRE && (
-                                <Tag color="#29d259" style={{ color: 'white' }}>
-                                  {Status.HIRE}
-                                </Tag>
-                              )}
-                              {data?.interviewResult === Status.REJECT && (
-                                <Tag color="#ff2730" style={{ color: 'white' }}>
-                                  {Status.REJECT}
-                                </Tag>
-                              )}
-                              {data?.interviewResult ===
-                                Status.KEEP_IN_VIEW && (
-                                <Tag color="#f0f000" style={{ color: 'white' }}>
-                                  {Status.KEEP_IN_VIEW}
-                                </Tag>
-                              )}
-                              {data?.interviewResult === Status.RESCHEDULE && (
-                                <Tag color="#f0f000" style={{ color: 'white' }}>
-                                  {Status.RESCHEDULE}
-                                </Tag>
-                              )}
-                            </Link>
-                            {
-                              /* {!data?.isEmailSent &&  */
-                              <Button
-                                disabled={
-                                  buttonDisabled[
-                                    `interviewer${data?.interviewerNik}`
-                                  ]
-                                }
-                                onClick={() =>
-                                  handleResendEmail(
-                                    'interviewer',
-                                    item?.candidateInterviews[interviewValue]
-                                      ?.value,
-                                    data?.interviewerNik,
-                                  )
-                                }
-                              >
-                                Resend Interview Invitation
-                              </Button>
-                            }
-                          </div>
+                          </Popover>
                         </div>
-                      ))}
-                  </div>
+                        <div className="col-lg-3">
+                          <Link
+                            href={{
+                              pathname: `${pathname}/result/${data?.interviewerNik}`,
+                              query: { q: encryptedInterviewResultData },
+                            }}
+                          >
+                            {!data?.interviewResult && (
+                              <Tag color="#1e87f0" style={{ color: 'white' }}>
+                                {Status.WAITING}
+                              </Tag>
+                            )}
+                            {data?.interviewResult === Status.HIRE && (
+                              <Tag color="#29d259" style={{ color: 'white' }}>
+                                {Status.HIRE}
+                              </Tag>
+                            )}
+                            {data?.interviewResult === Status.REJECT && (
+                              <Tag color="#ff2730" style={{ color: 'white' }}>
+                                {Status.REJECT}
+                              </Tag>
+                            )}
+                            {data?.interviewResult === Status.KEEP_IN_VIEW && (
+                              <Tag color="#f0f000" style={{ color: 'white' }}>
+                                {Status.KEEP_IN_VIEW}
+                              </Tag>
+                            )}
+                            {data?.interviewResult === Status.RESCHEDULE && (
+                              <Tag color="#1e87f0" style={{ color: 'white' }}>
+                                {Status.RESCHEDULE}
+                              </Tag>
+                            )}
+                          </Link>
+                        </div>
+                      </div>
+                    ))}
                 </div>
               </div>
               <div className="col-xl-1 col-md-4">

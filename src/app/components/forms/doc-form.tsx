@@ -1,13 +1,14 @@
 'use client';
-
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { UploadProps, FormProps } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
 import { Upload, Button, message, Input, Form } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
-import { getCandidateDocuments } from '@/libs/Candidate/retrieve-data';
-import { Document, Page } from 'react-pdf';
-import { StyleSheet } from '@react-pdf/renderer';
+import { AiOutlineUpload } from 'react-icons/ai';
+import { HiOutlineEye } from 'react-icons/hi';
+import ViewDocModal from '../common/popup/view-doc';
+// import { getCandidateDocuments } from '@/libs/Candidate/retrieve-data';
+// import { Document, Page } from 'react-pdf';
+// import { StyleSheet } from '@react-pdf/renderer';
 
 type FieldType = {
   idFile?: string;
@@ -29,6 +30,7 @@ type FieldType = {
 const props: UploadProps = {
   name: 'file',
   action: '',
+  maxCount: 1,
   headers: {
     authorization: 'authorization-text',
   },
@@ -50,6 +52,7 @@ const DocumentForm = () => {
   const [editState, setEditState] = useState(false);
   const [documentPDF, setDocumentPDF] = useState<string>('');
   const [displayPDF, setDisplayPDF] = useState<File | null>(null);
+  const [isOpenModal, setIsOpenModal] = useState(false);
   console.info('pdf-file:', displayPDF);
 
   // const styles = StyleSheet.create({
@@ -77,6 +80,10 @@ const DocumentForm = () => {
   //   setDisplayPDF(toFile);
   //   console.info('new-file: ', toFile);
   // };
+
+  const handleView = () => {
+    setIsOpenModal(true);
+  };
 
   const editOnChange = () => {
     setEditState(!editState);
@@ -118,105 +125,266 @@ const DocumentForm = () => {
         onFinishFailed={onFinishFailed}
       >
         <div className="row">
-          <label className="fw-bold mt-5">Documents</label>
+          <label className="fw-bold sub-section-profile">Documents</label>
           <div className="col-6">
             <div className="input-group-meta position-relative mb-15">
-              <label>ID/Pasport Number</label>
+              <label className="fw-bold">ID/Passport Number</label>
               <Form.Item<FieldType> name="idNumber" className="mb-0">
-                <Input
-                  placeholder="Your ID/Pasport Number"
-                  disabled={!editState}
-                />
+                {editState && (
+                  <Input
+                    placeholder="Your ID/Pasport Number"
+                    disabled={!editState}
+                  />
+                )}
+                {!editState && <p className="mb-0">-</p>}
               </Form.Item>
             </div>
           </div>
+
           <div className="col-6">
             <div className="input-group-meta position-relative mb-15">
-              <label>ID/Pasport</label>
+              <label className="fw-bold">ID/Passport</label>
               <Form.Item<FieldType> name="idFile" className="mb-0">
-                <Upload {...props} disabled={!editState}>
-                  <Button icon={<UploadOutlined />}>Upload File</Button>
-                </Upload>
+                {editState && (
+                  <Upload {...props} disabled={!editState}>
+                    <Button
+                      className="d-flex align-items-center justify-content-center"
+                      icon={<AiOutlineUpload style={{ fontSize: '19px' }} />}
+                    >
+                      Upload File
+                    </Button>
+                  </Upload>
+                )}
+                {!editState && (
+                  <div className="row">
+                    <div className="col-3">
+                      <Button
+                        className="d-flex align-items-center justify-content-center"
+                        icon={<HiOutlineEye style={{ fontSize: '19px' }} />}
+                        onClick={handleView}
+                      >
+                        View File
+                      </Button>
+                    </div>
+                    <div className="col-9 ps-4">
+                      <p className="mb-0">(Nama File)</p>
+                    </div>
+                  </div>
+                )}
               </Form.Item>
             </div>
           </div>
+
           <div className="col-6">
             <div className="input-group-meta position-relative mb-15">
-              <label>Tax Number</label>
+              <label className="fw-bold">Tax Number</label>
               <Form.Item<FieldType> name="npwpNumber" className="mb-0">
-                <Input placeholder="Your NPWP Number" disabled={!editState} />
+                {editState && (
+                  <Input placeholder="Your NPWP Number" disabled={!editState} />
+                )}
+                {!editState && <p className="mb-0">-</p>}
               </Form.Item>
             </div>
           </div>
+
           <div className="col-6">
             <div className="input-group-meta position-relative mb-15">
-              <label>Tax</label>
+              <label className="fw-bold">Tax</label>
               <Form.Item<FieldType> name="npwp" className="mb-0">
-                <Upload {...props} disabled={!editState}>
-                  <Button icon={<UploadOutlined />}>Upload File</Button>
-                </Upload>
+                {editState && (
+                  <Upload {...props} disabled={!editState}>
+                    <Button
+                      className="d-flex align-items-center justify-content-center"
+                      icon={<AiOutlineUpload style={{ fontSize: '19px' }} />}
+                    >
+                      Upload File
+                    </Button>
+                  </Upload>
+                )}
+                {!editState && (
+                  <div className="row">
+                    <div className="col-3">
+                      <Button
+                        className="d-flex align-items-center justify-content-center"
+                        icon={<HiOutlineEye style={{ fontSize: '19px' }} />}
+                        onClick={handleView}
+                      >
+                        View File
+                      </Button>
+                    </div>
+                    <div className="col-9 ps-4">
+                      <p className="mb-0">(Nama File)</p>
+                    </div>
+                  </div>
+                )}
               </Form.Item>
             </div>
           </div>
+
           <div className="col-6">
             <div className="input-group-meta position-relative mb-15">
-              <label>Family Registration Card Number</label>
+              <label className="fw-bold">Family Registration Card Number</label>
               <Form.Item<FieldType> name="kkNumber" className="mb-0">
-                <Input
-                  placeholder="Your Family Register Number"
-                  disabled={!editState}
-                />
+                {editState && (
+                  <Input
+                    placeholder="Your Family Register Number"
+                    disabled={!editState}
+                  />
+                )}
+                {!editState && <p className="mb-0">-</p>}
               </Form.Item>
             </div>
           </div>
+
           <div className="col-6">
             <div className="input-group-meta position-relative mb-15">
-              <label>Family Registration Card</label>
+              <label className="fw-bold">Family Registration Card</label>
               <Form.Item<FieldType> name="kk" className="mb-0">
-                <Upload {...props} disabled={!editState}>
-                  <Button icon={<UploadOutlined />}>Upload File</Button>
-                </Upload>
+                {editState && (
+                  <Upload {...props} disabled={!editState}>
+                    <Button
+                      className="d-flex align-items-center justify-content-center"
+                      icon={<AiOutlineUpload style={{ fontSize: '19px' }} />}
+                    >
+                      Upload File
+                    </Button>
+                  </Upload>
+                )}
+                {!editState && (
+                  <div className="row">
+                    <div className="col-3">
+                      <Button
+                        className="d-flex align-items-center justify-content-center"
+                        icon={<HiOutlineEye style={{ fontSize: '19px' }} />}
+                        onClick={handleView}
+                      >
+                        View File
+                      </Button>
+                    </div>
+                    <div className="col-9 ps-4">
+                      <p className="mb-0">(Nama File)</p>
+                    </div>
+                  </div>
+                )}
               </Form.Item>
             </div>
           </div>
+
           <div className="col-6">
             <div className="input-group-meta position-relative mb-15">
-              <label>Bank Central Asia (BCA) Number</label>
+              <label className="fw-bold">
+                Bank Central Asia (BCA) - Bank Account
+              </label>
               <Form.Item<FieldType> name="bankAccountNumber" className="mb-0">
-                <Input
-                  placeholder="Your Bank Account Number"
-                  disabled={!editState}
-                />
+                {editState && (
+                  <Input
+                    placeholder="Your Bank Account Number"
+                    disabled={!editState}
+                  />
+                )}
+                {!editState && <p className="mb-0">-</p>}
               </Form.Item>
             </div>
           </div>
+
           <div className="col-6">
             <div className="input-group-meta position-relative mb-15">
-              <label>Bank Central Asia (BCA)</label>
+              <label className="fw-bold">Bank Central Asia (BCA)</label>
               <Form.Item<FieldType> name="bankAccount" className="mb-0">
-                <Upload {...props} disabled={!editState}>
-                  <Button icon={<UploadOutlined />}>Upload File</Button>
-                </Upload>
+                {editState && (
+                  <Upload {...props} disabled={!editState}>
+                    <Button
+                      className="d-flex align-items-center justify-content-center"
+                      icon={<AiOutlineUpload style={{ fontSize: '19px' }} />}
+                    >
+                      Upload File
+                    </Button>
+                  </Upload>
+                )}
+                {!editState && (
+                  <div className="row">
+                    <div className="col-3">
+                      <Button
+                        className="d-flex align-items-center justify-content-center"
+                        icon={<HiOutlineEye style={{ fontSize: '19px' }} />}
+                        onClick={handleView}
+                      >
+                        View File
+                      </Button>
+                    </div>
+                    <div className="col-9 ps-4">
+                      <p className="mb-0">(Nama File)</p>
+                    </div>
+                  </div>
+                )}
               </Form.Item>
             </div>
           </div>
+
           <div className="col-6">
             <div className="input-group-meta position-relative mb-15">
-              <label>Latest Education Certificate</label>
+              <label className="fw-bold">Latest Education Certificate</label>
               <Form.Item<FieldType> name="latestEducation" className="mb-0">
-                <Upload {...props} disabled={!editState}>
-                  <Button icon={<UploadOutlined />}>Upload File</Button>
-                </Upload>
+                {editState && (
+                  <Upload {...props} disabled={!editState}>
+                    <Button
+                      className="d-flex align-items-center justify-content-center"
+                      icon={<AiOutlineUpload style={{ fontSize: '19px' }} />}
+                    >
+                      Upload File
+                    </Button>
+                  </Upload>
+                )}
+                {!editState && (
+                  <div className="row">
+                    <div className="col-3">
+                      <Button
+                        className="d-flex align-items-center justify-content-center"
+                        icon={<HiOutlineEye style={{ fontSize: '19px' }} />}
+                        onClick={handleView}
+                      >
+                        View File
+                      </Button>
+                    </div>
+                    <div className="col-9 ps-4">
+                      <p className="mb-0">(Nama File)</p>
+                    </div>
+                  </div>
+                )}
               </Form.Item>
             </div>
           </div>
+
           <div className="col-6">
             <div className="input-group-meta position-relative mb-15">
-              <label>Health Certicate/MCU Result</label>
+              <label className="fw-bold">Health Certicate/MCU Result</label>
               <Form.Item<FieldType> name="healthCertificate" className="mb-0">
-                <Upload {...props} disabled={!editState}>
-                  <Button icon={<UploadOutlined />}>Upload File</Button>
-                </Upload>
+                {editState && (
+                  <Upload {...props} disabled={!editState}>
+                    <Button
+                      className="d-flex align-items-center justify-content-center"
+                      icon={<AiOutlineUpload style={{ fontSize: '19px' }} />}
+                    >
+                      Upload File
+                    </Button>
+                  </Upload>
+                )}
+                {!editState && (
+                  <div className="row">
+                    <div className="col-3">
+                      <Button
+                        className="d-flex align-items-center justify-content-center"
+                        icon={<HiOutlineEye style={{ fontSize: '19px' }} />}
+                        onClick={handleView}
+                      >
+                        View File
+                      </Button>
+                    </div>
+                    <div className="col-9 ps-4">
+                      <p className="mb-0">(Nama File)</p>
+                    </div>
+                  </div>
+                )}
               </Form.Item>
             </div>
           </div>
@@ -234,7 +402,12 @@ const DocumentForm = () => {
                   ]}
                 >
                   <Upload {...props}>
-                    <Button icon={<UploadOutlined />}>Upload File</Button>
+                    <Button
+                    className="d-flex align-items-center justify-content-center"
+                    icon={<AiOutlineUpload style={{ fontSize: '19px' }} />}
+                  >
+                    Upload File
+                  </Button>
                   </Upload>
                 </Form.Item>
               </div>
@@ -253,14 +426,19 @@ const DocumentForm = () => {
                   ]}
                 >
                   <Upload {...props}>
-                    <Button icon={<UploadOutlined />}>Upload File</Button>
+                    <Button
+                    className="d-flex align-items-center justify-content-center"
+                    icon={<AiOutlineUpload style={{ fontSize: '19px' }} />}
+                  >
+                    Upload File
+                  </Button>
                   </Upload>
                 </Form.Item>
               </div>
             </div> */}
           <div className="col-6">
             <div className="input-group-meta position-relative mb-15">
-              <label>COVID Vaccine Certificate</label>
+              <label className="fw-bold">COVID Vaccine Certificate</label>
               <Form.Item<FieldType>
                 name="vaccineCertificate"
                 className="mb-0"
@@ -271,15 +449,39 @@ const DocumentForm = () => {
                 //   },
                 // ]}
               >
-                <Upload {...props} disabled={!editState}>
-                  <Button icon={<UploadOutlined />}>Upload File</Button>
-                </Upload>
+                {editState && (
+                  <Upload {...props} disabled={!editState}>
+                    <Button
+                      className="d-flex align-items-center justify-content-center"
+                      icon={<AiOutlineUpload style={{ fontSize: '19px' }} />}
+                    >
+                      Upload File
+                    </Button>
+                  </Upload>
+                )}
+                {!editState && (
+                  <div className="row">
+                    <div className="col-3">
+                      <Button
+                        className="d-flex align-items-center justify-content-center"
+                        icon={<HiOutlineEye style={{ fontSize: '19px' }} />}
+                        onClick={handleView}
+                      >
+                        View File
+                      </Button>
+                    </div>
+                    <div className="col-9 ps-4">
+                      <p className="mb-0">(Nama File)</p>
+                    </div>
+                  </div>
+                )}
               </Form.Item>
             </div>
           </div>
+
           <div className="col-6">
             <div className="input-group-meta position-relative mb-15">
-              <label>Upload CV*</label>
+              <label className="fw-bold">Upload CV*</label>
               <Form.Item<FieldType>
                 name="uploadCV"
                 className="mb-0"
@@ -290,24 +492,32 @@ const DocumentForm = () => {
                 //   },
                 // ]}
               >
-                <Upload
-                  action=""
-                  listType="text"
-                  maxCount={1}
-                  accept=".pdf"
-                  disabled={!editState}
-                >
-                  <Button
-                    icon={
-                      <UploadOutlined
-                        onPointerEnterCapture={''}
-                        onPointerLeaveCapture={''}
-                      />
-                    }
-                  >
-                    Upload
-                  </Button>
-                </Upload>
+                {editState && (
+                  <Upload {...props} disabled={!editState}>
+                    <Button
+                      className="d-flex align-items-center justify-content-center"
+                      icon={<AiOutlineUpload style={{ fontSize: '19px' }} />}
+                    >
+                      Upload File
+                    </Button>
+                  </Upload>
+                )}
+                {!editState && (
+                  <div className="row">
+                    <div className="col-3">
+                      <Button
+                        className="d-flex align-items-center justify-content-center"
+                        icon={<HiOutlineEye style={{ fontSize: '19px' }} />}
+                        onClick={handleView}
+                      >
+                        View File
+                      </Button>
+                    </div>
+                    <div className="col-9 ps-4">
+                      <p className="mb-0">(Nama File)</p>
+                    </div>
+                  </div>
+                )}
               </Form.Item>
             </div>
           </div>
@@ -319,6 +529,12 @@ const DocumentForm = () => {
           </div>
         </div>
       </Form>
+
+      <ViewDocModal
+        sourceFile={''}
+        isOpen={isOpenModal}
+        setIsOpenModal={setIsOpenModal}
+      />
     </div>
   );
 };

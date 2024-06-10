@@ -91,21 +91,39 @@ type MasterData = {
 
 type Props = {
   experiences?: any;
+  setExperiences?: React.Dispatch<any>;
   masterData?: MasterData | null;
   noticePeriod?: string;
+  submitType?: { type: string; counter: number };
+  setSubmitType?: React.Dispatch<{ type: string; counter: number }>;
   errors?: any;
 };
 
 const BackgroundExperienceForm: React.FC<Props> = ({
   experiences,
+  setExperiences,
   masterData,
   noticePeriod,
+  submitType,
+  setSubmitType,
   errors,
 }) => {
   const [form] = Form.useForm();
   const [editState, setEditState] = useState(false);
-
   const [expValue, setExpValue] = useState<string>('Professional');
+  const [expIdx, setExpIdx] = useState<number>(0);
+
+  const initExpItems: any[] = [];
+  const displayedInit: any[] = [];
+  const [activeExpKey, setActiveExpKey] = useState('');
+  const [expItems, setExpItems] = useState(initExpItems);
+  const [displayedItems, setDisplayedItems] = useState(displayedInit);
+  const newExpTabIdx = useRef(0);
+
+  const [expTotal, setExpTotal] = useState(0);
+  const [loopTotal, setLoopTotal] = useState(0);
+  const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
+
   const onChangeExp = (e: RadioChangeEvent) => {
     setExpValue(e.target.value);
   };
@@ -114,12 +132,9 @@ const BackgroundExperienceForm: React.FC<Props> = ({
     setEditState(!editState);
   };
 
-  const [expIdx, setExpIdx] = useState<number>(0);
-
   type Tprops1 = {
     expIdx: number;
   };
-
   const ExpTabContent: React.FC<Tprops1> = ({ expIdx }) => {
     const [yearState, setYearState] = useState<{ [key: string]: boolean }>({});
     const handleCheckboxChange: any = (e: any, expIdx: number) => {
@@ -239,14 +254,14 @@ const BackgroundExperienceForm: React.FC<Props> = ({
                 showSearch
                 placeholder="Your Position Level"
                 optionFilterProp="children"
-                // filterOption={(input, option) =>
-                //   (option?.label.toLowerCase() ?? '').includes(input)
-                // }
-                filterSort={(optionA, optionB) =>
-                  (optionA?.label ?? '')
-                    .toLowerCase()
-                    .localeCompare((optionB?.label ?? '').toLowerCase())
+                filterOption={(input, option) =>
+                  (option?.label.toLowerCase() ?? '').includes(input)
                 }
+                // filterSort={(optionA, optionB) =>
+                //   (optionA?.label ?? '')
+                //     .toLowerCase()
+                //     .localeCompare((optionB?.label ?? '').toLowerCase())
+                // }
                 // options={masterData?.job_levels}
                 options={[
                   { value: 'Director', label: 'Director' },
@@ -416,7 +431,6 @@ const BackgroundExperienceForm: React.FC<Props> = ({
   type Tprops2 = {
     expIdx: number;
   };
-
   const DisplayedTabContent: React.FC<Tprops2> = ({ expIdx }) => {
     return (
       <div key={expIdx} className="row">
@@ -502,28 +516,27 @@ const BackgroundExperienceForm: React.FC<Props> = ({
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Current Salary (gross Monthly)*</label>
             <p className="mb-0">
-              {Number(experiences?.experiences[expIdx]?.salary)}
+              {`Rp. ${Number(experiences?.experiences[expIdx]?.salary)}`.replace(
+                /\B(?=(\d{3})+(?!\d))/g,
+                '.',
+              )}
             </p>
           </div>
         </div>
         <div className="col-6">
           <div className="input-group-meta position-relative mb-15">
             <label className="fw-bold">Expected Salary (gross Monthly)*</label>
-            <p className="mb-0">{experiences?.expectedSalary}</p>
+            <p className="mb-0">
+              {`Rp. ${experiences?.expectedSalary}`.replace(
+                /\B(?=(\d{3})+(?!\d))/g,
+                '.',
+              )}
+            </p>
           </div>
         </div>
       </div>
     );
   };
-
-  const initExpItems: any[] = [];
-  const displayedInit: any[] = [];
-
-  const [activeExpKey, setActiveExpKey] = useState('');
-  const [expItems, setExpItems] = useState(initExpItems);
-  const [displayedItems, setDisplayedItems] = useState(displayedInit);
-  // const [displayedItems, setDisplayedItems] = useState(null);
-  const newExpTabIdx = useRef(0);
 
   const onChangeExpTabs = (newActiveKey: string) => {
     setActiveExpKey(newActiveKey);
@@ -595,13 +608,10 @@ const BackgroundExperienceForm: React.FC<Props> = ({
     }
   };
 
-  const [expTotal, setExpTotal] = useState(0);
-  const [loopTotal, setLoopTotal] = useState(0);
-  const [initFieldsValue, setInitFieldsValue] = useState<FieldType>({});
-
   /* ACTIONS */
   const handleSubmit: FormProps<FieldType>['onFinish'] = async () => {
     if (editState) {
+      message.loading('Please wait');
       let values = form.getFieldsValue();
       values = {
         ...values,
@@ -613,8 +623,8 @@ const BackgroundExperienceForm: React.FC<Props> = ({
         const experienceId = values.experience[key].id;
         if (expItems.some((jobId) => jobId.jobId === experienceId)) {
           filteredExperience[key] = values.experience[key];
-        };
-      };
+        }
+      }
       values = {
         ...values,
         experience: { ...filteredExperience },
@@ -622,9 +632,25 @@ const BackgroundExperienceForm: React.FC<Props> = ({
       const plainObjectValues = JSON.parse(JSON.stringify(values));
       console.log('submittedValueExperience: ', plainObjectValues);
       const updating = await updateCandidateExperiences(plainObjectValues);
-      if(!updating.success) return message.error(updating.message);
+      if (!updating.success) return message.error(updating.message);
       message.success(updating.message);
-    };
+
+      if (setSubmitType && setExperiences && submitType) {
+        setLoopTotal(0);
+        setActiveExpKey('');
+        newExpTabIdx.current = 0;
+        setExpItems([]);
+        setDisplayedItems([]);
+        setExperiences(null);
+        const newSubmitType = {
+          ...submitType,
+          type: 'experience',
+          counter: submitType?.counter + 1,
+        };
+        setSubmitType(newSubmitType);
+        setEditState(false);
+      }
+    }
   };
   /* END ACTIONS */
 
@@ -640,7 +666,10 @@ const BackgroundExperienceForm: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    if (experiences) {
+    // console.log('useEffect in(experiences): ', experiences);
+    // console.log('useEffect in(initFieldsValue): ', initFieldsValue);
+    if (experiences && experiences !== null) {
+      // console.log('mulai setInitFieldsValue');
       if ('experiences' in experiences) {
         setInitFieldsValue((prevState) => ({
           ...prevState,
@@ -677,7 +706,13 @@ const BackgroundExperienceForm: React.FC<Props> = ({
         );
         setExpValue('Professional');
         setExpTotal(experiences.experiences.length);
-        if (loopTotal < 1 && expValue === 'Professional') {
+        if (
+          initFieldsValue &&
+          experiences.experiences.length > 0 &&
+          loopTotal < 1 &&
+          expValue === 'Professional'
+        ) {
+          // console.log('tambah tab');
           addExp(experiences.experiences.length);
           setLoopTotal((prevState) => prevState + 1);
         }

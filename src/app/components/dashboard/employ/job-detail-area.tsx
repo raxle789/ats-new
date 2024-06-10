@@ -1,14 +1,20 @@
+import React, { ReactNode } from 'react';
 import { getJobVacancyData } from '@/lib/actions/job-vacancies/job-vacancy-details/action';
-import { Suspense } from 'react';
-import EmployJobDetailSkeleton from '../../loadings/employ-job-detail-skeleton';
-import InterviewListArea from '../../applicants/interview-list-area';
-import { Status } from '@/status/applicant-status';
-import AssessmentListArea from '../../applicants/assessment-list-area';
-import ApplicantListArea from '../../applicants/applicant-list-area';
+// import { Suspense } from 'react';
+// import EmployJobDetailSkeleton from '../../loadings/employ-job-detail-skeleton';
+// import InterviewListArea from '../../applicants/interview-list-area';
+// import { Status } from '@/status/applicant-status';
+// import AssessmentListArea from '../../applicants/assessment-list-area';
+// import ApplicantListArea from '../../applicants/applicant-list-area';
 import EmployJobDetailItem from './job-detail-item';
-import * as crypto from '@/lib/utils/utils';
+// import * as crypto from '@/lib/utils/utils';
 
-const EmployJobDetailArea = async ({ children, params }) => {
+type Props = {
+  children?: ReactNode;
+  params?: any;
+};
+
+const EmployJobDetailArea: React.FC<Props> = async ({ children, params }) => {
   // const page = searchParams?.page ?? '1';
 
   // const perPage = searchParams?.perPage ?? '10';
