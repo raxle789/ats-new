@@ -31,6 +31,9 @@ const nextConfig = {
   },
   experimental: {
     serverComponentsExternalPackages: ['@react-pdf/renderer'],
+    serverActions: {
+      bodySizeLimit: '5mb'
+    }
   },
   webpack(config) {
     // react-pdf configuration

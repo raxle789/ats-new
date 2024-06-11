@@ -20,17 +20,16 @@ export function EncryptSession(payload: any) {
 };
 
 /**
- * 
+ *
  * @param value cookies value from server-side
  * @returns decrypted payload as an object of user-information
  */
 export function DecryptSession(value: string): any {
   try {
     const decrypted = jwt.verify(value, 'sidokaredev24', { algorithms: ['HS256'] });
-
     return decrypted;
   } catch (error) {
-    console.error('erro while decrypting session', error);
+    console.error('DECRYPT ERROR \t:', error);
     return false;
   }
 }

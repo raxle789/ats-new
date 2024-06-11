@@ -3,90 +3,28 @@ import { NextResponse, NextRequest } from "next/server";
 import jwt from 'jsonwebtoken';
 import { v4 as uuidV4 } from 'uuid';
 import prisma from "@/root/prisma";
+import { getUserSession } from "@/libs/Sessions";
 
 export async function GET(request: NextRequest) {
-  // const session = request.cookies.get('_ERAHC-AUTH');
-  const experiences = await prisma.working_experiences.findMany();
-  // const roles = await prisma.userRoles.findMany({
-  //   where: {
-  //     userId: 77550
-  //   },
-  //   select: {
-  //     roles: {
-  //       select: {
-  //         name: true
-  //       }
-  //     }
-  //   }
-  // });
-  // const user = await prisma.users.findUnique({
-  //   where: {
-  //     email: 'tahsamarliah@gmail.com',
-  //   },
-  //   include: {
-  //     userRoles: { // empty array.
-  //       include: {
-  //         roles: {
-  //           select: {
-  //             name: true
-  //           }
-  //         }
-  //       }
-  //     },
-  //     candidates: { // null.
-  //       select: {
-  //         gender: true
-  //       }
-  //     }
-  //   }
-  // });
-  return NextResponse.json({
-    data: experiences.map(experience => {
-      return {
-        ...experience,
-        salary: Number(experience.salary)
+  const authSession = await getUserSession('auth');
+  console.info(authSession);
+  try {
+    const candidate = await prisma.candidates.findUnique({
+      where: {
+        id: authSession.candidate.id
       }
     })
-  });
-  // if(session) {
-    // const serverSession = cookies().get(session.value);
-    // console.log('server jwt-token', serverSession);
-    /* use trycatch */
-    // const payload = jwt.verify(serverSession?.value as string, 'ats-developers', { complete: true });
-  //   jwt.verify('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJvYXV0aDIiOiJsaW5rZWRpbiIsIl9lcmFoYy1vYXV0aCI6InNpZG9rYXJlZGV2IiwiaWF0IjoxNzE2NzAwNzkyOTkzfQ.-RoC3ZkNb3_K0fnc3RDnWtTty-iDFnpwgoL83oN5muQ', 'ats-developers');
-  //   return NextResponse.json({
-  //     session: session,
-  //     data: 'on try'
-  //   });
-  // } else {
-    // const serverSessionKey = uuidV4();
-    // const serverSessionToken = jwt.sign({
-    //   name: 'Fatkhur Rozak',
-    //   role: 'database-administrator',
-    // }, 'ats-developers', {
-    //   algorithm: 'HS256'
-    // });
-    /* server-session */
-    // cookies().set(serverSessionKey, serverSessionToken, {
-    //   expires: new Date(Date.now() + 2 * 60 * 1000),
-    //   httpOnly: true
-    // });
-    /* client-cookies */
-    // cookies().set('_ERAHC-AUTH', serverSessionKey, {
-    //   expires: new Date(Date.now() + 2 * 60 * 1000),
-    //   httpOnly: false
-    // });
-  //   cookies().set('_ERAHC-AUTH', JSON.stringify({
-  //     name: 'Fatkhur Rozak',
-  //     role: 'database.administrator'
-  //   }), {
-  //     expires: new Date(Date.now() + 2 * 60 * 1000),
-  //     httpOnly: false
-  //   });
-  //   const sessionData = cookies().get('_ERAHC-AUTH');
-  //   return NextResponse.json({
-  //     session: sessionData,
-  //     data: null
-  //   });
-  // };
+    return NextResponse.json({
+      success: true,
+      data: authSession,
+      message: 'success:'
+    });
+  } catch (error) {
+    console.info('Fetching Error: ', error);
+    return NextResponse.json({
+      success: false,
+      data: null,
+      message: 'Fetching Error: There is a problem with database connection: ',
+    });
+  };
 };
