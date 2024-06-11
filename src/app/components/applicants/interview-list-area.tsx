@@ -1,6 +1,8 @@
 'use server';
 
 import InterviewListItem from './interview-list-item';
+import EmployJobDetailSkeleton from '@/app/components/loadings/employ-job-detail-skeleton';
+import { Suspense } from 'react';
 import { encryptObject } from '@/lib/utils/utils';
 import { handleApplicant } from '../message/confirm';
 import {
@@ -27,6 +29,7 @@ const InterviewListArea: React.FC<Props> = async ({
   searchParams,
   status,
 }) => {
+  // const pathname = usePathname();
   const page = searchParams?.page ?? '1';
 
   const perPage = searchParams?.perPage ?? '10';
@@ -107,6 +110,7 @@ const InterviewListArea: React.FC<Props> = async ({
   })();
 
   return (
+    // <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
     <InterviewListItem
       status={status}
       applicantData={applicantData?.data}
@@ -120,6 +124,7 @@ const InterviewListArea: React.FC<Props> = async ({
       handleApplicant={handleApplicant}
       encryptObject={encryptObject}
     />
+    // </Suspense>
   );
 };
 

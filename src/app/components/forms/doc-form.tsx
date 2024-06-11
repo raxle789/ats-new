@@ -669,13 +669,13 @@ const DocumentForm: React.FC<Props> = ({documentData}) => {
 
           {editState && (
 
-          <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
-            <button type="submit" className="dash-btn-two tran3s me-3">
-              Submit
-            </button>
-          </div>
+          {editState && (
+            <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
+              <button type="submit" className="dash-btn-two tran3s me-3">
+                Submit
+              </button>
+            </div>
           )}
-
         </div>
       </Form>
 

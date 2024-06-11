@@ -85,8 +85,11 @@ type Props = {
 
 const EmployJobArea: React.FC<Props> = async ({ searchParams }) => {
   const page = searchParams?.page ?? '1';
+
   const perPage = searchParams?.perPage ?? '10';
+
   const searchQuery = searchParams?.query ?? '';
+
   const offset = (Number(page) - 1) * Number(perPage);
 
   const jobVacancyData = await getAllJobVacancyData(offset, Number(perPage))

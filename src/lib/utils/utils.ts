@@ -89,16 +89,23 @@ export async function formatHtml(
 export async function encryptObject(data) {
   try {
     const encryptedData = encodeURIComponent(
-      jwt.sign(data, process.env.NEXT_PUBLIC_SECRET_KEY, {
-        algorithm: 'HS256',
-      }),
+      CryptoJS.Rabbit.encrypt(
+        JSON.stringify(data),
+        process.env.NEXT_PUBLIC_SECRET_KEY,
+      ).toString(),
     );
+
+    // encodeURIComponent(
+    //   jwt.sign(data, process.env.NEXT_PUBLIC_SECRET_KEY, {
+    //     algorithm: 'HS256',
+    //   }),
+    // );
 
     return encryptedData;
   } catch (e) {
     console.log(e);
 
-    return false;
+    return '';
   }
 }
 
@@ -106,18 +113,37 @@ export async function decryptObject(data) {
   try {
     const query = decodeURIComponent(data);
 
-    const decryptedData = jwt.verify(
-      query,
+    const decryptedValue = CryptoJS.Rabbit.decrypt(
+      String(query),
       process.env.NEXT_PUBLIC_SECRET_KEY,
-      {
-        algorithm: ['HS256'],
-      },
     );
 
-    return decryptedData;
+    const convertString = decryptedValue.toString(CryptoJS.enc.Utf8);
+
+    const originalValue = JSON.parse(convertString);
+
+    return originalValue;
   } catch (e) {
     console.log(e);
 
-    return false;
+    return {};
   }
+
+  // try {
+  //   const query = decodeURIComponent(data);
+
+  //   const decryptedData = jwt.verify(
+  //     query,
+  //     process.env.NEXT_PUBLIC_SECRET_KEY,
+  //     {
+  //       algorithm: ['HS256'],
+  //     },
+  //   );
+
+  //   return decryptedData;
+  // } catch (e) {
+  //   console.log(e);
+
+  //   return false;
+  // }
 }

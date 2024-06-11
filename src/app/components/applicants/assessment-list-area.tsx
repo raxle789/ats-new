@@ -1,6 +1,8 @@
 'use server';
 
 import AssessmentListItem from './assessment-list-item';
+import EmployJobDetailSkeleton from '@/app/components/loadings/employ-job-detail-skeleton';
+import { Suspense } from 'react';
 import { handleApplicant } from '../message/confirm';
 // import JobAssessmentResultArea from '../dashboard/employ/job-assessment-result-area';
 // import { registerAssessment } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-assessment/action';
@@ -17,6 +19,7 @@ const AssessmentListArea: React.FC<Props> = async ({
   searchParams,
   status,
 }) => {
+  // const pathname = usePathname();
   const page = searchParams?.page ?? '1';
 
   const perPage = searchParams?.perPage ?? '10';
@@ -55,12 +58,14 @@ const AssessmentListArea: React.FC<Props> = async ({
   })();
 
   return (
+    // <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
     <AssessmentListItem
       status={status}
       applicantData={applicantData?.data}
       jobVacancyId={params?.id}
       handleApplicant={handleApplicant}
     />
+    // </Suspense>
   );
 };
 

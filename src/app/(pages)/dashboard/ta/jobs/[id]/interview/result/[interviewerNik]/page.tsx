@@ -4,7 +4,7 @@ import InterviewResultArea from '@/app/components/dashboard/employ/interview-res
 
 const InterviewResultPage = ({ params, searchParams }) => {
   return (
-    <Suspense fallback={<EmployJobDetailSkeleton rows={1} />}>
+    <Suspense fallback={<EmployJobDetailSkeleton rows={4} />}>
       <InterviewResultArea params={params} searchParams={searchParams} />
     </Suspense>
   );

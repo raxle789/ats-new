@@ -264,7 +264,7 @@ const EmployJobDetailItem: React.FC<Props> = ({ jobVacancyData, params }) => {
         </button>
       </div>
 
-      <div className="d-flex justify-content-between align-items-center mb-40">
+      {/* <div className="d-flex justify-content-between align-items-center mb-40">
         <div>
           <h4 className="sub-main-title">
             {pathname?.endsWith(params?.id)
@@ -273,9 +273,9 @@ const EmployJobDetailItem: React.FC<Props> = ({ jobVacancyData, params }) => {
                   ?.split('/')
                   [pathname?.split('/')?.length - 1]?.toUpperCase() ?? '-'}
           </h4>
-        </div>
-        {/* <SearchBar /> */}
-      </div>
+        </div> */}
+      {/* <SearchBar /> */}
+      {/* </div> */}
 
       {/* {list} */}
     </>

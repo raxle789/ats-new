@@ -225,6 +225,12 @@ export const validateInterviewResultData = z.object({
       invalid_type_error: 'Job Vacancy Id Must Be A Number!',
     })
     .int(),
+  interviewId: z
+    .number({
+      required_error: 'Interview Id Required!',
+      invalid_type_error: 'Interview Id Must Be A Number!',
+    })
+    .int(),
   interviewerNik: z.coerce
     .string({
       required_error: 'Interviewer NIK Required!',
@@ -254,7 +260,7 @@ export const validateInterviewResultSchema = z
         invalid_type_error: 'Interview Id Must Be A Number!',
       })
       .int(),
-    interviewerNik: z.coerce
+    interviewerNik: z
       .string({
         required_error: 'Interviewer NIK Required!',
         invalid_type_error: 'Interviewer NIK Must Be A String!',
@@ -269,12 +275,13 @@ export const validateInterviewResultSchema = z
       .int()
       .min(1, { message: 'Education Background Rate Must Be 1 - 4!' })
       .max(4, { message: 'Education Background Rate Must Be 1 - 4!' }),
-    educationBackgroundComment: z.coerce
+    educationBackgroundComment: z
       .string({
         required_error: 'Education Background Comment Required!',
         invalid_type_error: 'Education Background Comment Must Be A String!',
       })
       .trim()
+      .nullable()
       .default(''),
     workingExperienceRate: z
       .number({
@@ -284,12 +291,13 @@ export const validateInterviewResultSchema = z
       .int()
       .min(1, { message: 'Working Experience Rate Must Be 1 - 4!' })
       .max(4, { message: 'Working Experience Rate Must Be 1 - 4!' }),
-    workingExperienceComment: z.coerce
+    workingExperienceComment: z
       .string({
         required_error: 'Working Experience Comment Required!',
         invalid_type_error: 'Working Experience Comment Must Be A String!',
       })
       .trim()
+      .nullable()
       .default(''),
     communicationSkillsRate: z
       .number({
@@ -299,12 +307,13 @@ export const validateInterviewResultSchema = z
       .int()
       .min(1, { message: 'Communication Skills Rate Must Be 1 - 4!' })
       .max(4, { message: 'Communication Skills Rate Must Be 1 - 4!' }),
-    communicationSkillsComment: z.coerce
+    communicationSkillsComment: z
       .string({
         required_error: 'Communication Skills Comment Required!',
         invalid_type_error: 'Communication Skills Comment Must Be A String!',
       })
       .trim()
+      .nullable()
       .default(''),
     qualityOrientedRate: z
       .number({
@@ -314,12 +323,13 @@ export const validateInterviewResultSchema = z
       .int()
       .min(1, { message: 'Quality Oriented Rate Must Be 1 - 4!' })
       .max(4, { message: 'Quality Oriented Rate Must Be 1 - 4!' }),
-    qualityOrientedComment: z.coerce
+    qualityOrientedComment: z
       .string({
         required_error: 'Quality Oriented Comment Required!',
         invalid_type_error: 'Quality Oriented Comment Must Be A String!',
       })
       .trim()
+      .nullable()
       .default(''),
     achievementOrientedRate: z
       .number({
@@ -329,12 +339,13 @@ export const validateInterviewResultSchema = z
       .int()
       .min(1, { message: 'Achievement Oriented Rate Must Be 1 - 4!' })
       .max(4, { message: 'Achievement Oriented Rate Must Be 1 - 4!' }),
-    achievementOrientedComment: z.coerce
+    achievementOrientedComment: z
       .string({
         required_error: 'Achievement Oriented Comment Required!',
         invalid_type_error: 'Achievement Oriented Comment Must Be A String!',
       })
       .trim()
+      .nullable()
       .default(''),
     developingOthersRate: z
       .number({
@@ -344,12 +355,13 @@ export const validateInterviewResultSchema = z
       .int()
       .min(1, { message: 'Developing Others Rate Must Be 1 - 4!' })
       .max(4, { message: 'Developing Others Rate Must Be 1 - 4!' }),
-    developingOthersComment: z.coerce
+    developingOthersComment: z
       .string({
         required_error: 'Developing Others Comment Required!',
         invalid_type_error: 'Developing Others Comment Must Be A String!',
       })
       .trim()
+      .nullable()
       .default(''),
     creativeAgilityRate: z
       .number({
@@ -359,12 +371,13 @@ export const validateInterviewResultSchema = z
       .int()
       .min(1, { message: 'Creative Agility Rate Must Be 1 - 4!' })
       .max(4, { message: 'Creative Agility Rate Must Be 1 - 4!' }),
-    creativeAgilityComment: z.coerce
+    creativeAgilityComment: z
       .string({
         required_error: 'Creative Agility Comment Required!',
         invalid_type_error: 'Creative Agility Comment Must Be A String!',
       })
       .trim()
+      .nullable()
       .default(''),
     leadingOthersRate: z
       .number({
@@ -374,12 +387,13 @@ export const validateInterviewResultSchema = z
       .int()
       .min(1, { message: 'Leading Others Rate Must Be 1 - 4!' })
       .max(4, { message: 'Leading Others Rate Must Be 1 - 4!' }),
-    leadingOthersComment: z.coerce
+    leadingOthersComment: z
       .string({
         required_error: 'Leading Others Comment Required!',
         invalid_type_error: 'Leading Others Comment Must Be A String!',
       })
       .trim()
+      .nullable()
       .default(''),
     strategicThinkingRate: z
       .number({
@@ -389,12 +403,13 @@ export const validateInterviewResultSchema = z
       .int()
       .min(1, { message: 'Strategic Thinking Rate Must Be 1 - 4!' })
       .max(4, { message: 'Strategic Thinking Rate Must Be 1 - 4!' }),
-    strategicThinkingComment: z.coerce
+    strategicThinkingComment: z
       .string({
         required_error: 'Strategic Thinking Comment Required!',
         invalid_type_error: 'Strategic Thinking Comment Must Be A String!',
       })
       .trim()
+      .nullable()
       .default(''),
     reliablePartnerRate: z
       .number({
@@ -404,12 +419,13 @@ export const validateInterviewResultSchema = z
       .int()
       .min(1, { message: 'Reliable Partner Rate Must Be 1 - 4' })
       .max(4, { message: 'Reliable Partner Rate Must Be 1 - 4' }),
-    reliablePartnerComment: z.coerce
+    reliablePartnerComment: z
       .string({
         required_error: 'Reliable Partner Comment Required!',
         invalid_type_error: 'Reliable Partner Comment Must Be A String!',
       })
       .trim()
+      .nullable()
       .default(''),
     technologySavvyRate: z
       .number({
@@ -419,28 +435,29 @@ export const validateInterviewResultSchema = z
       .int()
       .min(1, { message: 'Technology Savvy Rate Must Be 1 - 4!' })
       .max(4, { message: 'Technology Savvy Rate Must Be 1 - 4!' }),
-    technologySavvyComment: z.coerce
+    technologySavvyComment: z
       .string({
         required_error: 'Technology Savvy Comment Required!',
         invalid_type_error: 'Technology Savvy Comment Must Be A String!',
       })
       .trim()
+      .nullable()
       .default(''),
     status: z.nativeEnum(Status, {
       required_error: 'Status Required!',
       invalid_type_error: 'Status Must Be A Valid Status!',
     }),
-    reason: z.coerce
+    reason: z
       .string({
         required_error: 'Reason Required!',
         invalid_type_error: 'Reason Must Be A String!',
       })
       .trim()
       .default(''),
-    rescheduler: z.coerce
+    rescheduler: z
       .string({
         required_error: 'Rescheduler Required!',
-        invalid_type_error: 'Rescheduler NIK Must Be A String!',
+        invalid_type_error: 'Rescheduler Must Be A String!',
       })
       .trim()
       // .transform((val, ctx) => {
@@ -585,3 +602,19 @@ export const validateInterviewResultSchema = z
       });
     }
   });
+
+export const validateInterviewIdAndInterviewerNik = z.object({
+  interviewId: z
+    .number({
+      required_error: 'Interview Id Required!',
+      invalid_type_error: 'Interview Id Must Be A Number!',
+    })
+    .int(),
+  interviewerNik: z.coerce
+    .string({
+      required_error: 'Interviewer NIK Required!',
+      invalid_type_error: 'Interviewer NIK Must Be A String!',
+    })
+    .trim()
+    .length(9, { message: 'Interviewer NIK Must Contain 9 Numbers!' }),
+});

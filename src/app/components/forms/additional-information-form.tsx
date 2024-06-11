@@ -15,6 +15,10 @@ import dayjs, { Dayjs } from 'dayjs';
 import EmployJobDetailSkeleton from '../loadings/employ-job-detail-skeleton';
 import { updateAdditionalInformations } from '@/libs/Candidate/actions';
 import { MasterData } from '../dashboard/candidate/dashboard-profile-area';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+
+dayjs.extend(localizedFormat);
+dayjs.locale('en');
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
@@ -214,7 +218,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
             <p className="mb-0">
               {dayjs(
                 additionalInformation?.families[index]?.dateOfBirth,
-              ).format('YYYY-MM-DD')}
+              ).format('D MMMM YYYY')}
             </p>
           </div>
         </div>
@@ -341,6 +345,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
 
       if (setSubmitType && setAdditionalInformation && submitType) {
         setLoopTotal(0);
+        setIndex(0);
         setActiveKey('');
         newTabIndex.current = 0;
         setItems([]);
@@ -721,7 +726,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
                       <p className="mb-0">
                         {everWorked === 'No'
                           ? 'No'
-                          : `${dayjs(initFieldsValue?.others?.everWorkedMonth).format('YYYY-MM')}, ${dayjs(initFieldsValue?.others?.everWorkedYear).format('YYYY-MM')}`}
+                          : `${dayjs(initFieldsValue?.others?.everWorkedMonth).format('MMMM YYYY')}, ${dayjs(initFieldsValue?.others?.everWorkedYear).format('MMMM YYYY')}`}
                       </p>
                     )}
                   </Form.Item>

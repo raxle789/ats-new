@@ -481,6 +481,18 @@ async function main() {
 
   await prisma.$executeRaw`INSERT INTO interview_result_status(name, isComment) VALUES('Hire', 0), ('Reject', 1), ('Keep In View', 1), ('Reschedule', 1)`;
 
+  await prisma.document_types.createMany({
+    data: [
+      { document_name: 'ijazah' },
+      { document_name: 'ktp/passport' },
+      { document_name: 'npwp/tax' },
+      { document_name: 'kartu-keluarga' },
+      { document_name: 'BCA-card' },
+      { document_name: 'MCU' },
+      { document_name: 'vaksin-certificate' },
+    ],
+  });
+
   // await prisma.$executeRaw`INSERT INTO phones(user_id, type, number, status, [current], created_at, updated_at) SELECT user_id, type, number, status, [current], created_at, updated_at FROM ats.dbo.phones ORDER BY id;`;
 
   // await prisma.$executeRaw`INSERT INTO efpk_initiator_informations(nik, name, email, position, efpk_id, user_id) SELECT efpk.initiator_nik, efpk.initiator_name, efpk.initiator_email, u.position, efpk.id, u.id FROM efpk LEFT JOIN ats.dbo.users AS u ON efpk.initiator_email COLLATE SQL_Latin1_General_CP1_CI_AS = u.email COLLATE SQL_Latin1_General_CP1_CI_AS ORDER BY efpk.id;`;
