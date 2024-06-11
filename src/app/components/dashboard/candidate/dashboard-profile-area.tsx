@@ -27,6 +27,7 @@ import { getCandidateDocuments, getCandidateProfile } from '@/libs/Candidate/ret
 import { getCandidateExperiences } from '@/libs/Candidate/retrieve-data';
 import { getEducationSkills } from '@/libs/Candidate/retrieve-data';
 import { getAdditionalInformations } from '@/libs/Candidate/retrieve-data';
+import { useSearchParams } from 'next/navigation';
 
 export type MasterData = {
   citys?: {
@@ -131,6 +132,9 @@ const DashboardProfileArea = () => {
     type: string;
     counter: number;
   }>({ type: 'initial-load', counter: 0 });
+
+  const searchParams = useSearchParams();
+  const paramError = searchParams.get('error');
 
   /* Fetch Form Data */
   const fetchProfileData = async () => {
@@ -252,7 +256,9 @@ const DashboardProfileArea = () => {
   return (
     <>
       <h2 className="main-title">My Profile</h2>
-
+      {paramError &&
+        <h1>{paramError}</h1>
+      }
       <div className="bg-white card-box border-20">
         <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
         {keyState === '1' && (

@@ -27,10 +27,9 @@ export function EncryptSession(payload: any) {
 export function DecryptSession(value: string): any {
   try {
     const decrypted = jwt.verify(value, 'sidokaredev24', { algorithms: ['HS256'] });
-
     return decrypted;
   } catch (error) {
-    console.error('erro while decrypting session', error);
+    console.error('DECRYPT ERROR \t:', error);
     return false;
   }
 }

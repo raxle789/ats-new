@@ -225,10 +225,10 @@ const DocumentForm: React.FC<Props> = ({documentData}) => {
         setZodErrors(zodErrors);
         return message.error('Validation failed!')
       };
-      debugger;
-      // const updateDocuments = await updateCandidateDocuments(submittedValues);
-      // if(!updateDocuments.success) message.error(updateDocuments.message);
-      // return message.success(updateDocuments.message);
+      // debugger;
+      const updateDocuments = await updateCandidateDocuments(submittedValues);
+      if(!updateDocuments.success) message.error(updateDocuments.message);
+      return message.success(updateDocuments.message);
     }
   };
 
@@ -666,8 +666,6 @@ const DocumentForm: React.FC<Props> = ({documentData}) => {
               </Form.Item>
             </div>
           </div>
-
-          {editState && (
 
           {editState && (
             <div className="button-group d-inline-flex align-items-center mt-30 mb-0">

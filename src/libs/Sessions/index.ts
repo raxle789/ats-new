@@ -19,7 +19,6 @@ export async function getUserSession(
       const authSession = cookies().get(Utils.authSession)?.value;
       if (!authSession) return false;
       const decryptedAuthSession = Jwt.DecryptSession(authSession as string);
-      // console.log('Decrypted session', decryptedAuthSession);
       return decryptedAuthSession;
 
     case 'reg':
@@ -130,7 +129,6 @@ export async function deleteSession(
     default:
       console.info('no valid session choosen');
       break;
-  }
-}
-
+  };
+};
 // export { Utils };
