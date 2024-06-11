@@ -20,7 +20,7 @@ export function EncryptSession(payload: any) {
 };
 
 /**
- * 
+ *
  * @param value cookies value from server-side
  * @returns decrypted payload as an object of user-information
  */

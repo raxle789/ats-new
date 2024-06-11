@@ -23,7 +23,7 @@ import {
   fetchEducationLevels,
   fetchSkills,
 } from '@/libs/Fetch';
-import { getCandidateProfile } from '@/libs/Candidate/retrieve-data';
+import { getCandidateDocuments, getCandidateProfile } from '@/libs/Candidate/retrieve-data';
 import { getCandidateExperiences } from '@/libs/Candidate/retrieve-data';
 import { getEducationSkills } from '@/libs/Candidate/retrieve-data';
 import { getAdditionalInformations } from '@/libs/Candidate/retrieve-data';
@@ -79,6 +79,17 @@ export type MasterData = {
   }[];
 };
 
+type CandidateDocuments = {
+  curriculum_vitae: string | null;
+  ijazah: string | null;
+  identity_card: string | null;
+  tax: string | null;
+  family_registration: string | null;
+  bca_card: string | null;
+  mcu: string | null;
+  vaccine_certf: string | null;
+};
+
 const DashboardProfileArea = () => {
   const items: TabsProps['items'] = [
     {
@@ -113,6 +124,8 @@ const DashboardProfileArea = () => {
     null,
   );
   const [noticePeriod, setNoticePeriod] = useState<string>('');
+  const [base64Documents, setBase64Documents] = useState<CandidateDocuments | null>(null);
+  console.info("Base64 Documents \t:", base64Documents);
   const [errors, setErrors] = useState<string>('');
   const [submitType, setSubmitType] = useState<{
     type: string;
@@ -156,6 +169,12 @@ const DashboardProfileArea = () => {
     return setAdditionalInformation(additionalInformationsData.data);
   };
 
+  const fetchCandidateDocuments = async () => {
+    const candidateDocumentsData = await getCandidateDocuments();
+    if(!candidateDocumentsData.success) message.error(candidateDocumentsData.message);
+    return setBase64Documents(candidateDocumentsData.data);
+  };
+
   const fetchData = async () => {
     await Promise.all([
       fetchCities(setMasterData),
@@ -170,30 +189,34 @@ const DashboardProfileArea = () => {
       fetchCertificates(setMasterData),
       fetchSkills(setMasterData),
       fetchSources(setMasterData),
-    ]);
-  };
-
-  const onChange = (key: string) => {
-    setKeyState(key);
-  };
-
-  useEffect(() => {
-    /* Candidate Data */
-    if (submitType.type === 'personal-data') {
-      fetchProfileData();
+      ]);
+      };
+      
+      const onChange = (key: string) => {
+        setKeyState(key);
+        };
+        
+        useEffect(() => {
+          /* Candidate Data */
+          if (submitType.type === 'personal-data') {
+            fetchProfileData();
     } else if (submitType.type === 'experience') {
       fetchExperiences();
       fetchAdditionalInformations();
     } else if (submitType.type === 'education') {
       fetchEducationSkills();
     } else if (submitType.type === 'additional') {
-      fetchProfileData();
-      fetchAdditionalInformations();
-    } else {
-      fetchProfileData();
-      fetchExperiences();
-      fetchEducationSkills();
-      fetchAdditionalInformations();
+        fetchProfileData();
+        fetchAdditionalInformations();
+    } else if (submitType.type === 'document') {
+      fetchCandidateDocuments()
+      
+      } else {
+        fetchProfileData();
+        fetchExperiences();
+        fetchEducationSkills();
+        fetchAdditionalInformations();
+        fetchCandidateDocuments()
     }
   }, [submitType]);
 
@@ -274,7 +297,7 @@ const DashboardProfileArea = () => {
             errors={errors}
           />
         )}
-        {keyState === '5' && <DocumentForm />}
+        {keyState === '5' && <DocumentForm documentData={base64Documents} />}
       </div>
     </>
   );

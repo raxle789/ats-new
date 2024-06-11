@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Modal } from 'antd';
 
 type Props = {
@@ -16,6 +16,10 @@ const ViewDocModal: React.FC<Props> = ({
   const handleCancel = () => {
     setIsOpenModal(false);
   };
+
+  useEffect(() => {
+    console.log('sources file: ', sourceFile);
+  }, [sourceFile])
   return (
     <>
       <Modal
@@ -27,9 +31,16 @@ const ViewDocModal: React.FC<Props> = ({
         width={700}
         wrapClassName="custom-modal-wrapper"
       >
+        {sourceFile &&
         <div>
-          <p>Tes</p>
-        </div>
+          <embed
+            title='document'
+            type='application/pdf'
+            src={sourceFile}
+            width="100%"
+            height="100%"
+          />
+        </div>}
       </Modal>
     </>
   );

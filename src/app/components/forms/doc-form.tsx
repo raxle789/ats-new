@@ -6,6 +6,9 @@ import { MdOutlineModeEdit } from 'react-icons/md';
 import { AiOutlineUpload } from 'react-icons/ai';
 import { HiOutlineEye } from 'react-icons/hi';
 import ViewDocModal from '../common/popup/view-doc';
+import { fileToBase64 } from '@/libs/Registration/utils';
+import { updateCandidateDocuments } from '@/libs/Candidate/actions';
+import { Documents } from '@/libs/validations/Documents';
 // import { getCandidateDocuments } from '@/libs/Candidate/retrieve-data';
 // import { Document, Page } from 'react-pdf';
 // import { StyleSheet } from '@react-pdf/renderer';
@@ -48,12 +51,31 @@ const props: UploadProps = {
   },
 };
 
-const DocumentForm = () => {
+type CandidateDocuments = {
+  curriculum_vitae: string | null;
+  ijazah: string | null;
+  identity_card: string | null;
+  tax: string | null;
+  family_registration: string | null;
+  bca_card: string | null;
+  mcu: string | null;
+  vaccine_certf: string | null;
+};
+
+type Props = {
+  documentData?: CandidateDocuments | null;
+}
+
+const DocumentForm: React.FC<Props> = ({documentData}) => {
+  const [form] = Form.useForm();
   const [editState, setEditState] = useState(false);
   const [documentPDF, setDocumentPDF] = useState<string>('');
   const [displayPDF, setDisplayPDF] = useState<File | null>(null);
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [sourceFile, setSourceFile] = useState<string | null>('');
   console.info('pdf-file:', displayPDF);
+
+  const [zodErrors, setZodErrors] = useState<{ [key: string]: string[] } | null>(null);
 
   // const styles = StyleSheet.create({
   //   page: {
@@ -81,16 +103,132 @@ const DocumentForm = () => {
   //   console.info('new-file: ', toFile);
   // };
 
-  const handleView = () => {
+  const handleView = (documentType: string) => {
+    if (documentData) {
+      if (documentType === 'cv') {
+        setSourceFile(documentData.curriculum_vitae);
+      }
+    }
     setIsOpenModal(true);
   };
 
   const editOnChange = () => {
     setEditState(!editState);
   };
-  const handleSubmit: FormProps<FieldType>['onFinish'] = (values) => {
+  const handleSubmit: FormProps<FieldType>['onFinish'] = async () => {
     if (editState) {
       // jalankan simpan data
+      const values = form.getFieldsValue();
+      console.log('submitted values: ', values);
+      let submittedValues = JSON.parse(JSON.stringify(values));
+      /* Bank Account */
+      if(values.bankAccount) {
+        const base64BankAccount = await fileToBase64(values.bankAccount.file.originFileObj);
+        submittedValues = {
+          ...submittedValues,
+          bankAccount: {
+            original_name: values.bankAccount.file.originFileObj.name,
+            byte_size: values.bankAccount.file.originFileObj.size,
+            file_base: base64BankAccount
+          }
+        };
+      };
+      /* Health Certificate */
+      if(values.healthCertificate) {
+        const base64HealtCertificate = await fileToBase64(values.healthCertificate.file.originFileObj);
+        submittedValues = {
+          ...submittedValues,
+          healthCertificate: {
+            original_name: values.healthCertificate.file.originFileObj.name,
+            byte_size: values.healthCertificate.file.originFileObj.size,
+            file_base: base64HealtCertificate
+          }
+        };
+      };
+      /* ID Card/Passport */
+      if(values.idFile) {
+        const base64IDFile = await fileToBase64(values.idFile.file.originFileObj);
+        submittedValues = {
+          ...submittedValues,
+          idFile: {
+            original_name: values.idFile.file.originFileObj.name,
+            byte_size: values.idFile.file.originFileObj.size,
+            file_base: base64IDFile
+          }
+        };
+      };
+      /* Kartu Keluarga */
+      if(values.kk) {
+        const base64KartuKeluarga = await fileToBase64(values.kk.file.originFileObj);
+        submittedValues = {
+          ...submittedValues,
+          kk: {
+            original_name: values.kk.file.originFileObj.name,
+            byte_size: values.kk.file.originFileObj.size,
+            file_base: base64KartuKeluarga
+          }
+        };
+      };
+      /* Ijazah */
+      if(values.latestEducation) {
+        const base64Ijazah = await fileToBase64(values.latestEducation.file.originFileObj);
+        submittedValues = {
+          ...submittedValues,
+          latestEducation: {
+            original_name: values.latestEducation.file.originFileObj.name,
+            byte_size: values.latestEducation.file.originFileObj.size,
+            file_base: base64Ijazah
+          }
+        };
+      };
+      /* Tax/NPWP */
+      if(values.npwp) {
+        const base64Tax = await fileToBase64(values.npwp.file.originFileObj);
+        submittedValues = {
+          ...submittedValues,
+          npwp: {
+            original_name: values.npwp.file.originFileObj.name,
+            byte_size: values.npwp.file.originFileObj.size,
+            file_base: base64Tax
+          }
+        };
+      };
+      /* Curriculum Vitae */
+      if(values.uploadCV) {
+        const base64CV = await fileToBase64(values.uploadCV.file.originFileObj);
+        submittedValues = {
+          ...submittedValues,
+          uploadCV: {
+            original_name: values.uploadCV.file.originFileObj.name,
+            byte_size: values.uploadCV.file.originFileObj.size,
+            file_base: base64CV
+          }
+        };
+      };
+      /* Vaccine Certf */
+      if(values.vaccineCertificate) {
+        const base64Vaccine = await fileToBase64(values.vaccineCertificate.file.originFileObj);
+        submittedValues = {
+          ...submittedValues,
+          vaccineCertificate: {
+            original_name: values.vaccineCertificate.file.originFileObj.name,
+            byte_size: values.vaccineCertificate.file.originFileObj.size,
+            file_base: base64Vaccine
+          }
+        };
+      };
+      console.info("After add documents \t:", submittedValues);
+      const validate = Documents.safeParse(submittedValues);
+      if(!validate.success) {
+        const zodErrors = validate.error.flatten().fieldErrors;
+        console.info("VALIDATE -> ", zodErrors);
+        setZodErrors(zodErrors);
+        return message.error('Validation failed!')
+      };
+      debugger;
+      // const updateDocuments = await updateCandidateDocuments(submittedValues);
+      // if(!updateDocuments.success) message.error(updateDocuments.message);
+      // return message.success(updateDocuments.message);
     }
   };
 
@@ -105,9 +243,15 @@ const DocumentForm = () => {
     }
   };
 
-  // useEffect(() => {
-  //   fetchDocumentPDF();
-  // }, []);
+  useEffect(() => {
+    console.log('documentData: ', documentData);
+    if (documentData && documentData?.curriculum_vitae) {
+      setSourceFile(documentData?.curriculum_vitae);
+    }
+  }, [documentData]);
+  useEffect(() => {
+    console.log('sourceFile blm dioper: ', sourceFile);
+  }, [sourceFile]);
   return (
     <div>
       <div className="mb-25">
@@ -121,6 +265,7 @@ const DocumentForm = () => {
       <Form
         name="doc-form"
         variant="filled"
+        form={form}
         onFinish={handleSubmit}
         onFinishFailed={onFinishFailed}
       >
@@ -161,7 +306,7 @@ const DocumentForm = () => {
                       <Button
                         className="d-flex align-items-center justify-content-center"
                         icon={<HiOutlineEye style={{ fontSize: '19px' }} />}
-                        onClick={handleView}
+                        onClick={() => handleView('apa')}
                       >
                         View File
                       </Button>
@@ -207,7 +352,7 @@ const DocumentForm = () => {
                       <Button
                         className="d-flex align-items-center justify-content-center"
                         icon={<HiOutlineEye style={{ fontSize: '19px' }} />}
-                        onClick={handleView}
+                        onClick={() => handleView('apa')}
                       >
                         View File
                       </Button>
@@ -256,7 +401,7 @@ const DocumentForm = () => {
                       <Button
                         className="d-flex align-items-center justify-content-center"
                         icon={<HiOutlineEye style={{ fontSize: '19px' }} />}
-                        onClick={handleView}
+                        onClick={() => handleView('apa')}
                       >
                         View File
                       </Button>
@@ -307,7 +452,7 @@ const DocumentForm = () => {
                       <Button
                         className="d-flex align-items-center justify-content-center"
                         icon={<HiOutlineEye style={{ fontSize: '19px' }} />}
-                        onClick={handleView}
+                        onClick={() => handleView('apa')}
                       >
                         View File
                       </Button>
@@ -341,7 +486,7 @@ const DocumentForm = () => {
                       <Button
                         className="d-flex align-items-center justify-content-center"
                         icon={<HiOutlineEye style={{ fontSize: '19px' }} />}
-                        onClick={handleView}
+                        onClick={() => handleView('apa')}
                       >
                         View File
                       </Button>
@@ -375,7 +520,7 @@ const DocumentForm = () => {
                       <Button
                         className="d-flex align-items-center justify-content-center"
                         icon={<HiOutlineEye style={{ fontSize: '19px' }} />}
-                        onClick={handleView}
+                        onClick={() => handleView('apa')}
                       >
                         View File
                       </Button>
@@ -465,7 +610,7 @@ const DocumentForm = () => {
                       <Button
                         className="d-flex align-items-center justify-content-center"
                         icon={<HiOutlineEye style={{ fontSize: '19px' }} />}
-                        onClick={handleView}
+                        onClick={() => handleView('apa')}
                       >
                         View File
                       </Button>
@@ -508,7 +653,7 @@ const DocumentForm = () => {
                       <Button
                         className="d-flex align-items-center justify-content-center"
                         icon={<HiOutlineEye style={{ fontSize: '19px' }} />}
-                        onClick={handleView}
+                        onClick={() => handleView('cv')}
                       >
                         View File
                       </Button>
@@ -522,16 +667,20 @@ const DocumentForm = () => {
             </div>
           </div>
 
+          {editState && (
+
           <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
             <button type="submit" className="dash-btn-two tran3s me-3">
               Submit
             </button>
           </div>
+          )}
+
         </div>
       </Form>
 
       <ViewDocModal
-        sourceFile={''}
+        sourceFile={sourceFile}
         isOpen={isOpenModal}
         setIsOpenModal={setIsOpenModal}
       />
