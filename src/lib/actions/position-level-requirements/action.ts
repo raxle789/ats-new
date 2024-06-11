@@ -258,6 +258,14 @@ export async function getPositionLevelRequirementData(positionLevelId) {
             ];
 
           d.value = await parserFunction(d?.value, true);
+
+          // if (
+          //   d?.requirementFields?.requirementFieldParsers?.name === 'salary'
+          // ) {
+          //   return {
+          //     start_salary: d.value.start_salary,
+          //   };
+          // }
           // if (d?.requirementFields?.name === 'line_industry') {
           //   // if (d?.value?.includes('#')) {
           //   //   d.value = await d?.value
@@ -342,7 +350,7 @@ export async function getAllEducationLevelData() {
 }
 
 export async function setPositionLevelRequirementData(values) {
-  const formValidation = validateForm.safeParse(values);
+  const formValidation = validateForm.safeParse({ ...values, salary: [0, 0] });
 
   if (formValidation.success) {
     const positionLevelId = formValidation?.data?.positionLevelId;
@@ -393,9 +401,19 @@ export async function setPositionLevelRequirementData(values) {
       );
 
       if (schemaValidation.success) {
-        await setPositionLevelRequirement(positionLevelId, key, newValue);
+        const response = await setPositionLevelRequirement(
+          positionLevelId,
+          key,
+          newValue,
+        );
       } else {
         console.log(schemaValidation.error);
+
+        return {
+          success: false,
+          message:
+            "Failed to Set Position Level's Requirements, Please Check Your Inputs",
+        };
       }
     }
 

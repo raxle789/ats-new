@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 // import * as messages from '@/utils/message';
@@ -146,6 +147,7 @@ const ApplicantListItem: React.FC<Props> = ({
       {contextHolder}
 
       <Spin spinning={loading} fullscreen />
+
       <div className="d-flex justify-content-between align-items-center mb-20">
         <div>
           <h4 className="sub-main-title">

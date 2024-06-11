@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import EmployJobDetailSkeleton from '@/app/components/loadings/employ-job-detail-skeleton';
+import EmployJobDetailSkeleton from '@/ui/skeleton';
 import { Status } from '@/status/applicant-status';
 import AssessmentListArea from '@/app/components/applicants/assessment-list-area';
 

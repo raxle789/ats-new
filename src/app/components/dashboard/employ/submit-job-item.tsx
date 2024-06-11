@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as confirmations from '@/utils/confirmation';
 import * as messages from '@/utils/message';
-import JobVacancyForm from '../../forms/job-vacancy-form';
+import JobVacancyForm from '../../forms/submit-job-vacancy-form';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import {
   Cascader,

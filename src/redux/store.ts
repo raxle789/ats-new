@@ -1,4 +1,5 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import spinFullScreenSlice from './features/spinFullScreenSlice';
 import wishlistSlice from './features/wishlist';
 import filterSlice from './features/filterSlice';
 import sidebarSlice from './features/sidebarSlice';
@@ -18,6 +19,8 @@ const rootReducer = combineReducers({
   sidebar: sidebarSlice,
   wishlist: wishlistSlice,
   applicantStep: applicantStepSlice,
+  spinFullScreen: spinFullScreenSlice,
+
   // step: stepSlice,
   // register: registerSlice,
   // auth: authSlice,

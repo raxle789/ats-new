@@ -1,10 +1,10 @@
 import React from 'react';
-import EmployJobFpk from '@/app/components/dashboard/employ/job-fpk-area';
+import FpkArea from '@/app/components/dashboard/employ/fpk-area';
 
 export const revalidate = 0;
 
-const JobFpkPage = async ({ searchParams }: any) => {
-  return <EmployJobFpk searchParams={searchParams} />;
+const FpkPage = async ({ searchParams }: any) => {
+  return <FpkArea searchParams={searchParams} />;
 };
 
-export default JobFpkPage;
+export default FpkPage;

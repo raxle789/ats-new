@@ -1,6 +1,8 @@
+'use server';
+
 import EmployShortSelect from './short-select';
+import FpkItem from './fpk-item';
 import React from 'react';
-import EmployJobFpkItem from './job-fpk-item';
 import SearchBar from '@/ui/search-bar';
 import {
   getFpkData,
@@ -73,7 +75,7 @@ interface EmployJobFpkProps {
   searchParams: any;
 }
 
-const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
+const FpkArea: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
   const page = searchParams?.page ?? '1';
 
   const perPage = searchParams?.perPage ?? '10';
@@ -84,47 +86,47 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
 
   const fpkData = await (async () => {
     if (searchQuery) {
-      return await searchFpkData(searchQuery, offset, Number(perPage))
-        .then((res) => {
-          const data = res?.data ?? [];
+      return await searchFpkData(searchQuery, offset, Number(perPage));
+      // .then((res) => {
+      //   const data = res?.data ?? [];
 
-          const total = res?.total ?? 0;
+      //   const total = res?.total ?? 0;
 
-          return {
-            data: data,
-            total: total,
-          };
-        })
-        .catch((e) => {
-          console.log('Failed Searching FPK Data: ', e);
+      //   return {
+      //     data: data,
+      //     total: total,
+      //   };
+      // })
+      // .catch((e) => {
+      //   console.log('Failed Searching FPK Data: ', e);
 
-          return {
-            data: [],
-            total: 0,
-          };
-        });
+      //   return {
+      //     data: [],
+      //     total: 0,
+      //   };
+      // });
     } else {
       // setOffset((Number(page) - 1) * Number(perPage));
 
-      return await getFpkData(offset, Number(perPage))
-        .then((res) => {
-          const data = res?.data ?? [];
+      return await getFpkData(offset, Number(perPage));
+      // .then((res) => {
+      //   const data = res?.data ?? [];
 
-          const total = res?.total ?? 0;
+      //   const total = res?.total ?? 0;
 
-          return {
-            data: data,
-            total: total,
-          };
-        })
-        .catch((e) => {
-          console.log('Failed Getting FPK Data: ', e);
+      //   return {
+      //     data: data,
+      //     total: total,
+      //   };
+      // })
+      // .catch((e) => {
+      //   console.log('Failed Getting FPK Data: ', e);
 
-          return {
-            data: [],
-            total: 0,
-          };
-        });
+      //   return {
+      //     data: [],
+      //     total: 0,
+      //   };
+      // });
 
       // getFpkTotal('fpkTotal').then((res) => {
       //   setFpkTotal(res[0].total);
@@ -132,17 +134,17 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
     }
   })();
 
-  const taData = await getTaData()
-    .then((res) => {
-      const data = res ?? [];
+  const taData = await getTaData();
+  // .then((res) => {
+  //   const data = res ?? [];
 
-      return data;
-    })
-    .catch((e) => {
-      console.log('Failed Getting TA Data: ', e);
+  //   return data;
+  // })
+  // .catch((e) => {
+  //   console.log('Failed Getting TA Data: ', e);
 
-      return [];
-    });
+  //   return [];
+  // });
 
   return (
     <>
@@ -160,7 +162,7 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
       </div> */}
 
       <div className="bg-white card-box border-20">
-        <EmployJobFpkItem
+        <FpkItem
           fpkData={fpkData}
           offset={offset}
           taData={taData}
@@ -182,4 +184,4 @@ const EmployJobFpk: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
   );
 };
 
-export default EmployJobFpk;
+export default FpkArea;

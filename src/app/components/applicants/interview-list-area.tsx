@@ -1,7 +1,7 @@
 'use server';
 
 import InterviewListItem from './interview-list-item';
-import EmployJobDetailSkeleton from '@/app/components/loadings/employ-job-detail-skeleton';
+import EmployJobDetailSkeleton from '@/ui/skeleton';
 import { Suspense } from 'react';
 import { encryptObject } from '@/lib/utils/utils';
 import { handleApplicant } from '../message/confirm';

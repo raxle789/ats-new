@@ -1,10 +1,12 @@
+'use server';
+
 import React from 'react';
 // import DashboardHeader from '../candidate/dashboard-header';
 import {
   getAllPositionLevelRequirementData,
   searchPositionLevelRequirementData,
 } from '@/lib/actions/position-level-requirements/action';
-import EmployJobParameter from './job-parameter-item';
+import PositionLevelRequirementItem from './position-level-requirement-item';
 import EmployShortSelect from './short-select';
 import Pagination from '@/ui/pagination';
 // import Image from 'next/image';
@@ -59,7 +61,9 @@ type Props = {
   searchParams: any;
 };
 
-const EmployParameterArea: React.FC<Props> = async ({ searchParams }) => {
+const PositionLevelRequirementArea: React.FC<Props> = async ({
+  searchParams,
+}) => {
   const page = searchParams?.page ?? '1';
 
   const perPage = searchParams?.perPage ?? '10';
@@ -74,45 +78,45 @@ const EmployParameterArea: React.FC<Props> = async ({ searchParams }) => {
         searchQuery,
         offset,
         Number(perPage),
-      )
-        .then((res) => {
-          const data = res?.data ?? [];
+      );
+      // .then((res) => {
+      //   const data = res?.data ?? [];
 
-          const total = res?.total ? res?.total : 0;
+      //   const total = res?.total ? res?.total : 0;
 
-          return {
-            data: data,
-            total: total,
-          };
-        })
-        .catch((e) => {
-          console.log("Error Searching Position Level's Requirements: ", e);
+      //   return {
+      //     data: data,
+      //     total: total,
+      //   };
+      // })
+      // .catch((e) => {
+      //   console.log("Error Searching Position Level's Requirements: ", e);
 
-          return {
-            data: [],
-            total: 0,
-          };
-        });
+      //   return {
+      //     data: [],
+      //     total: 0,
+      //   };
+      // });
     } else {
-      return await getAllPositionLevelRequirementData(offset, Number(perPage))
-        .then((res) => {
-          const data = res?.data ?? [];
+      return await getAllPositionLevelRequirementData(offset, Number(perPage));
+      // .then((res) => {
+      //   const data = res?.data ?? [];
 
-          const total = res?.total ? res?.total : 0;
+      //   const total = res?.total ? res?.total : 0;
 
-          return {
-            data: data,
-            total: total,
-          };
-        })
-        .catch((e) => {
-          console.log("Error Getting Position Level's Requirements: ", e);
+      //   return {
+      //     data: data,
+      //     total: total,
+      //   };
+      // })
+      // .catch((e) => {
+      //   console.log("Error Getting Position Level's Requirements: ", e);
 
-          return {
-            data: [],
-            total: 0,
-          };
-        });
+      //   return {
+      //     data: [],
+      //     total: 0,
+      //   };
+      // });
     }
   })();
 
@@ -162,7 +166,7 @@ const EmployParameterArea: React.FC<Props> = async ({ searchParams }) => {
       </div> */}
 
       <div className="bg-white card-box border-20">
-        <EmployJobParameter
+        <PositionLevelRequirementItem
           positionLevelRequirementData={positionLevelRequirementData}
           perPage={perPage}
         />
@@ -184,4 +188,4 @@ const EmployParameterArea: React.FC<Props> = async ({ searchParams }) => {
   );
 };
 
-export default EmployParameterArea;
+export default PositionLevelRequirementArea;

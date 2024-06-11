@@ -12,7 +12,7 @@ import {
 import type { FormProps, RadioChangeEvent } from 'antd';
 import { MdOutlineModeEdit } from 'react-icons/md';
 import dayjs, { Dayjs } from 'dayjs';
-import EmployJobDetailSkeleton from '../loadings/employ-job-detail-skeleton';
+import EmployJobDetailSkeleton from '../../../ui/skeleton';
 import { updateAdditionalInformations } from '@/libs/Candidate/actions';
 import { MasterData } from '../dashboard/candidate/dashboard-profile-area';
 import localizedFormat from 'dayjs/plugin/localizedFormat';

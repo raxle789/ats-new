@@ -1,7 +1,7 @@
 'use server';
 
 import AssessmentListItem from './assessment-list-item';
-import EmployJobDetailSkeleton from '@/app/components/loadings/employ-job-detail-skeleton';
+import EmployJobDetailSkeleton from '@/ui/skeleton';
 import { Suspense } from 'react';
 import { handleApplicant } from '../message/confirm';
 // import JobAssessmentResultArea from '../dashboard/employ/job-assessment-result-area';
