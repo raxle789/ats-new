@@ -70,7 +70,7 @@ const AssessmentListItem: React.FC<Props> = ({
         0,
       );
       if (
-        countTrueValues > 1 ||
+        countTrueValues > 0 ||
         (applicantData.length === 1 && countTrueValues === 1)
       ) {
         setPopOverState(true);

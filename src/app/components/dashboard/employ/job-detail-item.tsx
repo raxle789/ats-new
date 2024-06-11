@@ -49,6 +49,7 @@ const EmployJobDetailItem: React.FC<Props> = ({ jobVacancyData, params }) => {
     APPLICANT: `/dashboard/ta/jobs/${params?.id}`,
     ASSESSMENT: `/dashboard/ta/jobs/${params?.id}/${Status.ASSESSMENT.toLowerCase()}`,
     INTERVIEW: `/dashboard/ta/jobs/${params?.id}/${Status.INTERVIEW.toLowerCase()}`,
+    REF_CHECK: `/dashboard/ta/jobs/${params?.id}/ref-check`,
   };
 
   function handlePath(status: string) {
@@ -61,16 +62,21 @@ const EmployJobDetailItem: React.FC<Props> = ({ jobVacancyData, params }) => {
     } else if (status === Status?.INTERVIEW) {
       router.replace(path?.INTERVIEW);
       setStatus(Status?.INTERVIEW);
+    } else if (status === Status?.REF_CHECK) {
+      router.replace(path?.REF_CHECK);
+      setStatus(Status?.REF_CHECK);
     }
   }
 
   useEffect(() => {
-    if (pathname === path.ASSESSMENT) {
+    if (pathname.includes('assessment')) {
       setStatus(Status?.ASSESSMENT);
-    } else if (pathname === path.INTERVIEW) {
+    } else if (pathname.includes('interview')) {
       setStatus(Status?.INTERVIEW);
+    } else if (pathname.includes('ref-check')) {
+      setStatus(Status?.REF_CHECK);
     }
-  }, []);
+  }, [pathname]);
 
   // useEffect(() => {
   //   if (params?.id && jobVacancyData && !_.isEmpty(jobVacancyData)) {
@@ -206,7 +212,7 @@ const EmployJobDetailItem: React.FC<Props> = ({ jobVacancyData, params }) => {
           <span>Shortlisted</span>
         </button>
         <button
-          className={`d-flex flex-column align-items-center ${status === 'TALENT_POOL' ? 'btn-pipeline btn-pipeline-active' : 'btn-pipeline'}`}
+          className={`d-flex flex-column align-items-center ${status === 'TALENT POOL' ? 'btn-pipeline btn-pipeline-active' : 'btn-pipeline'}`}
           onClick={() => handlePath(Status?.APPLICANT)}
         >
           <span>{jobVacancyData?.applicant}</span>
@@ -227,8 +233,8 @@ const EmployJobDetailItem: React.FC<Props> = ({ jobVacancyData, params }) => {
           <span>Interview</span>
         </button>
         <button
-          className={`d-flex flex-column align-items-center ${status === 'REF_CHECK' ? 'btn-pipeline btn-pipeline-active' : 'btn-pipeline'}`}
-          onClick={() => handlePath(Status?.APPLICANT)}
+          className={`d-flex flex-column align-items-center ${status === 'REF CHECK' ? 'btn-pipeline btn-pipeline-active' : 'btn-pipeline'}`}
+          onClick={() => handlePath(Status?.REF_CHECK)}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span className="text-center">Ref Check</span>

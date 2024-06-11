@@ -4,22 +4,28 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import * as confirmations from '@/utils/confirmation';
 import { useRouter } from 'next/navigation';
-import { ExclamationCircleFilled } from '@ant-design/icons';
+// import { ExclamationCircleFilled } from '@ant-design/icons';
 import * as messages from '@/utils/message';
 import Pagination from '@/ui/pagination';
 import SearchBar from '@/ui/search-bar';
 import EmployShortSelect from './short-select';
 import { Spin, Modal, message } from 'antd';
 import ActionJobVacancies from '../candidate/action-job-vacancies';
-import { notification, Button, Checkbox, Popover } from 'antd';
+import { Checkbox, Popover } from 'antd';
 import type { CheckboxProps } from 'antd';
 import ActionCheckboxJob from '../../common/popup/action-checkbox-jobs';
 
-const moment = require('moment');
+// const moment = require('moment');
 
 const { confirm } = Modal;
 
-const EmployJobItem: React.FC<JobItemProps> = ({
+type Props = {
+  jobVacancyData?: any;
+  perPage?: string | any;
+  deleteJobVacancyData?: any;
+};
+
+const EmployJobItem: React.FC<Props> = ({
   jobVacancyData,
   perPage,
   deleteJobVacancyData,
@@ -80,7 +86,7 @@ const EmployJobItem: React.FC<JobItemProps> = ({
 
   function handleJobVacancy(
     handleType: 'view' | 'edit' | 'duplicate' | 'delete',
-    jobId,
+    jobId: number | any,
   ) {
     setLoading(true);
 
@@ -225,8 +231,9 @@ const EmployJobItem: React.FC<JobItemProps> = ({
                             onChange={() => onChangeCheckbox(index)}
                           ></Checkbox>
                         </td>
-                        <td>
+                        <td className="text-start">
                           <Link
+                            className="job-title-item"
                             href={`/dashboard/ta/jobs/${data?.jobId}`}
                             onClick={() => setLoading(true)}
                           >{`${data?.jobTitleName ?? '-'}`}</Link>
