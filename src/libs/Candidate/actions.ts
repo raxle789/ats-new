@@ -3,6 +3,7 @@
 import prisma from "@/root/prisma";
 import { getUserSession } from "../Sessions";
 import { TypeReturnedServerAction } from "../Registration";
+import { v4 as uuidV4 } from 'uuid';
 
 export async function updateCandidateProfile(submittedValue: any): Promise<TypeReturnedServerAction> {
   console.info('Submitted Value Data \t:', submittedValue);
@@ -510,6 +511,370 @@ export async function updateAdditionalInformations(submittedValue: any): Promise
       data: null,
       errors: error,
       message: 'Error updating additional information!'
+    };
+  };
+};
+
+export async function updateCandidateDocuments(submittedValue: any): Promise<TypeReturnedServerAction> {
+  // console.info("[server] -> ", submittedValue);
+  /* Validate Input ZOD */
+  const authSession = await getUserSession('auth');
+  try {
+    const updateDocuments = await prisma.$transaction(async (tx) => {
+      /* Get Identity Info ID */
+      console.info("Checking Identity Info ID...");
+      const checkIdentityInfo = await tx.candidates.findUnique({
+        where: {
+          id: authSession.candidate.id
+        },
+        select: {
+          identityInfoId: true
+        }
+      });
+      /* Store candidate identity info */
+      if(!checkIdentityInfo?.identityInfoId) {
+        console.info("Storing Identity Info...");
+        const storeIdentityInfo = await tx.identity_info.create({
+          data: {
+            bank_account: submittedValue.bankAccountNumber,
+            family_number: submittedValue.kkNumber,
+            id_card_number: submittedValue.idNumber,
+            tax_number: submittedValue.npwpNumber
+          }
+        });
+        console.info("Updating candidate Identity Info ID...");
+        await tx.candidates.update({
+          where: {
+            id: authSession.candidate.id
+          },
+          data: {
+            identityInfoId: storeIdentityInfo.id
+          }
+        });
+      } else {
+        /* Update candidate identity info */
+        console.info("Updating candidate Identity Info data...");
+        await tx.identity_info.update({
+          where: {
+            id: checkIdentityInfo?.identityInfoId as number
+          },
+          data: {
+            bank_account: submittedValue.bankAccountNumber,
+            family_number: submittedValue.kkNumber,
+            id_card_number: submittedValue.idNumber,
+            tax_number: submittedValue.npwpNumber
+          }
+        });
+      };
+      /* Updating candidate Documents */
+      /* ID CARD KTP/PASSPORT */
+      if(submittedValue.idFile) {
+        console.info("Checking candidate ID card document...");
+        const idCardDoc = await tx.documents.findFirst({
+          where: { candidate_id: authSession.candidate.id, documentTypeId: 4 } // -> id ktp/passport
+        });
+        if(!idCardDoc) {
+          console.info("Creating new ID card document...");
+          await tx.documents.create({
+            data: {
+              saved_name: uuidV4(),
+              original_name: submittedValue.idFile.original_name,
+              byte_size: submittedValue.idFile.byte_size,
+              path: 'no-path',
+              file_base: Buffer.from(submittedValue.idFile.file_base),
+              created_at: new Date(Date.now()),
+              updated_at: new Date(Date.now()),
+              documentTypeId: 4,
+              candidate_id: authSession.candidate.id
+            }
+          });
+        } else {
+          console.info("Just updating existing ID card document...");
+          await tx.documents.update({
+            where: {
+              id: idCardDoc?.id,
+              // documentTypeId: 4
+            },
+            data: {
+              original_name: submittedValue.idFile.original_name,
+              byte_size: submittedValue.idFile.byte_size,
+              file_base: Buffer.from(submittedValue.idFile.file_base)
+            }
+          });
+        };
+      };
+      /* BANK BCA */
+      if(submittedValue.bankAccount) {
+        console.info("Checking candidate Bank BCA card document...");
+        const idBankBCA = await tx.documents.findFirst({
+          where: { candidate_id: authSession.candidate.id, documentTypeId: 7 } // -> id bank BCA card
+        });
+        if(!idBankBCA) {
+          console.info("Creating new Bank BCA card document...");
+          await tx.documents.create({
+            data: {
+              saved_name: uuidV4(),
+              original_name: submittedValue.bankAccount.original_name,
+              byte_size: submittedValue.bankAccount.byte_size,
+              path: 'no-path',
+              file_base: Buffer.from(submittedValue.bankAccount.file_base),
+              created_at: new Date(Date.now()),
+              updated_at: new Date(Date.now()),
+              documentTypeId: 7,
+              candidate_id: authSession.candidate.id
+            }
+          });
+        } else {
+          console.info("Just updating existing Bank BCA card document...");
+          await tx.documents.update({
+            where: {
+              id: idBankBCA?.id,
+              // documentTypeId: 7
+            },
+            data: {
+              original_name: submittedValue.bankAccount.original_name,
+              byte_size: submittedValue.bankAccount.byte_size,
+              file_base: Buffer.from(submittedValue.bankAccount.file_base)
+            }
+          });
+        };
+      };
+      /* MCU/HealtCertf */
+      if(submittedValue.healthCertificate) {
+        console.info("Checking candidate MCU Health Certf document...");
+        const idMCUHealth = await tx.documents.findFirst({
+          where: { candidate_id: authSession.candidate.id, documentTypeId: 8 } // -> id MCUHealth
+        });
+        console.info("MCU Check record : ", idMCUHealth);
+        if(!idMCUHealth) {
+          console.info("Creating new MCU Health Certf document...");
+          await tx.documents.create({
+            data: {
+              saved_name: uuidV4(),
+              original_name: submittedValue.healthCertificate.original_name,
+              byte_size: submittedValue.healthCertificate.byte_size,
+              path: 'no-path',
+              file_base: Buffer.from(submittedValue.healthCertificate.file_base),
+              created_at: new Date(Date.now()),
+              updated_at: new Date(Date.now()),
+              documentTypeId: 8,
+              candidate_id: authSession.candidate.id
+            }
+          });
+        } else {
+          console.info("Just updating existing MCU Health Certf document...");
+          await tx.documents.update({
+            where: {
+              id: idMCUHealth?.id,
+              // documentTypeId: 8
+            },
+            data: {
+              original_name: submittedValue.healthCertificate.original_name,
+              byte_size: submittedValue.healthCertificate.byte_size,
+              file_base: Buffer.from(submittedValue.healthCertificate.file_base)
+            }
+          });
+        };
+      };
+      /* Kartu Keluarga */
+      if(submittedValue.kk) {
+        console.info("Checking candidate Family Registration document...");
+        const idKartuKeluarga = await tx.documents.findFirst({
+          where: { candidate_id: authSession.candidate.id, documentTypeId: 6 } // -> id KK
+        });
+        if(!idKartuKeluarga) {
+          console.info("Creating new Family Registration document...");
+          await tx.documents.create({
+            data: {
+              saved_name: uuidV4(),
+              original_name: submittedValue.kk.original_name,
+              byte_size: submittedValue.kk.byte_size,
+              path: 'no-path',
+              file_base: Buffer.from(submittedValue.kk.file_base),
+              created_at: new Date(Date.now()),
+              updated_at: new Date(Date.now()),
+              documentTypeId: 6,
+              candidate_id: authSession.candidate.id
+            }
+          });
+        } else {
+          console.info("Just updating existing Family Registration document...");
+          await tx.documents.update({
+            where: {
+              id: idKartuKeluarga?.id,
+              // documentTypeId: 6
+            },
+            data: {
+              original_name: submittedValue.kk.original_name,
+              byte_size: submittedValue.kk.byte_size,
+              file_base: Buffer.from(submittedValue.kk.file_base)
+            }
+          });
+        };
+      };
+      /* Ijazah */
+      if(submittedValue.latestEducation) {
+        console.info("Checking candidate Ijazah document...");
+        const idIjazah = await tx.documents.findFirst({
+          where: { candidate_id: authSession.candidate.id, documentTypeId: 3 } // -> id Ijazah
+        });
+        if(!idIjazah) {
+          console.info("Creating new Ijazah document...");
+          await tx.documents.create({
+            data: {
+              saved_name: uuidV4(),
+              original_name: submittedValue.latestEducation.original_name,
+              byte_size: submittedValue.latestEducation.byte_size,
+              path: 'no-path',
+              file_base: Buffer.from(submittedValue.latestEducation.file_base),
+              created_at: new Date(Date.now()),
+              updated_at: new Date(Date.now()),
+              documentTypeId: 3,
+              candidate_id: authSession.candidate.id
+            }
+          });
+        } else {
+          console.info("Just updating existing Ijazah document...");
+          await tx.documents.update({
+            where: {
+              id: idIjazah?.id,
+              // documentTypeId: 3
+            },
+            data: {
+              original_name: submittedValue.latestEducation.original_name,
+              byte_size: submittedValue.latestEducation.byte_size,
+              file_base: Buffer.from(submittedValue.latestEducation.file_base)
+            }
+          });
+        };
+      };
+      /* Tax/NPWP */
+      if(submittedValue.npwp) {
+        console.info("Checking candidate Tax document...");
+        const idTax = await tx.documents.findFirst({
+          where: { candidate_id: authSession.candidate.id, documentTypeId: 5 } // -> id Tax/NPWP
+        });
+        if(!idTax) {
+          console.info("Creating new Tax document...");
+          await tx.documents.create({
+            data: {
+              saved_name: uuidV4(),
+              original_name: submittedValue.npwp.original_name,
+              byte_size: submittedValue.npwp.byte_size,
+              path: 'no-path',
+              file_base: Buffer.from(submittedValue.npwp.file_base),
+              created_at: new Date(Date.now()),
+              updated_at: new Date(Date.now()),
+              documentTypeId: 5,
+              candidate_id: authSession.candidate.id
+            }
+          });
+        } else {
+          console.info("Just updating existing Tax document...");
+          await tx.documents.update({
+            where: {
+              id: idTax?.id,
+              // documentTypeId: 5
+            },
+            data: {
+              original_name: submittedValue.npwp.original_name,
+              byte_size: submittedValue.npwp.byte_size,
+              file_base: Buffer.from(submittedValue.npwp.file_base)
+            }
+          });
+        };
+      };
+      /* Curriculum Vitae */
+      if(submittedValue.uploadCV) {
+        console.info("Checking candidate CV document...");
+        const idCV = await tx.documents.findFirst({
+          where: { candidate_id: authSession.candidate.id, documentTypeId: 2 } // -> id Curriculum vitae
+        });
+        if(!idCV) {
+          console.info("Creating new CV document...");
+          await tx.documents.create({
+            data: {
+              saved_name: uuidV4(),
+              original_name: submittedValue.uploadCV.original_name,
+              byte_size: submittedValue.uploadCV.byte_size,
+              path: 'no-path',
+              file_base: Buffer.from(submittedValue.uploadCV.file_base),
+              created_at: new Date(Date.now()),
+              updated_at: new Date(Date.now()),
+              documentTypeId: 2,
+              candidate_id: authSession.candidate.id
+            }
+          });
+        } else {
+          console.info("Just updating existing CV document...");
+          await tx.documents.update({
+            where: {
+              id: idCV?.id,
+              // documentTypeId: 2
+            },
+            data: {
+              original_name: submittedValue.uploadCV.original_name,
+              byte_size: submittedValue.uploadCV.byte_size,
+              file_base: Buffer.from(submittedValue.uploadCV.file_base)
+            }
+          });
+        };
+      };
+      /* Vaccine Certf */
+      if(submittedValue.vaccineCertificate) {
+        console.info("Checking candidate Vaccine Certf document...");
+        const idVaccine = await tx.documents.findFirst({
+          where: { candidate_id: authSession.candidate.id, documentTypeId: 9 } // -> id Vaccine Certf
+        });
+        if(!idVaccine) {
+          console.info("Creating new Vaccine Certf document...");
+          await tx.documents.create({
+            data: {
+              saved_name: uuidV4(),
+              original_name: submittedValue.vaccineCertificate.original_name,
+              byte_size: submittedValue.vaccineCertificate.byte_size,
+              path: 'no-path',
+              file_base: Buffer.from(submittedValue.vaccineCertificate.file_base),
+              created_at: new Date(Date.now()),
+              updated_at: new Date(Date.now()),
+              documentTypeId: 9,
+              candidate_id: authSession.candidate.id
+            }
+          });
+        } else {
+          console.info("Just updating existing Vaccine Certf document...");
+          await tx.documents.update({
+            where: {
+              id: idVaccine?.id,
+              // documentTypeId: 9
+            },
+            data: {
+              original_name: submittedValue.vaccineCertificate.original_name,
+              byte_size: submittedValue.vaccineCertificate.byte_size,
+              file_base: Buffer.from(submittedValue.vaccineCertificate.file_base)
+            }
+          });
+        };
+      };
+
+      return {
+        success: true,
+        data: null,
+        errors: null,
+        message: "Documents updated:"
+      };
+    }, {
+      timeout: 60000
+    });
+
+    return updateDocuments;
+  } catch (error) {
+    console.info("Error update documents: ", error);
+    return {
+      success: false,
+      data: null,
+      errors: error,
+      message: "Fail updating documents!"
     };
   };
 };

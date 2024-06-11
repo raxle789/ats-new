@@ -191,23 +191,129 @@ export async function getAdditionalInformations(): Promise<TypeFetchReturned> {
   }
 }
 
-/**
- * @description Test
- * @returns
- */
-export async function getCandidateDocuments() {
+export async function getCandidateDocuments(): Promise<TypeFetchReturned> {
   const authSession = await getUserSession('auth');
   try {
-    const documentPDF = await prisma.documents.findFirst({
-      where: {
-        candidate_id: authSession.candidate.id,
-        documentTypeId: 2,
-      },
-    });
+    const [cv, ijazah, ktp, npwp, kk, bca, mcu, vaksin, identityInfo] = await prisma.$transaction([
+      prisma.documents.findFirst({
+        where: {
+          candidate_id: authSession.candidate.id,
+          documentTypeId: 2
+        },
+        select: {
+          file_base: true,
+          original_name: true
+        }
+      }),
+      prisma.documents.findFirst({
+        where: {
+          candidate_id: authSession.candidate.id,
+          documentTypeId: 3
+        },
+        select: {
+          file_base: true,
+          original_name: true
+        }
+      }),
+      prisma.documents.findFirst({
+        where: {
+          candidate_id: authSession.candidate.id,
+          documentTypeId: 4
+        },
+        select: {
+          file_base: true,
+          original_name: true
+        }
+      }),
+      prisma.documents.findFirst({
+        where: {
+          candidate_id: authSession.candidate.id,
+          documentTypeId: 5
+        },
+        select: {
+          file_base: true,
+          original_name: true
+        }
+      }),
+      prisma.documents.findFirst({
+        where: {
+          candidate_id: authSession.candidate.id,
+          documentTypeId: 6
+        },
+        select: {
+          file_base: true,
+          original_name: true
+        }
+      }),
+      prisma.documents.findFirst({
+        where: {
+          candidate_id: authSession.candidate.id,
+          documentTypeId: 7
+        },
+        select: {
+          file_base: true,
+          original_name: true
+        }
+      }),
+      prisma.documents.findFirst({
+        where: {
+          candidate_id: authSession.candidate.id,
+          documentTypeId: 8
+        },
+        select: {
+          file_base: true,
+          original_name: true
+        }
+      }),
+      prisma.documents.findFirst({
+        where: {
+          candidate_id: authSession.candidate.id,
+          documentTypeId: 9
+        },
+        select: {
+          file_base: true,
+          original_name: true
+        }
+      }),
+      prisma.candidates.findUnique({
+        where: {
+          id: authSession.candidate.id
+        },
+        select: {
+          identity_info: {
+            select: {
+              bank_account: true,
+              family_number: true,
+              id_card_number: true,
+              tax_number: true,
+            }
+          }
+        }
+      })
+    ]);
+
     return {
       success: true,
-      data: documentPDF?.file_base.toString(),
-      message: 'Data fetched:',
+      data: {
+        identity_info: identityInfo?.identity_info,
+        curriculum_vitae: cv?.file_base.toString() ?? null,
+        curriculum_vitae_name: cv?.original_name ?? null,
+        ijazah: ijazah?.file_base.toString() ?? null,
+        ijazah_name: ijazah?.original_name ?? null,
+        identity_card: ktp?.file_base.toString() ?? null,
+        identity_card_name: ktp?.original_name ?? null,
+        tax: npwp?.file_base.toString() ?? null,
+        tax_name: npwp?.original_name ?? null,
+        family_registration: kk?.file_base.toString() ?? null,
+        family_registration_name: kk?.original_name ?? null,
+        bca_card: bca?.file_base.toString() ?? null,
+        bca_card_name: bca?.original_name ?? null,
+        mcu: mcu?.file_base.toString() ?? null,
+        mcu_name: mcu?.original_name ?? null,
+        vaccine_certf: vaksin?.file_base.toString() ?? null,
+        vaccine_certf_name: vaksin?.original_name ?? null
+      },
+      message: 'Data Fetched:'
     };
   } catch (error) {
     console.info('Fetching Error: ', error);
@@ -254,5 +360,5 @@ export async function getAppliedJobs(): Promise<TypeFetchReturned> {
       data: null,
       message: 'Fetching Error: There is a problem with database connection: ',
     };
-  }
-}
+  };
+};

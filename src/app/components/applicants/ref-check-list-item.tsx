@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 // import * as messages from '@/utils/message';
@@ -7,7 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { Checkbox, Popover, Spin, message } from 'antd';
 import type { CheckboxProps } from 'antd';
 import ActionCheckboxPipeline from '../common/popup/action-checkbox-pipeline';
-import ApplicantItem from '../dashboard/employ/applicant-item';
+import RefCheckItem from '../dashboard/employ/ref-check-item';
 // const { confirm } = Modal;
 
 type Props = {
@@ -31,7 +30,7 @@ type Props = {
   ) => void;
 };
 
-const ApplicantListItem: React.FC<Props> = ({
+const RefCheckListItem: React.FC<Props> = ({
   status,
   applicantData,
   jobVacancyId,
@@ -147,7 +146,6 @@ const ApplicantListItem: React.FC<Props> = ({
       {contextHolder}
 
       <Spin spinning={loading} fullscreen />
-
       <div className="d-flex justify-content-between align-items-center mb-20">
         <div>
           <h4 className="sub-main-title">
@@ -177,7 +175,7 @@ const ApplicantListItem: React.FC<Props> = ({
       )}
       <div className="wrapper">
         {applicantData?.map((item: any) => (
-          <ApplicantItem
+          <RefCheckItem
             key={item?.candidateId}
             item={item}
             status={status}
@@ -197,4 +195,4 @@ const ApplicantListItem: React.FC<Props> = ({
   );
 };
 
-export default ApplicantListItem;
+export default RefCheckListItem;
