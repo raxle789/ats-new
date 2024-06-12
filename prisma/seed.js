@@ -186,6 +186,7 @@ async function main() {
       { document_name: "kartu-keluarga" },
       { document_name: "BCA-card" },
       { document_name: "MCU" },
+      { document_name: "health-certificate" },
       { document_name: "vaksin-certificate" },
     ]
   });

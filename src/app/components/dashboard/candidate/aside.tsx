@@ -101,17 +101,9 @@ const CandidateAside = () => {
   /**
    * Session Context
    */
-  // const session = useAppSessionContext();
-  // const sessionValue: TypeSessionValue = {
-  //   regSession: session[`${regSession}`],
-  //   authSession: session[`${authSession}`],
-  //   linkedinSession: session[`${linkedinSession}`]
-  // };
-  // for(const key in sessionValue) {
-  //   if(sessionValue[key as keyof TypeSessionValue]) {
-  //     sessionValue[key as keyof TypeSessionValue] = DecryptSession(sessionValue[key as keyof TypeSessionValue] as string);
-  //   };
-  // };
+  const session = useAppSessionContext();
+  const authSessionPayload = DecryptSession(session[`${authSession}`]);
+  console.info('auth payload \t:', authSessionPayload);
   /* END SESSION */
 
   const pathname = usePathname();
@@ -163,8 +155,7 @@ const CandidateAside = () => {
                 aria-expanded="false"
               >
                 {/* Only displaying reg-session and linkedin-session. Next -> auth-session */}
-                {/* {sessionValue?.regSession?.user?.name || sessionValue?.linkedinSession?.name} */}
-                Era
+                {authSessionPayload?.user?.name ?? 'unknown'}
               </button>
               <ul className="dropdown-menu" aria-labelledby="profile-dropdown">
                 <li>

@@ -97,6 +97,7 @@ export async function userAuth(formData: any) {
       await setUserSession('auth', {
         user: {
           id: userData.id,
+          name: userData.name
         },
         roles: roles
       });
@@ -177,7 +178,8 @@ export async function userAuth(formData: any) {
       console.info('remember value \t:', formData.is_rememberOn);
       await setUserSession('auth', {
         user: {
-          id: userData.id
+          id: userData.id,
+          name: userData.name
         },
         candidate: {
           id: userData.candidates.id
@@ -187,7 +189,8 @@ export async function userAuth(formData: any) {
     } else {
       await setUserSession('auth', {
         user: {
-          id: userData.id
+          id: userData.id,
+          name: userData.name
         },
         candidate: {
           id: userData.candidates.id
