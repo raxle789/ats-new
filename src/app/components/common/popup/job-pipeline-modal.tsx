@@ -146,7 +146,7 @@ const JobPipelineModal: React.FC<IProps> = ({ isOpen, setIsOpenModal }) => {
           items={items}
         />
         {current === 'assessment' && (
-          <div className="mt-3">
+          <div className="mt-3 mb-5">
             <Collapse
               items={assessmentItems}
               defaultActiveKey={['1']}
@@ -155,7 +155,7 @@ const JobPipelineModal: React.FC<IProps> = ({ isOpen, setIsOpenModal }) => {
           </div>
         )}
         {current === 'interview' && (
-          <div className="mt-3">
+          <div className="mt-3 mb-5">
             <Collapse
               items={interviewItems}
               defaultActiveKey={['1']}
@@ -164,7 +164,7 @@ const JobPipelineModal: React.FC<IProps> = ({ isOpen, setIsOpenModal }) => {
           </div>
         )}
         {current === 'ref check' && (
-          <div className="mt-3">
+          <div className="mt-3 overflow-x-hidden mb-5">
             <CandidateRefCheckForm />
           </div>
         )}

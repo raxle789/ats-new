@@ -1,6 +1,15 @@
 'use client';
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Modal, Input, message, Select, DatePicker, Tabs } from 'antd';
+import {
+  Form,
+  Modal,
+  Button,
+  Input,
+  message,
+  Select,
+  DatePicker,
+  Tabs,
+} from 'antd';
 import type { FormProps } from 'antd';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
@@ -181,6 +190,12 @@ const CandidateRefCheckForm = () => {
             <Form.Item<FieldType>
               name={['refereeData', index.toString(), 'introductionDate']}
               className="mb-3"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input date!',
+                },
+              ]}
             >
               <DatePicker
                 className="w-100"
@@ -197,6 +212,12 @@ const CandidateRefCheckForm = () => {
             <Form.Item<FieldType>
               name={['refereeData', index.toString(), 'durationWithReferee']}
               className="mb-3"
+              rules={[
+                {
+                  required: true,
+                  message: 'Please input date!',
+                },
+              ]}
             >
               <DatePicker
                 className="w-100"
@@ -283,7 +304,7 @@ const CandidateRefCheckForm = () => {
   }, []);
   return (
     <>
-      <h2 className="main-title">Candidate Ref Check Form</h2>
+      <p>Candidate Ref Check Form</p>
       <div>
         <Form
           form={form}
@@ -299,10 +320,15 @@ const CandidateRefCheckForm = () => {
               items={items}
             />
 
-            <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
+            {/* <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
               <button type="submit" className="dash-btn-two tran3s me-3">
                 Submit
               </button>
+            </div> */}
+            <div className="d-flex justify-content-end">
+              <Button type="primary" htmlType="submit">
+                Submit
+              </Button>
             </div>
           </div>
         </Form>
