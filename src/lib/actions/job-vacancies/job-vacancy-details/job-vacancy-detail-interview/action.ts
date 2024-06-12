@@ -500,9 +500,9 @@ export async function getInterviewResultData(
                 return [];
               }
             })(),
-            interviewResultData: await getInterviewResult(
-              isUserAlreadyFilledInterviewResult,
-            ),
+            interviewResultData: isUserAlreadyFilledInterviewResult
+              ? await getInterviewResult(isUserAlreadyFilledInterviewResult)
+              : {},
           };
 
           return newData;

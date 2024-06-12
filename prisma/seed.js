@@ -180,14 +180,14 @@ async function main() {
 
   await prisma.document_types.createMany({
     data: [
-      { document_name: "ijazah" },
-      { document_name: "ktp/passport" },
-      { document_name: "npwp/tax" },
-      { document_name: "kartu-keluarga" },
-      { document_name: "BCA-card" },
-      { document_name: "MCU" },
-      { document_name: "vaksin-certificate" },
-    ]
+      { document_name: 'ijazah' },
+      { document_name: 'ktp/passport' },
+      { document_name: 'npwp/tax' },
+      { document_name: 'kartu-keluarga' },
+      { document_name: 'BCA-card' },
+      { document_name: 'MCU' },
+      { document_name: 'vaksin-certificate' },
+    ],
   });
 
   const hashed = await bcrypt.hash('super.admin-pass', 10);
@@ -490,6 +490,7 @@ async function main() {
       { document_name: 'BCA-card' },
       { document_name: 'MCU' },
       { document_name: 'vaksin-certificate' },
+      { document_name: 'health-certificate' },
     ],
   });
 

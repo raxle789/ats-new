@@ -9,7 +9,7 @@ import {
   setPositionLevelRequirement,
   searchPositionLevelRequirement,
 } from '../../services/position-level-requirements/service';
-import CryptoJS from 'crypto-js';
+import * as crypto from '@/lib/utils/utils';
 import _ from 'lodash';
 // import * as parserFunctions from '../requirement-parsers/action';
 import {
@@ -137,12 +137,7 @@ async function formatPositionLevelRequirementData(data) {
     await Promise.all(
       data?.data?.map(async (a) => {
         if (a && !_.isEmpty(a)) {
-          a.id = encodeURIComponent(
-            CryptoJS.Rabbit.encrypt(
-              String(a?.id),
-              process.env.NEXT_PUBLIC_SECRET_KEY,
-            ).toString(),
-          );
+          a.id = await crypto.encryptData(a?.id);
         }
 
         if (
@@ -240,12 +235,7 @@ export async function getPositionLevelRequirementData(positionLevelId) {
   const data = await getPositionLevelRequirement(positionLevelId);
 
   if (data && !_.isEmpty(data)) {
-    data.id = encodeURIComponent(
-      CryptoJS.Rabbit.encrypt(
-        String(data?.id),
-        process.env.NEXT_PUBLIC_SECRET_KEY,
-      ).toString(),
-    );
+    data.id = crypto.encryptData(data?.id);
 
     await Promise.all(
       data?.positionLevelRequirements?.map(async (d) => {

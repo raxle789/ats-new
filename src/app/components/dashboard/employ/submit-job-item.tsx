@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import SpinFullScreen from '@/ui/spin-full-screen';
 import * as confirmations from '@/utils/confirmation';
 import * as messages from '@/utils/message';
 import JobVacancyForm from '../../forms/submit-job-vacancy-form';
@@ -439,7 +440,7 @@ const SubmitJobItem = ({
     <>
       {contextHolder}
 
-      <Spin spinning={loading} fullscreen />
+      <SpinFullScreen loading={loading} />
 
       {/* <div>
         <Modal

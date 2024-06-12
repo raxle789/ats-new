@@ -103,6 +103,11 @@ const InterviewResultItem: React.FC<Props> = ({
     [key: string]: number;
   };
 
+  const [
+    isInterviewResultCategoryDisabled,
+    setIsInterviewResultCategoryDisabled,
+  ] = useState({});
+
   const [interviewResultCategoriesRate, setInterviewResultCategoriesRate] =
     useState<TInterviewResultCategoriesRate>({});
 
@@ -146,8 +151,8 @@ const InterviewResultItem: React.FC<Props> = ({
     }
 
     if (
-      interviewResultData.interviewResultData &&
-      !_.isEmpty(interviewResultData.interviewResultData)
+      interviewResultData?.interviewResultData &&
+      !_.isEmpty(interviewResultData?.interviewResultData)
     ) {
       form.setFieldsValue({
         status: interviewResultData?.interviewResultData?.statusName,
@@ -187,11 +192,54 @@ const InterviewResultItem: React.FC<Props> = ({
 
   function handleInterviewResultStatus(status: string | any) {
     // console.log('radio checked', e.target.value);
-    setInterviewResultStatusValue(
-      interviewResultData?.interviewResultStatus?.findIndex(
-        (item: {} | any) => item?.name === status,
-      ),
+
+    const value = interviewResultData?.interviewResultStatus?.findIndex(
+      (item: {} | any) => item?.name === status,
     );
+
+    setInterviewResultStatusValue(value);
+
+    if (
+      interviewResultData?.interviewResultStatus[value]?.name === 'Reschedule'
+    ) {
+      if (
+        interviewResultData?.interviewResultCategories &&
+        interviewResultData?.interviewResultCategories?.length
+      ) {
+        interviewResultData?.interviewResultCategories?.map(
+          (item: {} | any) => {
+            // console.info(item);
+
+            setInterviewResultCategoriesRate((prev) => ({
+              ...prev,
+              [`${_.camelCase(item?.name)}Rate`]: 1,
+            }));
+
+            form.setFieldsValue({
+              [`${_.camelCase(item?.name)}Rate`]: 1,
+              [`${_.camelCase(item?.name)}Comment`]: '-',
+            });
+
+            // if (
+            //   item?.interviewResultCategories &&
+            //   item?.interviewResultCategories?.length
+            // ) {
+            //   item?.interviewResultCategories?.map((data: {} | any) => {
+            //     setInterviewResultCategoriesRate((prev) => ({
+            //       ...prev,
+            //       [`${_.camelCase(data?.categoryName)}Rate`]: 1,
+            //     }));
+
+            //     form.setFieldsValue({
+            //       [`${_.camelCase(data?.categoryName)}Rate`]: 1,
+            //       [`${_.camelCase(data?.categoryName)}Comment`]: '-',
+            //     });
+            //   });
+            // }
+          },
+        );
+      }
+    }
   }
 
   function handleSubmit(values: any) {
@@ -250,18 +298,19 @@ const InterviewResultItem: React.FC<Props> = ({
     // insertInterviewResult(params, searchParams, values);
   }
 
-  function onFinishFailed(errorInfo: {} | any) {
-    if (errorInfo.errorFields && errorInfo.errorFields.length > 0) {
-      const errorMessage = errorInfo.errorFields
-        .map((field: any) => field.errors.join(', '))
-        .join('; ');
-      message.error(`Failed: ${errorMessage}`);
-    }
-  }
+  // function onFinishFailed(errorInfo: {} | any) {
+  //   if (errorInfo.errorFields && errorInfo.errorFields.length > 0) {
+  //     const errorMessage = errorInfo.errorFields
+  //       .map((field: any) => field.errors.join(', '))
+  //       .join('; ');
+  //     message.error(`Failed: ${errorMessage}`);
+  //   }
+  // }
 
   useEffect(() => {
     console.log('ratingUseEffect: ', rating);
   }, [rating]);
+
   return (
     <>
       {isOpenModal && (
@@ -345,10 +394,13 @@ const InterviewResultItem: React.FC<Props> = ({
               form={form}
               scrollToFirstError={true}
               onFinish={handleSubmit}
-              onFinishFailed={onFinishFailed}
+              // onFinishFailed={onFinishFailed}
             >
               <div className="row">
                 {interviewResultData?.interviewResultCategories?.length &&
+                  // interviewResultData?.interviewResultStatus[
+                  //   interviewResultStatusValue
+                  // ]?.name !== 'Reschedule' &&
                   interviewResultData?.interviewResultCategories?.map(
                     (item: {} | any, index: number) => {
                       return (
