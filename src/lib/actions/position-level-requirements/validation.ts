@@ -1,101 +1,138 @@
 import { z } from 'zod';
 import CryptoJS from 'crypto-js';
 
-export const validateForm = z.object({
-  positionLevelId: z.coerce
-    .string({
-      required_error: 'Position Level Required!',
-      invalid_type_error: 'Position Level Id Must Be A String!',
-    })
-    .trim()
-    .transform((val, ctx) => {
-      try {
-        const query = decodeURIComponent(val) ?? '';
+export const validateForm = z
+  .object({
+    positionLevelId: z.coerce
+      .string({
+        required_error: 'Position Level Required!',
+        invalid_type_error: 'Position Level Id Must Be A String!',
+      })
+      .trim()
+      .transform((val, ctx) => {
+        try {
+          const query = decodeURIComponent(val) ?? '';
 
-        const decryptedValue = CryptoJS.Rabbit.decrypt(
-          String(query),
-          process.env.NEXT_PUBLIC_SECRET_KEY,
-        );
+          const decryptedValue = CryptoJS.Rabbit.decrypt(
+            String(query),
+            process.env.NEXT_PUBLIC_SECRET_KEY,
+          );
 
-        const convertString = decryptedValue.toString(CryptoJS.enc.Utf8);
+          const convertString = decryptedValue.toString(CryptoJS.enc.Utf8);
 
-        const originalValue = Number(convertString);
+          const originalValue = Number(convertString);
 
-        return originalValue;
-      } catch (e) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Invalid Position Level Id's format!",
-        });
+          return originalValue;
+        } catch (e) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Invalid Position Level Id's format!",
+          });
 
-        return z.NEVER;
-      }
+          return z.NEVER;
+        }
+      }),
+    job_level: z
+      .number({
+        required_error: 'Job Level Required!',
+        invalid_type_error: 'Job Level Must Be A Number!',
+      })
+      .int(),
+    min_year_experience: z
+      .number({
+        required_error: 'Year Of Experience Required!',
+        invalid_type_error: 'Year Of Experience Must Be A Number!',
+      })
+      .int(),
+    line_industry: z
+      .number({
+        required_error: 'Line Industry Required!',
+        invalid_type_error: 'Line Industry Must Be A Number!',
+      })
+      .array(),
+    education_level: z
+      .number({
+        required_error: 'Education Level Required!',
+        invalid_type_error: 'Education Level Must Be A Number!',
+      })
+      .int(),
+    grade: z.number({
+      required_error: 'Grade Required!',
+      invalid_type_error: 'Grade Must Be A Number!',
     }),
-  job_level: z
-    .number({
-      required_error: 'Job Level Required!',
-      invalid_type_error: 'Job Level Must Be A Number!',
-    })
-    .int(),
-  min_year_experience: z
-    .number({
-      required_error: 'Year Of Experience Required!',
-      invalid_type_error: 'Year Of Experience Must Be A Number!',
-    })
-    .int(),
-  line_industry: z
-    .number({
-      required_error: 'Line Industry Required!',
-      invalid_type_error: 'Line Industry Must Be A Number!',
-    })
-    .array(),
-  education_level: z
-    .number({
-      required_error: 'Education Level Required!',
-      invalid_type_error: 'Education Level Must Be A Number!',
-    })
-    .int(),
-  grade: z.number({
-    required_error: 'Grade Required!',
-    invalid_type_error: 'Grade Must Be A Number!',
-  }),
-  salary: z
-    .object({
-      start_salary: z
-        .number({
-          required_error: 'Start Salary Required!',
-          invalid_type_error: 'Start Salary Must Be A Number!',
-        })
-        .int(),
-      end_salary: z
-        .number({
-          required_error: 'End Salary Required!',
-          invalid_type_error: 'End Salary Must Be A Number!',
-        })
-        .int(),
-    })
-    .transform((val, ctx) => {
-      if (val.start_salary < 0 || val.end_salary < 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Salary Cannot Be Negative!',
-        });
+    start_salary: z
+      .number({
+        required_error: 'Start Salary Range Required!',
+        invalid_type_error: 'Start Salary Range Must Be A Number!',
+      })
+      .int()
+      .positive()
+      .gte(1000),
+    end_salary: z
+      .number({
+        required_error: 'End Salary Range Required!',
+        invalid_type_error: 'End Salary Range Must Be A Number!',
+      })
+      .int()
+      .positive()
+      .gte(1000),
+    salary: z
+      .number({
+        required_error: 'Salary Required!',
+        invalid_type_error: 'Salary Must Be A Number!',
+      })
+      .array()
+      .length(2),
+    // salary: z
+    //   .object({
+    //     start_salary: z
+    //       .number({
+    //         required_error: 'Start Salary Required!',
+    //         invalid_type_error: 'Start Salary Must Be A Number!',
+    //       })
+    //       .int(),
+    //     end_salary: z
+    //       .number({
+    //         required_error: 'End Salary Required!',
+    //         invalid_type_error: 'End Salary Must Be A Number!',
+    //       })
+    //       .int(),
+    //   })
+    //   .transform((val, ctx) => {
+    //     if (val.start_salary < 0 || val.end_salary < 0) {
+    //       ctx.addIssue({
+    //         code: z.ZodIssueCode.custom,
+    //         message: 'Salary Cannot Be Negative!',
+    //       });
 
-        return z.NEVER;
-      }
+    //       return z.NEVER;
+    //     }
 
-      if (val.start_salary > val.end_salary) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: 'Start Salary Cannot Be Greater Than End Salary!',
-        });
+    //     if (val.start_salary > val.end_salary) {
+    //       ctx.addIssue({
+    //         code: z.ZodIssueCode.custom,
+    //         message: 'Start Salary Cannot Be Greater Than End Salary!',
+    //       });
 
-        return z.NEVER;
-      }
+    //       return z.NEVER;
+    //     }
 
-      return [val.start_salary, val.end_salary];
-    }),
-});
+    //     return [val.start_salary, val.end_salary];
+    //   }),
+  })
+  .superRefine((value, ctx) => {
+    if (value?.start_salary >= value?.end_salary) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Start Salary Range Must Be Less Than End Salary Range!',
+      });
+    }
+  })
+  .transform((val) => {
+    val.salary = [val?.start_salary, val?.end_salary];
+
+    return val;
+  });
 
 export const validatePositionLevelRequirementSchema = z.object({
   positionLevelId: z

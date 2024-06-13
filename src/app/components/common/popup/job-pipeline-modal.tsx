@@ -3,6 +3,7 @@ import { DownOutlined } from '@ant-design/icons';
 import { Tree, Modal, Menu, Collapse } from 'antd';
 import type { MenuProps } from 'antd';
 import type { CollapseProps } from 'antd';
+import CandidateRefCheckForm from '../../dashboard/employ/candidate-ref-check-form';
 
 const text = `
   A dog is a type of domesticated animal.
@@ -145,7 +146,7 @@ const JobPipelineModal: React.FC<IProps> = ({ isOpen, setIsOpenModal }) => {
           items={items}
         />
         {current === 'assessment' && (
-          <div className="mt-3">
+          <div className="mt-3 mb-5">
             <Collapse
               items={assessmentItems}
               defaultActiveKey={['1']}
@@ -154,12 +155,17 @@ const JobPipelineModal: React.FC<IProps> = ({ isOpen, setIsOpenModal }) => {
           </div>
         )}
         {current === 'interview' && (
-          <div className="mt-3">
+          <div className="mt-3 mb-5">
             <Collapse
               items={interviewItems}
               defaultActiveKey={['1']}
               onChange={onChangeInterview}
             />
+          </div>
+        )}
+        {current === 'ref check' && (
+          <div className="mt-3 overflow-x-hidden mb-5">
+            <CandidateRefCheckForm />
           </div>
         )}
       </Modal>

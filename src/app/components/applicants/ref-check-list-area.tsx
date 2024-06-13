@@ -1,12 +1,11 @@
 'use server';
 
-import AssessmentListItem from './assessment-list-item';
-import EmployJobDetailSkeleton from '@/ui/skeleton';
-import { Suspense } from 'react';
+import RefCheckListItem from './ref-check-list-item';
+// import { Suspense } from 'react';
+// import EmployJobDetailSkeleton from '@/app/components/loadings/employ-job-detail-skeleton';
 import { handleApplicant } from '../message/confirm';
-// import JobAssessmentResultArea from '../dashboard/employ/job-assessment-result-area';
 // import { registerAssessment } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-assessment/action';
-import { getAllApplicantDataByJobVacancyIdAndStateName } from '@/lib/actions/job-vacancies/job-vacancy-details/action';
+import { getAllApplicantDataByJobVacancyId } from '@/lib/actions/job-vacancies/job-vacancy-details/action';
 
 type Props = {
   params?: any;
@@ -14,18 +13,15 @@ type Props = {
   status?: string | any;
 };
 
-const AssessmentListArea: React.FC<Props> = async ({
+const RefCheckListArea: React.FC<Props> = async ({
   params,
   searchParams,
   status,
 }) => {
   // const pathname = usePathname();
   const page = searchParams?.page ?? '1';
-
   const perPage = searchParams?.perPage ?? '10';
-
   const searchQuery = searchParams?.query ?? '';
-
   const offset = (Number(page) - 1) * Number(perPage);
 
   type fieldData = {
@@ -46,9 +42,8 @@ const AssessmentListArea: React.FC<Props> = async ({
 
   const applicantData: never[] | fieldData | any = await (async () => {
     if (params?.id) {
-      return await getAllApplicantDataByJobVacancyIdAndStateName(
+      return await getAllApplicantDataByJobVacancyId(
         params?.id,
-        status,
         offset,
         Number(perPage),
       );
@@ -58,15 +53,13 @@ const AssessmentListArea: React.FC<Props> = async ({
   })();
 
   return (
-    // <Suspense fallback={<EmployJobDetailSkeleton rows={2} />}>
-    <AssessmentListItem
+    <RefCheckListItem
       status={status}
       applicantData={applicantData?.data}
       jobVacancyId={params?.id}
       handleApplicant={handleApplicant}
     />
-    // </Suspense>
   );
 };
 
-export default AssessmentListArea;
+export default RefCheckListArea;

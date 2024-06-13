@@ -8,7 +8,15 @@ import _ from 'lodash';
 import { decryptObject } from '@/lib/utils/utils';
 import InterviewResultItem from './interview-result-item';
 
-const InterviewResultArea = async ({ params, searchParams }) => {
+type Props = {
+  params?: {} | any;
+  searchParams?: {} | any;
+};
+
+const InterviewResultArea: React.FC<Props> = async ({
+  params,
+  searchParams,
+}) => {
   const interviewResultData = await (async () => {
     const decryptedQuery = await decryptObject(searchParams?.q);
 
@@ -21,7 +29,7 @@ const InterviewResultArea = async ({ params, searchParams }) => {
       decryptedQuery?.interviewId &&
       params?.interviewerNik
     ) {
-      const data = await getInterviewResultData(
+      const data: any = await getInterviewResultData(
         decryptedQuery?.candidateId,
         params?.id,
         decryptedQuery?.interviewId,

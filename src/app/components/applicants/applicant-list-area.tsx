@@ -2,7 +2,7 @@
 
 import ApplicantListItem from './applicant-list-item';
 import { Suspense } from 'react';
-import EmployJobDetailSkeleton from '@/app/components/loadings/employ-job-detail-skeleton';
+import EmployJobDetailSkeleton from '@/ui/skeleton';
 import { handleApplicant } from '../message/confirm';
 // import { registerAssessment } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-assessment/action';
 import { getAllApplicantDataByJobVacancyId } from '@/lib/actions/job-vacancies/job-vacancy-details/action';
@@ -20,8 +20,11 @@ const ApplicantListArea: React.FC<Props> = async ({
 }) => {
   // const pathname = usePathname();
   const page = searchParams?.page ?? '1';
+
   const perPage = searchParams?.perPage ?? '10';
+
   const searchQuery = searchParams?.query ?? '';
+
   const offset = (Number(page) - 1) * Number(perPage);
 
   type fieldData = {

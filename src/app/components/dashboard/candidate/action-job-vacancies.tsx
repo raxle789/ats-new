@@ -1,11 +1,22 @@
 import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import edit from '@/assets/dashboard/images/icon/icon_20.svg';
-import delete_icon from '@/assets/dashboard/images/icon/icon_21.svg';
-import JobDetails from '@/app/(pages)/main/jobs/[id]/page';
+// import Link from 'next/link';
+import { HiOutlineEye } from 'react-icons/hi';
+import { FiEdit } from 'react-icons/fi';
+import { IoDuplicateOutline } from 'react-icons/io5';
+import { AiOutlineDelete } from 'react-icons/ai';
+// import JobDetails from '@/app/(pages)/main/jobs/[id]/page';
 
-const ActionJobVacancies = ({ jobId, setLoading, handleJobVacancy }) => {
+type Props = {
+  jobId?: string | any;
+  setLoading?: React.Dispatch<boolean>;
+  handleJobVacancy?: any;
+};
+
+const ActionJobVacancies: React.FC<Props> = ({
+  jobId,
+  setLoading,
+  handleJobVacancy,
+}) => {
   return (
     <ul className="dropdown-menu dropdown-menu-end">
       <li>
@@ -14,7 +25,7 @@ const ActionJobVacancies = ({ jobId, setLoading, handleJobVacancy }) => {
           type="button"
           onClick={() => handleJobVacancy('view', jobId)}
         >
-          <Image src={edit} alt="icon" className="lazy-img" /> View
+          <HiOutlineEye className="me-1" style={{ fontSize: '16px' }} /> View
         </button>
       </li>
       <li>
@@ -23,7 +34,7 @@ const ActionJobVacancies = ({ jobId, setLoading, handleJobVacancy }) => {
           type="button"
           onClick={() => handleJobVacancy('edit', jobId)}
         >
-          <Image src={edit} alt="icon" className="lazy-img" /> Edit
+          <FiEdit className="me-1" style={{ fontSize: '15px' }} /> Edit
         </button>
       </li>
       <li>
@@ -34,7 +45,8 @@ const ActionJobVacancies = ({ jobId, setLoading, handleJobVacancy }) => {
             handleJobVacancy('duplicate', jobId);
           }}
         >
-          <Image src={edit} alt="icon" className="lazy-img" /> Duplicate
+          <IoDuplicateOutline className="me-1" style={{ fontSize: '15px' }} />{' '}
+          Duplicate
         </button>
       </li>
       <li>
@@ -43,7 +55,8 @@ const ActionJobVacancies = ({ jobId, setLoading, handleJobVacancy }) => {
           type="button"
           onClick={() => handleJobVacancy('delete', jobId)}
         >
-          <Image src={delete_icon} alt="icon" className="lazy-img" /> Delete
+          <AiOutlineDelete className="me-1" style={{ fontSize: '16px' }} />{' '}
+          Delete
         </button>
       </li>
     </ul>

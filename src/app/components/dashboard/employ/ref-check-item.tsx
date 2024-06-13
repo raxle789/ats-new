@@ -48,7 +48,7 @@ type Props = {
   ) => void | any;
 };
 
-const ApplicantItem: React.FC<Props> = ({
+const RefCheckItem: React.FC<Props> = ({
   item,
   status,
   checkboxState,
@@ -107,11 +107,7 @@ const ApplicantItem: React.FC<Props> = ({
                 <h4 className="candidate-name mb-0">
                   <a
                     className="tran3s"
-                    style={{
-                      cursor: 'pointer',
-                      width: '140px',
-                      wordBreak: 'break-all',
-                    }}
+                    style={{ cursor: 'pointer' }}
                     onClick={showModal}
                   >
                     {item?.candidateName ?? '-'}
@@ -194,4 +190,4 @@ const ApplicantItem: React.FC<Props> = ({
   );
 };
 
-export default ApplicantItem;
+export default RefCheckItem;

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import SpinFullScreen from '@/ui/spin-full-screen';
 import { useRouter } from 'next/navigation';
 import * as messages from '@/utils/message';
 import * as confirmations from '@/utils/confirmation';
@@ -21,7 +22,10 @@ type Props = {
   positionLevelRequirementData: [];
 };
 
-const EmployJobParameter = ({ positionLevelRequirementData, perPage }) => {
+const PositionLevelRequirementItem = ({
+  positionLevelRequirementData,
+  perPage,
+}) => {
   const router = useRouter();
 
   const [expandedRows, setExpandedRows] = useState<{ [key: string]: boolean }>(
@@ -137,7 +141,7 @@ const EmployJobParameter = ({ positionLevelRequirementData, perPage }) => {
             setTimeout(async () => {
               resolve(
                 router.push(
-                  `/dashboard/ta/submit-parameter/${positionLevelId}`,
+                  `/dashboard/ta/submit-position-level-requirement/${positionLevelId}`,
                 ),
               );
             }, 2000);
@@ -163,7 +167,7 @@ const EmployJobParameter = ({ positionLevelRequirementData, perPage }) => {
 
   return (
     <>
-      <Spin spinning={loading} fullscreen />
+      <SpinFullScreen loading={loading} />
 
       <div className="job-fpk-header d-sm-flex flex-wrap align-items-center justify-content-between mb-40 lg-mb-30">
         <h2 className="main-title m0 flex-grow-1">
@@ -344,4 +348,4 @@ const EmployJobParameter = ({ positionLevelRequirementData, perPage }) => {
   );
 };
 
-export default EmployJobParameter;
+export default PositionLevelRequirementItem;

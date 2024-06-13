@@ -22,7 +22,7 @@ import { MdOutlineModeEdit } from 'react-icons/md';
 import dayjs, { Dayjs } from 'dayjs';
 import { fileToBase64 } from '@/libs/Registration/utils';
 import { updateCandidateProfile } from '@/libs/Candidate/actions';
-import EmployJobDetailSkeleton from '../loadings/employ-job-detail-skeleton';
+import EmployJobDetailSkeleton from '../../../ui/skeleton';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 
 dayjs.extend(localizedFormat);
