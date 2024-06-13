@@ -70,6 +70,8 @@ type CandidateDocuments = {
   bca_card_name?: string;
   mcu?: string;
   mcu_name?: string;
+  health_certificate?: string; // new
+  health_certificate_name?: string; // new
   vaccine_certf?: string;
   vaccine_certf_name?: string;
 };
@@ -203,7 +205,21 @@ const DocumentForm: React.FC<Props> = ({
             file_base: base64HealtCertificate,
           },
         };
-      }
+      };
+      /* MCU */
+      if(values.mcu) {
+        const base64MCU = await fileToBase64(
+          values.mcu.file.originFileObj,
+        );
+        submittedValues = {
+          ...submittedValues,
+          mcu: {
+            original_name: values.mcu.file.originFileObj.name,
+            byte_size: values.mcu.file.originFileObj.size,
+            file_base: base64MCU
+          }
+        };
+      };
       /* Kartu Keluarga */
       if (values.kk) {
         const base64KartuKeluarga = await fileToBase64(
