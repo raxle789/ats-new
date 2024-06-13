@@ -34,6 +34,9 @@ import { ExpendableButtonAside } from './expendable-button-aside';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 
 import { setIsOpen } from '@/redux/features/sidebarSlice';
+import { useAppSessionContext } from '@/libs/Sessions/AppSession';
+import { DecryptSession } from '@/libs/Sessions/jwt';
+import { authSession } from '@/libs/Sessions/utils';
 
 type subLink = {
   link: string;
@@ -122,6 +125,11 @@ const EmployAside = () => {
   const isOpenSidebar = useAppSelector((state) => state.sidebar.isOpen);
   const dispatch = useAppDispatch();
 
+  /* Session Context */
+  const session = useAppSessionContext();
+  const authSessionPayload = DecryptSession(session[`${authSession}`]);
+  console.info('auth payload \t:', authSessionPayload);
+
   const handleClick = () => {
     const screenWidth = window.innerWidth;
     if (screenWidth < 450) {
@@ -171,7 +179,7 @@ const EmployAside = () => {
                 data-bs-auto-close="outside"
                 aria-expanded="false"
               >
-                John Doe
+                {authSessionPayload?.user?.name ?? "unknown"}
               </button>
               <ul className="dropdown-menu" aria-labelledby="profile-dropdown">
                 <li>

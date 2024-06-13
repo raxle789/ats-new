@@ -2,8 +2,6 @@
 
 import prisma from '@/root/prisma';
 import { getUserSession } from '../Sessions';
-import { string } from 'zod';
-import { message } from 'antd';
 
 export type TypeFetchReturned = {
   success: boolean;
@@ -194,8 +192,8 @@ export async function getAdditionalInformations(): Promise<TypeFetchReturned> {
 export async function getCandidateDocuments(): Promise<TypeFetchReturned> {
   const authSession = await getUserSession('auth');
   try {
-    const [cv, ijazah, ktp, npwp, kk, bca, mcu, vaksin, identityInfo] = await prisma.$transaction([
-      prisma.documents.findFirst({
+    const [cv, ijazah, ktp, npwp, kk, bca, mcu, health_certf, vaksin, identityInfo] = await prisma.$transaction([
+      prisma.documents.findFirst({ // cv
         where: {
           candidate_id: authSession.candidate.id,
           documentTypeId: 2
@@ -205,7 +203,7 @@ export async function getCandidateDocuments(): Promise<TypeFetchReturned> {
           original_name: true
         }
       }),
-      prisma.documents.findFirst({
+      prisma.documents.findFirst({ // ijazah
         where: {
           candidate_id: authSession.candidate.id,
           documentTypeId: 3
@@ -215,7 +213,7 @@ export async function getCandidateDocuments(): Promise<TypeFetchReturned> {
           original_name: true
         }
       }),
-      prisma.documents.findFirst({
+      prisma.documents.findFirst({ // ktp/passport
         where: {
           candidate_id: authSession.candidate.id,
           documentTypeId: 4
@@ -225,7 +223,7 @@ export async function getCandidateDocuments(): Promise<TypeFetchReturned> {
           original_name: true
         }
       }),
-      prisma.documents.findFirst({
+      prisma.documents.findFirst({ // tax/npwp
         where: {
           candidate_id: authSession.candidate.id,
           documentTypeId: 5
@@ -235,7 +233,7 @@ export async function getCandidateDocuments(): Promise<TypeFetchReturned> {
           original_name: true
         }
       }),
-      prisma.documents.findFirst({
+      prisma.documents.findFirst({ // kk
         where: {
           candidate_id: authSession.candidate.id,
           documentTypeId: 6
@@ -245,7 +243,7 @@ export async function getCandidateDocuments(): Promise<TypeFetchReturned> {
           original_name: true
         }
       }),
-      prisma.documents.findFirst({
+      prisma.documents.findFirst({ // bca
         where: {
           candidate_id: authSession.candidate.id,
           documentTypeId: 7
@@ -255,7 +253,7 @@ export async function getCandidateDocuments(): Promise<TypeFetchReturned> {
           original_name: true
         }
       }),
-      prisma.documents.findFirst({
+      prisma.documents.findFirst({ // mcu
         where: {
           candidate_id: authSession.candidate.id,
           documentTypeId: 8
@@ -265,10 +263,20 @@ export async function getCandidateDocuments(): Promise<TypeFetchReturned> {
           original_name: true
         }
       }),
-      prisma.documents.findFirst({
+      prisma.documents.findFirst({ // health certf
         where: {
           candidate_id: authSession.candidate.id,
           documentTypeId: 9
+        },
+        select: {
+          file_base: true,
+          original_name: true
+        }
+      }),
+      prisma.documents.findFirst({ // vaccine certf
+        where: {
+          candidate_id: authSession.candidate.id,
+          documentTypeId: 10
         },
         select: {
           file_base: true,
@@ -310,6 +318,8 @@ export async function getCandidateDocuments(): Promise<TypeFetchReturned> {
         bca_card_name: bca?.original_name ?? null,
         mcu: mcu?.file_base.toString() ?? null,
         mcu_name: mcu?.original_name ?? null,
+        health_certificate: health_certf?.file_base.toString() ?? null,
+        health_certificate_name: health_certf?.original_name ?? null,
         vaccine_certf: vaksin?.file_base.toString() ?? null,
         vaccine_certf_name: vaksin?.original_name ?? null
       },

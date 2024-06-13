@@ -7,7 +7,6 @@ import { deleteSession, setUserSession } from '../Sessions';
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { sendOTP } from '../Registration/verifications';
-// import bcryptV2 from 'bcrypt-updated';
 
 type GreCaptcha = {
   secret: string;
@@ -97,6 +96,7 @@ export async function userAuth(formData: any) {
       await setUserSession('auth', {
         user: {
           id: userData.id,
+          name: userData.name
         },
         roles: roles
       });
@@ -177,7 +177,8 @@ export async function userAuth(formData: any) {
       console.info('remember value \t:', formData.is_rememberOn);
       await setUserSession('auth', {
         user: {
-          id: userData.id
+          id: userData.id,
+          name: userData.name
         },
         candidate: {
           id: userData.candidates.id
@@ -187,7 +188,8 @@ export async function userAuth(formData: any) {
     } else {
       await setUserSession('auth', {
         user: {
-          id: userData.id
+          id: userData.id,
+          name: userData.name
         },
         candidate: {
           id: userData.candidates.id
