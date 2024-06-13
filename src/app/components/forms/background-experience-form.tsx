@@ -5,7 +5,7 @@ import {
   Select,
   DatePicker,
   Tabs,
-  // Radio,
+  Spin,
   Checkbox,
   InputNumber,
   message,
@@ -113,6 +113,7 @@ const BackgroundExperienceForm: React.FC<Props> = ({
   errors,
 }) => {
   const [form] = Form.useForm();
+  const [spinning, setSpinning] = useState(false);
   const [editState, setEditState] = useState(false);
   const [expValue, setExpValue] = useState<string>('Professional');
   const [expIdx, setExpIdx] = useState<number>(0);
@@ -615,7 +616,7 @@ const BackgroundExperienceForm: React.FC<Props> = ({
   /* ACTIONS */
   const handleSubmit: FormProps<FieldType>['onFinish'] = async () => {
     if (editState) {
-      message.loading('Please wait');
+      setSpinning(true);
       let values = form.getFieldsValue();
       values = {
         ...values,
@@ -636,8 +637,12 @@ const BackgroundExperienceForm: React.FC<Props> = ({
       const plainObjectValues = JSON.parse(JSON.stringify(values));
       console.log('submittedValueExperience: ', plainObjectValues);
       const updating = await updateCandidateExperiences(plainObjectValues);
-      if (!updating.success) return message.error(updating.message);
+      if (!updating.success) {
+        setSpinning(false);
+        return message.error(updating.message);
+      }
       message.success(updating.message);
+      setSpinning(false);
 
       if (setSubmitType && setExperiences && submitType) {
         setLoopTotal(0);
@@ -896,6 +901,8 @@ const BackgroundExperienceForm: React.FC<Props> = ({
               )}
             </div>
           </Form>
+
+          <Spin fullscreen spinning={spinning} />
         </div>
       )}
     </>

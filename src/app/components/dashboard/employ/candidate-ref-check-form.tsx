@@ -1,15 +1,6 @@
 'use client';
 import React, { useEffect, useState, useRef } from 'react';
-import {
-  Form,
-  Modal,
-  Button,
-  Input,
-  message,
-  Select,
-  DatePicker,
-  Tabs,
-} from 'antd';
+import { Form, Button, Input, message, Select, DatePicker, Tabs } from 'antd';
 import type { FormProps } from 'antd';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
@@ -304,35 +295,29 @@ const CandidateRefCheckForm = () => {
   }, []);
   return (
     <>
-      <p>Candidate Ref Check Form</p>
-      <div>
-        <Form
-          form={form}
-          onFinish={handleSubmit}
-          onFinishFailed={onFinishFailed}
-        >
-          <div className="row">
-            <Tabs
-              type="editable-card"
-              onChange={onChangeTabs}
-              activeKey={activeKey}
-              onEdit={onEdit}
-              items={items}
-            />
+      {/* <p>Candidate Ref Check Form</p> */}
+      <Form form={form} onFinish={handleSubmit} onFinishFailed={onFinishFailed}>
+        <div className="row">
+          <Tabs
+            type="editable-card"
+            onChange={onChangeTabs}
+            activeKey={activeKey}
+            onEdit={onEdit}
+            items={items}
+          />
 
-            {/* <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
+          {/* <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
               <button type="submit" className="dash-btn-two tran3s me-3">
                 Submit
               </button>
             </div> */}
-            <div className="d-flex justify-content-end">
-              <Button type="primary" htmlType="submit">
-                Submit
-              </Button>
-            </div>
+          <div className="d-flex justify-content-end">
+            <Button type="primary" htmlType="submit">
+              Submit
+            </Button>
           </div>
-        </Form>
-      </div>
+        </div>
+      </Form>
     </>
   );
 };

@@ -10,7 +10,6 @@ import { fileToBase64 } from '@/libs/Registration/utils';
 import { updateCandidateDocuments } from '@/libs/Candidate/actions';
 import { Documents } from '@/libs/validations/Documents';
 import EmployJobDetailSkeleton from '@/ui/skeleton';
-// import { getCandidateDocuments } from '@/libs/Candidate/retrieve-data';
 
 type FieldType = {
   idFile?: string | any;
@@ -109,19 +108,6 @@ const DocumentForm: React.FC<Props> = ({
     });
   };
 
-  const convertBase64ToFile = async (fileBase64: string, filename: string) => {
-    const toReqFile = await fetch(fileBase64 as string);
-    const blob = await toReqFile.blob();
-    console.log('blob: ', blob);
-
-    const toFile = new File([blob], filename, {
-      type: blob.type,
-      lastModified: Date.now(),
-    });
-    console.log('new-file: ', toFile);
-    return toFile;
-  };
-
   const handleView = (documentType: string) => {
     if (documentData) {
       if (documentType === 'id') {
@@ -187,6 +173,18 @@ const DocumentForm: React.FC<Props> = ({
             original_name: values.bankAccount.file.originFileObj.name,
             byte_size: values.bankAccount.file.originFileObj.size,
             file_base: base64BankAccount,
+          },
+        };
+      }
+      /* MCU */
+      if (values.mcu) {
+        const base64MCU = await fileToBase64(values.mcu.file.originFileObj);
+        submittedValues = {
+          ...submittedValues,
+          mcu: {
+            original_name: values.mcu.file.originFileObj.name,
+            byte_size: values.mcu.file.originFileObj.size,
+            file_base: base64MCU,
           },
         };
       }
@@ -276,12 +274,15 @@ const DocumentForm: React.FC<Props> = ({
         const zodErrors = validate.error.flatten().fieldErrors;
         console.info('VALIDATE -> ', zodErrors);
         setZodErrors(zodErrors);
+        setSpinning(false);
         return message.error('Validation failed!');
       }
       // debugger;
       const updateDocuments = await updateCandidateDocuments(submittedValues);
-      if (!updateDocuments.success)
+      if (!updateDocuments.success) {
+        setSpinning(false);
         return message.error(updateDocuments.message);
+      }
       message.success(updateDocuments.message);
       setSpinning(false);
 
@@ -379,21 +380,25 @@ const DocumentForm: React.FC<Props> = ({
       // if (idCardFile && npwpFile && kkFile) {
       // }
 
-      console.log(
-        'setState - (documents) - initFieldsValue: ',
-        initFieldsValue,
-      );
+      // console.log(
+      //   'setState - (documents) - initFieldsValue: ',
+      //   initFieldsValue,
+      // );
     }
   }, [documentData]);
 
-  useEffect(() => {
-    console.log('sourceFile sebelum dioper: ', sourceFile);
-  }, [sourceFile]);
+  // useEffect(() => {
+  //   console.log('sourceFile sebelum dioper: ', sourceFile);
+  // }, [sourceFile]);
 
   useEffect(() => {
     console.log('useEffect - (documents) - initFieldsValue: ', initFieldsValue);
     form.setFieldsValue(initFieldsValue);
   }, [initFieldsValue]);
+
+  useEffect(() => {
+    console.log('zodErrors: ', zodErrors);
+  }, [zodErrors]);
   return (
     <>
       {documentData === null && <EmployJobDetailSkeleton rows={2} />}
@@ -419,7 +424,14 @@ const DocumentForm: React.FC<Props> = ({
               <div className="col-6">
                 <div className="input-group-meta position-relative mb-15">
                   <label className="fw-bold">ID/Passport Number</label>
-                  <Form.Item<FieldType> name="idNumber" className="mb-0">
+                  <Form.Item<FieldType>
+                    name="idNumber"
+                    className="mb-0"
+                    validateStatus={
+                      zodErrors && zodErrors?.idNumber ? 'error' : ''
+                    }
+                    help={zodErrors && zodErrors?.idNumber}
+                  >
                     {editState && (
                       <Input
                         placeholder="Your ID/Pasport Number"
@@ -444,7 +456,14 @@ const DocumentForm: React.FC<Props> = ({
                     </div>
                   )}
                   {editState && (
-                    <Form.Item<FieldType> name="idFile" className="mb-0">
+                    <Form.Item<FieldType>
+                      name="idFile"
+                      className="mb-0"
+                      validateStatus={
+                        zodErrors && zodErrors?.idFile ? 'error' : ''
+                      }
+                      help={zodErrors && zodErrors?.idFile}
+                    >
                       <Upload {...props} disabled={!editState}>
                         <Button
                           className="d-flex align-items-center justify-content-center"
@@ -479,7 +498,14 @@ const DocumentForm: React.FC<Props> = ({
               <div className="col-6">
                 <div className="input-group-meta position-relative mb-15">
                   <label className="fw-bold">Tax Number</label>
-                  <Form.Item<FieldType> name="npwpNumber" className="mb-0">
+                  <Form.Item<FieldType>
+                    name="npwpNumber"
+                    className="mb-0"
+                    validateStatus={
+                      zodErrors && zodErrors?.npwpNumber ? 'error' : ''
+                    }
+                    help={zodErrors && zodErrors?.npwpNumber}
+                  >
                     {editState && (
                       <Input
                         placeholder="Your NPWP Number"
@@ -504,7 +530,14 @@ const DocumentForm: React.FC<Props> = ({
                     </div>
                   )}
                   {editState && (
-                    <Form.Item<FieldType> name="npwp" className="mb-0">
+                    <Form.Item<FieldType>
+                      name="npwp"
+                      className="mb-0"
+                      validateStatus={
+                        zodErrors && zodErrors?.npwp ? 'error' : ''
+                      }
+                      help={zodErrors && zodErrors?.npwp}
+                    >
                       <Upload {...props} disabled={!editState}>
                         <Button
                           className="d-flex align-items-center justify-content-center"
@@ -541,7 +574,14 @@ const DocumentForm: React.FC<Props> = ({
                   <label className="fw-bold">
                     Family Registration Card Number
                   </label>
-                  <Form.Item<FieldType> name="kkNumber" className="mb-0">
+                  <Form.Item<FieldType>
+                    name="kkNumber"
+                    className="mb-0"
+                    validateStatus={
+                      zodErrors && zodErrors?.kkNumber ? 'error' : ''
+                    }
+                    help={zodErrors && zodErrors?.kkNumber}
+                  >
                     {editState && (
                       <Input
                         placeholder="Your Family Register Number"
@@ -568,7 +608,12 @@ const DocumentForm: React.FC<Props> = ({
                     </div>
                   )}
                   {editState && (
-                    <Form.Item<FieldType> name="kk" className="mb-0">
+                    <Form.Item<FieldType>
+                      name="kk"
+                      className="mb-0"
+                      validateStatus={zodErrors && zodErrors?.kk ? 'error' : ''}
+                      help={zodErrors && zodErrors?.kk}
+                    >
                       <Upload {...props} disabled={!editState}>
                         <Button
                           className="d-flex align-items-center justify-content-center"
@@ -601,6 +646,10 @@ const DocumentForm: React.FC<Props> = ({
                   <Form.Item<FieldType>
                     name="bankAccountNumber"
                     className="mb-0"
+                    validateStatus={
+                      zodErrors && zodErrors?.bankAccountNumber ? 'error' : ''
+                    }
+                    help={zodErrors && zodErrors?.bankAccountNumber}
                   >
                     {editState && (
                       <Input
@@ -626,7 +675,14 @@ const DocumentForm: React.FC<Props> = ({
                     </div>
                   )}
                   {editState && (
-                    <Form.Item<FieldType> name="bankAccount" className="mb-0">
+                    <Form.Item<FieldType>
+                      name="bankAccount"
+                      className="mb-0"
+                      validateStatus={
+                        zodErrors && zodErrors?.bankAccount ? 'error' : ''
+                      }
+                      help={zodErrors && zodErrors?.bankAccount}
+                    >
                       <Upload {...props} disabled={!editState}>
                         <Button
                           className="d-flex align-items-center justify-content-center"
@@ -665,6 +721,10 @@ const DocumentForm: React.FC<Props> = ({
                     <Form.Item<FieldType>
                       name="latestEducation"
                       className="mb-0"
+                      validateStatus={
+                        zodErrors && zodErrors?.latestEducation ? 'error' : ''
+                      }
+                      help={zodErrors && zodErrors?.latestEducation}
                     >
                       <Upload {...props} disabled={!editState}>
                         <Button
@@ -702,6 +762,10 @@ const DocumentForm: React.FC<Props> = ({
                     <Form.Item<FieldType>
                       name="healthCertificate"
                       className="mb-0"
+                      validateStatus={
+                        zodErrors && zodErrors?.healthCertificate ? 'error' : ''
+                      }
+                      help={zodErrors && zodErrors?.healthCertificate}
                     >
                       <Upload {...props} disabled={!editState}>
                         <Button
@@ -736,7 +800,14 @@ const DocumentForm: React.FC<Props> = ({
                     </div>
                   )}
                   {editState && (
-                    <Form.Item<FieldType> name="mcu" className="mb-0">
+                    <Form.Item<FieldType>
+                      name="mcu"
+                      className="mb-0"
+                      validateStatus={
+                        zodErrors && zodErrors?.mcu ? 'error' : ''
+                      }
+                      help={zodErrors && zodErrors?.mcu}
+                    >
                       <Upload {...props} disabled={!editState}>
                         <Button
                           className="d-flex align-items-center justify-content-center"
@@ -773,6 +844,12 @@ const DocumentForm: React.FC<Props> = ({
                     <Form.Item<FieldType>
                       name="vaccineCertificate"
                       className="mb-0"
+                      validateStatus={
+                        zodErrors && zodErrors?.vaccineCertificate
+                          ? 'error'
+                          : ''
+                      }
+                      help={zodErrors && zodErrors?.vaccineCertificate}
                       // rules={[
                       //   {
                       //     required: true,
@@ -818,12 +895,10 @@ const DocumentForm: React.FC<Props> = ({
                     <Form.Item<FieldType>
                       name="uploadCV"
                       className="mb-0"
-                      // rules={[
-                      //   {
-                      //     required: true,
-                      //     message: 'Please upload your cv!',
-                      //   },
-                      // ]}
+                      validateStatus={
+                        zodErrors && zodErrors?.uploadCV ? 'error' : ''
+                      }
+                      help={zodErrors && zodErrors?.uploadCV}
                     >
                       <Upload {...props} disabled={!editState}>
                         <Button

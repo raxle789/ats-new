@@ -527,8 +527,8 @@ const InterviewResultItem: React.FC<Props> = ({
                 title="candidateCv"
                 src={interviewResultData?.applicantCv}
                 width="100%"
-                height="28%"
-                style={{ position: 'sticky', top: '90px' }}
+                height="30%"
+                style={{ position: 'sticky', top: '92px' }}
               />
             </div>
           )}
