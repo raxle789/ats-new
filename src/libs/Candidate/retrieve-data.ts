@@ -2,8 +2,6 @@
 
 import prisma from '@/root/prisma';
 import { getUserSession } from '../Sessions';
-import { string } from 'zod';
-import { message } from 'antd';
 
 export type TypeFetchReturned = {
   success: boolean;

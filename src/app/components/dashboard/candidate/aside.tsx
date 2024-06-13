@@ -154,7 +154,6 @@ const CandidateAside = () => {
                 data-bs-auto-close="outside"
                 aria-expanded="false"
               >
-                {/* Only displaying reg-session and linkedin-session. Next -> auth-session */}
                 {authSessionPayload?.user?.name ?? 'unknown'}
               </button>
               <ul className="dropdown-menu" aria-labelledby="profile-dropdown">

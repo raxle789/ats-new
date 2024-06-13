@@ -7,7 +7,6 @@ import { deleteSession, setUserSession } from '../Sessions';
 import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { sendOTP } from '../Registration/verifications';
-// import bcryptV2 from 'bcrypt-updated';
 
 type GreCaptcha = {
   secret: string;

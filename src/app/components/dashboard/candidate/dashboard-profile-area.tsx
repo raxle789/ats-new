@@ -195,15 +195,15 @@ const DashboardProfileArea = () => {
       fetchSources(setMasterData),
       ]);
       };
-      
-      const onChange = (key: string) => {
-        setKeyState(key);
-        };
-        
-        useEffect(() => {
-          /* Candidate Data */
-          if (submitType.type === 'personal-data') {
-            fetchProfileData();
+
+  const onChange = (key: string) => {
+    setKeyState(key);
+  };
+
+  useEffect(() => {
+    /* Candidate Data */
+    if (submitType.type === 'personal-data') {
+      fetchProfileData();
     } else if (submitType.type === 'experience') {
       fetchExperiences();
       fetchAdditionalInformations();
