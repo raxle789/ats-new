@@ -125,16 +125,16 @@ const DocumentForm: React.FC<Props> = ({
       } else if (documentType === 'bank-account') {
         setSourceFile(documentData.bca_card);
       } else if (documentType === 'health-certificate') {
-        // setSourceFile(documentData.)
+        setSourceFile(documentData.health_certificate);
       } else if (documentType === 'mcu') {
         setSourceFile(documentData.mcu);
       } else if (documentType === 'vaccine') {
         setSourceFile(documentData.vaccine_certf);
       }
     }
-    if (sourceFile !== null) {
-      setIsOpenModal(true);
-    }
+    // if (sourceFile !== null) {
+    setIsOpenModal(true);
+    // }
   };
 
   const editOnChange = () => {
@@ -203,21 +203,19 @@ const DocumentForm: React.FC<Props> = ({
             file_base: base64HealtCertificate,
           },
         };
-      };
+      }
       /* MCU */
-      if(values.mcu) {
-        const base64MCU = await fileToBase64(
-          values.mcu.file.originFileObj,
-        );
+      if (values.mcu) {
+        const base64MCU = await fileToBase64(values.mcu.file.originFileObj);
         submittedValues = {
           ...submittedValues,
           mcu: {
             original_name: values.mcu.file.originFileObj.name,
             byte_size: values.mcu.file.originFileObj.size,
-            file_base: base64MCU
-          }
+            file_base: base64MCU,
+          },
         };
-      };
+      }
       /* Kartu Keluarga */
       if (values.kk) {
         const base64KartuKeluarga = await fileToBase64(
@@ -456,7 +454,7 @@ const DocumentForm: React.FC<Props> = ({
                     )}
                     {!editState && (
                       <p className="mb-0">
-                        {documentData?.identity_info?.id_card_number}
+                        {documentData?.identity_info?.id_card_number ?? '-'}
                       </p>
                     )}
                   </Form.Item>
@@ -468,7 +466,9 @@ const DocumentForm: React.FC<Props> = ({
                   <label className="fw-bold">ID/Passport</label>
                   {editState && (
                     <div>
-                      <p className="mb-0">{documentData?.identity_card_name}</p>
+                      <p className="mb-0">
+                        {documentData?.identity_card_name ?? 'No File'}
+                      </p>
                     </div>
                   )}
                   {editState && (
@@ -530,7 +530,7 @@ const DocumentForm: React.FC<Props> = ({
                     )}
                     {!editState && (
                       <p className="mb-0">
-                        {documentData?.identity_info?.tax_number}
+                        {documentData?.identity_info?.tax_number ?? '-'}
                       </p>
                     )}
                   </Form.Item>
@@ -542,7 +542,9 @@ const DocumentForm: React.FC<Props> = ({
                   <label className="fw-bold">Tax</label>
                   {editState && (
                     <div>
-                      <p className="mb-0">{documentData?.tax_name}</p>
+                      <p className="mb-0">
+                        {documentData?.tax_name ?? 'No File'}
+                      </p>
                     </div>
                   )}
                   {editState && (
@@ -606,7 +608,7 @@ const DocumentForm: React.FC<Props> = ({
                     )}
                     {!editState && (
                       <p className="mb-0">
-                        {documentData?.identity_info?.family_number}
+                        {documentData?.identity_info?.family_number ?? '-'}
                       </p>
                     )}
                   </Form.Item>
@@ -619,7 +621,7 @@ const DocumentForm: React.FC<Props> = ({
                   {editState && (
                     <div>
                       <p className="mb-0">
-                        {documentData?.family_registration_name}
+                        {documentData?.family_registration_name ?? 'No File'}
                       </p>
                     </div>
                   )}
@@ -675,7 +677,7 @@ const DocumentForm: React.FC<Props> = ({
                     )}
                     {!editState && (
                       <p className="mb-0">
-                        {documentData?.identity_info?.bank_account}
+                        {documentData?.identity_info?.bank_account ?? '-'}
                       </p>
                     )}
                   </Form.Item>
@@ -687,7 +689,9 @@ const DocumentForm: React.FC<Props> = ({
                   <label className="fw-bold">Bank Central Asia (BCA)</label>
                   {editState && (
                     <div>
-                      <p className="mb-0">{documentData?.bca_card_name}</p>
+                      <p className="mb-0">
+                        {documentData?.bca_card_name ?? 'No File'}
+                      </p>
                     </div>
                   )}
                   {editState && (
@@ -730,7 +734,9 @@ const DocumentForm: React.FC<Props> = ({
                   </label>
                   {editState && (
                     <div>
-                      <p className="mb-0">{documentData?.ijazah_name}</p>
+                      <p className="mb-0">
+                        {documentData?.ijazah_name ?? 'No File'}
+                      </p>
                     </div>
                   )}
                   {editState && (
@@ -771,7 +777,9 @@ const DocumentForm: React.FC<Props> = ({
                   <label className="fw-bold">Health Certicate</label>
                   {editState && (
                     <div>
-                      <p className="mb-0">(Nama File)</p>
+                      <p className="mb-0">
+                        {documentData?.health_certificate_name ?? 'No File'}
+                      </p>
                     </div>
                   )}
                   {editState && (
@@ -812,7 +820,9 @@ const DocumentForm: React.FC<Props> = ({
                   <label className="fw-bold">MCU Result</label>
                   {editState && (
                     <div>
-                      <p className="mb-0">{documentData?.mcu_name}</p>
+                      <p className="mb-0">
+                        {documentData?.mcu_name ?? 'No File'}
+                      </p>
                     </div>
                   )}
                   {editState && (
@@ -853,7 +863,9 @@ const DocumentForm: React.FC<Props> = ({
                   <label className="fw-bold">COVID Vaccine Certificate</label>
                   {editState && (
                     <div>
-                      <p className="mb-0">{documentData?.vaccine_certf_name}</p>
+                      <p className="mb-0">
+                        {documentData?.vaccine_certf_name ?? 'No File'}
+                      </p>
                     </div>
                   )}
                   {editState && (
@@ -903,7 +915,7 @@ const DocumentForm: React.FC<Props> = ({
                   {editState && (
                     <div>
                       <p className="mb-0">
-                        {documentData?.curriculum_vitae_name}
+                        {documentData?.curriculum_vitae_name ?? 'No File'}
                       </p>
                     </div>
                   )}
