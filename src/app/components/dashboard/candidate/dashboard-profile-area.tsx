@@ -23,7 +23,10 @@ import {
   fetchEducationLevels,
   fetchSkills,
 } from '@/libs/Fetch';
-import { getCandidateDocuments, getCandidateProfile } from '@/libs/Candidate/retrieve-data';
+import {
+  getCandidateDocuments,
+  getCandidateProfile,
+} from '@/libs/Candidate/retrieve-data';
 import { getCandidateExperiences } from '@/libs/Candidate/retrieve-data';
 import { getEducationSkills } from '@/libs/Candidate/retrieve-data';
 import { getAdditionalInformations } from '@/libs/Candidate/retrieve-data';
@@ -81,14 +84,28 @@ export type MasterData = {
 };
 
 type CandidateDocuments = {
-  curriculum_vitae: string | null;
-  ijazah: string | null;
-  identity_card: string | null;
-  tax: string | null;
-  family_registration: string | null;
-  bca_card: string | null;
-  mcu: string | null;
-  vaccine_certf: string | null;
+  identity_info?: {
+    bank_account?: string;
+    family_number?: string;
+    id_card_number?: string;
+    tax_number?: string;
+  };
+  curriculum_vitae?: string;
+  curriculum_vitae_name?: string;
+  ijazah?: string;
+  ijazah_name?: string;
+  identity_card?: string;
+  identity_card_name?: string;
+  tax?: string;
+  tax_name?: string;
+  family_registration?: string;
+  family_registration_name?: string;
+  bca_card?: string;
+  bca_card_name?: string;
+  mcu?: string;
+  mcu_name?: string;
+  vaccine_certf?: string;
+  vaccine_certf_name?: string;
 };
 
 const DashboardProfileArea = () => {
@@ -125,8 +142,9 @@ const DashboardProfileArea = () => {
     null,
   );
   const [noticePeriod, setNoticePeriod] = useState<string>('');
-  const [base64Documents, setBase64Documents] = useState<CandidateDocuments | null>(null);
-  console.info("Base64 Documents \t:", base64Documents);
+  const [base64Documents, setBase64Documents] =
+    useState<CandidateDocuments | null>(null);
+  console.info('Base64 Documents \t:', base64Documents);
   const [errors, setErrors] = useState<string>('');
   const [submitType, setSubmitType] = useState<{
     type: string;
@@ -175,7 +193,8 @@ const DashboardProfileArea = () => {
 
   const fetchCandidateDocuments = async () => {
     const candidateDocumentsData = await getCandidateDocuments();
-    if(!candidateDocumentsData.success) message.error(candidateDocumentsData.message);
+    if (!candidateDocumentsData.success)
+      message.error(candidateDocumentsData.message);
     return setBase64Documents(candidateDocumentsData.data);
   };
 
@@ -193,34 +212,33 @@ const DashboardProfileArea = () => {
       fetchCertificates(setMasterData),
       fetchSkills(setMasterData),
       fetchSources(setMasterData),
-      ]);
-      };
-      
-      const onChange = (key: string) => {
-        setKeyState(key);
-        };
-        
-        useEffect(() => {
-          /* Candidate Data */
-          if (submitType.type === 'personal-data') {
-            fetchProfileData();
+    ]);
+  };
+
+  const onChange = (key: string) => {
+    setKeyState(key);
+  };
+
+  useEffect(() => {
+    /* Candidate Data */
+    if (submitType.type === 'personal-data') {
+      fetchProfileData();
     } else if (submitType.type === 'experience') {
       fetchExperiences();
       fetchAdditionalInformations();
     } else if (submitType.type === 'education') {
       fetchEducationSkills();
     } else if (submitType.type === 'additional') {
-        fetchProfileData();
-        fetchAdditionalInformations();
+      fetchProfileData();
+      fetchAdditionalInformations();
     } else if (submitType.type === 'document') {
-      fetchCandidateDocuments()
-      
-      } else {
-        fetchProfileData();
-        fetchExperiences();
-        fetchEducationSkills();
-        fetchAdditionalInformations();
-        fetchCandidateDocuments()
+      fetchCandidateDocuments();
+    } else {
+      fetchProfileData();
+      fetchExperiences();
+      fetchEducationSkills();
+      fetchAdditionalInformations();
+      fetchCandidateDocuments();
     }
   }, [submitType]);
 
@@ -256,9 +274,7 @@ const DashboardProfileArea = () => {
   return (
     <>
       <h2 className="main-title">My Profile</h2>
-      {paramError &&
-        <h1>{paramError}</h1>
-      }
+      {paramError && <h1>{paramError}</h1>}
       <div className="bg-white card-box border-20">
         <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
         {keyState === '1' && (
@@ -303,7 +319,14 @@ const DashboardProfileArea = () => {
             errors={errors}
           />
         )}
-        {keyState === '5' && <DocumentForm documentData={base64Documents} />}
+        {keyState === '5' && (
+          <DocumentForm
+            documentData={base64Documents}
+            setDocumentData={setBase64Documents}
+            submitType={submitType}
+            setSubmitType={setSubmitType}
+          />
+        )}
       </div>
     </>
   );
