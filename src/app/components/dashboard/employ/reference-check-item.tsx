@@ -52,7 +52,7 @@ type Props = {
   ) => void | any;
 };
 
-const ReferenceCheckItem = ({
+const ReferenceCheckItem: React.FC<Props> = ({
   item,
   status,
   checkboxState,

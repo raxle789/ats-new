@@ -13,7 +13,11 @@ type Props = {
   status?: string | any;
 };
 
-const ReferenceCheckListArea = async ({ params, searchParams, status }) => {
+const ReferenceCheckListArea: React.FC<Props> = async ({
+  params,
+  searchParams,
+  status,
+}) => {
   // const pathname = usePathname();
   const page = searchParams?.page ?? '1';
 
