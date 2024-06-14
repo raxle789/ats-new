@@ -578,7 +578,9 @@ const InterviewItem: React.FC<Props> = ({
                           candidateId={item?.candidateId}
                           jobVacancyId={jobVacancyId}
                           interviewId={
-                            item?.candidateInterviews[interviewValue]?.value
+                            item?.candidateInterviews?.length
+                              ? item?.candidateInterviews[interviewValue]?.value
+                              : null
                           }
                           api={api}
                           router={router}

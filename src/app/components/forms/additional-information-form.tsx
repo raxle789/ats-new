@@ -4,6 +4,7 @@ import {
   InputNumber,
   Form,
   Select,
+  Spin,
   DatePicker,
   Tabs,
   Radio,
@@ -73,6 +74,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
   errors,
 }) => {
   const [form] = Form.useForm();
+  const [spinning, setSpinning] = useState(false);
   const [editState, setEditState] = useState(false);
   const [index, setIndex] = useState<number>(0);
   const initialItems: any[] = [];
@@ -310,7 +312,7 @@ const AdditionalInformationForm: React.FC<Props> = ({
   /* ACTIONS */
   const handleSubmit: FormProps<FieldType>['onFinish'] = async () => {
     if (editState) {
-      message.loading('Please wait');
+      setSpinning(true);
       let values = form.getFieldsValue();
       values = {
         ...values,
@@ -340,8 +342,12 @@ const AdditionalInformationForm: React.FC<Props> = ({
       console.log('submittedValueFamilies: ', plainObjectValues);
       // debugger;
       const updating = await updateAdditionalInformations(plainObjectValues);
-      if (!updating.success) return message.error(updating.message);
+      if (!updating.success) {
+        setSpinning(false);
+        return message.error(updating.message);
+      }
       message.success(updating.message);
+      setSpinning(false);
 
       if (setSubmitType && setAdditionalInformation && submitType) {
         setLoopTotal(0);
@@ -936,6 +942,8 @@ const AdditionalInformationForm: React.FC<Props> = ({
               )}
             </div>
           </Form>
+
+          <Spin fullscreen spinning={spinning} />
         </div>
       )}
     </>

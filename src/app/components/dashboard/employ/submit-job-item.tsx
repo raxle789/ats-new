@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import SpinFullScreen from '@/ui/spin-full-screen';
 import * as confirmations from '@/utils/confirmation';
 import * as messages from '@/utils/message';
 import JobVacancyForm from '../../forms/submit-job-vacancy-form';
@@ -174,7 +175,7 @@ const SubmitJobItem = ({
       form.setFieldsValue({
         jobEfpk: efpkDataByRequestNo?.RequestNo ?? null,
         jobTitle: efpkDataByRequestNo?.JobTitleCode ?? null,
-        jobEmploymentStatus: efpkDataByRequestNo?.EmpType ?? null,
+        // jobEmploymentStatus: efpkDataByRequestNo?.EmpType ?? null,
         jobPositionLevel: efpkDataByRequestNo?.JobLvlCode ?? null,
         jobVertical: efpkDataByRequestNo?.OrgGroupName ?? null,
         jobDepartment: efpkDataByRequestNo?.OrgGroupCode ?? null,
@@ -204,17 +205,24 @@ const SubmitJobItem = ({
   }
 
   function handleEfpkChange(value) {
-    setLoading(true);
-
-    const params = new URLSearchParams(searchParams);
-
     if (value) {
-      params.set('fpk', encodeURIComponent(value));
-    } else {
-      params.delete('fpk');
-    }
+      setLoading(true);
 
-    router.replace(`${pathname}?${params.toString()}`);
+      const params = new URLSearchParams(searchParams);
+
+      if (value) {
+        params.set('fpk', encodeURIComponent(value));
+      } else {
+        params.delete('fpk');
+      }
+
+      router.replace(`${pathname}?${params.toString()}`);
+    } else {
+      form.setFieldsValue({
+        jobEfpk: null,
+        jobTitle: null,
+      });
+    }
   }
 
   function handleVerticalChange(value) {
@@ -439,7 +447,7 @@ const SubmitJobItem = ({
     <>
       {contextHolder}
 
-      <Spin spinning={loading} fullscreen />
+      <SpinFullScreen loading={loading} />
 
       {/* <div>
         <Modal

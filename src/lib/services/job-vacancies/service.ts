@@ -119,7 +119,7 @@ export async function getAllEmploymentStatus() {
     // });
 
     const data =
-      await prisma.$queryRaw`SELECT name AS value, name AS label FROM employment_status ORDER BY name`;
+      await prisma.$queryRaw`SELECT name AS value, alias AS label FROM employment_status WHERE is_show = 1 ORDER BY name`;
 
     // const aliasedData = data?.map((d) => {
     //   return {
@@ -267,7 +267,7 @@ export async function getAllLineIndustry() {
 export async function getAllRegion() {
   try {
     const data =
-      await prisma.$queryRaw`SELECT LocGrpCode AS value, LocGrpName AS label FROM MASTER_ERA.dbo.ERA_MasterRegion ORDER BY LocGrpName`;
+      await prisma.$queryRaw`SELECT id AS value, name AS label FROM regions WHERE is_show = 1 ORDER BY id`;
 
     return data;
   } catch (e) {
@@ -514,23 +514,25 @@ export async function createJobVacancy(
           isConfidential: jobConfidential,
           isCareerFest: jobCareerFest,
           taId: taId,
-          jobTitleCode: jobTitle,
+          jobTitleCode: jobTitle ? jobTitle : null,
           jobFunctionId: jobFunction,
           employmentStatusName: jobEmploymentStatus,
           positionLevel: jobPositionLevel,
           verticalCode: jobVertical,
           organizationGroupCode: jobDepartment,
-          locationGroupCode: jobRegion,
+          regionId: jobRegion,
           locationCode: jobWorkLocation,
         },
       });
 
-      await tx.efpkJobVacancies.create({
-        data: {
-          efpkRequestNo: jobEfpk,
-          jobVacancyId: id,
-        },
-      });
+      if (jobEfpk) {
+        await tx.efpkJobVacancies.create({
+          data: {
+            efpkRequestNo: jobEfpk,
+            jobVacancyId: id,
+          },
+        });
+      }
 
       await tx.jobVacancyLineIndustries.createMany({
         data: jobLineIndustry.map((lineIndustryId) => {
@@ -758,6 +760,7 @@ export async function getJobVacancy(jobVacancyId) {
         employmentStatus: {
           select: {
             name: true,
+            alias: true,
           },
         },
         positionLevels: {
@@ -1042,7 +1045,7 @@ export async function getDepartmentByOrganizationGroupCode(
 export async function getWorkLocationByLocationCode(locationCode) {
   try {
     const [data] =
-      await prisma.$queryRaw`SELECT LocationName FROM MASTER_ERA.dbo.ERA_MasterLocation WHERE LocationCode = ${locationCode}`;
+      await prisma.$queryRaw`SELECT (CASE WHEN CHARINDEX('@', LocationName) > 0 THEN RTRIM(LTRIM(SUBSTRING(LocationName, CHARINDEX('@', LocationName) + 1, LEN(LocationName)))) ELSE LocationName END) AS LocationName FROM MASTER_ERA.dbo.ERA_MasterLocation WHERE LocationCode = ${locationCode}`;
 
     return data?.LocationName;
   } catch (e) {
@@ -1068,7 +1071,7 @@ export async function getLastEfpkApprovalByRequestNo(requestNo) {
 export async function getEfpkInitiatorNameByRequestNo(requestNo) {
   try {
     const [data] =
-      await prisma.$queryRaw`SELECT InitiatorName FROM MASTER_ERA.dbo.PROINT_trx_efpk WHERE RequestNo = ${requestNo}`;
+      await prisma.$queryRaw`SELECT TOP (1) InitiatorName FROM MASTER_ERA.dbo.PROINT_trx_efpk WHERE RequestNo = ${requestNo}`;
 
     return data?.InitiatorName;
   } catch (e) {
@@ -1137,23 +1140,31 @@ export async function editJobVacancy(
           positionLevel: jobPositionLevel,
           verticalCode: jobVertical,
           organizationGroupCode: jobDepartment,
-          locationGroupCode: jobRegion,
+          regionId: jobRegion,
           locationCode: jobWorkLocation,
         },
       });
 
-      await tx.efpkJobVacancies.deleteMany({
-        where: {
-          jobVacancyId: id,
-        },
-      });
+      if (jobEfpk) {
+        await tx.efpkJobVacancies.deleteMany({
+          where: {
+            jobVacancyId: id,
+          },
+        });
 
-      await tx.efpkJobVacancies.create({
-        data: {
-          jobVacancyId: id,
-          efpkRequestNo: jobEfpk,
-        },
-      });
+        await tx.efpkJobVacancies.create({
+          data: {
+            jobVacancyId: id,
+            efpkRequestNo: jobEfpk,
+          },
+        });
+      } else {
+        await tx.efpkJobVacancies.deleteMany({
+          where: {
+            jobVacancyId: id,
+          },
+        });
+      }
 
       await tx.jobVacancyLineIndustries.deleteMany({
         where: {
@@ -1501,7 +1512,11 @@ export async function getAllApplicantByJobVacancyId(
                   },
                 },
               },
-              working_experiences: true,
+              working_experiences: {
+                orderBy: {
+                  end_at: 'desc',
+                },
+              },
               educations: true,
               candidate_skills: {
                 select: {

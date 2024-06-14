@@ -103,6 +103,11 @@ const InterviewResultItem: React.FC<Props> = ({
     [key: string]: number;
   };
 
+  const [
+    isInterviewResultCategoryDisabled,
+    setIsInterviewResultCategoryDisabled,
+  ] = useState({});
+
   const [interviewResultCategoriesRate, setInterviewResultCategoriesRate] =
     useState<TInterviewResultCategoriesRate>({});
 
@@ -138,7 +143,8 @@ const InterviewResultItem: React.FC<Props> = ({
 
             form.setFieldsValue({
               [`${_.camelCase(data?.categoryName)}Rate`]: data?.score ?? 0,
-              [`${_.camelCase(data?.categoryName)}Comment`]: data?.comment,
+              [`${_.camelCase(data?.categoryName)}Comment`]:
+                data?.comment ?? null,
             });
           });
         }
@@ -146,9 +152,75 @@ const InterviewResultItem: React.FC<Props> = ({
     }
 
     if (
-      interviewResultData.interviewResultData &&
-      !_.isEmpty(interviewResultData.interviewResultData)
+      interviewResultData?.interviewResultData &&
+      !_.isEmpty(interviewResultData?.interviewResultData)
     ) {
+      if (
+        interviewResultData?.interviewResultCategories &&
+        interviewResultData?.interviewResultCategories?.length
+      ) {
+        interviewResultData?.interviewResultCategories?.map(
+          (item: {} | any) => {
+            // console.info(item);
+
+            if (
+              interviewResultData?.interviewResultData?.statusName ===
+              'Reschedule'
+            ) {
+              setIsInterviewResultCategoryDisabled((prev) => ({
+                ...prev,
+                [`${_.camelCase(item?.name)}Rate`]: true,
+                [`${_.camelCase(item?.name)}Comment`]: true,
+              }));
+
+              setInterviewResultCategoriesRate((prev) => ({
+                ...prev,
+                [`${_.camelCase(item?.name)}Rate`]: 1,
+              }));
+
+              form.setFieldsValue({
+                [`${_.camelCase(item?.name)}Rate`]: 1,
+                [`${_.camelCase(item?.name)}Comment`]: '-',
+              });
+            } else {
+              setIsInterviewResultCategoryDisabled((prev) => ({
+                ...prev,
+                [`${_.camelCase(item?.name)}Rate`]: false,
+                [`${_.camelCase(item?.name)}Comment`]: false,
+              }));
+
+              if (
+                item?.interviewResultCategories &&
+                item?.interviewResultCategories?.length
+              ) {
+                item?.interviewResultCategories?.map((data: {} | any) => {
+                  setInterviewResultCategoriesRate((prev) => ({
+                    ...prev,
+                    [`${_.camelCase(item?.name)}Rate`]: data?.score ?? 0,
+                  }));
+
+                  form.setFieldsValue({
+                    [`${_.camelCase(item?.name)}Rate`]: data?.score ?? 0,
+                    [`${_.camelCase(item?.name)}Comment`]:
+                      data?.comment ?? null,
+                  });
+                });
+              } else {
+                setInterviewResultCategoriesRate((prev) => ({
+                  ...prev,
+                  [`${_.camelCase(item?.name)}Rate`]: 0,
+                }));
+
+                form.setFieldsValue({
+                  [`${_.camelCase(item?.name)}Rate`]: 0,
+                  [`${_.camelCase(item?.name)}Comment`]: null,
+                });
+              }
+            }
+          },
+        );
+      }
+
       form.setFieldsValue({
         status: interviewResultData?.interviewResultData?.statusName,
         reason: interviewResultData?.interviewResultData?.reason,
@@ -187,11 +259,113 @@ const InterviewResultItem: React.FC<Props> = ({
 
   function handleInterviewResultStatus(status: string | any) {
     // console.log('radio checked', e.target.value);
-    setInterviewResultStatusValue(
-      interviewResultData?.interviewResultStatus?.findIndex(
-        (item: {} | any) => item?.name === status,
-      ),
+
+    const value = interviewResultData?.interviewResultStatus?.findIndex(
+      (item: {} | any) => item?.name === status,
     );
+
+    setInterviewResultStatusValue(value);
+
+    if (
+      interviewResultData?.interviewResultCategories &&
+      interviewResultData?.interviewResultCategories?.length
+    ) {
+      interviewResultData?.interviewResultCategories?.map((item: {} | any) => {
+        // console.info(item);
+
+        if (
+          interviewResultData?.interviewResultStatus[value]?.name ===
+          'Reschedule'
+        ) {
+          setIsInterviewResultCategoryDisabled((prev) => ({
+            ...prev,
+            [`${_.camelCase(item?.name)}Rate`]: true,
+            [`${_.camelCase(item?.name)}Comment`]: true,
+          }));
+
+          setInterviewResultCategoriesRate((prev) => ({
+            ...prev,
+            [`${_.camelCase(item?.name)}Rate`]: 1,
+          }));
+
+          form.setFieldsValue({
+            [`${_.camelCase(item?.name)}Rate`]: 1,
+            [`${_.camelCase(item?.name)}Comment`]: '-',
+          });
+        } else {
+          setIsInterviewResultCategoryDisabled((prev) => ({
+            ...prev,
+            [`${_.camelCase(item?.name)}Rate`]: false,
+            [`${_.camelCase(item?.name)}Comment`]: false,
+          }));
+
+          if (
+            item?.interviewResultCategories &&
+            item?.interviewResultCategories?.length
+          ) {
+            item?.interviewResultCategories?.map((data: {} | any) => {
+              if (
+                interviewResultData?.interviewResultData &&
+                !_.isEmpty(interviewResultData?.interviewResultData)
+              ) {
+                if (
+                  interviewResultData?.interviewResultData?.statusName ===
+                  'Reschedule'
+                ) {
+                  setInterviewResultCategoriesRate((prev) => ({
+                    ...prev,
+                    [`${_.camelCase(item?.name)}Rate`]: 0,
+                  }));
+
+                  form.setFieldsValue({
+                    [`${_.camelCase(item?.name)}Rate`]: 0,
+                    [`${_.camelCase(item?.name)}Comment`]: null,
+                  });
+                } else {
+                  setInterviewResultCategoriesRate((prev) => ({
+                    ...prev,
+                    [`${_.camelCase(item?.name)}Rate`]: data?.score ?? 0,
+                  }));
+
+                  form.setFieldsValue({
+                    [`${_.camelCase(item?.name)}Rate`]: data?.score ?? 0,
+                    [`${_.camelCase(item?.name)}Comment`]:
+                      data?.comment ?? null,
+                  });
+                }
+              }
+            });
+          } else {
+            setInterviewResultCategoriesRate((prev) => ({
+              ...prev,
+              [`${_.camelCase(item?.name)}Rate`]: 0,
+            }));
+
+            form.setFieldsValue({
+              [`${_.camelCase(item?.name)}Rate`]: 0,
+              [`${_.camelCase(item?.name)}Comment`]: null,
+            });
+          }
+        }
+
+        // if (
+        //   item?.interviewResultCategories &&
+        //   item?.interviewResultCategories?.length
+        // ) {
+        //   item?.interviewResultCategories?.map((data: {} | any) => {
+        //     setInterviewResultCategoriesRate((prev) => ({
+        //       ...prev,
+        //       [`${_.camelCase(data?.categoryName)}Rate`]: 1,
+        //     }));
+
+        //     form.setFieldsValue({
+        //       [`${_.camelCase(data?.categoryName)}Rate`]: 1,
+        //       [`${_.camelCase(data?.categoryName)}Comment`]: '-',
+        //     });
+        //   });
+        // }
+      });
+    }
   }
 
   function handleSubmit(values: any) {
@@ -250,18 +424,19 @@ const InterviewResultItem: React.FC<Props> = ({
     // insertInterviewResult(params, searchParams, values);
   }
 
-  function onFinishFailed(errorInfo: {} | any) {
-    if (errorInfo.errorFields && errorInfo.errorFields.length > 0) {
-      const errorMessage = errorInfo.errorFields
-        .map((field: any) => field.errors.join(', '))
-        .join('; ');
-      message.error(`Failed: ${errorMessage}`);
-    }
-  }
+  // function onFinishFailed(errorInfo: {} | any) {
+  //   if (errorInfo.errorFields && errorInfo.errorFields.length > 0) {
+  //     const errorMessage = errorInfo.errorFields
+  //       .map((field: any) => field.errors.join(', '))
+  //       .join('; ');
+  //     message.error(`Failed: ${errorMessage}`);
+  //   }
+  // }
 
   useEffect(() => {
     console.log('ratingUseEffect: ', rating);
   }, [rating]);
+
   return (
     <>
       {isOpenModal && (
@@ -345,10 +520,13 @@ const InterviewResultItem: React.FC<Props> = ({
               form={form}
               scrollToFirstError={true}
               onFinish={handleSubmit}
-              onFinishFailed={onFinishFailed}
+              // onFinishFailed={onFinishFailed}
             >
               <div className="row">
                 {interviewResultData?.interviewResultCategories?.length &&
+                  // interviewResultData?.interviewResultStatus[
+                  //   interviewResultStatusValue
+                  // ]?.name !== 'Reschedule' &&
                   interviewResultData?.interviewResultCategories?.map(
                     (item: {} | any, index: number) => {
                       return (
@@ -373,6 +551,11 @@ const InterviewResultItem: React.FC<Props> = ({
                                   <div>
                                     <Rate
                                       tooltips={desc}
+                                      disabled={
+                                        isInterviewResultCategoryDisabled[
+                                          `${_.camelCase(item?.name)}Rate`
+                                        ]
+                                      }
                                       allowClear={true}
                                       onChange={(value) =>
                                         handleRateChange(
@@ -417,6 +600,11 @@ const InterviewResultItem: React.FC<Props> = ({
                                 >
                                   <TextArea
                                     placeholder="Comment"
+                                    disabled={
+                                      isInterviewResultCategoryDisabled[
+                                        `${_.camelCase(item?.name)}Comment`
+                                      ]
+                                    }
                                     autoSize={{ minRows: 3 }}
                                   />
                                 </Form.Item>
@@ -527,8 +715,8 @@ const InterviewResultItem: React.FC<Props> = ({
                 title="candidateCv"
                 src={interviewResultData?.applicantCv}
                 width="100%"
-                height="28%"
-                style={{ position: 'sticky', top: '90px' }}
+                height="30%"
+                style={{ position: 'sticky', top: '92px' }}
               />
             </div>
           )}

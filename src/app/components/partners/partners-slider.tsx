@@ -78,6 +78,7 @@ const PartnersSlider = () => {
                 src={logo}
                 alt="logo"
                 style={{ width: 'auto', height: '63px' }}
+                loading="lazy"
               />
             </div>
           </div>

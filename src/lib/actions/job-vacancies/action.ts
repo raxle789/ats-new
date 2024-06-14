@@ -270,7 +270,7 @@ export async function getJobVacancyData(
               data?.locationCode,
             ),
             positionLevelName: data?.positionLevels?.name,
-            jobTypeName: data?.employmentStatus?.name,
+            jobTypeName: data?.employmentStatus?.alias,
             publishedDate: moment(data?.publishedDate, 'YYYY-MM-DD').format(
               'DD-MMM-YYYY',
             ),
@@ -328,10 +328,9 @@ export async function getJobVacancyData(
         if (data && !_.isEmpty(data)) {
           let newData = {
             jobId: await crypto.encryptData(data?.id),
-            jobEfpk:
-              data?.efpkJobVacancies?.length > 0
-                ? data?.efpkJobVacancies[0]?.efpkRequestNo
-                : '',
+            jobEfpk: data?.efpkJobVacancies?.length
+              ? data?.efpkJobVacancies[0]?.efpkRequestNo
+              : null,
             jobTitle: data?.jobTitleCode,
             jobTitleAliases: data.jobTitleAliases,
             jobFunction: data?.jobFunctions?.id,
@@ -342,7 +341,7 @@ export async function getJobVacancyData(
             jobLineIndustry: data?.jobVacancyLineIndustries?.map(
               (d) => d?.lineIndustryId,
             ),
-            jobRegion: data?.locationGroupCode,
+            jobRegion: data?.regionId,
             jobWorkLocation: data?.locationCode,
             jobWorkLocationAddress: data?.workLocationAddress,
             jobPublishedDateAndExpiredDate: [
@@ -438,7 +437,7 @@ export async function getAllJobVacancyData(
             }
             return {
               jobId: await crypto.encryptData(d?.id),
-              jobTitleName: await getJobTitleByCode(d?.jobTitleCode),
+              jobTitleName: d?.jobTitleAliases,
               departmentName: await getDepartmentByOrganizationGroupCode(
                 d?.organizationGroupCode,
               ),
@@ -480,9 +479,13 @@ export async function getAllJobVacancyData(
                     ? '0 days'
                     : `${different} days`;
               })(),
-              user: await getEfpkInitiatorNameByRequestNo(
+              user: (await getEfpkInitiatorNameByRequestNo(
                 d?.efpkJobVacancies[0]?.efpkRequestNo,
-              ),
+              ))
+                ? await getEfpkInitiatorNameByRequestNo(
+                    d?.efpkJobVacancies[0]?.efpkRequestNo,
+                  )
+                : null,
               recruiter: d?.ta?.name,
               efpkStatus: d?.efpkJobVacancies?.length > 0 ? 'Done' : 'Not Yet',
             };

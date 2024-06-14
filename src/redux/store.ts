@@ -4,6 +4,7 @@ import wishlistSlice from './features/wishlist';
 import filterSlice from './features/filterSlice';
 import sidebarSlice from './features/sidebarSlice';
 import applicantStepSlice from './features/applicantStepSlice';
+import userRegisterStepSlice from './features/fatkhur/registerSlice';
 // import stepSlice from './features/stepSlice';
 // import registerSlice from './features/registerSlice';
 // import authSlice from './features/authorizingSlice';
@@ -12,7 +13,6 @@ import applicantStepSlice from './features/applicantStepSlice';
 
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
-import userRegisterStepSlice from './features/fatkhur/registerSlice';
 
 const rootReducer = combineReducers({
   filter: filterSlice,

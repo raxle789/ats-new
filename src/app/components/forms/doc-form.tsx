@@ -10,7 +10,6 @@ import { fileToBase64 } from '@/libs/Registration/utils';
 import { updateCandidateDocuments } from '@/libs/Candidate/actions';
 import { Documents } from '@/libs/validations/Documents';
 import EmployJobDetailSkeleton from '@/ui/skeleton';
-// import { getCandidateDocuments } from '@/libs/Candidate/retrieve-data';
 
 type FieldType = {
   idFile?: string | any;
@@ -36,6 +35,11 @@ const props: UploadProps = {
     authorization: 'authorization-text',
   },
   listType: 'picture',
+  // defaultFileList: [
+  //   {
+
+  //   }
+  // ],
   accept: '.pdf',
   onChange(info) {
     if (info.file.status !== 'uploading') {
@@ -111,19 +115,6 @@ const DocumentForm: React.FC<Props> = ({
     });
   };
 
-  const convertBase64ToFile = async (fileBase64: string, filename: string) => {
-    const toReqFile = await fetch(fileBase64 as string);
-    const blob = await toReqFile.blob();
-    console.log('blob: ', blob);
-
-    const toFile = new File([blob], filename, {
-      type: blob.type,
-      lastModified: Date.now(),
-    });
-    console.log('new-file: ', toFile);
-    return toFile;
-  };
-
   const handleView = (documentType: string) => {
     if (documentData) {
       if (documentType === 'id') {
@@ -139,16 +130,16 @@ const DocumentForm: React.FC<Props> = ({
       } else if (documentType === 'bank-account') {
         setSourceFile(documentData.bca_card);
       } else if (documentType === 'health-certificate') {
-        // setSourceFile(documentData.)
+        setSourceFile(documentData.health_certificate);
       } else if (documentType === 'mcu') {
         setSourceFile(documentData.mcu);
       } else if (documentType === 'vaccine') {
         setSourceFile(documentData.vaccine_certf);
       }
     }
-    if (sourceFile !== null) {
-      setIsOpenModal(true);
-    }
+    // if (sourceFile !== null) {
+    setIsOpenModal(true);
+    // }
   };
 
   const editOnChange = () => {
@@ -192,6 +183,18 @@ const DocumentForm: React.FC<Props> = ({
           },
         };
       }
+      /* MCU */
+      if (values.mcu) {
+        const base64MCU = await fileToBase64(values.mcu.file.originFileObj);
+        submittedValues = {
+          ...submittedValues,
+          mcu: {
+            original_name: values.mcu.file.originFileObj.name,
+            byte_size: values.mcu.file.originFileObj.size,
+            file_base: base64MCU,
+          },
+        };
+      }
       /* Health Certificate */
       if (values.healthCertificate) {
         const base64HealtCertificate = await fileToBase64(
@@ -205,21 +208,19 @@ const DocumentForm: React.FC<Props> = ({
             file_base: base64HealtCertificate,
           },
         };
-      };
+      }
       /* MCU */
-      if(values.mcu) {
-        const base64MCU = await fileToBase64(
-          values.mcu.file.originFileObj,
-        );
+      if (values.mcu) {
+        const base64MCU = await fileToBase64(values.mcu.file.originFileObj);
         submittedValues = {
           ...submittedValues,
           mcu: {
             original_name: values.mcu.file.originFileObj.name,
             byte_size: values.mcu.file.originFileObj.size,
-            file_base: base64MCU
-          }
+            file_base: base64MCU,
+          },
         };
-      };
+      }
       /* Kartu Keluarga */
       if (values.kk) {
         const base64KartuKeluarga = await fileToBase64(
@@ -292,12 +293,15 @@ const DocumentForm: React.FC<Props> = ({
         const zodErrors = validate.error.flatten().fieldErrors;
         console.info('VALIDATE -> ', zodErrors);
         setZodErrors(zodErrors);
+        setSpinning(false);
         return message.error('Validation failed!');
       }
       // debugger;
       const updateDocuments = await updateCandidateDocuments(submittedValues);
-      if (!updateDocuments.success)
+      if (!updateDocuments.success) {
+        setSpinning(false);
         return message.error(updateDocuments.message);
+      }
       message.success(updateDocuments.message);
       setSpinning(false);
 
@@ -395,21 +399,25 @@ const DocumentForm: React.FC<Props> = ({
       // if (idCardFile && npwpFile && kkFile) {
       // }
 
-      console.log(
-        'setState - (documents) - initFieldsValue: ',
-        initFieldsValue,
-      );
+      // console.log(
+      //   'setState - (documents) - initFieldsValue: ',
+      //   initFieldsValue,
+      // );
     }
   }, [documentData]);
 
-  useEffect(() => {
-    console.log('sourceFile sebelum dioper: ', sourceFile);
-  }, [sourceFile]);
+  // useEffect(() => {
+  //   console.log('sourceFile sebelum dioper: ', sourceFile);
+  // }, [sourceFile]);
 
   useEffect(() => {
     console.log('useEffect - (documents) - initFieldsValue: ', initFieldsValue);
     form.setFieldsValue(initFieldsValue);
   }, [initFieldsValue]);
+
+  useEffect(() => {
+    console.log('zodErrors: ', zodErrors);
+  }, [zodErrors]);
   return (
     <>
       {documentData === null && <EmployJobDetailSkeleton rows={2} />}
@@ -435,7 +443,14 @@ const DocumentForm: React.FC<Props> = ({
               <div className="col-6">
                 <div className="input-group-meta position-relative mb-15">
                   <label className="fw-bold">ID/Passport Number</label>
-                  <Form.Item<FieldType> name="idNumber" className="mb-0">
+                  <Form.Item<FieldType>
+                    name="idNumber"
+                    className="mb-0"
+                    validateStatus={
+                      zodErrors && zodErrors?.idNumber ? 'error' : ''
+                    }
+                    help={zodErrors && zodErrors?.idNumber}
+                  >
                     {editState && (
                       <Input
                         placeholder="Your ID/Pasport Number"
@@ -444,7 +459,7 @@ const DocumentForm: React.FC<Props> = ({
                     )}
                     {!editState && (
                       <p className="mb-0">
-                        {documentData?.identity_info?.id_card_number}
+                        {documentData?.identity_info?.id_card_number ?? '-'}
                       </p>
                     )}
                   </Form.Item>
@@ -456,11 +471,20 @@ const DocumentForm: React.FC<Props> = ({
                   <label className="fw-bold">ID/Passport</label>
                   {editState && (
                     <div>
-                      <p className="mb-0">{documentData?.identity_card_name}</p>
+                      <p className="mb-0">
+                        {documentData?.identity_card_name ?? 'No File'}
+                      </p>
                     </div>
                   )}
                   {editState && (
-                    <Form.Item<FieldType> name="idFile" className="mb-0">
+                    <Form.Item<FieldType>
+                      name="idFile"
+                      className="mb-0"
+                      validateStatus={
+                        zodErrors && zodErrors?.idFile ? 'error' : ''
+                      }
+                      help={zodErrors && zodErrors?.idFile}
+                    >
                       <Upload {...props} disabled={!editState}>
                         <Button
                           className="d-flex align-items-center justify-content-center"
@@ -495,7 +519,14 @@ const DocumentForm: React.FC<Props> = ({
               <div className="col-6">
                 <div className="input-group-meta position-relative mb-15">
                   <label className="fw-bold">Tax Number</label>
-                  <Form.Item<FieldType> name="npwpNumber" className="mb-0">
+                  <Form.Item<FieldType>
+                    name="npwpNumber"
+                    className="mb-0"
+                    validateStatus={
+                      zodErrors && zodErrors?.npwpNumber ? 'error' : ''
+                    }
+                    help={zodErrors && zodErrors?.npwpNumber}
+                  >
                     {editState && (
                       <Input
                         placeholder="Your NPWP Number"
@@ -504,7 +535,7 @@ const DocumentForm: React.FC<Props> = ({
                     )}
                     {!editState && (
                       <p className="mb-0">
-                        {documentData?.identity_info?.tax_number}
+                        {documentData?.identity_info?.tax_number ?? '-'}
                       </p>
                     )}
                   </Form.Item>
@@ -516,11 +547,20 @@ const DocumentForm: React.FC<Props> = ({
                   <label className="fw-bold">Tax</label>
                   {editState && (
                     <div>
-                      <p className="mb-0">{documentData?.tax_name}</p>
+                      <p className="mb-0">
+                        {documentData?.tax_name ?? 'No File'}
+                      </p>
                     </div>
                   )}
                   {editState && (
-                    <Form.Item<FieldType> name="npwp" className="mb-0">
+                    <Form.Item<FieldType>
+                      name="npwp"
+                      className="mb-0"
+                      validateStatus={
+                        zodErrors && zodErrors?.npwp ? 'error' : ''
+                      }
+                      help={zodErrors && zodErrors?.npwp}
+                    >
                       <Upload {...props} disabled={!editState}>
                         <Button
                           className="d-flex align-items-center justify-content-center"
@@ -557,7 +597,14 @@ const DocumentForm: React.FC<Props> = ({
                   <label className="fw-bold">
                     Family Registration Card Number
                   </label>
-                  <Form.Item<FieldType> name="kkNumber" className="mb-0">
+                  <Form.Item<FieldType>
+                    name="kkNumber"
+                    className="mb-0"
+                    validateStatus={
+                      zodErrors && zodErrors?.kkNumber ? 'error' : ''
+                    }
+                    help={zodErrors && zodErrors?.kkNumber}
+                  >
                     {editState && (
                       <Input
                         placeholder="Your Family Register Number"
@@ -566,7 +613,7 @@ const DocumentForm: React.FC<Props> = ({
                     )}
                     {!editState && (
                       <p className="mb-0">
-                        {documentData?.identity_info?.family_number}
+                        {documentData?.identity_info?.family_number ?? '-'}
                       </p>
                     )}
                   </Form.Item>
@@ -579,12 +626,17 @@ const DocumentForm: React.FC<Props> = ({
                   {editState && (
                     <div>
                       <p className="mb-0">
-                        {documentData?.family_registration_name}
+                        {documentData?.family_registration_name ?? 'No File'}
                       </p>
                     </div>
                   )}
                   {editState && (
-                    <Form.Item<FieldType> name="kk" className="mb-0">
+                    <Form.Item<FieldType>
+                      name="kk"
+                      className="mb-0"
+                      validateStatus={zodErrors && zodErrors?.kk ? 'error' : ''}
+                      help={zodErrors && zodErrors?.kk}
+                    >
                       <Upload {...props} disabled={!editState}>
                         <Button
                           className="d-flex align-items-center justify-content-center"
@@ -617,6 +669,10 @@ const DocumentForm: React.FC<Props> = ({
                   <Form.Item<FieldType>
                     name="bankAccountNumber"
                     className="mb-0"
+                    validateStatus={
+                      zodErrors && zodErrors?.bankAccountNumber ? 'error' : ''
+                    }
+                    help={zodErrors && zodErrors?.bankAccountNumber}
                   >
                     {editState && (
                       <Input
@@ -626,7 +682,7 @@ const DocumentForm: React.FC<Props> = ({
                     )}
                     {!editState && (
                       <p className="mb-0">
-                        {documentData?.identity_info?.bank_account}
+                        {documentData?.identity_info?.bank_account ?? '-'}
                       </p>
                     )}
                   </Form.Item>
@@ -638,11 +694,20 @@ const DocumentForm: React.FC<Props> = ({
                   <label className="fw-bold">Bank Central Asia (BCA)</label>
                   {editState && (
                     <div>
-                      <p className="mb-0">{documentData?.bca_card_name}</p>
+                      <p className="mb-0">
+                        {documentData?.bca_card_name ?? 'No File'}
+                      </p>
                     </div>
                   )}
                   {editState && (
-                    <Form.Item<FieldType> name="bankAccount" className="mb-0">
+                    <Form.Item<FieldType>
+                      name="bankAccount"
+                      className="mb-0"
+                      validateStatus={
+                        zodErrors && zodErrors?.bankAccount ? 'error' : ''
+                      }
+                      help={zodErrors && zodErrors?.bankAccount}
+                    >
                       <Upload {...props} disabled={!editState}>
                         <Button
                           className="d-flex align-items-center justify-content-center"
@@ -674,13 +739,19 @@ const DocumentForm: React.FC<Props> = ({
                   </label>
                   {editState && (
                     <div>
-                      <p className="mb-0">{documentData?.ijazah_name}</p>
+                      <p className="mb-0">
+                        {documentData?.ijazah_name ?? 'No File'}
+                      </p>
                     </div>
                   )}
                   {editState && (
                     <Form.Item<FieldType>
                       name="latestEducation"
                       className="mb-0"
+                      validateStatus={
+                        zodErrors && zodErrors?.latestEducation ? 'error' : ''
+                      }
+                      help={zodErrors && zodErrors?.latestEducation}
                     >
                       <Upload {...props} disabled={!editState}>
                         <Button
@@ -711,13 +782,19 @@ const DocumentForm: React.FC<Props> = ({
                   <label className="fw-bold">Health Certicate</label>
                   {editState && (
                     <div>
-                      <p className="mb-0">(Nama File)</p>
+                      <p className="mb-0">
+                        {documentData?.health_certificate_name ?? 'No File'}
+                      </p>
                     </div>
                   )}
                   {editState && (
                     <Form.Item<FieldType>
                       name="healthCertificate"
                       className="mb-0"
+                      validateStatus={
+                        zodErrors && zodErrors?.healthCertificate ? 'error' : ''
+                      }
+                      help={zodErrors && zodErrors?.healthCertificate}
                     >
                       <Upload {...props} disabled={!editState}>
                         <Button
@@ -748,11 +825,20 @@ const DocumentForm: React.FC<Props> = ({
                   <label className="fw-bold">MCU Result</label>
                   {editState && (
                     <div>
-                      <p className="mb-0">{documentData?.mcu_name}</p>
+                      <p className="mb-0">
+                        {documentData?.mcu_name ?? 'No File'}
+                      </p>
                     </div>
                   )}
                   {editState && (
-                    <Form.Item<FieldType> name="mcu" className="mb-0">
+                    <Form.Item<FieldType>
+                      name="mcu"
+                      className="mb-0"
+                      validateStatus={
+                        zodErrors && zodErrors?.mcu ? 'error' : ''
+                      }
+                      help={zodErrors && zodErrors?.mcu}
+                    >
                       <Upload {...props} disabled={!editState}>
                         <Button
                           className="d-flex align-items-center justify-content-center"
@@ -782,13 +868,21 @@ const DocumentForm: React.FC<Props> = ({
                   <label className="fw-bold">COVID Vaccine Certificate</label>
                   {editState && (
                     <div>
-                      <p className="mb-0">{documentData?.vaccine_certf_name}</p>
+                      <p className="mb-0">
+                        {documentData?.vaccine_certf_name ?? 'No File'}
+                      </p>
                     </div>
                   )}
                   {editState && (
                     <Form.Item<FieldType>
                       name="vaccineCertificate"
                       className="mb-0"
+                      validateStatus={
+                        zodErrors && zodErrors?.vaccineCertificate
+                          ? 'error'
+                          : ''
+                      }
+                      help={zodErrors && zodErrors?.vaccineCertificate}
                       // rules={[
                       //   {
                       //     required: true,
@@ -826,7 +920,7 @@ const DocumentForm: React.FC<Props> = ({
                   {editState && (
                     <div>
                       <p className="mb-0">
-                        {documentData?.curriculum_vitae_name}
+                        {documentData?.curriculum_vitae_name ?? 'No File'}
                       </p>
                     </div>
                   )}
@@ -834,12 +928,10 @@ const DocumentForm: React.FC<Props> = ({
                     <Form.Item<FieldType>
                       name="uploadCV"
                       className="mb-0"
-                      // rules={[
-                      //   {
-                      //     required: true,
-                      //     message: 'Please upload your cv!',
-                      //   },
-                      // ]}
+                      validateStatus={
+                        zodErrors && zodErrors?.uploadCV ? 'error' : ''
+                      }
+                      help={zodErrors && zodErrors?.uploadCV}
                     >
                       <Upload {...props} disabled={!editState}>
                         <Button

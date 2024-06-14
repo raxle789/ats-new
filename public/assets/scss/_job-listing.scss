@@ -493,9 +493,12 @@
     width: calc(100% - 90px);
     margin-left: 30px;
     &:hover {
-      color: $color-three;
+      color: $color-one !important;
     }
   }
+  // .title:hover {
+  //   color: $color-one;
+  // }
   .split-box1 {
     width: calc(100% - 60px);
     padding-left: 10px;
@@ -780,7 +783,7 @@
       color: #000;
       margin-bottom: 7px;
       &:hover {
-        color: $color-five;
+        color: $color-one;
       }
     }
     .info-data li {

@@ -6,7 +6,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { Checkbox, Popover, Spin, message } from 'antd';
 import type { CheckboxProps } from 'antd';
 import ActionCheckboxPipeline from '../common/popup/action-checkbox-pipeline';
-import RefCheckItem from '../dashboard/employ/ref-check-item';
+// import RefCheckItem from '../dashboard/employ/ref-check-item';
 // const { confirm } = Modal;
 
 type Props = {
@@ -174,7 +174,7 @@ const RefCheckListItem: React.FC<Props> = ({
         </div>
       )}
       <div className="wrapper">
-        {applicantData?.map((item: any) => (
+        {/* {applicantData?.map((item: any) => (
           <RefCheckItem
             key={item?.candidateId}
             item={item}
@@ -189,7 +189,7 @@ const RefCheckListItem: React.FC<Props> = ({
             setLoading={setLoading}
             handleApplicant={handleApplicant}
           />
-        ))}
+        ))} */}
       </div>
     </>
   );

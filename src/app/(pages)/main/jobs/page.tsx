@@ -4,27 +4,27 @@ import React from 'react';
 // import HeaderSix from '@/layouts/headers/header-6';
 import Wrapper from '@/layouts/wrapper';
 import JobBreadcrumb from '../../../components/jobs/breadcrumb/job-breadcrumb';
-import JobList from '../../../components/jobs/list/job-list-area';
+// import JobList from '../../../components/jobs/list/job-list-area';
+import dynamic from 'next/dynamic';
 // import JobPortalIntro from '../../../components/job-portal-intro/job-portal-intro';
 // import FooterOne from '@/layouts/footers/footer-one';
 
 export const revalidate = 0;
 
-// interface IProps {
-//   searchParams: {
-//     page?: string;
-//     perPage?: string;
-//     query?: string;
-//   };
-// }
+type Props = {
+  searchParams: {} | any;
+};
 
-const JobVacancies = async ({ searchParams }) => {
+const JobVacancies: React.FC<Props> = async ({ searchParams }) => {
+  const DynamicJobList = dynamic(
+    () => import('../../../components/jobs/list/job-list-area'),
+  );
   return (
     <Wrapper>
       <div className="main-page-wrapper">
         <JobBreadcrumb />
 
-        <JobList searchParams={searchParams} />
+        <DynamicJobList searchParams={searchParams} />
       </div>
     </Wrapper>
   );

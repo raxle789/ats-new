@@ -12,8 +12,11 @@ import carousel6 from '@/assets/images/home/carousel6.jpg';
 import carousel7 from '@/assets/images/home/carousel7.jpg';
 import carousel8 from '@/assets/images/home/carousel8.jpg';
 import carousel9 from '@/assets/images/home/carousel9.jpg';
+// import dynamic from 'next/dynamic';
 
 const SpiritSection = () => {
+  // const DynamicCarousel9 = dynamic(() => import('@/assets/images/home/carousel9.jpg'));
+  // const imageSrc = require('@/assets/images/home/carousel9.jpg');
   return (
     <div className="spirit-section row">
       <div className="col-lg-4 spirit-words">
@@ -44,6 +47,7 @@ const SpiritSection = () => {
               className="d-block w-100"
               alt=""
               style={{ width: 'auto', height: '450px' }}
+              loading="lazy"
             />
           </div>
           <div className="carousel-item">
@@ -52,6 +56,7 @@ const SpiritSection = () => {
               className="d-block w-100"
               alt=""
               style={{ width: 'auto', height: '450px' }}
+              loading="lazy"
             />
           </div>
           <div className="carousel-item">
@@ -60,6 +65,7 @@ const SpiritSection = () => {
               className="d-block w-100"
               alt=""
               style={{ width: 'auto', height: '450px' }}
+              loading="lazy"
             />
           </div>
           <div className="carousel-item">
@@ -68,6 +74,7 @@ const SpiritSection = () => {
               className="d-block w-100"
               alt=""
               style={{ width: 'auto', height: '450px' }}
+              loading="lazy"
             />
           </div>
           <div className="carousel-item">
@@ -76,6 +83,7 @@ const SpiritSection = () => {
               className="d-block w-100"
               alt=""
               style={{ width: 'auto', height: '450px' }}
+              loading="lazy"
             />
           </div>
           <div className="carousel-item">
@@ -84,6 +92,7 @@ const SpiritSection = () => {
               className="d-block w-100"
               alt=""
               style={{ width: 'auto', height: '450px' }}
+              loading="lazy"
             />
           </div>
           <div className="carousel-item">
@@ -92,6 +101,7 @@ const SpiritSection = () => {
               className="d-block w-100"
               alt=""
               style={{ width: 'auto', height: '450px' }}
+              loading="lazy"
             />
           </div>
           <div className="carousel-item">
@@ -100,6 +110,7 @@ const SpiritSection = () => {
               className="d-block w-100"
               alt=""
               style={{ width: 'auto', height: '450px' }}
+              loading="lazy"
             />
           </div>
           <div className="carousel-item">
@@ -108,6 +119,7 @@ const SpiritSection = () => {
               className="d-block w-100"
               alt=""
               style={{ width: 'auto', height: '450px' }}
+              loading="lazy"
             />
           </div>
         </div>

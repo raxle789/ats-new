@@ -152,7 +152,7 @@ const ApplicantItem: React.FC<Props> = ({
             <div className="col-lg-4 col-md-4 col-sm-6">
               <div className="candidate-info">
                 <span>Year of Experience</span>
-                <div>{`${item?.candidateYearOfExperience ?? '-'} year`}</div>
+                <div>{`${item?.candidateYearOfExperience ?? '-'}`}</div>
               </div>
               <div className="candidate-info mt-2">
                 <span>Status</span>

@@ -7,6 +7,7 @@ import {
   Tabs,
   Divider,
   Space,
+  Spin,
   Button,
   InputNumber,
   message,
@@ -123,6 +124,7 @@ const EducationSkillsForm: React.FC<Props> = ({
   errors,
 }) => {
   const [form] = Form.useForm();
+  const [spinning, setSpinning] = useState(false);
   const [editState, setEditState] = useState(false);
   const [certificationIdx, setCertificationIdx] = useState<number>(0);
   const certifInitItems: any[] = [];
@@ -393,7 +395,7 @@ const EducationSkillsForm: React.FC<Props> = ({
 
   const handleSubmit: FormProps<FieldType>['onFinish'] = async () => {
     if (editState) {
-      message.loading('Please wait');
+      setSpinning(true);
       let values = form.getFieldsValue();
       values = {
         ...values,
@@ -425,8 +427,12 @@ const EducationSkillsForm: React.FC<Props> = ({
       console.log('PLAIN OBJECT VALUES \t: ', plainObjectValues);
       const updating = await updateEducationSkills(plainObjectValues);
       console.info('Updating Result \t: ', updating);
-      if (!updating.success) return message.error(updating.message);
+      if (!updating.success) {
+        setSpinning(false);
+        return message.error(updating.message);
+      }
       message.success(updating.message);
+      setSpinning(false);
 
       if (setSubmitType && setEducationAndSkill && submitType) {
         setLoopTotal(0);
@@ -1014,6 +1020,8 @@ const EducationSkillsForm: React.FC<Props> = ({
               )}
             </div>
           </Form>
+
+          <Spin fullscreen spinning={spinning} />
         </div>
       )}
     </>

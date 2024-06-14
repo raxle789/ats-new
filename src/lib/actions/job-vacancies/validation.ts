@@ -124,21 +124,23 @@ export const validateJobVacancySchema = z.object({
       invalid_type_error: 'TA Id Must Be A Number!',
     })
     .int(),
-  jobEfpk: z.coerce
+  jobEfpk: z
     .string({
       required_error: 'Job FPK Required!',
       invalid_type_error: 'Job FPK Request No Must Be A String!',
     })
     .trim()
-    .min(1),
-  jobTitle: z.coerce
+    .nullable()
+    .default(''),
+  jobTitle: z
     .string({
       required_error: 'Job Title FPK Required!',
       invalid_type_error: 'Job Title FPK Must Be A String!',
     })
     .trim()
-    .min(1),
-  jobTitleAliases: z.coerce
+    .nullable()
+    .default(''),
+  jobTitleAliases: z
     .string({
       required_error: 'Job Posting Name Required!',
       invalid_type_error: 'Job Posting Name Must Be A String!',
@@ -151,7 +153,7 @@ export const validateJobVacancySchema = z.object({
       invalid_type_error: 'Job Function Id Must Be A Number!',
     })
     .int(),
-  jobEmploymentStatus: z.coerce
+  jobEmploymentStatus: z
     .string({
       required_error: 'Employment Status Required!',
       invalid_type_error: 'Employment Status Name Must Be A String!',
@@ -164,14 +166,14 @@ export const validateJobVacancySchema = z.object({
       invalid_type_error: 'Position Level Id Must Be A Number!',
     })
     .int(),
-  jobVertical: z.coerce
+  jobVertical: z
     .string({
       required_error: 'Vertical Required!',
       invalid_type_error: 'Vertical Code Must Be A String!',
     })
     .trim()
     .min(1),
-  jobDepartment: z.coerce
+  jobDepartment: z
     .string({
       required_error: 'Department Required!',
       invalid_type_error:
@@ -185,21 +187,20 @@ export const validateJobVacancySchema = z.object({
       invalid_type_error: 'Line Industry Id Must Be A Number!',
     })
     .array(),
-  jobRegion: z.coerce
-    .string({
+  jobRegion: z
+    .number({
       required_error: 'Region Required!',
-      invalid_type_error: 'Region Location Group Code Must Be A String!',
+      invalid_type_error: 'Region Id Must Be A Number!',
     })
-    .trim()
-    .min(1),
-  jobWorkLocation: z.coerce
+    .int(),
+  jobWorkLocation: z
     .string({
       required_error: 'Work Location Required!',
       invalid_type_error: 'Work Location Code Must Be A String!',
     })
     .trim()
     .min(1),
-  jobWorkLocationAddress: z.coerce
+  jobWorkLocationAddress: z
     .string({
       required_error: 'Work Location Address Required!',
       invalid_type_error: 'Work Location Address Must Be A String!',
@@ -213,21 +214,21 @@ export const validateJobVacancySchema = z.object({
     })
     .array()
     .length(2),
-  jobDescription: z.coerce
+  jobDescription: z
     .string({
       required_error: 'Job Description Required!',
       invalid_type_error: 'Job Description Must Be A String!',
     })
     .trim()
     .min(1),
-  jobRequirement: z.coerce
+  jobRequirement: z
     .string({
       required_error: 'Job Requirement Required!',
       invalid_type_error: 'Job Requirement Must Be A String!',
     })
     .trim()
     .min(1),
-  ageParameterCheckbox: z.coerce
+  ageParameterCheckbox: z
     .boolean({
       required_error: 'Age Parameter Checkbox Required!',
       invalid_type_error: 'Age Parameter Checkbox Must Be A Boolean!',
@@ -281,7 +282,7 @@ export const validateJobVacancySchema = z.object({
     .nullable()
     .transform((val) => (val === null ? [] : val))
     .default([]),
-  jobVideoInterview: z.coerce
+  jobVideoInterview: z
     .string({
       required_error: 'Job Video Interview Required!',
       invalid_type_error: 'Job Video Interview Must Be A String!',
@@ -290,7 +291,7 @@ export const validateJobVacancySchema = z.object({
     .refine((val) => val === 'enable' || val === 'disable', {
       message: 'Job Video Interview Must Be Enable Or Disable!',
     }),
-  jobAutoAssessment: z.coerce
+  jobAutoAssessment: z
     .string({
       required_error: 'Job Auto Assessment Required!',
       invalid_type_error: 'Job Auto Assessment Must Be A String!',
@@ -299,7 +300,7 @@ export const validateJobVacancySchema = z.object({
     .refine((val) => val === 'enable' || val === 'disable', {
       message: 'Job Auto Assessment Must Be Enable Or Disable!',
     }),
-  jobConfidential: z.coerce
+  jobConfidential: z
     .string({
       required_error: 'Job Confidential Required!',
       invalid_type_error: 'Job Confidential Must Be A String!',
@@ -308,7 +309,7 @@ export const validateJobVacancySchema = z.object({
     .refine((val) => val === 'yes' || val === 'no', {
       message: 'Job Confidential Must Be Yes Or No!',
     }),
-  jobCareerFest: z.coerce
+  jobCareerFest: z
     .string({
       required_error: 'Job Career Fest Required!',
       invalid_type_error: 'Job Career Fest Must Be A String!',

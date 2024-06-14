@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import Pagination from '@/ui/pagination';
 import { Spin } from 'antd';
 import NiceSelect from '@/ui/nice-select';
@@ -12,6 +12,7 @@ const JobListItem = ({
   candidateApplyJobVacancy,
 }: any) => {
   const [loading, setLoading] = useState(false);
+  // const DynamicPagination = dynamic(() => import('@/ui/pagination'));
 
   // const buttonRef = useRef({});
 
@@ -27,13 +28,13 @@ const JobListItem = ({
   //   }
   // }, [jobVacancyData?.data, jobVacancyData?.total]);
 
-  const [filterItems, setFilterItems] = useState([]);
+  // const [filterItems, setFilterItems] = useState([]);
 
   const [shortValue, setShortValue] = useState('');
 
-  const [currentItems, setCurrentItems] = useState(null);
+  // const [currentItems, setCurrentItems] = useState(null);
 
-  const [itemOffset, setItemOffset] = useState(0);
+  // const [itemOffset, setItemOffset] = useState(0);
 
   const handleShort = (item: { value: string; label: string }) => {
     setShortValue(item.value);
@@ -81,8 +82,8 @@ const JobListItem = ({
             ))}
           </div>
 
-          <div className={`accordion-box grid-style`}>
-            {/* <div className="row">
+          {/* <div className={`accordion-box grid-style`}> */}
+          {/* <div className="row">
             {currentItems &&
               currentItems.map((job) => (
                 <div key={job.id} className="col-sm-6 mb-30">
@@ -90,7 +91,7 @@ const JobListItem = ({
                 </div>
               ))}
           </div> */}
-          </div>
+          {/* </div> */}
         </div>
         <div>
           <Pagination

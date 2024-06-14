@@ -56,68 +56,74 @@ const ActionApplicant = (props) => {
                 Create Interview
               </button>
             </li>
-            <li>
-              <button
-                className="applicant-action"
-                type="button"
-                onClick={() => {
-                  props?.handleApplicant(
-                    'resendCandidateInterviewInvitation',
-                    '',
-                    '',
-                    props?.interviewId,
-                    props?.api,
-                    props?.router,
-                    props?.setLoading,
-                    Status?.INTERVIEW,
-                  );
-                }}
-              >
-                Resend Interview Invitation to Candidate
-              </button>
-            </li>
+            {props?.status === Status?.INTERVIEW && props?.interviewId && (
+              <li>
+                <button
+                  className="applicant-action"
+                  type="button"
+                  onClick={() => {
+                    props?.handleApplicant(
+                      'resendCandidateInterviewInvitation',
+                      '',
+                      '',
+                      props?.interviewId,
+                      props?.api,
+                      props?.router,
+                      props?.setLoading,
+                      Status?.INTERVIEW,
+                    );
+                  }}
+                >
+                  Resend Interview Invitation to Candidate
+                </button>
+              </li>
+            )}
           </>
         )}
-        <li>
-          <button
-            className="applicant-action"
-            type="button"
-            onClick={() => {
-              props?.handleApplicant(
-                'assignInterview',
-                props?.candidateId,
-                props?.jobVacancyId,
-                0,
-                props?.api,
-                props?.router,
-                props?.setLoading,
-                Status?.INTERVIEW,
-              );
-            }}
-          >
-            Assign to Interview
-          </button>
-        </li>
-        <li>
-          <button
-            className="applicant-action"
-            type="button"
-            onClick={() => {
-              props?.handleApplicant(
-                'assignAssessment',
-                props?.candidateId,
-                props?.jobVacancyId,
-                0,
-                props?.api,
-                props?.router,
-                props?.setLoading,
-                Status?.ASSESSMENT,
-              );
-            }}
-          >
-            Assign to Assessment
-          </button>
-        </li>
+        {props?.status !== Status?.INTERVIEW && (
+          <li>
+            <button
+              className="applicant-action"
+              type="button"
+              onClick={() => {
+                props?.handleApplicant(
+                  'assignInterview',
+                  props?.candidateId,
+                  props?.jobVacancyId,
+                  0,
+                  props?.api,
+                  props?.router,
+                  props?.setLoading,
+                  Status?.INTERVIEW,
+                );
+              }}
+            >
+              Assign to Interview
+            </button>
+          </li>
+        )}
+        {props?.status !== Status?.ASSESSMENT && (
+          <li>
+            <button
+              className="applicant-action"
+              type="button"
+              onClick={() => {
+                props?.handleApplicant(
+                  'assignAssessment',
+                  props?.candidateId,
+                  props?.jobVacancyId,
+                  0,
+                  props?.api,
+                  props?.router,
+                  props?.setLoading,
+                  Status?.ASSESSMENT,
+                );
+              }}
+            >
+              Assign to Assessment
+            </button>
+          </li>
+        )}
         <li>
           <button className="applicant-action red-action" type="button">
             Blacklist

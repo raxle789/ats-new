@@ -3,26 +3,27 @@
 import React from 'react';
 import SpinFullScreen from '@/ui/spin-full-screen';
 import { useRouter } from 'next/navigation';
-import * as messages from '@/utils/message';
+// import * as messages from '@/utils/message';
 import * as confirmations from '@/utils/confirmation';
 import _ from 'lodash';
 import Pagination from '@/ui/pagination';
-import EmployShortSelect from './short-select';
-import SearchBar from '@/ui/search-bar';
-import { Spin, Modal } from 'antd';
+// import EmployShortSelect from './short-select';
+// import SearchBar from '@/ui/search-bar';
+import { Modal } from 'antd';
 import Link from 'next/link';
 import { FaEdit } from 'react-icons/fa';
-import ActionDropdown from '../candidate/action-dropdown';
-import { useState, useEffect } from 'react';
+// import ActionDropdown from '../candidate/action-dropdown';
+import { useState } from 'react';
 import { ExpendableButton } from './expendable-button';
 
 const { confirm } = Modal;
 
 type Props = {
-  positionLevelRequirementData: [];
+  positionLevelRequirementData: [] | any;
+  perPage?: number | any;
 };
 
-const PositionLevelRequirementItem = ({
+const PositionLevelRequirementItem: React.FC<Props> = ({
   positionLevelRequirementData,
   perPage,
 }) => {
@@ -130,7 +131,10 @@ const PositionLevelRequirementItem = ({
     }));
   };
 
-  function handlePositionLevelRequirement(handleType: 'edit', positionLevelId) {
+  function handlePositionLevelRequirement(
+    handleType: 'edit',
+    positionLevelId: string | any,
+  ) {
     setLoading(true);
 
     if (handleType === 'edit') {
@@ -169,17 +173,17 @@ const PositionLevelRequirementItem = ({
     <>
       <SpinFullScreen loading={loading} />
 
-      <div className="job-fpk-header d-sm-flex flex-wrap align-items-center justify-content-between mb-40 lg-mb-30">
+      <div className="job-fpk-header d-sm-flex flex-wrap align-items-center justify-content-between mb-70 lg-mb-30">
         <h2 className="main-title m0 flex-grow-1">
           Position Level Requirements
         </h2>
-        <div className="d-flex xs-mt-30 justify-content-between align-items-center">
+        {/* <div className="d-flex xs-mt-30 justify-content-between align-items-center">
           <SearchBar />
           <div className="short-filter d-flex align-items-center ms-3">
             <div className="text-dark fw-500 me-2">Filter by:</div>
             <EmployShortSelect />
           </div>
-        </div>
+        </div> */}
       </div>
       <div className="tab-content" id="nav-tabContent">
         <div className="tab-pane fade show active" id="a1" role="tabpanel">

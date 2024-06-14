@@ -1,6 +1,6 @@
 'use client';
 import React, { useState } from 'react';
-import Image, { StaticImageData } from 'next/image';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import logo from '@/assets/dashboard/images/logo_01.png';
@@ -105,13 +105,13 @@ const nav_data: {
     link: '/dashboard/ta/fpk',
     title: 'FPK',
   },
-  // {
-  //   id: 8,
-  //   icon: nav_7,
-  //   icon_active: nav_7_active,
-  //   link: '/dashboard/employ-dashboard/setting',
-  //   title: 'Account Settings',
-  // },
+  {
+    id: 8,
+    icon: nav_7,
+    icon_active: nav_7_active,
+    link: '/dashboard/ta/position-level-requirement',
+    title: 'Level Requirement',
+  },
 ];
 
 // props type
@@ -171,64 +171,20 @@ const EmployAside = () => {
               />
             </div>
             <div className="user-name-data">
-              <button
-                className="user-name dropdown-toggle"
-                type="button"
-                id="profile-dropdown"
-                data-bs-toggle="dropdown"
-                data-bs-auto-close="outside"
-                aria-expanded="false"
-              >
-                {authSessionPayload?.user?.name ?? "unknown"}
-              </button>
-              <ul className="dropdown-menu" aria-labelledby="profile-dropdown">
-                <li>
-                  <Link
-                    className="dropdown-item d-flex align-items-center"
-                    href="/dashboard/employ-dashboard/profile"
-                  >
-                    <Image
-                      src={profile_icon_1}
-                      alt="icon"
-                      className="lazy-img"
-                    />
-                    <span className="ms-2 ps-1">Profile</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="dropdown-item d-flex align-items-center"
-                    href="/dashboard/employ-dashboard/profile"
-                  >
-                    <Image
-                      src={profile_icon_2}
-                      alt="icon"
-                      className="lazy-img"
-                    />
-                    <span className="ms-2 ps-1">Account Settings</span>
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    className="dropdown-item d-flex align-items-center"
-                    href="#"
-                  >
-                    <Image
-                      src={profile_icon_3}
-                      alt="icon"
-                      className="lazy-img"
-                    />
-                    <span className="ms-2 ps-1">Notification</span>
-                  </a>
-                </li>
-              </ul>
+              <p className="user-name">
+                {authSessionPayload?.user?.name ?? 'unknown'}
+              </p>
             </div>
           </div>
           <nav className="dasboard-main-nav">
             <ul className="style-none">
               {nav_data.map((m) => {
                 let isActive = false;
-                if (m.id === 6) {
+                if (m.id === 3) {
+                  isActive =
+                    pathname === m.link ||
+                    pathname === '/dashboard/ta/submit-job';
+                } else if (m.id === 6) {
                   isActive =
                     pathname === m.link ||
                     pathname === '/dashboard/ta/candidates/blacklisted';
@@ -293,8 +249,8 @@ const EmployAside = () => {
                   </li>
                 );
               })}
-              {/* <li>
-                <a
+              <li>
+                {/* <a
                   href="#"
                   className="d-flex w-100 align-items-center"
                   data-bs-toggle="modal"
@@ -302,22 +258,14 @@ const EmployAside = () => {
                 >
                   <Image src={nav_8} alt="icon" className="lazy-img" />
                   <span>Delete Account</span>
-                </a>
-              </li> */}
+                </a> */}
+                <Link href="#" className="d-flex w-100 align-items-center">
+                  <Image src={logout} alt="icon" className="lazy-img" />
+                  <span style={{ color: '#ff2730' }}>Logout</span>
+                </Link>
+              </li>
             </ul>
           </nav>
-          {/* <div className="profile-complete-status">
-            <div className="progress-value fw-500">87%</div>
-            <div className="progress-line position-relative">
-              <div className="inner-line" style={{ width: '80%' }}></div>
-            </div>
-            <p>Profile Complete</p>
-          </div>
-
-          <a href="#" className="d-flex w-100 align-items-center logout-btn">
-            <Image src={logout} alt="icon" className="lazy-img" />
-            <span>Logout</span>
-          </a> */}
         </div>
       </aside>
       {/* LogoutModal star */}

@@ -93,6 +93,9 @@ const JobVacancyForm = ({
     <>
       <Form
         form={form}
+        // initialValue={[
+        //   {jobFpk: }
+        // ]}
         scrollToFirstError
         className="bg-white card-box border-20"
         layout="vertical"
@@ -104,12 +107,12 @@ const JobVacancyForm = ({
           <Form.Item
             label="FPK"
             name="jobEfpk"
-            rules={[
-              {
-                required: true,
-                message: 'Please Select Job FPK!',
-              },
-            ]}
+            // rules={[
+            //   {
+            //     required: true,
+            //     message: 'Please Select Job FPK!',
+            //   },
+            // ]}
           >
             <Select
               className="select"
@@ -137,9 +140,9 @@ const JobVacancyForm = ({
           <Form.Item
             label="Job Title FPK"
             name="jobTitle"
-            rules={[
-              { required: true, message: 'Please Select Job Title FPK!' },
-            ]}
+            // rules={[
+            //   { required: true, message: 'Please Select Job Title FPK!' },
+            // ]}
           >
             <Select
               className="select"

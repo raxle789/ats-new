@@ -96,10 +96,10 @@
       padding-left: 10px;
     }
     &:hover {
-      color: #3c8968;
+      color: $color-two;
     }
     &.active {
-      background: #3f634d;
+      background: $color-one;
       color: #fff;
     }
     img {
@@ -144,18 +144,18 @@
     }
   }
   .logout-btn {
-    font-size: 16px;
-    font-weight: 500;
-    letter-spacing: -0.16px;
-    color: $color-one;
-    margin-left: 20px;
-    @include transition(0.25s);
-    span {
-      padding-left: 10px;
-    }
-    &:hover {
-      color: #ff5656;
-    }
+    // font-size: 16px;
+    // font-weight: 500;
+    // letter-spacing: -0.16px;
+    color: $color-six;
+    // margin-left: 20px;
+    // @include transition(0.25s);
+    // span {
+    //   padding-left: 10px;
+    // }
+    // &:hover {
+    //   color: #ff5656;
+    // }
   }
   .close-btn {
     font-size: 22px;
@@ -249,7 +249,7 @@
   .dash-title-three {
     font-family: var(--gorditas-font);
     font-size: 24px;
-    color: $color-five;
+    color: $color-two;
     margin: 0 0 30px;
   }
   .dash-btn-one {
@@ -294,7 +294,7 @@
     background: $color-one;
     &:hover {
       background: $color-two;
-      color: $color-one;
+      color: white;
     }
   }
   .offering-btn {
@@ -303,7 +303,7 @@
   }
   .dash-cancel-btn {
     font-weight: 500;
-    color: $color-five;
+    color: $color-six;
     &:hover {
       color: $color-one;
     }
@@ -449,7 +449,7 @@
       background: $color-one;
       &:hover {
         background: $color-two;
-        color: $color-one;
+        color: white;
       }
     }
     .dash-mobile-nav-toggler {
