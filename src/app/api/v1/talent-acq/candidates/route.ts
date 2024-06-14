@@ -10,30 +10,18 @@ export async function GET(request: NextRequest) {
     const _PARAMS = request.nextUrl.searchParams.get('page');
     const _GETSEARCH = request.nextUrl.searchParams.get('search') as string;
     const _DEFAULTRETURN = 10;
+    /**
+     * Only return OFFSET if params is a valid number and more than one (1)
+     */
     const _OFFSET = Number(_PARAMS) && Number(_PARAMS) > 1 ? (Number(_PARAMS) - 1) * _DEFAULTRETURN : 0;
     /* Begin transactions */
     const candidateList = await prisma.$transaction(async (tx) => {
       const count = await tx.candidates.count({
-        where: {
-          users: {
-            name: {
-              contains: _GETSEARCH
-            }
-          }
-        }
+        where: { users: { name: { contains: _GETSEARCH } } }
       });
       let candidatesData = await tx.candidates.findMany({
-        where: {
-          users: {
-            name: {
-              // contains: _SEARCH == null || _SEARCH == '' ? '' : _SEARCH
-              contains: _GETSEARCH
-            }
-          }
-        },
-        orderBy: {
-          created_at: 'desc'
-        },
+        where: { users: { name: { contains: _GETSEARCH } } },
+        orderBy: { created_at: 'desc' },
         select: {
           documents: {
             where: { documentTypeId: 1 },
@@ -55,15 +43,9 @@ export async function GET(request: NextRequest) {
           },
           expected_salary: true,
         },
-        /**
-         * If @_PARAMS type of number and greater than 1 -> return OFFSET _PARAMS * 10
-         * If @_PARAMS type of number and less than equal to 1 -> return OFFSET = 0
-         * If @_PARAMS NaN -> return OFFSET = 0
-         */
         skip: _OFFSET,
         take: 10,
       });
-      console.info("Candidate data \t:", candidatesData);
       /* Manipulated Records */
       const newRecords = candidatesData.map(candidate => {
         /* Helpers functions */
@@ -75,7 +57,6 @@ export async function GET(request: NextRequest) {
           working_experiences: experiences
         };
       });
-      console.info("LENGTH \t:", newRecords.length);
       return { count: count, candidates: newRecords };
     }, {
       timeout: 30000

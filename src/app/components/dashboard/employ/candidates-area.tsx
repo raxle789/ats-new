@@ -23,8 +23,6 @@ const CandidatesArea = () => {
   let _SEARCHTEXT = searchParams.get('search') ?? '';
   const [current, setCurrent] = useState<number>(Number(_CURRENTPAGE) ?? 0);
   const [candidateList, setCandidateList] = useState<any>(null);
-  console.info("CURRENT \t:", current);
-  console.info("SEARCH \t:", _SEARCHTEXT);
 
   const fetchCandidates = async () => {
     const request = await fetch('/api/v1/talent-acq/candidates?page=' + current + '&search=' + _SEARCHTEXT, {
@@ -36,11 +34,6 @@ const CandidatesArea = () => {
     const response = await request.json();
     /* Candidate List State */
     setCandidateList(response.data);
-  };
-  /* Move between number of pagination */
-  const onShowSizeChange: PaginationProps['onShowSizeChange'] = (current, pageSize) => {
-    console.info("current \t:", current);
-    console.info("page size \t:", pageSize);
   };
   /* Change number of pagination */
   const onChange: PaginationProps['onChange'] = (page) => {
@@ -86,7 +79,6 @@ const CandidatesArea = () => {
       </div>
       {/* Pagination */}
       <Pagination
-        onShowSizeChange={onShowSizeChange}
         onChange={onChange}
         defaultCurrent={current}
         current={current}
