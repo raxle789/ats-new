@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-// import { useRouter } from 'next/navigation';
 // import logo from '@/assets/images/logo/logo_06.png';
 // import dark_logo from '@/assets/images/logo/logo_04.png';
 import Menus from './component/menus';
@@ -15,19 +14,22 @@ import logo_era_putih from '@/assets/images/home/logo_era_putih.png';
 import logo_era_career from '@/assets/images/home/logo_era_career.png';
 import { authSession } from '@/libs/Sessions/utils';
 import { userLoggedOut } from '@/libs/Login';
-import { Spin } from 'antd';
+import { message, Spin } from 'antd';
+import { useSearchParams } from 'next/navigation';
 /* server components */
 // import { getSession } from '@/lib/Authentication';
 
 const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
   const { sticky } = useSticky();
-  /**
-   * Session Context
-   */
+  /* Session Context */
   const session = useAppSessionContext();
   const authSessionValue = session[`${authSession}`];
   const [scrollDistance, setScrollDistance] = useState<number>(0);
   const [spinning, setSpinning] = useState(false);
+
+  /* Search Params */
+  const params = useSearchParams();
+  console.info("PARAMS \t:", params.get('error'));
 
   const handleLogout = async () => {
     setSpinning(true);
@@ -38,6 +40,9 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
   };
 
   useEffect(() => {
+    if(params.get('error')) {
+      message.error(params.get('error'));
+    };
     const handleScroll = () => {
       setScrollDistance(window.scrollY);
     };
@@ -50,7 +55,6 @@ const HeaderSix = ({ dark_style = false }: { dark_style?: boolean }) => {
       <header
         className={`theme-main-menu menu-overlay ${dark_style ? '' : 'menu-style-two'} sticky-menu ${sticky ? 'fixed' : ''}`}
       >
-        {/* {("auth" in session) ? (<span className="">LoggedIn</span>) : (<span className="">Not LoggedIn</span>)} */}
         <div className="inner-content position-relative">
           <div className="top-header">
             <div className="d-flex align-items-center justify-content-between">

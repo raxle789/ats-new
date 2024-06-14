@@ -70,6 +70,7 @@ const FeatureNine = () => {
                   alt="image"
                   className="lazy-img logo-img mb-4 wow fadeInRight"
                   style={imgStyle}
+                  loading="lazy"
                 />
               </div>
               <div className="row ms-5 mt-30">
@@ -78,6 +79,7 @@ const FeatureNine = () => {
                     src={grey_bg}
                     alt="image"
                     className="about-image-2 mt-35 wow fadeInUp"
+                    loading="lazy"
                   />
                 </div>
               </div>

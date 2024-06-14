@@ -517,7 +517,6 @@ export async function updateAdditionalInformations(submittedValue: any): Promise
 
 export async function updateCandidateDocuments(submittedValue: any): Promise<TypeReturnedServerAction> {
   // console.info("[server] -> ", submittedValue);
-  /* Validate Input ZOD */
   const authSession = await getUserSession('auth');
   try {
     const updateDocuments = await prisma.$transaction(async (tx) => {
@@ -639,15 +638,49 @@ export async function updateCandidateDocuments(submittedValue: any): Promise<Typ
           });
         };
       };
-      /* MCU/HealtCertf */
-      if(submittedValue.healthCertificate) {
-        console.info("Checking candidate MCU Health Certf document...");
-        const idMCUHealth = await tx.documents.findFirst({
-          where: { candidate_id: authSession.candidate.id, documentTypeId: 8 } // -> id MCUHealth
+      /* Medical Check-Up */
+      if(submittedValue.mcu) {
+        console.info("Checking candidate Medical Check-Up...");
+        const idMCU = await tx.documents.findFirst({
+          where: { candidate_id: authSession.candidate.id, documentTypeId: 8 }
         });
-        console.info("MCU Check record : ", idMCUHealth);
-        if(!idMCUHealth) {
-          console.info("Creating new MCU Health Certf document...");
+        console.info("Medical Check-Up check record : ", idMCU);
+        if(!idMCU) {
+          console.info("Creating new Medical Check-Up document...");
+          await tx.documents.create({
+            data: {
+              saved_name: uuidV4(),
+              original_name: submittedValue.mcu.original_name,
+              byte_size: submittedValue.mcu.byte_size,
+              path: 'no-path',
+              file_base: Buffer.from(submittedValue.mcu.file_base),
+              created_at: new Date(Date.now()),
+              updated_at: new Date(Date.now()),
+              documentTypeId: 8,
+              candidate_id: authSession.candidate.id
+            }
+          });
+        } else {
+          console.info("Just updating existing Medical Check-Up document...");
+          await tx.documents.update({
+            where: { id: idMCU.id },
+            data: {
+              original_name: submittedValue.mcu.original_name,
+              byte_size: submittedValue.mcu.byte_size,
+              file_base: Buffer.from(submittedValue.mcu.file_base)
+            }
+          });
+        };
+      };
+      /* Healt Certf */
+      if(submittedValue.healthCertificate) {
+        console.info("Checking candidate Health Certf document...");
+        const idHealth = await tx.documents.findFirst({
+          where: { candidate_id: authSession.candidate.id, documentTypeId: 9 } // -> id MCUHealth
+        });
+        console.info("Health Certf Check record : ", idHealth);
+        if(!idHealth) {
+          console.info("Creating new Health Certf document...");
           await tx.documents.create({
             data: {
               saved_name: uuidV4(),
@@ -657,15 +690,15 @@ export async function updateCandidateDocuments(submittedValue: any): Promise<Typ
               file_base: Buffer.from(submittedValue.healthCertificate.file_base),
               created_at: new Date(Date.now()),
               updated_at: new Date(Date.now()),
-              documentTypeId: 8,
+              documentTypeId: 9,
               candidate_id: authSession.candidate.id
             }
           });
         } else {
-          console.info("Just updating existing MCU Health Certf document...");
+          console.info("Just updating existing Health Certf document...");
           await tx.documents.update({
             where: {
-              id: idMCUHealth?.id,
+              id: idHealth?.id,
               // documentTypeId: 8
             },
             data: {

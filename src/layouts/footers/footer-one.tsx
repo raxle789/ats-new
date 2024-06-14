@@ -29,7 +29,7 @@ const FooterOne = ({
                   <Image
                     src={style_2 ? logo_w : style_3 ? logo_2 : logo}
                     alt="logo"
-                    priority
+                    loading="lazy"
                   />
                 </Link>
               </div>
@@ -37,6 +37,7 @@ const FooterOne = ({
                 src={shape}
                 alt="shape"
                 className="lazy-img mt-80 sm-mt-30 sm-mb-20"
+                loading="lazy"
               />
             </div>
             {/* widget one */}

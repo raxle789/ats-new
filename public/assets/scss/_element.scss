@@ -375,7 +375,7 @@
 
 // Login Modal
 .registration-section {
-  background: $light-bg;
+  background: $blue-bg;
 }
 .modal .modal-dialog {
   height: auto;
@@ -416,6 +416,11 @@
   }
   .form-wrapper {
     max-width: 380px;
+    .tab-content {
+      p {
+        font-size: 14px;
+      }
+    }
     .input-group-meta {
       // input {
       //   width: 100%;
@@ -485,7 +490,7 @@
     max-width: 420px;
   }
   .register-wrapper {
-    max-width: 440px;
+    max-width: 550px;
   }
   .agreement-checkbox label {
     position: relative;
@@ -585,7 +590,7 @@
   width: 750px;
 }
 .user-register-form {
-  max-width: 540px;
+  max-width: 630px;
 }
 
 // Custom Styles

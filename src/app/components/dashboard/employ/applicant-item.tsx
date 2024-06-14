@@ -107,7 +107,11 @@ const ApplicantItem: React.FC<Props> = ({
                 <h4 className="candidate-name mb-0">
                   <a
                     className="tran3s"
-                    style={{ cursor: 'pointer' }}
+                    style={{
+                      cursor: 'pointer',
+                      width: '140px',
+                      wordBreak: 'break-all',
+                    }}
                     onClick={showModal}
                   >
                     {item?.candidateName ?? '-'}

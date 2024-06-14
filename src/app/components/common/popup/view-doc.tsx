@@ -19,7 +19,7 @@ const ViewDocModal: React.FC<Props> = ({
 
   useEffect(() => {
     console.log('sources file: ', sourceFile);
-  }, [sourceFile])
+  }, [sourceFile]);
   return (
     <>
       <Modal
@@ -31,16 +31,17 @@ const ViewDocModal: React.FC<Props> = ({
         width={700}
         wrapClassName="custom-modal-wrapper"
       >
-        {sourceFile &&
-        <div>
-          <embed
-            title='document'
-            type='application/pdf'
-            src={sourceFile}
-            width="100%"
-            height="100%"
-          />
-        </div>}
+        {sourceFile && (
+          <div style={{ height: '95%' }}>
+            <embed
+              title="document"
+              type="application/pdf"
+              src={sourceFile}
+              width="100%"
+              height="100%"
+            />
+          </div>
+        )}
       </Modal>
     </>
   );

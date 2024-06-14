@@ -6,7 +6,7 @@ import type { MenuProps } from 'antd';
 import type { CollapseProps } from 'antd';
 import type { TableProps } from 'antd';
 import Pagination from '@/ui/pagination';
-import { MentionProps } from 'antd';
+// import { MentionProps } from 'antd';
 
 const treeData: TreeDataNode[] = [
   {
@@ -118,26 +118,26 @@ interface DataType {
   status: string;
 }
 
-const data: DataType[] = [
-  {
-    key: '1',
-    title: 'Merchandising and Planning Assistant Manager',
-    applyDate: '22-04-2023',
-    status: 'Assessment',
-  },
-  {
-    key: '2',
-    title: 'Project Assistant Manager',
-    applyDate: '22-04-2023',
-    status: 'Interview',
-  },
-  {
-    key: '3',
-    title: 'Operation Development Assistant Manager',
-    applyDate: '22-04-2023',
-    status: 'Offering',
-  },
-];
+// const data: DataType[] = [
+//   {
+//     key: '1',
+//     title: 'Merchandising and Planning Assistant Manager',
+//     applyDate: '22-04-2023',
+//     status: 'Assessment',
+//   },
+//   {
+//     key: '2',
+//     title: 'Project Assistant Manager',
+//     applyDate: '22-04-2023',
+//     status: 'Interview',
+//   },
+//   {
+//     key: '3',
+//     title: 'Operation Development Assistant Manager',
+//     applyDate: '22-04-2023',
+//     status: 'Offering',
+//   },
+// ];
 
 const text = `
   A dog is a type of domesticated animal.
@@ -260,12 +260,12 @@ const CandidateDetailsModal: React.FC<IProps> = ({
     },
   ];
 
-  const tableProps: TableProps<DataType> = {
-    columns,
-    dataSource: data,
-    pagination: false,
-    rowClassName: () => 'ant-table-tbody no-hover-effect',
-  };
+  // const tableProps: TableProps<DataType> = {
+  //   columns,
+  //   dataSource: data,
+  //   pagination: false,
+  //   rowClassName: () => 'ant-table-tbody no-hover-effect',
+  // };
   return (
     <>
       <Modal

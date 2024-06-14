@@ -597,7 +597,8 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
     /* Set Auth-Session */
     await setUserSession('auth', {
       user: {
-        id: regSession.user.id
+        id: regSession.user.id,
+        name: regSession.user.name
       },
       candidate: {
         id: regSession.candidate.id

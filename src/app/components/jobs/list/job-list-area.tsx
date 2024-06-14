@@ -8,17 +8,15 @@ import {
   candidateApplyJobVacancy,
 } from '@/lib/actions/job-vacancies/action';
 import JobListItem from './job-list-item';
-import JobFilter from '../filter/job-filter';
+import dynamic from 'next/dynamic';
+// import JobFilter from '../filter/job-filter';
 
-// interface IProps {
-//   searchParams: {
-//     page?: string;
-//     perPage?: string;
-//     query?: string;
-//   };
-// }
+type Props = {
+  searchParams: {} | any;
+};
 
-const JobList = async ({ searchParams }) => {
+const JobList: React.FC<Props> = async ({ searchParams }) => {
+  const DynamicFilter = dynamic(() => import('../filter/job-filter'));
   const page = searchParams?.page ?? '1';
   const perPage = searchParams?.perPage ?? '10';
   const searchQuery = searchParams?.query ?? '';
@@ -59,7 +57,7 @@ const JobList = async ({ searchParams }) => {
     <section className="job-listing-three pt-110 lg-pt-80 pb-160 xl-pb-150 lg-pb-80">
       <div className="container">
         <div className="row">
-          <JobFilter />
+          <DynamicFilter />
           <JobListItem
             jobVacancyData={jobVacancyData}
             perPage={perPage}

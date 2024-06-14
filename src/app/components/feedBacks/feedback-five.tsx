@@ -121,6 +121,7 @@ const FeedbackFive = () => {
                       className="author-img rounded-circle"
                       width="50"
                       height="50"
+                      loading="lazy"
                     />
                   </div>
                   <blockquote className="mt-50 lg-mt-20 mb-15 lg-mb-10 text-dark">

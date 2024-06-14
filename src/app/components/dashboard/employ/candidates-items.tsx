@@ -1,19 +1,24 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
+// import CandidateDetailsModal from '../../common/popup/candidate-details-modal';
 // import ActionCandidatesMenu from './action-candidates-menu';
 import { ICandidate } from '@/data/candidate-data';
 import Image from 'next/image';
-import { useAppDispatch } from '@/redux/hook';
-import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
+// import { useAppDispatch } from '@/redux/hook';
+// import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
 import dynamic from 'next/dynamic';
 
 const CandidatesItems = ({ item }: { item: ICandidate }) => {
+  const DynamicCandidateDetails = dynamic(
+    () => import('../../common/popup/candidate-details-modal'),
+    { ssr: false },
+  );
   const DynamicAction = dynamic(() => import('./action-candidates-menu'), {
     ssr: false,
   });
-  const dispatch = useAppDispatch();
+  const [isOpenModal, setIsOpenModal] = useState(false);
   const showModal = () => {
-    dispatch(setIsOpen(true));
+    setIsOpenModal(true);
   };
   return (
     <div className="candidate-profile-card list-layout border-0 mb-25">
@@ -45,7 +50,7 @@ const CandidatesItems = ({ item }: { item: ICandidate }) => {
                   <span>Last Position</span>
                   <div>{item.latestPosition}</div>
                 </div>
-                <div className="candidate-info mt-5">
+                {/* <div className="candidate-info mt-5">
                   <ul className="candidate-skills style-none d-flex align-items-center">
                     {item.skills.slice(0, 4).map((s, i) => (
                       <li key={i}>{s}</li>
@@ -56,7 +61,7 @@ const CandidatesItems = ({ item }: { item: ICandidate }) => {
                       </li>
                     )}
                   </ul>
-                </div>
+                </div> */}
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6">
@@ -99,6 +104,11 @@ const CandidatesItems = ({ item }: { item: ICandidate }) => {
           </div>
         </div>
       </div>
+
+      <DynamicCandidateDetails
+        isOpen={isOpenModal}
+        setIsOpenModal={setIsOpenModal}
+      />
     </div>
   );
 };

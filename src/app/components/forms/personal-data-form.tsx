@@ -7,6 +7,7 @@ import {
   DatePicker,
   Checkbox,
   Image,
+  Spin,
   Upload,
   message,
 } from 'antd';
@@ -138,6 +139,7 @@ const PersonalDataForm: React.FC<Props> = ({
   const [previewImage, setPreviewImage] = useState('');
   const [profilePhoto, setProfilePhoto] = useState<any>();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [spinning, setSpinning] = useState(false);
 
   const editOnChange = () => {
     setEditState(!editState);
@@ -202,12 +204,19 @@ const PersonalDataForm: React.FC<Props> = ({
   // };
   const handleAddressCheck: CheckboxProps['onChange'] = (e) => {
     setAddressCheck(e.target.checked);
+    if (e.target.checked) {
+      form.setFieldsValue({
+        address: {
+          currentAddress: '',
+        },
+      });
+    }
   };
 
   /* ACTIONS */
   const handleSubmit: FormProps<FieldType>['onFinish'] = async (values) => {
     if (editState) {
-      message.loading('Please wait');
+      setSpinning(true);
       console.log('submitted values: ', values);
       const plainObjectValues = JSON.parse(JSON.stringify(values));
       const photoFile = fileList.length > 0 ? fileList[0].originFileObj : null;
@@ -228,12 +237,14 @@ const PersonalDataForm: React.FC<Props> = ({
       console.info('Submitted Value \t:', submitedValue);
       const updating = await updateCandidateProfile(submitedValue);
       console.info('Error \t:', updating);
-      if (!updating.success) return message.error(updating.message);
+      if (!updating.success) {
+        setSpinning(false);
+        return message.error(updating.message);
+      }
       message.success(updating.message);
+      setSpinning(false);
       if (setSubmitType && setProfileData && submitType) {
         setProfileData(null);
-        // setSubmitType((prevState) => {...prevState, type: 'personal-data', counter: prevState.counter + 1});
-        // let counter = submitType?.counter;
         const newSubmitType = {
           ...submitType,
           type: 'personal-data',
@@ -271,7 +282,8 @@ const PersonalDataForm: React.FC<Props> = ({
         bloodType: profileData?.blood_type,
         maritalStatus: profileData?.maritalStatus,
       },
-      addressCheckbox: profileData?.addresses[0]?.currentAddress ? true : false,
+      addressCheckbox:
+        profileData?.addresses[0]?.currentAddress === '' ? true : false,
       address: {
         permanentAddress: profileData?.addresses[0]?.street,
         country: profileData?.addresses[0]?.country,
@@ -281,10 +293,19 @@ const PersonalDataForm: React.FC<Props> = ({
         subdistrict: profileData?.addresses[0]?.subdistrict,
         village: profileData?.addresses[0]?.village,
         zipCode: profileData?.addresses[0]?.zipCode,
-        currentAddress: profileData?.addresses[0]?.currentAddres,
+        currentAddress: profileData?.addresses[0]?.currentAddress,
       },
     });
+    if (profileData?.addresses[0]?.currentAddress === '') {
+      setAddressCheck(true);
+    } else {
+      setAddressCheck(false);
+    }
   }, [editState]);
+
+  useEffect(() => {
+    console.log('profileData (useEffect): ', profileData);
+  }, [profileData]);
   return (
     <>
       {profileData === null && <EmployJobDetailSkeleton rows={2} />}
@@ -315,8 +336,9 @@ const PersonalDataForm: React.FC<Props> = ({
                       // src={previewImage}
                       src={profileData?.documents}
                       alt="Profile"
-                      width={60}
-                      height={60}
+                      width={80}
+                      height={80}
+                      style={{ borderRadius: '50%' }}
                     />
                   )}
                   <Form.Item<FieldType>
@@ -341,10 +363,6 @@ const PersonalDataForm: React.FC<Props> = ({
                               type="button"
                             >
                               <AiOutlinePlus style={{ fontSize: '14px' }} />
-                              {/* <PlusOutlined
-                              onPointerEnterCapture={''}
-                              onPointerLeaveCapture={''}
-                            /> */}
                               <div style={{ marginTop: 8 }}>Upload</div>
                             </button>
                           )}
@@ -880,16 +898,16 @@ const PersonalDataForm: React.FC<Props> = ({
                     <Form.Item<FieldType>
                       name="addressCheckbox"
                       className="mb-2"
+                      initialValue={addressCheck}
                     >
                       <div className="d-flex align-items-center pt-10">
                         <Checkbox
                           onChange={handleAddressCheck}
                           disabled={!editState}
-                          checked={
-                            profileData?.addresses[0]?.currentAddress === null
-                              ? true
-                              : false
-                          }
+
+                          // checked={
+
+                          // }
                         >
                           Same as Permanent Address
                         </Checkbox>
@@ -907,13 +925,15 @@ const PersonalDataForm: React.FC<Props> = ({
                   >
                     {editState && (
                       <Input
-                        disabled={addressCheck || !editState}
+                        disabled={addressCheck}
                         placeholder="Your Current Address"
                       />
                     )}
                     {!editState && (
                       <p className="mb-0">
-                        {profileData?.addresses[0]?.currentAddress ?? '-'}
+                        {profileData?.addresses[0]?.currentAddress === ''
+                          ? 'Same as Permanent Address'
+                          : profileData?.addresses[0]?.currentAddress}
                       </p>
                     )}
                   </Form.Item>
@@ -929,6 +949,8 @@ const PersonalDataForm: React.FC<Props> = ({
               )}
             </div>
           </Form>
+
+          <Spin fullscreen spinning={spinning} />
         </div>
       )}
     </>

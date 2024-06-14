@@ -1,11 +1,15 @@
 'use client';
-import React, { SetStateAction } from 'react';
+import React, { useState, ReactNode, SetStateAction } from 'react';
 import img_2 from '@/assets/images/candidates/img_02.jpg';
 import ActionApplicant from '../../../../ui/action-card-applicant';
 import Image from 'next/image';
-import { useAppDispatch } from '@/redux/hook';
-import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
-import { Checkbox } from 'antd';
+// import { useAppDispatch } from '@/redux/hook';
+// import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
+import { Checkbox, Tag, Button, Tooltip } from 'antd';
+import { LuSend } from 'react-icons/lu';
+import RefCheckFormModal from '../../common/popup/ref-check-form-modal';
+import CandidateRefCheckForm from './candidate-ref-check-form';
+import RefereeForm from './referee-form';
 
 type Props = {
   item?:
@@ -61,9 +65,25 @@ const ReferenceCheckItem = ({
   setLoading,
   handleApplicant,
 }) => {
-  const dispatch = useAppDispatch();
-  const showModal = () => {
-    dispatch(setIsOpen(true));
+  // const dispatch = useAppDispatch();
+  const [isOpenRefForm, setIsRefForm] = useState(false);
+  const [titleModal, setTitleModal] = useState('');
+  const [childrenModal, setChildrenModal] = useState<ReactNode | null>(null);
+
+  // const showModal = () => {
+  //   dispatch(setIsOpen(true));
+  // };
+
+  const handleFormModal = (type: string) => {
+    if (type === 'candidate-reference') {
+      setTitleModal('Candidate Reference Check Form');
+      setChildrenModal(<CandidateRefCheckForm />);
+      setIsRefForm(true);
+    } else {
+      setTitleModal('Referee Form');
+      setChildrenModal(<RefereeForm />);
+      setIsRefForm(true);
+    }
   };
 
   const onChangeCheckbox = (index: string) => {
@@ -96,7 +116,6 @@ const ReferenceCheckItem = ({
               className="lazy-img rounded-circle"
               width="80"
               height="80"
-              // style={{ width: '80', height: '80' }}
             />
           </a>
         </div>
@@ -108,7 +127,7 @@ const ReferenceCheckItem = ({
                   <a
                     className="tran3s"
                     style={{ cursor: 'pointer' }}
-                    onClick={showModal}
+                    // onClick={showModal}
                   >
                     {item?.candidateName ?? '-'}
                   </a>
@@ -117,22 +136,6 @@ const ReferenceCheckItem = ({
                   <span>Last Position</span>
                   <div>{item?.candidateLastPosition ?? '-'}</div>
                 </div>
-                {/* <div className="candidate-info mt-5">
-                  <ul className="candidate-skills style-none d-flex align-items-center">
-                    {item?.candidateSkills
-                      ? item?.candidateSkills
-                          .slice(0, 4)
-                          .map((s, i) => <li key={i}>{s}</li>)
-                      : null}
-                    {item?.candidateSkills?.length > 4 && (
-                      <li className="more">
-                        {item?.candidateSkills?.length -
-                          item?.candidateSkills?.slice(0, 4).length}
-                        +
-                      </li>
-                    )}
-                  </ul>
-                </div> */}
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6">
@@ -147,17 +150,62 @@ const ReferenceCheckItem = ({
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6">
               <div className="candidate-info">
-                <span>Year of Experience</span>
-                <div>{`${item?.candidateYearOfExperience ?? '-'} year`}</div>
+                <span>Reference Form Status</span>
+                <div className="d-flex align-items-center justify-content-start">
+                  <button
+                    type="button"
+                    onClick={() => handleFormModal('candidate-reference')}
+                  >
+                    <Tag color="#1e87f0" style={{ color: 'white' }}>
+                      Waiting
+                    </Tag>
+                  </button>
+                  <Tooltip placement="top" title={'Resend Form'} arrow={true}>
+                    <Button
+                      className=" ms-2"
+                      // onClick={() =>
+                      //   handleResendEmail('interviewer', candidateInterviewValue, nik)
+                      // }
+                    >
+                      <LuSend
+                        style={{
+                          color: '#0c1d5c',
+                          fontSize: '15px',
+                        }}
+                      />
+                    </Button>
+                  </Tooltip>
+                </div>
               </div>
               <div className="candidate-info mt-2">
-                <span>Status</span>
-                <div>{item?.candidateStatus ?? '-'}</div>
+                <span>Referee Form Status</span>
+                <div className="d-flex align-items-center justify-content-start">
+                  <button
+                    type="button"
+                    onClick={() => handleFormModal('referee-form')}
+                  >
+                    <Tag color="#29d259" style={{ color: 'white' }}>
+                      Done
+                    </Tag>
+                  </button>
+                  <Tooltip placement="top" title={'Resend Form'} arrow={true}>
+                    {/* <Button
+                      className=" ms-2"
+                    >
+                      <LuSend
+                        style={{
+                          color: '#0c1d5c',
+                          fontSize: '15px',
+                        }}
+                      />
+                    </Button> */}
+                  </Tooltip>
+                </div>
               </div>
-              <div className="candidate-info mt-2">
+              {/* <div className="candidate-info mt-2">
                 <span>Score</span>
                 <div>{item?.candidateScore ?? '-'}</div>
-              </div>
+              </div> */}
             </div>
             <div className="col-xl-1 col-md-4">
               <div className="d-flex justify-content-md-end align-items-center">
@@ -186,6 +234,13 @@ const ReferenceCheckItem = ({
           </div>
         </div>
       </div>
+
+      <RefCheckFormModal
+        titleModal={titleModal}
+        isOpen={isOpenRefForm}
+        setIsOpenModal={setIsRefForm}
+        children={childrenModal}
+      />
     </div>
   );
 };

@@ -22,7 +22,7 @@ const HeroBannerSix = () => {
           <div className="row">
             <div className="col-xxl-8 col-xl-9 col-lg-8 m-auto text-center">
               <h1 className="wow fadeInUp" data-wow-delay="0.3s">
-                Erajaya Group of companies
+                Erajaya Group of Companies
               </h1>
               <p
                 className="text-md mt-25 mb-55 lg-mb-40 wow fadeInUp"

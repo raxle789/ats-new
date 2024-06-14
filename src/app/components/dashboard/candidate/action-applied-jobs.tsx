@@ -1,16 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import edit from '@/assets/dashboard/images/icon/icon_20.svg';
-import delete_icon from '@/assets/dashboard/images/icon/icon_21.svg';
+import { HiOutlineEye } from 'react-icons/hi';
 
 const ActionAppliedJobs = () => {
   return (
     <ul className="dropdown-menu dropdown-menu-end">
       <li>
-        <a className="dropdown-item" href="#">
-          <Image src={delete_icon} alt="icon" className="lazy-img" /> Delete
-        </a>
+        <Link className="dropdown-item" href="#">
+          <HiOutlineEye className="me-1" style={{ fontSize: '16px' }} /> View
+          Jobs
+        </Link>
       </li>
     </ul>
   );
