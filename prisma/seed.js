@@ -150,6 +150,26 @@ async function main() {
 
   await prisma.$executeRaw`INSERT INTO employment_status(name, proint_id) SELECT EmpType, EmpTypeId FROM MASTER_ERA.dbo.ERA_MasterEmploymentType ORDER BY EmpType`;
 
+  await prisma.$executeRaw`INSERT INTO employment_status(name, alias) VALUES('CONTRACT', 'Contract'),('REMOTEWORK', 'Remote Work')`;
+
+  await prisma.$executeRaw`UPDATE employment_status SET alias = 'Permanent' WHERE name = 'PERMANENT'`;
+
+  await prisma.$executeRaw`UPDATE employment_status SET alias = 'Part-Time' WHERE name = 'PARTTIMER'`;
+
+  await prisma.$executeRaw`UPDATE employment_status SET alias = 'Freelance' WHERE name = 'FREELANCE'`;
+
+  await prisma.$executeRaw`UPDATE employment_status SET alias = 'Apprentice' WHERE name = 'APPRENTICE'`;
+
+  await prisma.$executeRaw`UPDATE employment_status SET alias = 'Remote Work' WHERE name = 'REMOTEWORK'`;
+
+  await prisma.$executeRaw`UPDATE employment_status SET is_show = 1 WHERE name IN ('PERMANENT', 'CONTRACT', 'PARTTIMER', 'FREELANCE', 'REMOTEWORK', 'APPRENTICE')`;
+
+  await prisma.$executeRaw`INSERT INTO regions(proint_id, code, name) SELECT LocGrpId, LocGrpCode, LocGrpName FROM MASTER_ERA.dbo.ERA_MasterRegion ORDER BY LocGrpCode`;
+
+  await prisma.$executeRaw`INSERT INTO regions(name) VALUES ('HO')`;
+
+  await prisma.$executeRaw`UPDATE regions SET is_show = 1 WHERE name <> 'OVERSEAS'`;
+
   await prisma.$executeRaw`INSERT INTO genders(name) VALUES('Male'), ('Female')`;
 
   await prisma.$executeRaw`INSERT INTO skills(name) SELECT name FROM ats.dbo.special_skills ORDER BY id`;

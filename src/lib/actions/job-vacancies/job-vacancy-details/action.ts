@@ -98,12 +98,14 @@ export async function getAllApplicantDataByJobVacancyId(
       jobVacancyId: decryptedJobVacancyId,
     });
 
-    if (validate.success) {
+    if (validate?.success) {
       const data = await getAllApplicantByJobVacancyId(
         validate?.data?.jobVacancyId,
         offset,
         perPage,
       );
+
+      // console.info(data.data[0].candidates);
 
       const newData = await (async () => {
         if (data?.data && data?.data?.length) {
@@ -121,19 +123,29 @@ export async function getAllApplicantDataByJobVacancyId(
                       .file_base?.toString()
                   : null,
                 candidateName: d?.candidates?.users?.name,
-                candidateLastPosition:
-                  (await getLastPosition(d?.candidates?.working_experiences)) ??
-                  'Fresh Graduate',
+                candidateLastPosition: d?.candidates?.working_experiences
+                  ?.length
+                  ? d?.candidates?.working_experiences[0]?.job_title
+                  : 'Fresh Graduate',
                 candidateLastEducation: d?.candidates?.educations
                   ? `${d?.candidates?.educations?.edu_level}/${d?.candidates?.educations?.edu_major}`
                   : null,
                 candidateExpectedSalary: await formatToRupiah(
                   d?.candidates?.expected_salary,
                 ),
-                candidateYearOfExperience:
-                  (await calculateYearOfExperience(
-                    d?.candidates?.working_experiences,
-                  )) ?? 'Fresh Graduate',
+                candidateYearOfExperience: (await calculateYearOfExperience(
+                  d?.candidates?.working_experiences,
+                ))
+                  ? (await calculateYearOfExperience(
+                      d?.candidates?.working_experiences,
+                    )) <= 1
+                    ? `${await calculateYearOfExperience(
+                        d?.candidates?.working_experiences,
+                      )} year`
+                    : `${await calculateYearOfExperience(
+                        d?.candidates?.working_experiences,
+                      )} years`
+                  : 'Fresh Graduate',
                 candidateStatus: d?.states?.alias,
                 candidateSkills: d?.candidates?.candidate_skills?.map(
                   (s) => s?.skills?.name,

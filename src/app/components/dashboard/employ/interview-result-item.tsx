@@ -143,7 +143,8 @@ const InterviewResultItem: React.FC<Props> = ({
 
             form.setFieldsValue({
               [`${_.camelCase(data?.categoryName)}Rate`]: data?.score ?? 0,
-              [`${_.camelCase(data?.categoryName)}Comment`]: data?.comment,
+              [`${_.camelCase(data?.categoryName)}Comment`]:
+                data?.comment ?? null,
             });
           });
         }
@@ -154,6 +155,72 @@ const InterviewResultItem: React.FC<Props> = ({
       interviewResultData?.interviewResultData &&
       !_.isEmpty(interviewResultData?.interviewResultData)
     ) {
+      if (
+        interviewResultData?.interviewResultCategories &&
+        interviewResultData?.interviewResultCategories?.length
+      ) {
+        interviewResultData?.interviewResultCategories?.map(
+          (item: {} | any) => {
+            // console.info(item);
+
+            if (
+              interviewResultData?.interviewResultData?.statusName ===
+              'Reschedule'
+            ) {
+              setIsInterviewResultCategoryDisabled((prev) => ({
+                ...prev,
+                [`${_.camelCase(item?.name)}Rate`]: true,
+                [`${_.camelCase(item?.name)}Comment`]: true,
+              }));
+
+              setInterviewResultCategoriesRate((prev) => ({
+                ...prev,
+                [`${_.camelCase(item?.name)}Rate`]: 1,
+              }));
+
+              form.setFieldsValue({
+                [`${_.camelCase(item?.name)}Rate`]: 1,
+                [`${_.camelCase(item?.name)}Comment`]: '-',
+              });
+            } else {
+              setIsInterviewResultCategoryDisabled((prev) => ({
+                ...prev,
+                [`${_.camelCase(item?.name)}Rate`]: false,
+                [`${_.camelCase(item?.name)}Comment`]: false,
+              }));
+
+              if (
+                item?.interviewResultCategories &&
+                item?.interviewResultCategories?.length
+              ) {
+                item?.interviewResultCategories?.map((data: {} | any) => {
+                  setInterviewResultCategoriesRate((prev) => ({
+                    ...prev,
+                    [`${_.camelCase(item?.name)}Rate`]: data?.score ?? 0,
+                  }));
+
+                  form.setFieldsValue({
+                    [`${_.camelCase(item?.name)}Rate`]: data?.score ?? 0,
+                    [`${_.camelCase(item?.name)}Comment`]:
+                      data?.comment ?? null,
+                  });
+                });
+              } else {
+                setInterviewResultCategoriesRate((prev) => ({
+                  ...prev,
+                  [`${_.camelCase(item?.name)}Rate`]: 0,
+                }));
+
+                form.setFieldsValue({
+                  [`${_.camelCase(item?.name)}Rate`]: 0,
+                  [`${_.camelCase(item?.name)}Comment`]: null,
+                });
+              }
+            }
+          },
+        );
+      }
+
       form.setFieldsValue({
         status: interviewResultData?.interviewResultData?.statusName,
         reason: interviewResultData?.interviewResultData?.reason,
@@ -200,45 +267,104 @@ const InterviewResultItem: React.FC<Props> = ({
     setInterviewResultStatusValue(value);
 
     if (
-      interviewResultData?.interviewResultStatus[value]?.name === 'Reschedule'
+      interviewResultData?.interviewResultCategories &&
+      interviewResultData?.interviewResultCategories?.length
     ) {
-      if (
-        interviewResultData?.interviewResultCategories &&
-        interviewResultData?.interviewResultCategories?.length
-      ) {
-        interviewResultData?.interviewResultCategories?.map(
-          (item: {} | any) => {
-            // console.info(item);
+      interviewResultData?.interviewResultCategories?.map((item: {} | any) => {
+        // console.info(item);
 
+        if (
+          interviewResultData?.interviewResultStatus[value]?.name ===
+          'Reschedule'
+        ) {
+          setIsInterviewResultCategoryDisabled((prev) => ({
+            ...prev,
+            [`${_.camelCase(item?.name)}Rate`]: true,
+            [`${_.camelCase(item?.name)}Comment`]: true,
+          }));
+
+          setInterviewResultCategoriesRate((prev) => ({
+            ...prev,
+            [`${_.camelCase(item?.name)}Rate`]: 1,
+          }));
+
+          form.setFieldsValue({
+            [`${_.camelCase(item?.name)}Rate`]: 1,
+            [`${_.camelCase(item?.name)}Comment`]: '-',
+          });
+        } else {
+          setIsInterviewResultCategoryDisabled((prev) => ({
+            ...prev,
+            [`${_.camelCase(item?.name)}Rate`]: false,
+            [`${_.camelCase(item?.name)}Comment`]: false,
+          }));
+
+          if (
+            item?.interviewResultCategories &&
+            item?.interviewResultCategories?.length
+          ) {
+            item?.interviewResultCategories?.map((data: {} | any) => {
+              if (
+                interviewResultData?.interviewResultData &&
+                !_.isEmpty(interviewResultData?.interviewResultData)
+              ) {
+                if (
+                  interviewResultData?.interviewResultData?.statusName ===
+                  'Reschedule'
+                ) {
+                  setInterviewResultCategoriesRate((prev) => ({
+                    ...prev,
+                    [`${_.camelCase(item?.name)}Rate`]: 0,
+                  }));
+
+                  form.setFieldsValue({
+                    [`${_.camelCase(item?.name)}Rate`]: 0,
+                    [`${_.camelCase(item?.name)}Comment`]: null,
+                  });
+                } else {
+                  setInterviewResultCategoriesRate((prev) => ({
+                    ...prev,
+                    [`${_.camelCase(item?.name)}Rate`]: data?.score ?? 0,
+                  }));
+
+                  form.setFieldsValue({
+                    [`${_.camelCase(item?.name)}Rate`]: data?.score ?? 0,
+                    [`${_.camelCase(item?.name)}Comment`]:
+                      data?.comment ?? null,
+                  });
+                }
+              }
+            });
+          } else {
             setInterviewResultCategoriesRate((prev) => ({
               ...prev,
-              [`${_.camelCase(item?.name)}Rate`]: 1,
+              [`${_.camelCase(item?.name)}Rate`]: 0,
             }));
 
             form.setFieldsValue({
-              [`${_.camelCase(item?.name)}Rate`]: 1,
-              [`${_.camelCase(item?.name)}Comment`]: '-',
+              [`${_.camelCase(item?.name)}Rate`]: 0,
+              [`${_.camelCase(item?.name)}Comment`]: null,
             });
+          }
+        }
 
-            // if (
-            //   item?.interviewResultCategories &&
-            //   item?.interviewResultCategories?.length
-            // ) {
-            //   item?.interviewResultCategories?.map((data: {} | any) => {
-            //     setInterviewResultCategoriesRate((prev) => ({
-            //       ...prev,
-            //       [`${_.camelCase(data?.categoryName)}Rate`]: 1,
-            //     }));
+        // if (
+        //   item?.interviewResultCategories &&
+        //   item?.interviewResultCategories?.length
+        // ) {
+        //   item?.interviewResultCategories?.map((data: {} | any) => {
+        //     setInterviewResultCategoriesRate((prev) => ({
+        //       ...prev,
+        //       [`${_.camelCase(data?.categoryName)}Rate`]: 1,
+        //     }));
 
-            //     form.setFieldsValue({
-            //       [`${_.camelCase(data?.categoryName)}Rate`]: 1,
-            //       [`${_.camelCase(data?.categoryName)}Comment`]: '-',
-            //     });
-            //   });
-            // }
-          },
-        );
-      }
+        //     form.setFieldsValue({
+        //       [`${_.camelCase(data?.categoryName)}Rate`]: 1,
+        //       [`${_.camelCase(data?.categoryName)}Comment`]: '-',
+        //     });
+        //   });
+        // }
+      });
     }
   }
 
@@ -425,6 +551,11 @@ const InterviewResultItem: React.FC<Props> = ({
                                   <div>
                                     <Rate
                                       tooltips={desc}
+                                      disabled={
+                                        isInterviewResultCategoryDisabled[
+                                          `${_.camelCase(item?.name)}Rate`
+                                        ]
+                                      }
                                       allowClear={true}
                                       onChange={(value) =>
                                         handleRateChange(
@@ -469,6 +600,11 @@ const InterviewResultItem: React.FC<Props> = ({
                                 >
                                   <TextArea
                                     placeholder="Comment"
+                                    disabled={
+                                      isInterviewResultCategoryDisabled[
+                                        `${_.camelCase(item?.name)}Comment`
+                                      ]
+                                    }
                                     autoSize={{ minRows: 3 }}
                                   />
                                 </Form.Item>

@@ -1,6 +1,6 @@
 'use server';
 
-import RefCheckListItem from './ref-check-list-item';
+import ReferenceCheckListItem from './reference-check-list-item';
 // import { Suspense } from 'react';
 // import EmployJobDetailSkeleton from '@/app/components/loadings/employ-job-detail-skeleton';
 import { handleApplicant } from '../message/confirm';
@@ -13,15 +13,14 @@ type Props = {
   status?: string | any;
 };
 
-const RefCheckListArea: React.FC<Props> = async ({
-  params,
-  searchParams,
-  status,
-}) => {
+const ReferenceCheckListArea = async ({ params, searchParams, status }) => {
   // const pathname = usePathname();
   const page = searchParams?.page ?? '1';
+
   const perPage = searchParams?.perPage ?? '10';
+
   const searchQuery = searchParams?.query ?? '';
+
   const offset = (Number(page) - 1) * Number(perPage);
 
   type fieldData = {
@@ -53,7 +52,7 @@ const RefCheckListArea: React.FC<Props> = async ({
   })();
 
   return (
-    <RefCheckListItem
+    <ReferenceCheckListItem
       status={status}
       applicantData={applicantData?.data}
       jobVacancyId={params?.id}
@@ -62,4 +61,4 @@ const RefCheckListArea: React.FC<Props> = async ({
   );
 };
 
-export default RefCheckListArea;
+export default ReferenceCheckListArea;

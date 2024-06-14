@@ -1,6 +1,6 @@
 import React from 'react';
 import { Status } from '@/status/applicant-status';
-import RefCheckListArea from '@/app/components/applicants/ref-check-list-area';
+import ReferenceCheckListArea from '@/app/components/applicants/reference-check-list-area';
 
 export const revalidate = 0;
 
@@ -14,10 +14,10 @@ const EmployDashboardJobDetailRefCheck: React.FC<Props> = ({
   searchParams,
 }) => {
   return (
-    <RefCheckListArea
+    <ReferenceCheckListArea
       params={params}
       searchParams={searchParams}
-      status={Status.REF_CHECK}
+      status={Status?.REFCHECK}
     />
   );
 };

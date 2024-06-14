@@ -1,12 +1,12 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import ReferenceCheckItem from '../dashboard/employ/reference-check-item';
 import { useRouter, usePathname } from 'next/navigation';
 // import * as messages from '@/utils/message';
 // import * as confirmations from '@/utils/confirmation';
 import { Checkbox, Popover, Spin, message } from 'antd';
 import type { CheckboxProps } from 'antd';
 import ActionCheckboxPipeline from '../common/popup/action-checkbox-pipeline';
-import RefCheckItem from '../dashboard/employ/ref-check-item';
 // const { confirm } = Modal;
 
 type Props = {
@@ -30,7 +30,7 @@ type Props = {
   ) => void;
 };
 
-const RefCheckListItem: React.FC<Props> = ({
+const ReferenceCheckListItem = ({
   status,
   applicantData,
   jobVacancyId,
@@ -175,7 +175,7 @@ const RefCheckListItem: React.FC<Props> = ({
       )}
       <div className="wrapper">
         {applicantData?.map((item: any) => (
-          <RefCheckItem
+          <ReferenceCheckItem
             key={item?.candidateId}
             item={item}
             status={status}
@@ -195,4 +195,4 @@ const RefCheckListItem: React.FC<Props> = ({
   );
 };
 
-export default RefCheckListItem;
+export default ReferenceCheckListItem;

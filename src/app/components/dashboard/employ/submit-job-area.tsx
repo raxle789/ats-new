@@ -41,22 +41,22 @@ const SubmitJobArea = async ({ params, searchParams }) => {
 
   const jobVacancyData = await (async () => {
     if (params?.id) {
-      return await getJobVacancyData(params?.id)
-        .then((res) => {
-          const data = res ?? {};
+      return await getJobVacancyData(params?.id);
+      // .then((res) => {
+      //   const data = res ?? {};
 
-          // console.info(data);
+      //   // console.info(data);
 
-          return data;
-        })
-        .catch((e) => {
-          console.log('Failed Getting Job Vacancy Data: ', e);
+      //   return data;
+      // })
+      // .catch((e) => {
+      //   console.log('Failed Getting Job Vacancy Data: ', e);
 
-          return {};
-        });
+      //   return {};
+      // });
+    } else {
+      return {};
     }
-
-    return {};
   })();
 
   const efpkDataByTa = await getAllEfpkDataByTa(taId)
@@ -73,20 +73,20 @@ const SubmitJobArea = async ({ params, searchParams }) => {
 
   const efpkDataByRequestNo = await (async () => {
     if (requestNo) {
-      return await getEfpkDataByRequestNo(requestNo)
-        .then((res) => {
-          const data = res ?? {};
+      return await getEfpkDataByRequestNo(requestNo);
+      // .then((res) => {
+      //   const data = res ?? {};
 
-          return data;
-        })
-        .catch((e) => {
-          console.log('Failed getting efpk data by request no: ', e);
+      //   return data;
+      // })
+      // .catch((e) => {
+      //   console.log('Failed getting efpk data by request no: ', e);
 
-          return {};
-        });
+      //   return {};
+      // });
+    } else {
+      return {};
     }
-
-    return {};
   })();
 
   const jobTitleData = await getAllJobTitleData()

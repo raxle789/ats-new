@@ -175,7 +175,7 @@ const SubmitJobItem = ({
       form.setFieldsValue({
         jobEfpk: efpkDataByRequestNo?.RequestNo ?? null,
         jobTitle: efpkDataByRequestNo?.JobTitleCode ?? null,
-        jobEmploymentStatus: efpkDataByRequestNo?.EmpType ?? null,
+        // jobEmploymentStatus: efpkDataByRequestNo?.EmpType ?? null,
         jobPositionLevel: efpkDataByRequestNo?.JobLvlCode ?? null,
         jobVertical: efpkDataByRequestNo?.OrgGroupName ?? null,
         jobDepartment: efpkDataByRequestNo?.OrgGroupCode ?? null,
@@ -205,17 +205,24 @@ const SubmitJobItem = ({
   }
 
   function handleEfpkChange(value) {
-    setLoading(true);
-
-    const params = new URLSearchParams(searchParams);
-
     if (value) {
-      params.set('fpk', encodeURIComponent(value));
-    } else {
-      params.delete('fpk');
-    }
+      setLoading(true);
 
-    router.replace(`${pathname}?${params.toString()}`);
+      const params = new URLSearchParams(searchParams);
+
+      if (value) {
+        params.set('fpk', encodeURIComponent(value));
+      } else {
+        params.delete('fpk');
+      }
+
+      router.replace(`${pathname}?${params.toString()}`);
+    } else {
+      form.setFieldsValue({
+        jobEfpk: null,
+        jobTitle: null,
+      });
+    }
   }
 
   function handleVerticalChange(value) {

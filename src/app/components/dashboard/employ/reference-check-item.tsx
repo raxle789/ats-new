@@ -48,7 +48,7 @@ type Props = {
   ) => void | any;
 };
 
-const RefCheckItem: React.FC<Props> = ({
+const ReferenceCheckItem = ({
   item,
   status,
   checkboxState,
@@ -190,4 +190,4 @@ const RefCheckItem: React.FC<Props> = ({
   );
 };
 
-export default RefCheckItem;
+export default ReferenceCheckItem;

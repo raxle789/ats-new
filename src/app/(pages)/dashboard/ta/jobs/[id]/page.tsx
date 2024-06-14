@@ -19,7 +19,7 @@ const EmployDashboardJobDetailApplicant: React.FC<Props> = ({
     <ApplicantListArea
       params={params}
       searchParams={searchParams}
-      status={Status.APPLICANT}
+      status={Status?.APPLICANT}
     />
     // </Suspense>
   );
