@@ -28,6 +28,7 @@ const VerticalSection = () => {
                 alt="Vertical-Line"
                 className="mb-25 rounded-3"
                 style={{ width: '291px', height: '164px' }}
+                loading="lazy"
               ></Image>
               <h5 className="footer-title vertical-title">Erajaya Digital</h5>
               <p>
@@ -41,6 +42,7 @@ const VerticalSection = () => {
                 alt="Vertical-Line"
                 className="mb-25 rounded-3"
                 style={{ width: '291px', height: '164px' }}
+                loading="lazy"
               ></Image>
               <h5 className="footer-title vertical-title">
                 Erajaya Active Lifestyle​
@@ -57,6 +59,7 @@ const VerticalSection = () => {
                 alt="Vertical-Line"
                 className="mb-25 rounded-3"
                 style={{ width: '291px', height: '164px' }}
+                loading="lazy"
               ></Image>
               <h5 className="footer-title vertical-title">
                 Erajaya Food & Nourishment
@@ -69,6 +72,7 @@ const VerticalSection = () => {
                 alt="Vertical-Line"
                 className="mb-25 rounded-3"
                 style={{ width: '291px', height: '164px' }}
+                loading="lazy"
               ></Image>
               <h5 className="footer-title vertical-title">
                 Erajaya Beauty & Wellness

@@ -13,6 +13,7 @@ const BlogItemFour = ({ blog }: { blog: IBlogDataType }) => {
             alt="blog img"
             className="lazy-img w-100 tran4s"
             style={{ height: 'auto' }}
+            loading="lazy"
           />
         </Link>
       </figure>

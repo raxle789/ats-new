@@ -35,6 +35,11 @@ const props: UploadProps = {
     authorization: 'authorization-text',
   },
   listType: 'picture',
+  // defaultFileList: [
+  //   {
+
+  //   }
+  // ],
   accept: '.pdf',
   onChange(info) {
     if (info.file.status !== 'uploading') {
