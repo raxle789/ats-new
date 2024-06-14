@@ -17,6 +17,7 @@ export async function getUserSession(
     case 'auth':
       /* Getting both client and server */
       const authSession = cookies().get(Utils.authSession)?.value;
+      console.info("auth :", authSession);
       if (!authSession) return false;
       const decryptedAuthSession = Jwt.DecryptSession(authSession as string);
       return decryptedAuthSession;

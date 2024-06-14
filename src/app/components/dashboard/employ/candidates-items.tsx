@@ -7,10 +7,10 @@ import { useAppDispatch } from '@/redux/hook';
 import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
 import dynamic from 'next/dynamic';
 
-const CandidatesItems = ({ item }: { item: ICandidate }) => {
-  const DynamicAction = dynamic(() => import('./action-candidates-menu'), {
-    ssr: false,
-  });
+const CandidatesItems = ({ candidates }: { candidates: any }) => {
+  // const DynamicAction = dynamic(() => import('./action-candidates-menu'), {
+  //   ssr: false,
+  // });
   const dispatch = useAppDispatch();
   const showModal = () => {
     dispatch(setIsOpen(true));
@@ -21,8 +21,10 @@ const CandidatesItems = ({ item }: { item: ICandidate }) => {
         <div className="cadidate-avatar online position-relative d-block me-auto ms-auto mt-auto mb-auto">
           <a href="#" className="rounded-circle">
             <Image
-              src={item.img}
+              src={candidates?.documents}
               alt="image"
+              width={80}
+              height={80}
               className="lazy-img rounded-circle"
               style={{ height: 'auto' }}
             />
@@ -38,21 +40,21 @@ const CandidatesItems = ({ item }: { item: ICandidate }) => {
                     style={{ cursor: 'pointer' }}
                     onClick={showModal}
                   >
-                    {item.name}
+                    {candidates?.users?.name}
                   </a>
                 </h4>
                 <div className="candidate-info mt-2 mb-4">
                   <span>Last Position</span>
-                  <div>{item.latestPosition}</div>
+                  <div>{candidates?.working_experiences?.latest_experience}</div>
                 </div>
                 <div className="candidate-info mt-5">
                   <ul className="candidate-skills style-none d-flex align-items-center">
-                    {item.skills.slice(0, 4).map((s, i) => (
+                    {candidates.candidate_skills.slice(0, 4).map((s: any, i: number) => (
                       <li key={i}>{s}</li>
                     ))}
-                    {item.skills.length > 4 && (
+                    {candidates.candidate_skills.length > 4 && (
                       <li className="more">
-                        {item.skills.length - item.skills.slice(0, 4).length}+
+                        {candidates.candidate_skills.length - candidates.candidate_skills.slice(0, 4).length}+
                       </li>
                     )}
                   </ul>
@@ -62,22 +64,22 @@ const CandidatesItems = ({ item }: { item: ICandidate }) => {
             <div className="col-lg-4 col-md-4 col-sm-6">
               <div className="candidate-info">
                 <span>Last Education</span>
-                <div>{item.education}</div>
+                <div>{candidates?.educations?.edu_level}</div>
               </div>
 
               <div className="candidate-info mt-2">
                 <span>Expected Salary</span>
-                <div>{item.expectedSalary}</div>
+                <div>{candidates?.expected_salary}</div>
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6">
               <div className="candidate-info">
                 <span>Year of Experience</span>
-                <div>{item.yearExperience}</div>
+                <div>{candidates?.working_experiences?.experiences_desc}</div>
               </div>
               <div className="candidate-info mt-2">
                 <span>Status</span>
-                <div>{item.status}</div>
+                {/* <div>{item.status}</div> */}
               </div>
             </div>
             <div className="col-xl-1 col-md-4">
@@ -90,7 +92,7 @@ const CandidatesItems = ({ item }: { item: ICandidate }) => {
                     aria-expanded="false"
                   >
                     <span>
-                      <DynamicAction />
+                      {/* <DynamicAction /> */}
                     </span>
                   </button>
                 </div>
