@@ -3,7 +3,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image, { StaticImageData } from 'next/image';
 import { usePathname } from 'next/navigation';
-import logo from '@/assets/dashboard/images/logo_01.png';
+// import logo from '@/assets/dashboard/images/logo_01.png';
 import avatar from '@/assets/dashboard/images/avatar_01.jpg';
 import profile_icon_1 from '@/assets/dashboard/images/icon/icon_23.svg';
 import profile_icon_2 from '@/assets/dashboard/images/icon/icon_24.svg';
@@ -17,19 +17,23 @@ import nav_3 from '@/assets/dashboard/images/icon/icon_3.svg';
 import nav_3_active from '@/assets/dashboard/images/icon/icon_3_active.svg';
 import nav_4 from '@/assets/dashboard/images/icon/icon_4.svg';
 import nav_4_active from '@/assets/dashboard/images/icon/icon_4_active.svg';
-import nav_5 from '@/assets/dashboard/images/icon/icon_5.svg';
-import nav_5_active from '@/assets/dashboard/images/icon/icon_5_active.svg';
-import nav_6 from '@/assets/dashboard/images/icon/icon_6.svg';
-import nav_6_active from '@/assets/dashboard/images/icon/icon_6_active.svg';
-import nav_7 from '@/assets/dashboard/images/icon/icon_7.svg';
-import nav_7_active from '@/assets/dashboard/images/icon/icon_7_active.svg';
-import nav_8 from '@/assets/dashboard/images/icon/icon_8.svg';
+// import nav_5 from '@/assets/dashboard/images/icon/icon_5.svg';
+// import nav_5_active from '@/assets/dashboard/images/icon/icon_5_active.svg';
+// import nav_6 from '@/assets/dashboard/images/icon/icon_6.svg';
+// import nav_6_active from '@/assets/dashboard/images/icon/icon_6_active.svg';
+// import nav_7 from '@/assets/dashboard/images/icon/icon_7.svg';
+// import nav_7_active from '@/assets/dashboard/images/icon/icon_7_active.svg';
+// import nav_8 from '@/assets/dashboard/images/icon/icon_8.svg';
 import LogoutModal from '../../common/popup/logout-modal';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { setIsOpen } from '@/redux/features/sidebarSlice';
 import logo2 from '@/assets/images/logo/erajaya_logo4.jpg';
 import { useAppSessionContext } from '@/libs/Sessions/AppSession';
-import { authSession, linkedinSession, regSession } from '@/libs/Sessions/utils';
+import {
+  authSession,
+  linkedinSession,
+  regSession,
+} from '@/libs/Sessions/utils';
 import { DecryptSession } from '@/libs/Sessions/jwt';
 
 // nav data
@@ -146,57 +150,9 @@ const CandidateAside = () => {
               />
             </div>
             <div className="user-name-data">
-              <button
-                className="user-name dropdown-toggle"
-                type="button"
-                id="profile-dropdown"
-                data-bs-toggle="dropdown"
-                data-bs-auto-close="outside"
-                aria-expanded="false"
-              >
+              <p className="user-name">
                 {authSessionPayload?.user?.name ?? 'unknown'}
-              </button>
-              <ul className="dropdown-menu" aria-labelledby="profile-dropdown">
-                <li>
-                  <Link
-                    className="dropdown-item d-flex align-items-center"
-                    href="/dashboard/candidate-dashboard/profile"
-                  >
-                    <Image
-                      src={profile_icon_1}
-                      alt="icon"
-                      className="lazy-img"
-                    />
-                    <span className="ms-2 ps-1">Profile</span>
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    className="dropdown-item d-flex align-items-center"
-                    href="/dashboard/candidate-dashboard/profile"
-                  >
-                    <Image
-                      src={profile_icon_2}
-                      alt="icon"
-                      className="lazy-img"
-                    />
-                    <span className="ms-2 ps-1">Account Settings</span>
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    className="dropdown-item d-flex align-items-center"
-                    href="#"
-                  >
-                    <Image
-                      src={profile_icon_3}
-                      alt="icon"
-                      className="lazy-img"
-                    />
-                    <span className="ms-2 ps-1">Notification</span>
-                  </a>
-                </li>
-              </ul>
+              </p>
             </div>
           </div>
           <nav className="dasboard-main-nav">
@@ -230,8 +186,8 @@ const CandidateAside = () => {
                   </li>
                 );
               })}
-              {/* <li>
-                <a
+              <li>
+                {/* <a
                   href="#"
                   className="d-flex w-100 align-items-center"
                   data-bs-toggle="modal"
@@ -239,8 +195,12 @@ const CandidateAside = () => {
                 >
                   <Image src={nav_8} alt="icon" className="lazy-img" />
                   <span>Delete Account</span>
-                </a>
-              </li> */}
+                </a> */}
+                <Link href="#" className="d-flex w-100 align-items-center">
+                  <Image src={logout} alt="icon" className="lazy-img" />
+                  <span style={{ color: '#ff2730' }}>Logout</span>
+                </Link>
+              </li>
             </ul>
           </nav>
           {/* <div className="profile-complete-status">

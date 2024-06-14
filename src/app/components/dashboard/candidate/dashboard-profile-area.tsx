@@ -130,8 +130,8 @@ const DashboardProfileArea = () => {
       label: 'Documents',
     },
   ];
+
   const [keyState, setKeyState] = useState('1');
-  /* Master Data */
   const [masterData, setMasterData] = useState<MasterData | null>(null);
   const [profileData, setProfileData] = useState<any | null>(null);
   const [experiences, setExperiences] = useState<any | null>(null);
