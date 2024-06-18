@@ -376,11 +376,11 @@ const CandidateDetailsModal: React.FC<IProps> = ({
                 </tr>
               </tbody>
             </table>
-            <Pagination
+            {/* <Pagination
               pageRangeDisplayed={1}
               totalData={20}
               disabled={false}
-            />
+            /> */}
           </div>
         )}
         {current === 'candidateHistory' && (

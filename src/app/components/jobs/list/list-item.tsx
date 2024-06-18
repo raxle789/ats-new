@@ -2,6 +2,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import logoEra from '@/assets/images/home/erajaya_logo_hd.png';
 import ApplyModal from '../../common/popup/apply-modal';
 import { IJobType } from '@/types/job-data-type';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
@@ -29,28 +30,30 @@ const ListItem = ({
       className={`job-list-one position-relative ${cls} ${style_2 ? 'border-style mb-20' : 'bottom-border'}`}
     >
       <div className="row justify-content-between align-items-center">
-        <div className="col-xxl-3 col-lg-4">
-          <div className="job-title d-flex align-items-center">
-            <Link href={`/job-details-v1/${id}`} className="logo">
-              <Image src={logo} alt="logo" className="lazy-img m-auto" />
-            </Link>
+        {/* <div className="col-lg-1">
+          <Link href={`/job-details-v1/${id}`} className="logo">
+            <Image
+              src={logoEra}
+              alt="logo"
+              className="lazy-img m-auto"
+              style={{ width: 'auto', height: '60px' }}
+            />
+          </Link>
+        </div> */}
+        <div className="col-xxl-3 col-lg-7">
+          <div className="job-title d-flex align-items-start justify-content-start flex-column">
             <Link
               href={`/job-details-v1/${id}`}
               className="title fw-500 tran3s"
             >
               {title}
             </Link>
-          </div>
-        </div>
-        <div className="col-lg-3 col-md-4 col-sm-6 ms-auto">
-          <Link
-            href={`/job-details-v1/${id}`}
-            className={`job-duration fw-500 ${duration === 'Part time' ? 'part-time' : ''}`}
-          >
-            {duration}
-          </Link>
-          <div className="job-date">
-            {date} by <Link href={`/job-details-v1/${id}`}>{company}</Link>
+            <p
+              className="job-duration fw-500 mb-0"
+              style={{ marginLeft: '30px' }}
+            >
+              Assistant Manager - Business & Corporate Services
+            </p>
           </div>
         </div>
         <div className="col-xxl-2 col-lg-3 col-md-4 col-sm-6 ms-auto xs-mt-10">

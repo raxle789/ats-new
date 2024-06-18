@@ -11,7 +11,6 @@ import dynamic from 'next/dynamic';
 const CandidatesItems = ({ item }: { item: ICandidate }) => {
   const DynamicCandidateDetails = dynamic(
     () => import('../../common/popup/candidate-details-modal'),
-    { ssr: false },
   );
   const DynamicAction = dynamic(() => import('./action-candidates-menu'), {
     ssr: false,

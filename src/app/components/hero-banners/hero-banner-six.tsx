@@ -6,11 +6,13 @@ import React from 'react';
 // import banner_2 from '@/assets/images/home/banner2.png';
 import banner_3 from '@/assets/images/home/banner3.jpg';
 import useSearchFormSubmit from '@/hooks/use-search-form-submit';
+import PositionLevelSelect from '../select/position-level';
 import JobCategorySelect from '../select/job-category';
 // import CounterOne from '../counter/counter-one';
 
 const HeroBannerSix = () => {
-  const { handleSubmit, setCategoryVal, setSearchText } = useSearchFormSubmit();
+  const { handleSubmit, setCategoryVal, setLocationVal, setSearchText } =
+    useSearchFormSubmit();
   // handleSearchInput
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchText(e.target.value);
@@ -45,19 +47,23 @@ const HeroBannerSix = () => {
                     <div className="row">
                       <div className="col-md-5">
                         <div className="input-box">
-                          <div className="label">Your job title, keyword</div>
+                          {/* <div className="label">Your job title, keyword</div>
                           <input
                             onChange={handleSearchInput}
                             type="text"
                             placeholder="Google"
                             className="keyword"
-                          />
+                          /> */}
+                          <div className="label">Job Function</div>
+                          <JobCategorySelect setCategoryVal={setCategoryVal} />
                         </div>
                       </div>
                       <div className="col-md-4">
                         <div className="input-box border-left">
-                          <div className="label">Category</div>
-                          <JobCategorySelect setCategoryVal={setCategoryVal} />
+                          <div className="label">Position Level</div>
+                          <PositionLevelSelect
+                            setLocationVal={setLocationVal}
+                          />
                         </div>
                       </div>
                       <div className="col-md-3">

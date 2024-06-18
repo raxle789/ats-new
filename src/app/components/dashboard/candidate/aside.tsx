@@ -150,8 +150,11 @@ const CandidateAside = () => {
               />
             </div>
             <div className="user-name-data">
-              <p className="user-name">
-                {authSessionPayload?.user?.name ?? 'unknown'}
+              <p className="user-name text-center">
+                {/* {authSessionPayload?.user?.name ?? 'unknown'} */}
+                {authSessionPayload?.user?.name
+                  ? `${authSessionPayload?.user?.name.substring(0, 15)}...`
+                  : 'unknown'}
               </p>
             </div>
           </div>

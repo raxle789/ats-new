@@ -62,9 +62,9 @@ const EmployJobDetailItem: React.FC<Props> = ({ jobVacancyData, params }) => {
     } else if (status === Status?.INTERVIEW) {
       router.replace(path?.INTERVIEW);
       setStatus(Status?.INTERVIEW);
-    } else if (status === Status?.REF_CHECK) {
+    } else if (status === Status?.REFCHECK) {
       router.replace(path?.REF_CHECK);
-      setStatus(Status?.REF_CHECK);
+      setStatus(Status?.REFCHECK);
     }
   }
 
@@ -74,7 +74,7 @@ const EmployJobDetailItem: React.FC<Props> = ({ jobVacancyData, params }) => {
     } else if (pathname.includes('interview')) {
       setStatus(Status?.INTERVIEW);
     } else if (pathname.includes('ref-check')) {
-      setStatus(Status?.REF_CHECK);
+      setStatus(Status?.REFCHECK);
     }
   }, [pathname]);
 
@@ -233,8 +233,8 @@ const EmployJobDetailItem: React.FC<Props> = ({ jobVacancyData, params }) => {
           <span>Interview</span>
         </button>
         <button
-          className={`d-flex flex-column align-items-center ${status === 'REF CHECK' ? 'btn-pipeline btn-pipeline-active' : 'btn-pipeline'}`}
-          onClick={() => handlePath(Status?.REF_CHECK)}
+          className={`d-flex flex-column align-items-center ${status === 'REFERENCE CHECK' ? 'btn-pipeline btn-pipeline-active' : 'btn-pipeline'}`}
+          onClick={() => handlePath(Status?.REFCHECK)}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span className="text-center">Ref Check</span>

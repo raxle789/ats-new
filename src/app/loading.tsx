@@ -1,13 +1,14 @@
 'use client';
-import React, { useState } from 'react';
+import React from 'react';
 import { Spin } from 'antd';
 
 const LoadingArea = () => {
-  const [spinning, setSpinning] = useState(true);
   return (
-    // <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.2)' }}>
-    <div style={{ backgroundColor: 'white' }}>
-      <Spin fullscreen spinning={spinning} />
+    <div
+      className="d-flex justify-content-center align-items-center"
+      style={{ width: '100vw', height: '100vh' }}
+    >
+      <Spin tip="Loading" spinning={true} />
     </div>
   );
 };

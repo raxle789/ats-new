@@ -43,14 +43,17 @@
     .search-btn {
       letter-spacing: 0.8px;
       background: $color-two;
-      color: #000;
       border-radius: 0 10px 10px 0;
       width: 195px;
       margin-left: auto;
       margin-right: -1px;
+      color: #fff;
       &:hover {
-        background: $color-three;
+        background: $color-one;
         color: #fff;
+      }
+      &:focus {
+        border: 1px solid #fff;
       }
     }
     .search-btn-two {
