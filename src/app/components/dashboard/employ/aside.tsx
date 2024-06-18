@@ -186,7 +186,9 @@ const EmployAside = () => {
                 if (m.id === 3) {
                   isActive =
                     pathname === m.link ||
-                    pathname === '/dashboard/ta/submit-job';
+                    pathname === '/dashboard/ta/submit-job' ||
+                    pathname.includes('/dashboard/ta/submit-job/edit') ||
+                    pathname.includes('/dashboard/ta/submit-job/duplicate');
                 } else if (m.id === 6) {
                   isActive =
                     pathname === m.link ||

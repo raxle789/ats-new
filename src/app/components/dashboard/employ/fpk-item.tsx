@@ -176,7 +176,7 @@ const FpkItem = ({ fpkData, offset, taData, assignTa, perPage }) => {
       <SpinFullScreen loading={loading} />
 
       <div className="job-fpk-header d-sm-flex flex-wrap align-items-center justify-content-between mb-40 lg-mb-30">
-        <h2 className="main-title m0 flex-grow-1">FPK</h2>
+        <h2 className="main-title m0 flex-grow-1"></h2>
         <div className="d-flex ms-auto xs-mt-30 justify-content-between align-items-center">
           <SearchBar />
           <div className="short-filter d-flex align-items-center ms-3">
