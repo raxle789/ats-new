@@ -167,7 +167,9 @@ const EmployAside = () => {
                 src={avatar}
                 alt="avatar"
                 className="lazy-img"
-                style={{ height: 'auto' }}
+                width={76}
+                height={76}
+                style={{ borderRadius: '50%', objectFit: 'cover' }}
               />
             </div>
             <div className="user-name-data">
@@ -188,7 +190,8 @@ const EmployAside = () => {
                     pathname === m.link ||
                     pathname === '/dashboard/ta/submit-job' ||
                     pathname.includes('/dashboard/ta/submit-job/edit') ||
-                    pathname.includes('/dashboard/ta/submit-job/duplicate');
+                    pathname.includes('/dashboard/ta/submit-job/duplicate') ||
+                    pathname.includes('/dashboard/ta/jobs/');
                 } else if (m.id === 6) {
                   isActive =
                     pathname === m.link ||
