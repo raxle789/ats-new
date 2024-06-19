@@ -50,7 +50,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (request.nextUrl.pathname.includes('/dashboard/user/stages')) {
+  if (request.nextUrl.pathname.includes('/dashboard/user/stages')) { // default -> user
     if (_COOKIES.has(regSession)) {
       /* Session Pass */
       return NextResponse.next();
@@ -63,7 +63,7 @@ export async function middleware(request: NextRequest) {
   }
 
   /* CANDIDATE */
-  if (request.nextUrl.pathname.startsWith('/dashboard/user')) {
+  if (request.nextUrl.pathname.startsWith('/dashboard/user')) { // default -> user
     if (_COOKIES.has(authSession)) {
       if (listOfRole.candidate) {
         /* Roles Passed */

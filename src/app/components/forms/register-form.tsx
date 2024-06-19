@@ -47,7 +47,7 @@ const RegisterForm = () => {
     console.info(doRegisterPhase1);
     message.success(doRegisterPhase1.message);
     setTimeout(() => {
-      router.replace('/dashboard/user/stages');
+      router.replace('/dashboard/user/stages'); // change to -> candidate
     }, 1500);
     setSpinning(false);
   };

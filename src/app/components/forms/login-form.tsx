@@ -58,6 +58,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     console.info('authorizing user...');
     /**
      * Verify captcha
+     * NOTE: change token value to true
      */
     const checkingCaptcha = await GReCaptchaV2Check(token);
     console.log('result checking captcha: ', checkingCaptcha);
@@ -73,7 +74,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     if (authorizing.success && 'data' in authorizing) {
       console.info('directing user to otp form or fill form...');
       setTimeout(() => {
-        router.push('/dashboard/user/stages');
+        router.push('/dashboard/user/stages'); // change to -> candidate
       }, 1000);
       return dispatch(setRegisterStep(authorizing.data?.stage as number));
     };
@@ -89,7 +90,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
     console.info('user required data is completed...');
     message.success(authorizing.message);
     /* Directing to job list */
-    router.push('/dashboard/user');
+    router.push('/dashboard/user'); // change to candidate
     setSpinning(false);
   };
   /* END OF ACTIONS */

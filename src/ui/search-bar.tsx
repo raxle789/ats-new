@@ -18,10 +18,10 @@ const SearchBar = ({ current, setCurrent } : { current: number, setCurrent: Reac
     };
     if(value) {
       params.set('search', value);
-      router.push(pathname + '?' + params.toString());
+      router.replace(pathname + '?' + params.toString());
     } else {
       params.delete('search');
-      router.push(pathname + '?' + params.toString())
+      router.replace(pathname + '?' + params.toString())
     };
   }, 1000);
 

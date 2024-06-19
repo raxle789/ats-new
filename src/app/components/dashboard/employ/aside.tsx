@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import logo from '@/assets/dashboard/images/logo_01.png';
 import avatar from '@/assets/dashboard/images/avatar_03.jpg';
@@ -37,6 +37,7 @@ import { setIsOpen } from '@/redux/features/sidebarSlice';
 import { useAppSessionContext } from '@/libs/Sessions/AppSession';
 import { DecryptSession } from '@/libs/Sessions/jwt';
 import { authSession } from '@/libs/Sessions/utils';
+import { userLoggedOut } from '@/libs/Login';
 
 type subLink = {
   link: string;
@@ -121,6 +122,7 @@ const nav_data: {
 // };
 
 const EmployAside = () => {
+  const router = useRouter();
   const pathname = usePathname();
   const isOpenSidebar = useAppSelector((state) => state.sidebar.isOpen);
   const dispatch = useAppDispatch();
@@ -259,7 +261,13 @@ const EmployAside = () => {
                   <Image src={nav_8} alt="icon" className="lazy-img" />
                   <span>Delete Account</span>
                 </a> */}
-                <Link href="#" className="d-flex w-100 align-items-center">
+                <Link href={''} className="d-flex w-100 align-items-center"
+                  onClick={async () => {
+                    await userLoggedOut()
+                    setTimeout(() => {
+                      router.push("/")
+                    }, 1000)
+                  }}>
                   <Image src={logout} alt="icon" className="lazy-img" />
                   <span style={{ color: '#ff2730' }}>Logout</span>
                 </Link>

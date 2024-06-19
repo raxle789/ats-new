@@ -1,14 +1,19 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // import CandidateDetailsModal from '../../common/popup/candidate-details-modal';
 // import ActionCandidatesMenu from './action-candidates-menu';
-import { ICandidate } from '@/data/candidate-data';
 import Image from 'next/image';
 // import { useAppDispatch } from '@/redux/hook';
 // import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 const CandidatesItems = ({ candidates }: { candidates: any }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const newDetailParams = new URLSearchParams(searchParams);
   const DynamicCandidateDetails = dynamic(
     () => import('../../common/popup/candidate-details-modal'),
     { ssr: false },
@@ -16,9 +21,27 @@ const CandidatesItems = ({ candidates }: { candidates: any }) => {
   const DynamicAction = dynamic(() => import('./action-candidates-menu'), {
     ssr: false,
   });
+  /* States */
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const showModal = () => {
-    setIsOpenModal(true);
+  const [details, setDetails] = useState<any>(null); // will be typed soon
+  console.info("Details state data \t:", details)
+
+  const fetchDetailCandidate = async (candidateId: number) => {
+    const request = await fetch("/api/v1/talent-acq/candidates?for=" + String(candidateId), {
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    const response = await request.json();
+    /* Set Details State */
+    setDetails(response)
+  };
+
+  const showModal = async (candidateId: number) => {
+    /* Get detail candidates by id */
+    await fetchDetailCandidate(candidateId);
+    setIsOpenModal(true)
   };
   return (
     <div className="candidate-profile-card list-layout border-0 mb-25">
@@ -43,7 +66,7 @@ const CandidatesItems = ({ candidates }: { candidates: any }) => {
                   <a
                     className="tran3s"
                     style={{ cursor: 'pointer' }}
-                    onClick={showModal}
+                    onClick={() => showModal(candidates.id)}
                   >
                     {candidates?.users?.name}
                   </a>
@@ -52,7 +75,7 @@ const CandidatesItems = ({ candidates }: { candidates: any }) => {
                   <span>Last Position</span>
                   <div>{candidates?.working_experiences?.latest_experience}</div>
                 </div>
-                {/* <div className="candidate-info mt-5">
+                <div className="candidate-info mt-5">
                   <ul className="candidate-skills style-none d-flex align-items-center">
                     {candidates.candidate_skills.slice(0, 4).map((s: any, i: number) => (
                       <li key={i}>{s}</li>
@@ -63,7 +86,7 @@ const CandidatesItems = ({ candidates }: { candidates: any }) => {
                       </li>
                     )}
                   </ul>
-                </div> */}
+                </div>
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6">
@@ -110,6 +133,8 @@ const CandidatesItems = ({ candidates }: { candidates: any }) => {
       <DynamicCandidateDetails
         isOpen={isOpenModal}
         setIsOpenModal={setIsOpenModal}
+        data={null}
+        setDetails={setDetails}
       />
     </div>
   );

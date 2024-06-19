@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image, { StaticImageData } from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 // import logo from '@/assets/dashboard/images/logo_01.png';
 import avatar from '@/assets/dashboard/images/avatar_01.jpg';
 import profile_icon_1 from '@/assets/dashboard/images/icon/icon_23.svg';
@@ -35,6 +35,7 @@ import {
   regSession,
 } from '@/libs/Sessions/utils';
 import { DecryptSession } from '@/libs/Sessions/jwt';
+import { userLoggedOut } from '@/libs/Login';
 
 // nav data
 const nav_data: {
@@ -106,10 +107,11 @@ const CandidateAside = () => {
    * Session Context
    */
   const session = useAppSessionContext();
-  const authSessionPayload = DecryptSession(session[`${authSession}`]);
+  const authSessionPayload = DecryptSession(session[`${authSession}`] ?? ''); // verify if auth token doesn't exist
   console.info('auth payload \t:', authSessionPayload);
+  const regSessionPayload = DecryptSession(session[`${regSession}`] ?? '');
   /* END SESSION */
-
+  const router = useRouter();
   const pathname = usePathname();
   const isOpenSidebar = useAppSelector((state) => state.sidebar.isOpen);
   const dispatch = useAppDispatch();
@@ -151,7 +153,9 @@ const CandidateAside = () => {
             </div>
             <div className="user-name-data">
               <p className="user-name">
-                {authSessionPayload?.user?.name ?? 'unknown'}
+                {authSessionPayload?.user?.name ? authSessionPayload?.user?.name :
+                regSessionPayload?.user?.name ? regSessionPayload?.user?.name : 'guest'
+                }
               </p>
             </div>
           </div>
@@ -196,7 +200,13 @@ const CandidateAside = () => {
                   <Image src={nav_8} alt="icon" className="lazy-img" />
                   <span>Delete Account</span>
                 </a> */}
-                <Link href="#" className="d-flex w-100 align-items-center">
+                <Link href="#" className="d-flex w-100 align-items-center"
+                  onClick={async () => {
+                    await userLoggedOut()
+                    setTimeout(() => {
+                      router.push("/")
+                    }, 1000)
+                  }}>
                   <Image src={logout} alt="icon" className="lazy-img" />
                   <span style={{ color: '#ff2730' }}>Logout</span>
                 </Link>

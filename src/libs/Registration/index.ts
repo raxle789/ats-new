@@ -449,6 +449,11 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
       if(validatedInputData.experience.length > 0) {
         console.info('storing experiences...');
         const experiencesReadyToStore = validatedInputData.experience.map(experience => {
+          const dateNow = new Date(Date.now());
+          const experienceYear = experience.endYear.getFullYear();
+          const experienceMonth = experience.endYear.getMonth();
+          const isPresent = experienceYear >= dateNow.getFullYear() && experienceMonth >= dateNow.getMonth() ? true : false;
+          console.info("is present \t: ", isPresent);
           return {
             id_of_candidate: regSession.candidate.id,
             company_name: experience.compName,
@@ -461,7 +466,7 @@ export async function RegisterPhase2(submittedValues2: TypeSubmittedValues2, doc
             start_at: experience.startYear,
             end_at: experience.endYear, // NULLABLE - If current checked, it shoudl be null.
             // is_currently: false,
-            status: '-', // status can be determined by checked current or not. NULLABLE
+            status: experienceYear >= dateNow.getFullYear() && experienceMonth >= dateNow.getMonth() ? "present" : "-", // status can be determined by checked current or not. NULLABLE
             created_at: new Date(Date.now())
           }
         });

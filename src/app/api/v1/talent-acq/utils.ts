@@ -47,6 +47,15 @@ export function calculateExperiences({ experiences }: { experiences: Experiences
   const _FINALMONTH = totalAllExperiencesInMonth;
   const _FINALYEARS = Math.floor(totalAllExperiencesInMonth / 12);
   const _MONTHLEFT = totalAllExperiencesInMonth % 12;
+  /* If not valid experiences date */
+  if(_FINALMONTH <= 0) {
+    experiencesDescription = 'Have experiences but invalid date';
+    return {
+      total_experiences_in_month: 0,
+      experiences_desc: experiencesDescription,
+      latest_experience: experiences[0].job_title
+    };
+  };
   /* FINAL check */
   if (_FINALYEARS == 0) {
     experiencesDescription = `Less than a year (${_FINALMONTH}) Months`;

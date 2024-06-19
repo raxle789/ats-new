@@ -99,6 +99,10 @@ export async function updateCandidateExperiences(submittedValue: any): Promise<T
   console.info('reg-session-data', authSession);
   const { expectedSalary, ...restOfExperiences } = submittedValue.experience;
   const arrExperiences = Object.values(restOfExperiences).map((experience: any) => {
+    const dateNow = new Date(Date.now());
+    const experienceYear = new Date(experience.endYear).getFullYear();
+    const experienceMonth = new Date(experience.endYear).getMonth();
+    const isPresent = experienceYear >= dateNow.getFullYear() && experienceMonth >= dateNow.getMonth() ? true : false;
     return {
       id_of_candidate: authSession.candidate.id,
       company_name: experience.compName,
@@ -111,7 +115,7 @@ export async function updateCandidateExperiences(submittedValue: any): Promise<T
       start_at: new Date(experience.startYear),
       end_at: new Date(experience.endYear), // NULLABLE - If current checked, it shoudl be null.
       // is_currently: false,
-      status: '-', // status can be determined by checked current or not. NULLABLE
+      status: isPresent ? "present" : '-', // status can be determined by checked current or not. NULLABLE
       created_at: new Date(Date.now())
     };
   });

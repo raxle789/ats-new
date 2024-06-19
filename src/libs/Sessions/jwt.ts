@@ -29,7 +29,7 @@ export function DecryptSession(value: string): any {
     const decrypted = jwt.verify(value, 'sidokaredev24', { algorithms: ['HS256'] });
     return decrypted;
   } catch (error) {
-    console.error('DECRYPT ERROR \t:', error);
+    // console.error('DECRYPT ERROR \t:', error);
     return false;
   }
 }
