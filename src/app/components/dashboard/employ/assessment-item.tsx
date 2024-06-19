@@ -105,8 +105,9 @@ const AssessmentItem: React.FC<Props> = ({
                 src={item?.candidatePhoto ?? img_2}
                 alt="image"
                 className="lazy-img rounded-circle"
-                width="80"
-                height="80"
+                width={80}
+                height={80}
+                style={{ borderRadius: '50%', objectFit: 'cover' }}
                 // style={{ width: '80', height: '80' }}
               />
             </a>

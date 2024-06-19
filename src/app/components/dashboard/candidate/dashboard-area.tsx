@@ -54,10 +54,10 @@ const DashboardArea = () => {
 
   const getAppliedJobsData = async () => {
     const appliedJobsSData = await getAppliedJobs();
-    console.info("Applied Jobs \t: ", appliedJobsSData);
+    console.info('Applied Jobs \t: ', appliedJobsSData);
     if (appliedJobsSData.success) {
       return setAppliedJobs(appliedJobsSData.data);
-    };
+    }
     return setError(appliedJobsSData.message as string);
   };
 
@@ -80,59 +80,9 @@ const DashboardArea = () => {
           <div className="recent-job-tab bg-white border-20 mt-30 h-100">
             <h4 className="dash-title-two">Recommended Jobs 20</h4>
             <div
-              className={`wrapper ${appliedJobs.length !== 0 ? '' : 'content-dashboard-user'}`}
+              className={`wrapper ${appliedJobs.length !== 0 ? 'd-flex justify-content-center align-items-center' : 'content-dashboard-user'}`}
+              style={{ minHeight: '75%' }}
             >
-              {/* {job_items.map((j) => (
-                <div
-                  key={j.id}
-                  className="job-item-list d-flex align-items-center"
-                >
-                  <div>
-                    <Image
-                      src={j.logo}
-                      alt="logo"
-                      width={40}
-                      height={40}
-                      className="lazy-img logo"
-                    />
-                  </div>
-                  <div className="job-title">
-                    <h6 className="mb-5">
-                      <a href="#">Job Title</a>
-                    </h6>
-                    <div className="meta row">
-                      <span className="col-lg-5">Assistant Manager</span>
-                      <span className="col-lg-7">Fulltime</span>
-                    </div>
-                  </div>
-                  <div className="job-action">
-                    <button
-                      className="action-btn dropdown-toggle"
-                      type="button"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      <span></span>
-                    </button>
-                    <ul className="dropdown-menu">
-                      <li>
-                        <a
-                          className="dropdown-item"
-                          href="#"
-                          style={{ color: 'rgba(0, 0, 0, 0.7)' }}
-                        >
-                          View Job
-                        </a>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="#">
-                          Delete
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              ))} */}
               <Alert
                 message="No Recommendations"
                 description="There are no job recommendations for now"
@@ -189,9 +139,9 @@ const DashboardArea = () => {
                         {job.stateName}
                       </Tag>
                       <div className="meta row">
-                        <span className="col-lg-5">
-                          {/* {job.jobVacancies.positionLevels.name} */}
-                        </span>
+                        {/* <span className="col-lg-5">
+                          {job.jobVacancies.positionLevels.name}
+                        </span> */}
                         <span className="col-lg-7">
                           {job.jobVacancies.employmentStatusName}
                         </span>

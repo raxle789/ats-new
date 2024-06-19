@@ -16,7 +16,6 @@ const CandidatesItems = ({ candidates }: { candidates: any }) => {
   const newDetailParams = new URLSearchParams(searchParams);
   const DynamicCandidateDetails = dynamic(
     () => import('../../common/popup/candidate-details-modal'),
-    { ssr: false },
   );
   const DynamicAction = dynamic(() => import('./action-candidates-menu'), {
     ssr: false,
@@ -54,7 +53,9 @@ const CandidatesItems = ({ candidates }: { candidates: any }) => {
               width={80}
               height={80}
               className="lazy-img rounded-circle"
-              style={{ height: 'auto' }}
+              width={80}
+              height={80}
+              style={{ borderRadius: '50%', objectFit: 'cover' }}
             />
           </a>
         </div>

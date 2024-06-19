@@ -10,6 +10,7 @@ export interface IJobType {
   company: string;
   location: string;
   category: string[];
+  positionLevel?: string;
   tags?: string[];
   experience: string;
   salary: number;

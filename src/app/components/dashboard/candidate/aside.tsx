@@ -50,28 +50,28 @@ const nav_data: {
     id: 1,
     icon: nav_1,
     icon_active: nav_1_active,
-    link: '/dashboard/user',
+    link: '/dashboard/candidate',
     title: 'Dashboard',
   },
   {
     id: 2,
     icon: nav_2,
     icon_active: nav_2_active,
-    link: '/dashboard/user/profile',
+    link: '/dashboard/candidate/profile',
     title: 'My Profile',
   },
   {
     id: 3,
     icon: nav_3,
     icon_active: nav_3_active,
-    link: '/dashboard/user/stages',
+    link: '/dashboard/candidate/stages',
     title: 'Stages',
   },
   {
     id: 4,
     icon: nav_4,
     icon_active: nav_4_active,
-    link: '/dashboard/user/applied-jobs',
+    link: '/dashboard/candidate/applied-jobs',
     title: 'Applied Jobs',
   },
   // {
@@ -162,16 +162,16 @@ const CandidateAside = () => {
                 src={profilePic ?? 'https://placehold.jp/3d4070/ffffff/150x150.png?text=ERA'}
                 alt="avatar"
                 className="lazy-img"
-                style={{ height: 'auto' }}
-                width={80}
-                height={80}
+                width={76}
+                height={76}
+                style={{ borderRadius: '50%', objectFit: 'cover' }}
               />
             </div>
             <div className="user-name-data">
               <p className="user-name">
-                {authSessionPayload?.user?.name ? authSessionPayload?.user?.name :
-                regSessionPayload?.user?.name ? regSessionPayload?.user?.name : 'guest'
-                }
+                {authSessionPayload?.user?.name
+                  ? `${authSessionPayload?.user?.name.substring(0, 15)}...`
+                  : regSessionPayload?.user?.name ? regSessionPayload?.user?.name : 'guest'}
               </p>
             </div>
           </div>
@@ -180,16 +180,16 @@ const CandidateAside = () => {
               {nav_data.map((m) => {
                 // const isActive = pathname === m.link;
                 let isActive = false;
-                if (m.id === 2) {
-                  isActive =
-                    pathname === m.link ||
-                    pathname === '/dashboard/user/profile/document' ||
-                    pathname === '/dashboard/user/profile/personal-data' ||
-                    pathname ===
-                      '/dashboard/user/profile/background-experience';
-                } else {
-                  isActive = pathname === m.link;
-                }
+                // if (m.id === 2) {
+                //   isActive =
+                //     pathname === m.link ||
+                //     pathname === '/dashboard/candidate/profile/document' ||
+                //     pathname === '/dashboard/candidate/profile/personal-data' ||
+                //     pathname ===
+                //       '/dashboard/candidate/profile/background-experience';
+                // } else {
+                // }
+                isActive = pathname === m.link;
                 return (
                   <li key={m.id} onClick={handleClick}>
                     <Link

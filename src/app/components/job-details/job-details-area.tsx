@@ -1,17 +1,17 @@
 'use server';
 
 import React from 'react';
-import { getUserSession } from '@/libs/Sessions';
+// import { getUserSession } from '@/libs/Sessions';
 import JobDetailsItem from './job-details-item';
 import {
   getJobVacancyData,
   candidateApplyJobVacancy,
 } from '@/lib/actions/job-vacancies/action';
-import CryptoJS from 'crypto-js';
-import { IJobType } from '@/types/job-data-type';
-import Image from 'next/image';
+// import CryptoJS from 'crypto-js';
+// import { IJobType } from '@/types/job-data-type';
+// import Image from 'next/image';
 
-const JobDetailsArea = async ({ params }) => {
+const JobDetailsArea = async ({ params }: any) => {
   // const candidateId = await (async () => {
   //   const candidateSession = await getUserSession('auth');
 

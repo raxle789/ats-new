@@ -190,14 +190,20 @@ const EmployJobItem: React.FC<Props> = ({
         </div>
       </div>
 
-      <div className="bg-white card-box border-20">
+      <div
+        className="bg-white card-box border-20"
+        style={{ padding: '45px 40px 50px' }}
+      >
         <div className="tab-content" id="nav-tabContent">
           <div className="tab-pane fade show active" id="a1" role="tabpanel">
             <div className="table-responsive">
-              <table className="table job-alert-table job-vacancies-table w-100">
+              <table
+                className="table job-alert-table job-vacancies-table w-100"
+                style={{ tableLayout: 'fixed' }}
+              >
                 <thead>
                   <tr>
-                    <th scope="col">
+                    <th scope="col" style={{ width: '50px' }}>
                       <Popover
                         content={<ActionCheckboxJob />}
                         trigger="click"
@@ -209,7 +215,9 @@ const EmployJobItem: React.FC<Props> = ({
                         ></Checkbox>
                       </Popover>
                     </th>
-                    <th scope="col">Job Title</th>
+                    <th scope="col" style={{ width: '200px' }}>
+                      Job Title
+                    </th>
                     <th scope="col">Applicants</th>
                     <th scope="col">Assessment</th>
                     <th scope="col">Interview</th>
@@ -231,7 +239,13 @@ const EmployJobItem: React.FC<Props> = ({
                             onChange={() => onChangeCheckbox(index)}
                           ></Checkbox>
                         </td>
-                        <td className="text-start">
+                        <td
+                          className="text-start"
+                          style={{
+                            wordWrap: 'break-word',
+                            whiteSpace: 'normal',
+                          }}
+                        >
                           <Link
                             className="job-title-item"
                             href={`/dashboard/ta/jobs/${data?.jobId}`}
@@ -243,7 +257,9 @@ const EmployJobItem: React.FC<Props> = ({
                           {` ${data?.status ?? '-'}`}
                           <br />
                           End Posted:
-                          {` ${data?.endPosted ?? '-'}`}
+                          <span style={{ color: '#ff2730' }}>
+                            {` ${data?.endPosted ?? '-'}`}
+                          </span>
                         </td>
                         <td>{`${data?.applicants ?? 0}`}</td>
                         <td>{`${data?.assessment ?? 0}`}</td>

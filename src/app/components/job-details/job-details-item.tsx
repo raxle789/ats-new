@@ -5,31 +5,31 @@ import * as messages from '@/utils/message';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { useState } from 'react';
 import {
-  Cascader,
+  // Cascader,
   message,
   Spin,
-  DatePicker,
+  // DatePicker,
   Form,
-  Input,
-  InputNumber,
-  Mentions,
-  Select,
-  TimePicker,
-  TreeSelect,
-  Checkbox,
-  Col,
-  Row,
-  Slider,
-  Radio,
+  // Input,
+  // InputNumber,
+  // Mentions,
+  // Select,
+  // TimePicker,
+  // TreeSelect,
+  // Checkbox,
+  // Col,
+  // Row,
+  // Slider,
+  // Radio,
   Button,
-  notification,
+  // notification,
   Modal,
 } from 'antd';
 import { useRouter } from 'next/navigation';
 
 const { confirm } = Modal;
 
-const JobDetailsItem = ({ jobVacancyData, candidateApplyJobVacancy }) => {
+const JobDetailsItem = ({ jobVacancyData, candidateApplyJobVacancy }: any) => {
   const router = useRouter();
 
   const [disabled, setDisabled] = useState(false);
@@ -38,12 +38,17 @@ const JobDetailsItem = ({ jobVacancyData, candidateApplyJobVacancy }) => {
 
   const [loading, setLoading] = useState(false);
 
-  function handleCandidateApplyJobVacancy(jobId) {
+  function handleCandidateApplyJobVacancy(jobId: string | any) {
     setLoading(true);
 
     confirm({
       title: 'Confirmation',
-      icon: <ExclamationCircleFilled />,
+      icon: (
+        <ExclamationCircleFilled
+          onPointerEnterCapture={''}
+          onPointerLeaveCapture={''}
+        />
+      ),
       centered: true,
       content: 'Do want to apply this job?',
       onOk() {
@@ -91,7 +96,7 @@ const JobDetailsItem = ({ jobVacancyData, candidateApplyJobVacancy }) => {
                 </h3>
 
                 <div className="post-block border-style mt-50 lg-mt-30">
-                  <div className="d-flex align-items-center">
+                  <div className="d-flex align-items-center mb-15">
                     <div className="block-numb text-center fw-500 text-white rounded-circle me-2">
                       1
                     </div>
@@ -104,7 +109,7 @@ const JobDetailsItem = ({ jobVacancyData, candidateApplyJobVacancy }) => {
                   ></div>
                 </div>
                 <div className="post-block border-style mt-30">
-                  <div className="d-flex align-items-center">
+                  <div className="d-flex align-items-center mb-15">
                     <div className="block-numb text-center fw-500 text-white rounded-circle me-2">
                       2
                     </div>

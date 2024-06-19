@@ -4,12 +4,17 @@ import React from 'react';
 // import HeaderSix from '@/layouts/headers/header-6';
 import Wrapper from '@/layouts/wrapper';
 import JobBreadcrumb from '../../../components/jobs/breadcrumb/job-breadcrumb';
+import { Metadata } from 'next';
 // import JobList from '../../../components/jobs/list/job-list-area';
 import dynamic from 'next/dynamic';
 // import JobPortalIntro from '../../../components/job-portal-intro/job-portal-intro';
 // import FooterOne from '@/layouts/footers/footer-one';
 
 export const revalidate = 0;
+
+export const metadata: Metadata = {
+  title: 'Job Vacancy',
+};
 
 type Props = {
   searchParams: {} | any;

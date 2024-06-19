@@ -18,7 +18,7 @@ import { IJobType } from '@/types/job-data-type';
 //   setIsOpenSidebar: React.Dispatch<React.SetStateAction<boolean>>
 // }
 
-const EmployDashboardArea = () => {
+const UserDashboardArea = () => {
   const [job_items, set_job_items] = useState<IJobType[]>([]);
 
   const handleJobs = (item: { value: string; label: string }) => {};
@@ -145,4 +145,4 @@ const EmployDashboardArea = () => {
   );
 };
 
-export default EmployDashboardArea;
+export default UserDashboardArea;

@@ -9,7 +9,7 @@ const JobCategorySelect = ({
   setCategoryVal: React.Dispatch<React.SetStateAction<string>>;
 }) => {
   const uniqueCategories = [
-    ...new Set(job_data.flatMap((job) => job.category)),
+    ...new Set(job_data.flatMap((job) => job.job_function)),
   ];
   // category_option
   const category_option = uniqueCategories.map((c) => {

@@ -209,7 +209,8 @@ hr {
 .btn-one {
   text-transform: capitalize;
   font-weight: 500;
-  padding: 8px 26px;
+  font-size: 15px;
+  padding: 15px 26px;
   text-align: center;
   border-radius: 50px;
   color: white;
@@ -217,7 +218,7 @@ hr {
   border: 2px solid transparent;
   @include transition(0.3s);
   &.lg {
-    padding: 8px 32px;
+    padding: 15px 32px;
   }
   &:hover {
     background-color: $color-one;

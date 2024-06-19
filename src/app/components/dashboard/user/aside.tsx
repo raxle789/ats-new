@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import logo from '@/assets/dashboard/images/logo_01.png';
 import avatar from '@/assets/dashboard/images/avatar_03.jpg';
@@ -30,14 +30,13 @@ import LogoutModal from '../../common/popup/logout-modal';
 import logo2 from '@/assets/images/logo/erajaya_logo4.jpg';
 
 // import { ExpendableButton } from './expendable-button';
-import { ExpendableButtonAside } from './expendable-button-aside';
+// import { ExpendableButtonAside } from './expendable-button-aside';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 
 import { setIsOpen } from '@/redux/features/sidebarSlice';
 import { useAppSessionContext } from '@/libs/Sessions/AppSession';
 import { DecryptSession } from '@/libs/Sessions/jwt';
 import { authSession } from '@/libs/Sessions/utils';
-import { userLoggedOut } from '@/libs/Login';
 
 type subLink = {
   link: string;
@@ -57,7 +56,7 @@ const nav_data: {
     id: 1,
     icon: nav_1,
     icon_active: nav_1_active,
-    link: '/dashboard/ta',
+    link: '/dashboard/user',
     title: 'Dashboard',
   },
   // {
@@ -71,7 +70,7 @@ const nav_data: {
     id: 3,
     icon: nav_3,
     icon_active: nav_3_active,
-    link: '/dashboard/ta/jobs',
+    link: '/dashboard/user/jobs',
     title: 'Job Vacancies',
   },
   // {
@@ -89,30 +88,30 @@ const nav_data: {
   //   // subLink: [],
   //   title: 'Submit Job',
   // },
-  {
-    id: 6,
-    icon: nav_6,
-    icon_active: nav_6_active,
-    link: '/dashboard/ta/candidates',
-    subLink: [
-      { link: '/dashboard/ta/candidates/blacklisted', title: 'Blacklisted' },
-    ],
-    title: 'Candidates',
-  },
-  {
-    id: 7,
-    icon: nav_9,
-    icon_active: nav_9_active,
-    link: '/dashboard/ta/fpk',
-    title: 'FPK',
-  },
-  {
-    id: 8,
-    icon: nav_7,
-    icon_active: nav_7_active,
-    link: '/dashboard/ta/position-level-requirement',
-    title: 'Level Requirement',
-  },
+  // {
+  //   id: 6,
+  //   icon: nav_6,
+  //   icon_active: nav_6_active,
+  //   link: '/dashboard/ta/candidates',
+  //   subLink: [
+  //     { link: '/dashboard/ta/candidates/blacklisted', title: 'Blacklisted' },
+  //   ],
+  //   title: 'Candidates',
+  // },
+  // {
+  //   id: 7,
+  //   icon: nav_9,
+  //   icon_active: nav_9_active,
+  //   link: '/dashboard/ta/fpk',
+  //   title: 'FPK',
+  // },
+  // {
+  //   id: 8,
+  //   icon: nav_7,
+  //   icon_active: nav_7_active,
+  //   link: '/dashboard/ta/position-level-requirement',
+  //   title: 'Level Requirement',
+  // },
 ];
 
 // props type
@@ -121,8 +120,7 @@ const nav_data: {
 //   setIsOpenSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 // };
 
-const EmployAside = () => {
-  const router = useRouter();
+const UserAside = () => {
   const pathname = usePathname();
   const isOpenSidebar = useAppSelector((state) => state.sidebar.isOpen);
   const dispatch = useAppDispatch();
@@ -187,20 +185,13 @@ const EmployAside = () => {
             <ul className="style-none">
               {nav_data.map((m) => {
                 let isActive = false;
-                if (m.id === 3) {
-                  isActive =
-                    pathname === m.link ||
-                    pathname === '/dashboard/ta/submit-job' ||
-                    pathname.includes('/dashboard/ta/submit-job/edit') ||
-                    pathname.includes('/dashboard/ta/submit-job/duplicate') ||
-                    pathname.includes('/dashboard/ta/jobs/');
-                } else if (m.id === 6) {
-                  isActive =
-                    pathname === m.link ||
-                    pathname === '/dashboard/ta/candidates/blacklisted';
-                } else {
-                  isActive = pathname === m.link;
-                }
+                // if (m.id === 3) {
+                //   isActive =
+                //     pathname === m.link ||
+                //     pathname === '/dashboard/ta/submit-job';
+                // } else {
+                // }
+                isActive = pathname === m.link;
                 return (
                   <li key={m.id} onClick={handleClick}>
                     <Link
@@ -228,13 +219,13 @@ const EmployAside = () => {
                       />
                       <span className="d-flex align-items-center">
                         {m.title}
-                        {m.subLink && (
+                        {/* {m.subLink && (
                           <ExpendableButtonAside
                             isActive={isActive}
                             isOpen={isButtonOpen}
                             toggle={toggleOpen}
                           />
-                        )}
+                        )} */}
                       </span>
                     </Link>
                     {isButtonOpen &&
@@ -269,13 +260,7 @@ const EmployAside = () => {
                   <Image src={nav_8} alt="icon" className="lazy-img" />
                   <span>Delete Account</span>
                 </a> */}
-                <Link href={''} className="d-flex w-100 align-items-center"
-                  onClick={async () => {
-                    await userLoggedOut()
-                    setTimeout(() => {
-                      router.push("/")
-                    }, 1000)
-                  }}>
+                <Link href="#" className="d-flex w-100 align-items-center">
                   <Image src={logout} alt="icon" className="lazy-img" />
                   <span style={{ color: '#ff2730' }}>Logout</span>
                 </Link>
@@ -291,4 +276,4 @@ const EmployAside = () => {
   );
 };
 
-export default EmployAside;
+export default UserAside;
