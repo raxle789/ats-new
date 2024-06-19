@@ -1,8 +1,8 @@
 'use client';
 import React from 'react';
-import EmployDashboardArea from './dashboard-area';
+import UserDashboardArea from './dashboard-area';
 
-const EmployDashboardMain = () => {
+const UserDashboardMain = () => {
   return (
     <div className="main-page-wrapper">
       {/* aside start */}
@@ -13,10 +13,10 @@ const EmployDashboardMain = () => {
       {/* aside end 
 
       {/* dashboard area start */}
-      <EmployDashboardArea />
+      <UserDashboardArea />
       {/* dashboard area end */}
     </div>
   );
 };
 
-export default EmployDashboardMain;
+export default UserDashboardMain;

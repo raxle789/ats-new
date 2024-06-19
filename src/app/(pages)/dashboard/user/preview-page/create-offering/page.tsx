@@ -1,9 +1,9 @@
 'use client';
 import React from 'react';
-import CreateOfferingArea from '@/app/components/dashboard/employ/create-offering-area';
+import ApprovalOfferingUser from '@/app/components/dashboard/user/approval-offering-user';
 
 const JobApplicantPage = () => {
-  return <CreateOfferingArea />;
+  return <ApprovalOfferingUser />;
 };
 
 export default JobApplicantPage;

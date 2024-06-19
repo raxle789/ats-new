@@ -1,11 +1,11 @@
 import React from 'react';
 import Wrapper from '@/layouts/wrapper';
-import EmployDashboardMain from '@/app/components/dashboard/employ';
+import UserDashboardMain from '@/app/components/dashboard/user';
 
 const EmployDashboardPage = () => {
   return (
     <Wrapper>
-      <EmployDashboardMain />
+      <UserDashboardMain />
     </Wrapper>
   );
 };

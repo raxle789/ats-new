@@ -28,7 +28,9 @@ const CandidatesItems = ({ item }: { item: ICandidate }) => {
               src={item.img}
               alt="image"
               className="lazy-img rounded-circle"
-              style={{ height: 'auto' }}
+              width={80}
+              height={80}
+              style={{ borderRadius: '50%', objectFit: 'cover' }}
             />
           </a>
         </div>
