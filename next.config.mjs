@@ -27,6 +27,12 @@ const nextConfig = {
         port: '',
         pathname: '/dms/image/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+        port: '',
+        pathname: '*'
+      }
     ],
   },
   experimental: {

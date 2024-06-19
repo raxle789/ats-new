@@ -1,5 +1,5 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image, { StaticImageData } from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -36,6 +36,7 @@ import {
 } from '@/libs/Sessions/utils';
 import { DecryptSession } from '@/libs/Sessions/jwt';
 import { userLoggedOut } from '@/libs/Login';
+import { getUserProfilePicture } from '@/libs/Candidate/retrieve-data';
 
 // nav data
 const nav_data: {
@@ -122,6 +123,19 @@ const CandidateAside = () => {
       dispatch(setIsOpen(false));
     }
   };
+
+  /* State */
+  const [profilePic, setProfilePic] = useState<string | null>(null);
+
+  const fetchProfilePic = async () => {
+    const profilePictureBase64 = await getUserProfilePicture();
+    if(profilePictureBase64.file_base) {
+      setProfilePic(profilePictureBase64.file_base);
+    }
+  }
+  useEffect(() => {
+    fetchProfilePic()
+  }, []);
   return (
     <>
       <aside className={`dash-aside-navbar ${isOpenSidebar ? 'show' : ''}`}>
@@ -145,10 +159,12 @@ const CandidateAside = () => {
           <div className="user-data">
             <div className="user-avatar online position-relative rounded-circle">
               <Image
-                src={avatar}
+                src={profilePic ?? 'https://placehold.jp/3d4070/ffffff/150x150.png?text=ERA'}
                 alt="avatar"
                 className="lazy-img"
                 style={{ height: 'auto' }}
+                width={80}
+                height={80}
               />
             </div>
             <div className="user-name-data">
