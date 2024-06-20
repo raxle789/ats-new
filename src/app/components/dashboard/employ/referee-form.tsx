@@ -1,7 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Form, Button, Input, message, Select, DatePicker, Radio } from 'antd';
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  Form,
+  Button,
+  Tabs,
+  Input,
+  message,
+  Select,
+  DatePicker,
+  Radio,
+} from 'antd';
 import type { FormProps, RadioChangeEvent } from 'antd';
 
 type FieldType = {

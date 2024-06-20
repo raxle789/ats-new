@@ -209,3 +209,15 @@ export function blacklistedConfirmation() {
 
   return confirmation;
 }
+
+export function sendFirstFormRefConfirmation() {
+  const confirmation = (() => {
+    return {
+      ...confirmationTemplate,
+      content:
+        'Do you want to send candidate reference form to this Candidate?',
+    };
+  })();
+
+  return confirmation;
+}

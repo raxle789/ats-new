@@ -6,11 +6,14 @@ import ActionApplicant from '../../../../ui/action-card-applicant';
 import Image from 'next/image';
 // import { useAppDispatch } from '@/redux/hook';
 // import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
-import { Checkbox, Tag, Button, Tooltip } from 'antd';
+import { Checkbox, Tag, Button, Tooltip, Modal } from 'antd';
 import { LuSend } from 'react-icons/lu';
-import RefCheckFormModal from '../../common/popup/reference-check-form-modal';
+// import RefCheckFormModal from '../../common/popup/reference-check-form-modal';
 import CandidateRefCheckForm from './candidate-ref-check-form';
 import RefereeForm from './referee-form';
+import { sendFirstFormRefConfirmation } from '@/utils/confirmation';
+
+const { confirm } = Modal;
 
 type Props = {
   item?:
@@ -67,27 +70,46 @@ const ReferenceCheckItem: React.FC<Props> = ({
   handleApplicant,
 }) => {
   // const dispatch = useAppDispatch();
+  const [isOpenRefForm, setIsRefForm] = useState(false);
   const [isOpenModal, setIsOpenModal] = useState(false);
+  const [sendCandRefCheckForm, setSendCandRefCheckForm] = useState(false);
+  const [titleModal, setTitleModal] = useState('');
+  const [childrenModal, setChildrenModal] = useState<ReactNode | null>(null);
 
-  // const [titleModal, setTitleModal] = useState('');
-
-  // const [childrenModal, setChildrenModal] = useState<ReactNode | null>(null);
+  const [candRefCheckFormsState, setCandRefCheckFormsState] = useState(false);
+  const [onOkState, setOnOkState] = useState(false);
 
   // const showModal = () => {
   //   dispatch(setIsOpen(true));
   // };
 
-  // const handleFormModal = (type: string) => {
-  //   if (type === 'candidate-reference') {
-  //     setTitleModal('Candidate Reference Check Form');
-  //     setChildrenModal(<CandidateRefCheckForm />);
-  //     setIsRefForm(true);
-  //   } else {
-  //     setTitleModal('Referee Form');
-  //     setChildrenModal(<RefereeForm />);
-  //     setIsRefForm(true);
-  //   }
-  // };
+  const handleFirstFormSend = (type: string) => {
+    if (type === 'No') {
+      setSendCandRefCheckForm(true);
+    } else {
+      confirm({
+        ...sendFirstFormRefConfirmation(),
+        onOk() {
+          setOnOkState(true);
+        },
+        onCancel() {
+          setSendCandRefCheckForm(false);
+        },
+      });
+    }
+  };
+
+  const handleFormModal = (type: string) => {
+    if (type === 'candidate-reference') {
+      setTitleModal('Candidate Reference Check Form');
+      setChildrenModal(<CandidateRefCheckForm />);
+      setIsRefForm(true);
+    } else {
+      setTitleModal('Referee Form');
+      setChildrenModal(<RefereeForm />);
+      setIsRefForm(true);
+    }
+  };
 
   const onChangeCheckbox = (index: string) => {
     if (setCheckbox && setCheckboxAllValue && checkboxState) {
@@ -103,12 +125,12 @@ const ReferenceCheckItem: React.FC<Props> = ({
   };
   return (
     <>
-      {isOpenModal && (
+      {/* {isOpenModal && (
         <ReferenceCheckFormModal
           isOpenModal={isOpenModal}
           setIsOpenModal={setIsOpenModal}
         />
-      )}
+      )} */}
 
       <div className="candidate-profile-card list-layout border-0 mb-25">
         <div className="d-flex">
@@ -159,59 +181,104 @@ const ReferenceCheckItem: React.FC<Props> = ({
                   <div>{item?.candidateExpectedSalary ?? '-'}</div>
                 </div>
               </div>
-              <div className="col-lg-4 col-md-4 col-sm-6">
-                <div className="candidate-info">
-                  <span>Reference Form Status</span>
-                  <div className="d-flex align-items-center justify-content-start">
-                    <button type="button" onClick={() => setIsOpenModal(true)}>
-                      <Tag color="#1e87f0" style={{ color: 'white' }}>
-                        Waiting
-                      </Tag>
-                    </button>
-                    <Tooltip placement="top" title={'Resend Form'} arrow={true}>
-                      <Button
-                        className=" ms-2"
-                        // onClick={() =>
-                        //   handleResendEmail('interviewer', candidateInterviewValue, nik)
-                        // }
-                      >
-                        <LuSend
-                          style={{
-                            color: '#0c1d5c',
-                            fontSize: '15px',
-                          }}
-                        />
-                      </Button>
-                    </Tooltip>
-                  </div>
-                </div>
-                <div className="candidate-info mt-2">
-                  <span>Referee Form Status</span>
-                  <div className="d-flex align-items-center justify-content-start">
-                    <button type="button" onClick={() => setIsOpenModal(true)}>
-                      <Tag color="#29d259" style={{ color: 'white' }}>
-                        Done
-                      </Tag>
-                    </button>
-                    <Tooltip placement="top" title={'Resend Form'} arrow={true}>
-                      {/* <Button
-                      className=" ms-2"
+
+              {!sendCandRefCheckForm && !onOkState && (
+                <div className="col-lg-4 col-md-4 col-sm-6">
+                  <div className="candidate-info">
+                    <span className="d-block">
+                      Do you want to send candidate reference form to this
+                      Candidate?
+                    </span>
+                    <Button
+                      className="me-2"
+                      onClick={() => handleFirstFormSend('No')}
                     >
-                      <LuSend
-                        style={{
-                          color: '#0c1d5c',
-                          fontSize: '15px',
-                        }}
-                      />
-                    </Button> */}
-                    </Tooltip>
+                      No
+                    </Button>
+                    <Button
+                      type="primary"
+                      className="btn-yes-ref-check"
+                      onClick={() => handleFirstFormSend('Yes')}
+                    >
+                      <span style={{ color: 'white' }}>Yes</span>
+                    </Button>
                   </div>
                 </div>
-                {/* <div className="candidate-info mt-2">
-                <span>Score</span>
-                <div>{item?.candidateScore ?? '-'}</div>
-              </div> */}
-              </div>
+              )}
+
+              {(sendCandRefCheckForm || onOkState) && (
+                <div className="col-lg-4 col-md-4 col-sm-6">
+                  <div className="candidate-info">
+                    <span>Reference Form Status</span>
+                    <div className="d-flex align-items-center justify-content-start">
+                      <button
+                        type="button"
+                        onClick={() => handleFormModal('candidate-reference')}
+                      >
+                        {sendCandRefCheckForm && (
+                          <Tag color="#1e87f0" style={{ color: 'white' }}>
+                            Fill Form
+                          </Tag>
+                        )}
+                        {onOkState && (
+                          <Tag color="#1e87f0" style={{ color: 'white' }}>
+                            Waiting
+                          </Tag>
+                        )}
+                      </button>
+                      <Tooltip
+                        placement="top"
+                        title={'Resend Form'}
+                        arrow={true}
+                      >
+                        <Button className=" ms-2">
+                          <LuSend
+                            style={{
+                              color: '#0c1d5c',
+                              fontSize: '15px',
+                            }}
+                          />
+                        </Button>
+                      </Tooltip>
+                    </div>
+                  </div>
+                  {candRefCheckFormsState && (
+                    <div className="candidate-info mt-2">
+                      <span>Referee Form Status</span>
+                      <div className="d-flex align-items-center justify-content-start">
+                        <button
+                          type="button"
+                          onClick={() => handleFormModal('referee-form')}
+                        >
+                          <Tag color="#29d259" style={{ color: 'white' }}>
+                            Done
+                          </Tag>
+                        </button>
+                        <Tooltip
+                          placement="top"
+                          title={'Resend Form'}
+                          arrow={true}
+                        >
+                          {/* <Button
+                          className=" ms-2"
+                        >
+                          <LuSend
+                            style={{
+                              color: '#0c1d5c',
+                              fontSize: '15px',
+                            }}
+                          />
+                        </Button> */}
+                        </Tooltip>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* {onOkState && (
+              )} */}
+
               <div className="col-xl-1 col-md-4">
                 <div className="d-flex justify-content-md-end align-items-center">
                   <div className="action-dots float-end mt-10 ms-2">
@@ -240,12 +307,12 @@ const ReferenceCheckItem: React.FC<Props> = ({
           </div>
         </div>
 
-        {/* <RefCheckFormModal
-        titleModal={titleModal}
-        isOpen={isOpenRefForm}
-        setIsOpenModal={setIsRefForm}
-        children={childrenModal}
-      /> */}
+        <ReferenceCheckFormModal
+          titleModal={titleModal}
+          isOpenModal={isOpenRefForm}
+          setIsOpenModal={setIsRefForm}
+          children={childrenModal}
+        />
 
         {/* <ReferenceCheckFormModal
         isOpen={isOpenRefForm}
