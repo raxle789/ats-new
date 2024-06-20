@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import DashboardPageSkeleton from './loading';
 import Wrapper from '@/layouts/wrapper';
 import EmployAside from '../../../components/dashboard/employ/aside';
 // import DashboardHeader from '@/app/components/dashboard/candidate/dashboard-header';
@@ -38,7 +39,7 @@ export default function MainLayout({
         <div className={`dashboard-body ${isOpenSidebar ? 'show' : ''}`}>
           <div className="position-relative">
             <TaDashboardHeader />
-            {children}
+            <Suspense fallback={<DashboardPageSkeleton />}>{children}</Suspense>
           </div>
         </div>
       </div>

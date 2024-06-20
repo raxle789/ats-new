@@ -39,15 +39,48 @@ const interview: TInterviewer = {
   },
 };
 
-interface IProps {
-  item: ICandidate;
-  checkboxState: { [key: string]: boolean };
-  checkboxAllValue: boolean;
-  setCheckbox: React.Dispatch<SetStateAction<{ [key: string]: boolean }>>;
-  setCheckboxAllValue: React.Dispatch<boolean>;
+interface Props {
+  item?:
+    | {
+        candidateId?: string;
+        candidatePhoto?: string;
+        candidateName?: string;
+        candidateLastPosition?: string;
+        candidateLastEducation?: string;
+        candidateExpectedSalary?: string;
+        candidateYearOfExperience?: number;
+        candidateStatus?: string;
+        candidateSkills?: string[];
+        candidateScore?: string;
+      }
+    | any;
+  status?: string | any;
+  checkboxState?: { [key: string]: boolean };
+  checkboxAllValue?: boolean;
+  setCheckbox?: React.Dispatch<SetStateAction<{ [key: string]: boolean }>>;
+  setCheckboxAllValue?: React.Dispatch<boolean>;
+  jobVacancyId?: number | any;
+  api?: any;
+  router?: any;
+  setLoading?: any;
+  handleApplicant?: (
+    handleType:
+      | 'assignAssessment'
+      | 'detailAssessment'
+      | 'resendAssessment'
+      | 'assignInterview'
+      | 'resendCandidateInterviewInvitation',
+    candidateId: number,
+    jobVacancyId: number | any,
+    interviewId: number | null,
+    api: any,
+    router: any,
+    setLoading: (loading: boolean) => void,
+    status: string,
+  ) => void | any;
 }
 
-const CandidateOfferingItem: React.FC<IProps> = ({
+const OfferingItem: React.FC<Props> = ({
   item,
   checkboxState,
   checkboxAllValue,
@@ -65,13 +98,15 @@ const CandidateOfferingItem: React.FC<IProps> = ({
   };
 
   const onChangeCheckbox = (index: number) => {
-    setCheckbox((prevState: any) => ({
-      ...prevState,
-      [index]: !prevState[index],
-    }));
+    if (setCheckbox && setCheckboxAllValue && checkboxState) {
+      setCheckbox((prevState: any) => ({
+        ...prevState,
+        [index]: !prevState[index],
+      }));
 
-    if (checkboxAllValue || !checkboxState[index]) {
-      setCheckboxAllValue(false);
+      if (checkboxAllValue || !checkboxState[index]) {
+        setCheckboxAllValue(false);
+      }
     }
   };
   return (
@@ -82,8 +117,8 @@ const CandidateOfferingItem: React.FC<IProps> = ({
             <div className="checkbox-pipeline-action">
               <Checkbox
                 className="me-2"
-                checked={checkboxState[item.id]}
-                onChange={() => onChangeCheckbox(item.id)}
+                checked={checkboxState && checkboxState[item?.candidateId]}
+                onChange={() => onChangeCheckbox(item?.candidateId)}
               ></Checkbox>
             </div>
             <a href="#" className="rounded-circle">
@@ -91,7 +126,9 @@ const CandidateOfferingItem: React.FC<IProps> = ({
                 src={item.img}
                 alt="image"
                 className="lazy-img rounded-circle"
-                style={{ height: 'auto' }}
+                width={80}
+                height={80}
+                style={{ borderRadius: '50%', objectFit: 'cover' }}
               />
             </a>
           </div>
@@ -188,4 +225,4 @@ const CandidateOfferingItem: React.FC<IProps> = ({
   );
 };
 
-export default CandidateOfferingItem;
+export default OfferingItem;

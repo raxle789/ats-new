@@ -50,6 +50,7 @@ const EmployJobDetailItem: React.FC<Props> = ({ jobVacancyData, params }) => {
     ASSESSMENT: `/dashboard/ta/jobs/${params?.id}/${Status.ASSESSMENT.toLowerCase()}`,
     INTERVIEW: `/dashboard/ta/jobs/${params?.id}/${Status.INTERVIEW.toLowerCase()}`,
     REF_CHECK: `/dashboard/ta/jobs/${params?.id}/ref-check`,
+    OFFERING: `/dashboard/ta/jobs/${params?.id}/${Status.OFFERING.toLowerCase()}`,
   };
 
   function handlePath(status: string) {
@@ -65,6 +66,9 @@ const EmployJobDetailItem: React.FC<Props> = ({ jobVacancyData, params }) => {
     } else if (status === Status?.REFCHECK) {
       router.replace(path?.REF_CHECK);
       setStatus(Status?.REFCHECK);
+    } else if (status === Status?.OFFERING) {
+      router.replace(path?.OFFERING);
+      setStatus(Status?.OFFERING);
     }
   }
 
@@ -75,6 +79,8 @@ const EmployJobDetailItem: React.FC<Props> = ({ jobVacancyData, params }) => {
       setStatus(Status?.INTERVIEW);
     } else if (pathname.includes('ref-check')) {
       setStatus(Status?.REFCHECK);
+    } else if (pathname.includes('offering')) {
+      setStatus(Status?.OFFERING);
     }
   }, [pathname]);
 
@@ -241,7 +247,7 @@ const EmployJobDetailItem: React.FC<Props> = ({ jobVacancyData, params }) => {
         </button>
         <button
           className={`d-flex flex-column align-items-center ${status === 'OFFERING' ? 'btn-pipeline btn-pipeline-active' : 'btn-pipeline'}`}
-          onClick={() => handlePath(Status?.APPLICANT)}
+          onClick={() => handlePath(Status?.OFFERING)}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span>Offering</span>
