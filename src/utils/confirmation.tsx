@@ -141,7 +141,9 @@ export function viewConfirmation(handleType: 'jobVacancy') {
   return confirmation;
 }
 
-export function assignConfirmation(handleType: 'assessment' | 'interview') {
+export function assignConfirmation(
+  handleType: 'assessment' | 'interview' | 'refcheck',
+) {
   const confirmation = (() => {
     if (handleType === 'assessment') {
       return {
@@ -152,6 +154,11 @@ export function assignConfirmation(handleType: 'assessment' | 'interview') {
       return {
         ...confirmationTemplate,
         content: 'Do you want to assign this candidate to interview?',
+      };
+    } else if (handleType === 'refcheck') {
+      return {
+        ...confirmationTemplate,
+        content: 'Do you want to assign this candidate to reference check?',
       };
     }
   })();
@@ -186,6 +193,17 @@ export function resendAssessmentConfirmation() {
     return {
       ...confirmationTemplate,
       content: 'Do you want to resend assessment to this candidate?',
+    };
+  })();
+
+  return confirmation;
+}
+
+export function blacklistedConfirmation() {
+  const confirmation = (() => {
+    return {
+      ...confirmationTemplate,
+      content: 'Do you want to move this candidate to blacklisted?',
     };
   })();
 

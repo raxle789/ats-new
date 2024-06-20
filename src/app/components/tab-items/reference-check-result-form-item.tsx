@@ -20,7 +20,7 @@ type FieldType = {
   additionalInformation?: string;
 };
 
-const RefereeForm = () => {
+const ReferenceCheckResultFormItem = () => {
   const [form] = Form.useForm();
   const [positionOption, setPositionOption] = useState<string>('you-choose');
   const onChangePosition = (e: RadioChangeEvent) => {
@@ -430,4 +430,4 @@ const RefereeForm = () => {
   );
 };
 
-export default RefereeForm;
+export default ReferenceCheckResultFormItem;

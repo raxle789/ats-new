@@ -21,7 +21,7 @@ type FieldType = {
   };
 };
 
-const CandidateRefCheckForm = () => {
+const RefereeFormItem = () => {
   const [form] = Form.useForm();
   const [index, setIndex] = useState(0);
   const initItems: any[] = [];
@@ -301,13 +301,187 @@ const CandidateRefCheckForm = () => {
       {/* <p>Candidate Ref Check Form</p> */}
       <Form form={form} onFinish={handleSubmit} onFinishFailed={onFinishFailed}>
         <div className="row">
-          <Tabs
+          <div className="row">
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-0">
+                <label>Name*</label>
+                <Form.Item<FieldType>
+                  name={['refereeData', index.toString(), 'name']}
+                  className="mb-3"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input referee name!',
+                    },
+                  ]}
+                >
+                  <Input
+                    placeholder="Referee Name"
+                    onChange={(e) => sanitizeFullname(e.target.value)}
+                  />
+                </Form.Item>
+              </div>
+            </div>
+
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-0">
+                <label>Phone Number*</label>
+                <Form.Item<FieldType>
+                  name={['refereeData', index.toString(), 'phoneNumber']}
+                  className="mb-3"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input referee phone number!',
+                    },
+                  ]}
+                >
+                  <Input
+                    placeholder="Referee Phone Number"
+                    onChange={(e) => sanitizePhoneNumber(e.target.value)}
+                  />
+                </Form.Item>
+              </div>
+            </div>
+
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-0">
+                <label>Email*</label>
+                <Form.Item<FieldType>
+                  name={['refereeData', index.toString(), 'email']}
+                  className="mb-3"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input referee email!',
+                    },
+                  ]}
+                >
+                  <Input placeholder="Referee Email" />
+                </Form.Item>
+              </div>
+            </div>
+
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-0">
+                <label>Position*</label>
+                <Form.Item<FieldType>
+                  name={['refereeData', index.toString(), 'position']}
+                  className="mb-3"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input referee position!',
+                    },
+                  ]}
+                >
+                  <Input placeholder="Referee Position" />
+                </Form.Item>
+              </div>
+            </div>
+
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-0">
+                <label>Relations with referee*</label>
+                <Form.Item<FieldType>
+                  name={['refereeData', index.toString(), 'relation']}
+                  className="mb-3"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please select referee relation!',
+                    },
+                  ]}
+                >
+                  <Select
+                    className="w-100"
+                    placeholder="Referee Relation"
+                    options={[
+                      { value: 'Former Superior', label: 'Former Superior' },
+                      {
+                        value: 'Former Colleague',
+                        label: 'Former Colleague',
+                      },
+                    ]}
+                  />
+                </Form.Item>
+              </div>
+            </div>
+
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-0">
+                <label>Company where do you work with the referee*</label>
+                <Form.Item<FieldType>
+                  name={['refereeData', index.toString(), 'companyName']}
+                  className="mb-3"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input the company name!',
+                    },
+                  ]}
+                >
+                  <Input placeholder="Referee Company Name" />
+                </Form.Item>
+              </div>
+            </div>
+
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-15">
+                <label>When do you know the referee?*</label>
+                <Form.Item<FieldType>
+                  name={['refereeData', index.toString(), 'introductionDate']}
+                  className="mb-3"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input date!',
+                    },
+                  ]}
+                >
+                  <DatePicker
+                    className="w-100"
+                    placeholder="Select Year"
+                    picker="year"
+                  />
+                </Form.Item>
+              </div>
+            </div>
+
+            <div className="col-6">
+              <div className="input-group-meta position-relative mb-15">
+                <label>How long do you know the referee?*</label>
+                <Form.Item<FieldType>
+                  name={[
+                    'refereeData',
+                    index.toString(),
+                    'durationWithReferee',
+                  ]}
+                  className="mb-3"
+                  rules={[
+                    {
+                      required: true,
+                      message: 'Please input date!',
+                    },
+                  ]}
+                >
+                  <DatePicker
+                    className="w-100"
+                    format={'MMM YYYY'}
+                    placeholder="Select Date"
+                    picker="month"
+                  />
+                </Form.Item>
+              </div>
+            </div>
+          </div>
+          {/* <Tabs
             type="editable-card"
             onChange={onChangeTabs}
             activeKey={activeKey}
             onEdit={onEdit}
             items={items}
-          />
+          /> */}
 
           {/* <div className="button-group d-inline-flex align-items-center mt-30 mb-0">
               <button type="submit" className="dash-btn-two tran3s me-3">
@@ -325,4 +499,4 @@ const CandidateRefCheckForm = () => {
   );
 };
 
-export default CandidateRefCheckForm;
+export default RefereeFormItem;

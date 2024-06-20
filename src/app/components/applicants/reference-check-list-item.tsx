@@ -1,5 +1,7 @@
 'use client';
+
 import React, { useState, useEffect } from 'react';
+import SpinFullScreen from '@/ui/spin-full-screen';
 import ReferenceCheckItem from '../dashboard/employ/reference-check-item';
 import { useRouter, usePathname } from 'next/navigation';
 // import * as messages from '@/utils/message';
@@ -145,7 +147,8 @@ const ReferenceCheckListItem = ({
     <>
       {contextHolder}
 
-      <Spin spinning={loading} fullscreen />
+      <SpinFullScreen loading={loading} />
+
       <div className="d-flex justify-content-between align-items-center mb-20">
         <div>
           <h4 className="sub-main-title">

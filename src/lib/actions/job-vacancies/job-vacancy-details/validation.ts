@@ -25,9 +25,14 @@ export const validateJobVacancyIdAndStateName = z.object({
     })
     .trim()
     .refine(
-      (val) => val === 'WAITING' || val === 'ASSESSMENT' || val === 'INTERVIEW',
+      (val) =>
+        val === 'WAITING' ||
+        val === 'ASSESSMENT' ||
+        val === 'INTERVIEW' ||
+        val === 'REFERENCE CHECK',
       {
-        message: 'State Name Must Be Waiting Or Assessment or Interview!',
+        message:
+          'State Name Must Be Waiting Or Assessment Or Interview Or Reference Check!',
       },
     ),
 });
@@ -186,9 +191,16 @@ export const validateAssignApplicant = z.object({
     })
     .trim()
     .refine(
-      (val) => val === 'WAITING' || val === 'ASSESSMENT' || val === 'INTERVIEW',
+      (val) =>
+        val === 'WAITING' ||
+        val === 'ASSESSMENT' ||
+        val === 'INTERVIEW' ||
+        val === 'REFERENCE CHECK' ||
+        val === 'REJECTED' ||
+        val === 'BLACKLISTED',
       {
-        message: 'State Name Must Be Waiting Or Assessment Or Interview!',
+        message:
+          'State Name Must Be Waiting or Assessment or Interview or Reference Check or Rejected or Blacklisted!',
       },
     ),
 });

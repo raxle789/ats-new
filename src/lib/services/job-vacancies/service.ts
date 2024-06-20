@@ -19,7 +19,7 @@ export async function getAllEfpkByTa(taId) {
     // });
 
     const data =
-      await prisma.$queryRaw`SELECT efpk_request_no AS value, efpk_request_no AS label FROM efpk_ta WHERE ta_id = ${taId} ORDER BY efpk_request_no DESC`;
+      await prisma.$queryRaw`SELECT et.efpk_request_no AS value, et.efpk_request_no AS label FROM efpk_ta AS et LEFT JOIN efpk_job_vacancies ejv ON et.efpk_request_no = ejv.efpk_request_no WHERE et.ta_id = ${taId} AND ejv.job_vacancy_id IS NULL ORDER BY et.efpk_request_no DESC`;
 
     // const aliasedData = data?.map((d) => {
     //   return {
@@ -525,14 +525,12 @@ export async function createJobVacancy(
         },
       });
 
-      if (jobEfpk) {
-        await tx.efpkJobVacancies.create({
-          data: {
-            efpkRequestNo: jobEfpk,
-            jobVacancyId: id,
-          },
-        });
-      }
+      await tx.efpkJobVacancies.create({
+        data: {
+          efpkRequestNo: jobEfpk ? jobEfpk : null,
+          jobVacancyId: id,
+        },
+      });
 
       await tx.jobVacancyLineIndustries.createMany({
         data: jobLineIndustry.map((lineIndustryId) => {
@@ -1081,7 +1079,7 @@ export async function getEfpkInitiatorNameByRequestNo(requestNo) {
   }
 }
 
-export async function editJobVacancy(
+export async function updateJobVacancy(
   taId,
   jobVacancyId,
   {
@@ -1145,26 +1143,39 @@ export async function editJobVacancy(
         },
       });
 
-      if (jobEfpk) {
-        await tx.efpkJobVacancies.deleteMany({
-          where: {
-            jobVacancyId: id,
-          },
-        });
+      await tx.efpkJobVacancies.deleteMany({
+        where: {
+          jobVacancyId: id,
+        },
+      });
 
-        await tx.efpkJobVacancies.create({
-          data: {
-            jobVacancyId: id,
-            efpkRequestNo: jobEfpk,
-          },
-        });
-      } else {
-        await tx.efpkJobVacancies.deleteMany({
-          where: {
-            jobVacancyId: id,
-          },
-        });
-      }
+      await tx.efpkJobVacancies.create({
+        data: {
+          jobVacancyId: id,
+          efpkRequestNo: jobEfpk ? jobEfpk : null,
+        },
+      });
+
+      // if (jobEfpk) {
+      //   await tx.efpkJobVacancies.deleteMany({
+      //     where: {
+      //       jobVacancyId: id,
+      //     },
+      //   });
+
+      //   await tx.efpkJobVacancies.create({
+      //     data: {
+      //       jobVacancyId: id,
+      //       efpkRequestNo: jobEfpk,
+      //     },
+      //   });
+      // } else {
+      //   await tx.efpkJobVacancies.deleteMany({
+      //     where: {
+      //       jobVacancyId: id,
+      //     },
+      //   });
+      // }
 
       await tx.jobVacancyLineIndustries.deleteMany({
         where: {
@@ -1588,6 +1599,7 @@ export async function getAllApplicantByJobVacancyIdAndStateName(
                 },
               },
               working_experiences: true,
+              educations: true,
               candidate_skills: {
                 select: {
                   skills: {

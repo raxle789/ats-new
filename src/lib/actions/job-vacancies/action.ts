@@ -28,7 +28,7 @@ import {
   getWorkLocationByLocationCode,
   getLastEfpkApprovalByRequestNo,
   getEfpkInitiatorNameByRequestNo,
-  editJobVacancy,
+  updateJobVacancy,
   applyJobVacancy,
   candidateAlreadyApplyJobVacancy,
   deleteJobVacancy,
@@ -434,61 +434,70 @@ export async function getAllJobVacancyData(
                   'DD-MMM-YYYY',
                 ),
               };
-            }
-            return {
-              jobId: await crypto.encryptData(d?.id),
-              jobTitleName: d?.jobTitleAliases,
-              departmentName: await getDepartmentByOrganizationGroupCode(
-                d?.organizationGroupCode,
-              ),
-              status: moment(d?.expiredDate, 'YYYY-MM-DD').isSameOrAfter(
-                moment(),
-              )
-                ? 'Posted'
-                : 'Expired',
-              endPosted: moment(d?.expiredDate, 'YYYY-MM-DD').format(
-                'DD-MMM-YYYY',
-              ),
-              applicants: await getAllApplicantTotalByJobVacancyId(d?.id),
-              assessment: await getAllApplicantTotalByJobVacancyIdAndStateName(
-                d?.id,
-                'ASSESSMENT',
-              ),
-              interview: await getAllApplicantTotalByJobVacancyIdAndStateName(
-                d?.id,
-                'INTERVIEW',
-              ),
-              sla: await (async () => {
-                const lastApprovalDate = await getLastEfpkApprovalByRequestNo(
-                  d?.efpkJobVacancies[0]?.efpkRequestNo,
-                );
+            } else {
+              return {
+                jobId: await crypto.encryptData(d?.id),
+                jobTitleName: d?.jobTitleAliases,
+                departmentName: await getDepartmentByOrganizationGroupCode(
+                  d?.organizationGroupCode,
+                ),
+                status: moment(d?.expiredDate, 'YYYY-MM-DD').isSameOrAfter(
+                  moment(),
+                )
+                  ? 'Posted'
+                  : 'Expired',
+                endPosted: moment(d?.expiredDate, 'YYYY-MM-DD').format(
+                  'DD-MMM-YYYY',
+                ),
+                applicants: await getAllApplicantTotalByJobVacancyId(d?.id),
+                assessment:
+                  await getAllApplicantTotalByJobVacancyIdAndStateName(
+                    d?.id,
+                    'ASSESSMENT',
+                  ),
+                interview: await getAllApplicantTotalByJobVacancyIdAndStateName(
+                  d?.id,
+                  'INTERVIEW',
+                ),
+                sla: await (async () => {
+                  if (!d?.efpkJobVacancies[0]?.efpkRequestNo) {
+                    return 'Undefined';
+                  }
 
-                const sla = moment(lastApprovalDate, 'DD/MM/YYYY').add(
-                  d?.positionLevels?.slaDays,
-                  'days',
-                );
-
-                const different = sla.diff(
-                  moment(lastApprovalDate, 'DD/MM/YYYY'),
-                  'days',
-                );
-
-                return !different
-                  ? 'Undefined'
-                  : different < 0
-                    ? '0 days'
-                    : `${different} days`;
-              })(),
-              user: (await getEfpkInitiatorNameByRequestNo(
-                d?.efpkJobVacancies[0]?.efpkRequestNo,
-              ))
-                ? await getEfpkInitiatorNameByRequestNo(
+                  const lastApprovalDate = await getLastEfpkApprovalByRequestNo(
                     d?.efpkJobVacancies[0]?.efpkRequestNo,
-                  )
-                : null,
-              recruiter: d?.ta?.name,
-              efpkStatus: d?.efpkJobVacancies?.length > 0 ? 'Done' : 'Not Yet',
-            };
+                  );
+
+                  const sla = moment(lastApprovalDate, 'DD/MM/YYYY').add(
+                    d?.positionLevels?.slaDays,
+                    'days',
+                  );
+
+                  const different = sla.diff(
+                    moment(lastApprovalDate, 'DD/MM/YYYY'),
+                    'days',
+                  );
+
+                  return !different
+                    ? 'Undefined'
+                    : different < 0
+                      ? '0 days'
+                      : `${different} days`;
+                })(),
+                user: d?.efpkJobVacancies[0]?.efpkRequestNo
+                  ? (await getEfpkInitiatorNameByRequestNo(
+                      d?.efpkJobVacancies[0]?.efpkRequestNo,
+                    ))
+                    ? await getEfpkInitiatorNameByRequestNo(
+                        d?.efpkJobVacancies[0]?.efpkRequestNo,
+                      )
+                    : null
+                  : null,
+                recruiter: d?.ta?.name,
+                efpkStatus:
+                  d?.efpkJobVacancies?.length > 0 ? 'Done' : 'Not Yet',
+              };
+            }
           })();
 
           if (session && isCandidateView) {
@@ -550,7 +559,7 @@ export async function getAllJobVacancyData(
   };
 }
 
-export async function updateJobVacancy(taId, jobVacancyId, values) {
+export async function editJobVacancy(taId, jobVacancyId, values) {
   const decryptedJobVacancyId = await crypto.decryptData(jobVacancyId);
 
   const decryptedTaId = await crypto.decryptData(taId);
@@ -567,7 +576,7 @@ export async function updateJobVacancy(taId, jobVacancyId, values) {
       });
 
       if (validateSchema.success) {
-        const data = await editJobVacancy(
+        const data = await updateJobVacancy(
           decryptedTaId,
           validateId?.data?.jobVacancyId,
           validateSchema?.data,

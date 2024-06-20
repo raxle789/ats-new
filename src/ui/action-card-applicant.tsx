@@ -124,9 +124,66 @@ const ActionApplicant = (props) => {
             </button>
           </li>
         )}
+        {props?.status !== Status?.REFCHECK && (
+          <li>
+            <button
+              className="applicant-action"
+              type="button"
+              onClick={() => {
+                props?.handleApplicant(
+                  'assignRefcheck',
+                  props?.candidateId,
+                  props?.jobVacancyId,
+                  0,
+                  props?.api,
+                  props?.router,
+                  props?.setLoading,
+                  Status?.REFCHECK,
+                );
+              }}
+            >
+              Assign to Reference Check
+            </button>
+          </li>
+        )}
         <li>
-          <button className="applicant-action red-action" type="button">
-            Blacklist
+          <button
+            className="applicant-action red-action"
+            type="button"
+            onClick={() => {
+              props?.handleApplicant(
+                'moveRejected',
+                props?.candidateId,
+                props?.jobVacancyId,
+                0,
+                props?.api,
+                props?.router,
+                props?.setLoading,
+                Status?.REJECTED,
+              );
+            }}
+          >
+            Reject Candidate
+          </button>
+        </li>
+        <li>
+          <button
+            className="applicant-action red-action"
+            type="button"
+            onClick={() => {
+              props?.handleApplicant(
+                'moveBlacklisted',
+                props?.candidateId,
+                props?.jobVacancyId,
+                0,
+                props?.api,
+                props?.router,
+                props?.setLoading,
+                Status?.BLACKLISTED,
+              );
+            }}
+          >
+            Blacklist Candidate
           </button>
         </li>
       </ul>

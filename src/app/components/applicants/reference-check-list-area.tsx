@@ -1,11 +1,11 @@
 'use server';
 
 import ReferenceCheckListItem from './reference-check-list-item';
+import { getAllApplicantDataByJobVacancyIdAndStateName } from '@/lib/actions/job-vacancies/job-vacancy-details/action';
 // import { Suspense } from 'react';
 // import EmployJobDetailSkeleton from '@/app/components/loadings/employ-job-detail-skeleton';
 import { handleApplicant } from '../message/confirm';
 // import { registerAssessment } from '@/lib/actions/job-vacancies/job-vacancy-details/job-vacancy-detail-assessment/action';
-import { getAllApplicantDataByJobVacancyId } from '@/lib/actions/job-vacancies/job-vacancy-details/action';
 
 type Props = {
   params?: any;
@@ -41,8 +41,9 @@ const ReferenceCheckListArea = async ({ params, searchParams, status }) => {
 
   const applicantData: never[] | fieldData | any = await (async () => {
     if (params?.id) {
-      return await getAllApplicantDataByJobVacancyId(
+      return await getAllApplicantDataByJobVacancyIdAndStateName(
         params?.id,
+        status,
         offset,
         Number(perPage),
       );

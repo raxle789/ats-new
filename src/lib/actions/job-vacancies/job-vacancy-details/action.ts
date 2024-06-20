@@ -207,7 +207,7 @@ export async function getAllApplicantDataByJobVacancyIdAndStateName(
 
       const newData = await (async () => {
         if (data?.data && data?.data?.length) {
-          if (stateName === Status.ASSESSMENT) {
+          if (stateName === Status?.ASSESSMENT) {
             return await Promise.all(
               data?.data?.map(async (d) => {
                 const assessmentData = await requestAssessment(
@@ -254,7 +254,7 @@ export async function getAllApplicantDataByJobVacancyIdAndStateName(
                 return data;
               }),
             );
-          } else if (stateName === Status.INTERVIEW) {
+          } else if (stateName === Status?.INTERVIEW) {
             return await Promise.all(
               data?.data?.map(async (d) => {
                 const data = {
@@ -283,6 +283,46 @@ export async function getAllApplicantDataByJobVacancyIdAndStateName(
                   positionLevel: `${d?.jobVacancies?.positionLevels?.name} (level ${d?.jobVacancies?.positionLevels?.level})`,
                   candidateInterviews:
                     (await getInterviewByCandidateStateId(d?.id)) ?? [],
+                };
+
+                // console.info(
+                //   moment(
+                //     data.candidateInterviews[2].dateTime,
+                //     'YYYY-MM-DD HH:mm:ss',
+                //   ).format('DD-MMM-YYYY HH:mm:ss'),
+                // );
+
+                return data;
+              }),
+            );
+          } else if (stateName === Status?.REFCHECK) {
+            return await Promise.all(
+              data?.data?.map(async (d) => {
+                const data = {
+                  candidateId: await crypto.encryptData(d?.candidateId),
+                  candidatePhoto: d?.candidates?.documents?.length
+                    ? d?.candidates?.documents
+                        ?.filter(
+                          (item) =>
+                            item?.document_types?.document_name ===
+                            'profile-photo',
+                        )[0]
+                        .file_base?.toString()
+                    : null,
+                  candidateName: d?.candidates?.users?.name,
+                  candidateLastPosition:
+                    (await getLastPosition(
+                      d?.candidates?.working_experiences,
+                    )) ?? 'Fresh Graduate',
+                  candidateLastEducation: d?.candidates?.educations
+                    ? `${d?.candidates?.educations?.edu_level}/${d?.candidates?.educations?.edu_major}`
+                    : null,
+                  candidateExpectedSalary: await formatToRupiah(
+                    d?.candidates?.expected_salary,
+                  ),
+                  candidateSkills: d?.candidates?.candidate_skills?.map(
+                    (s) => s?.skills?.name,
+                  ),
                 };
 
                 // console.info(

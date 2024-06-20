@@ -180,7 +180,7 @@ async function main() {
 
   await prisma.$executeRaw`INSERT INTO questions(question) VALUES('How long your notice period?'), ('Have you ever worked in Erajaya group of companies?'), ('Do you have any prior medical conditions, illnesses, or congenital diseases?'), ('Do you have any friends, colleague, relative or family who is working at Erajaya Group Companies?')`;
 
-  await prisma.$executeRaw`INSERT INTO states(name, alias) VALUES('WAITING', 'Waiting'), ('ASSESSMENT', 'Assessment'), ('INTERVIEW', 'Interview'), ('REFERENCE CHECK', 'Reference Check'), ('OFFERING', 'Offering'), ('MCU', 'Medical Check Up'), ('AGREEMENT', 'Agreement'), ('ONBOARDING', 'Onboarding'), ('REJECTED', 'Rejected')`;
+  await prisma.$executeRaw`INSERT INTO states(name, alias) VALUES('WAITING', 'Waiting'), ('ASSESSMENT', 'Assessment'), ('INTERVIEW', 'Interview'), ('REFERENCE CHECK', 'Reference Check'), ('OFFERING', 'Offering'), ('MCU', 'Medical Check Up'), ('AGREEMENT', 'Agreement'), ('ONBOARDING', 'Onboarding'), ('REJECTED', 'Rejected'), ('BLACKLISTED', 'Blacklisted')`;
 
   await prisma.$executeRaw`INSERT INTO types(name) VALUES ('Online'), ('Offline')`;
 

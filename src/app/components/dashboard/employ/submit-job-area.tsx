@@ -23,7 +23,7 @@ import {
   getAllDepartmentDataByVertical,
   insertJobVacancy,
   getJobVacancyData,
-  updateJobVacancy,
+  editJobVacancy,
 } from '@/lib/actions/job-vacancies/action';
 
 const SubmitJobArea = async ({ params, searchParams }) => {
@@ -284,7 +284,7 @@ const SubmitJobArea = async ({ params, searchParams }) => {
       case 'create':
         return insertJobVacancy;
       case 'update':
-        return updateJobVacancy;
+        return editJobVacancy;
       case 'duplicate':
         return insertJobVacancy;
     }
