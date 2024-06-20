@@ -53,43 +53,44 @@ const LoginForm: React.FC<LoginFormProps> = ({
   const onFinish: FormProps<FieldType>['onFinish'] = async () => {
     setSpinning(true);
     let values = form.getFieldsValue();
-    values = {...values, is_rememberOn: checkedState}
+    values = { ...values, is_rememberOn: checkedState };
     console.log('Suubmitted data:', values);
     console.info('authorizing user...');
     /**
      * Verify captcha
+     * NOTE: change token value to true
      */
     const checkingCaptcha = await GReCaptchaV2Check(token);
     console.log('result checking captcha: ', checkingCaptcha);
     /**
      * Bug verify captcha on every fail login
      */
-    if(!checkingCaptcha.success) {
+    if (!checkingCaptcha.success) {
       setSpinning(false);
       return message.error('Please verify that captcha!');
-    };
+    }
     const authorizing = await userAuth(values);
     /* check and directing user stage */
     if (authorizing.success && 'data' in authorizing) {
       console.info('directing user to otp form or fill form...');
       setTimeout(() => {
-        router.push('/dashboard/user/stages');
+        router.push('/dashboard/candidate/stages');
       }, 1000);
       return dispatch(setRegisterStep(authorizing.data?.stage as number));
-    };
+    }
 
     if (authorizing.success === false) {
       alert(authorizing.message);
       return setSpinning(false);
-    };
+    }
 
-    if(authorizing.success && 'is_admin' in authorizing)  {
-      return router.push("/dashboard/ta");
-    };
+    if (authorizing.success && 'is_admin' in authorizing) {
+      return router.push('/dashboard/ta');
+    }
     console.info('user required data is completed...');
     message.success(authorizing.message);
     /* Directing to job list */
-    router.push('/dashboard/user');
+    router.push('/dashboard/candidate');
     setSpinning(false);
   };
   /* END OF ACTIONS */

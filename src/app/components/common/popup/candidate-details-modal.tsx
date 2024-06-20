@@ -218,13 +218,19 @@ const items: MenuProps['items'] = [
 interface IProps {
   isOpen: boolean;
   setIsOpenModal: React.Dispatch<boolean>;
+  data: any;
+  setDetails: any;
 }
 
 const CandidateDetailsModal: React.FC<IProps> = ({
   isOpen,
   setIsOpenModal,
+  data,
+  setDetails,
 }) => {
   const handleCancel = () => {
+    /* Delete details state */
+    setDetails(null);
     setIsOpenModal(false);
   };
 
@@ -376,11 +382,11 @@ const CandidateDetailsModal: React.FC<IProps> = ({
                 </tr>
               </tbody>
             </table>
-            <Pagination
+            {/* <Pagination
               pageRangeDisplayed={1}
               totalData={20}
               disabled={false}
-            />
+            /> */}
           </div>
         )}
         {current === 'candidateHistory' && (

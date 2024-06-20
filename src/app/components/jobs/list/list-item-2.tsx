@@ -18,7 +18,17 @@ import { add_to_wishlist } from '@/redux/features/wishlist';
 
 const { confirm } = Modal;
 
-const ListItemTwo = ({ item, setLoading, candidateApplyJobVacancy }) => {
+type Props = {
+  item?: [] | any;
+  setLoading: React.Dispatch<boolean>;
+  candidateApplyJobVacancy?: any;
+};
+
+const ListItemTwo: React.FC<Props> = ({
+  item,
+  setLoading,
+  candidateApplyJobVacancy,
+}) => {
   const router = useRouter();
 
   const [disabled, setDisabled] = useState(false);
@@ -35,12 +45,17 @@ const ListItemTwo = ({ item, setLoading, candidateApplyJobVacancy }) => {
     dispatch(add_to_wishlist(item));
   };
 
-  function handleCandidateApplyJobVacancy(jobId) {
+  function handleCandidateApplyJobVacancy(jobId: string | any) {
     setLoading(true);
 
     confirm({
       title: 'Confirmation',
-      icon: <ExclamationCircleFilled />,
+      icon: (
+        <ExclamationCircleFilled
+          onPointerEnterCapture={''}
+          onPointerLeaveCapture={''}
+        />
+      ),
       centered: true,
       content: 'Do want to apply this job?',
       onOk() {

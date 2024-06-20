@@ -43,14 +43,15 @@ export async function middleware(request: NextRequest) {
         _NEXTURL.searchParams.set('error', 'already authenticated');
         return NextResponse.redirect(_NEXTURL);
       } else if (listOfRole.candidate) {
-        _NEXTURL.pathname = '/dashboard/user';
+        _NEXTURL.pathname = '/dashboard/candidate';
         _NEXTURL.searchParams.set('error', 'already authenticated');
         return NextResponse.redirect(_NEXTURL);
       }
     }
   }
 
-  if (request.nextUrl.pathname.includes('/dashboard/user/stages')) {
+  if (request.nextUrl.pathname.includes('/dashboard/candidate/stages')) {
+    // default -> candidate
     if (_COOKIES.has(regSession)) {
       /* Session Pass */
       return NextResponse.next();
@@ -63,7 +64,8 @@ export async function middleware(request: NextRequest) {
   }
 
   /* CANDIDATE */
-  if (request.nextUrl.pathname.startsWith('/dashboard/user')) {
+  if (request.nextUrl.pathname.startsWith('/dashboard/candidate')) {
+    // default -> candidate
     if (_COOKIES.has(authSession)) {
       if (listOfRole.candidate) {
         /* Roles Passed */

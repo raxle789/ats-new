@@ -142,7 +142,7 @@ export default async function Home() {
               <div className="col-lg-5">
                 <div className="d-flex justify-content-lg-end">
                   <Link
-                    href="/job-list-v1"
+                    href="/main/jobs"
                     className="btn-six d-none d-lg-inline-block"
                   >
                     Explore all jobs

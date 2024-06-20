@@ -1,24 +1,46 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // import CandidateDetailsModal from '../../common/popup/candidate-details-modal';
 // import ActionCandidatesMenu from './action-candidates-menu';
-import { ICandidate } from '@/data/candidate-data';
 import Image from 'next/image';
 // import { useAppDispatch } from '@/redux/hook';
 // import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 
-const CandidatesItems = ({ item }: { item: ICandidate }) => {
+const CandidatesItems = ({ candidates }: { candidates: any }) => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const newDetailParams = new URLSearchParams(searchParams);
   const DynamicCandidateDetails = dynamic(
     () => import('../../common/popup/candidate-details-modal'),
-    { ssr: false },
   );
   const DynamicAction = dynamic(() => import('./action-candidates-menu'), {
     ssr: false,
   });
+  /* States */
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const showModal = () => {
-    setIsOpenModal(true);
+  const [details, setDetails] = useState<any>(null); // will be typed soon
+  console.info("Details state data \t:", details)
+
+  const fetchDetailCandidate = async (candidateId: number) => {
+    const request = await fetch("/api/v1/talent-acq/candidates?for=" + String(candidateId), {
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    const response = await request.json();
+    /* Set Details State */
+    setDetails(response)
+  };
+
+  const showModal = async (candidateId: number) => {
+    /* Get detail candidates by id */
+    await fetchDetailCandidate(candidateId);
+    setIsOpenModal(true)
   };
   return (
     <div className="candidate-profile-card list-layout border-0 mb-25">
@@ -26,10 +48,14 @@ const CandidatesItems = ({ item }: { item: ICandidate }) => {
         <div className="cadidate-avatar online position-relative d-block me-auto ms-auto mt-auto mb-auto">
           <a href="#" className="rounded-circle">
             <Image
-              src={item.img}
+              src={candidates?.documents}
               alt="image"
+              width={80}
+              height={80}
               className="lazy-img rounded-circle"
-              style={{ height: 'auto' }}
+              width={80}
+              height={80}
+              style={{ borderRadius: '50%', objectFit: 'cover' }}
             />
           </a>
         </div>
@@ -41,48 +67,48 @@ const CandidatesItems = ({ item }: { item: ICandidate }) => {
                   <a
                     className="tran3s"
                     style={{ cursor: 'pointer' }}
-                    onClick={showModal}
+                    onClick={() => showModal(candidates.id)}
                   >
-                    {item.name}
+                    {candidates?.users?.name}
                   </a>
                 </h4>
                 <div className="candidate-info mt-2 mb-4">
                   <span>Last Position</span>
-                  <div>{item.latestPosition}</div>
+                  <div>{candidates?.working_experiences?.latest_experience}</div>
                 </div>
-                {/* <div className="candidate-info mt-5">
+                <div className="candidate-info mt-5">
                   <ul className="candidate-skills style-none d-flex align-items-center">
-                    {item.skills.slice(0, 4).map((s, i) => (
+                    {candidates.candidate_skills.slice(0, 4).map((s: any, i: number) => (
                       <li key={i}>{s}</li>
                     ))}
-                    {item.skills.length > 4 && (
+                    {candidates.candidate_skills.length > 4 && (
                       <li className="more">
-                        {item.skills.length - item.skills.slice(0, 4).length}+
+                        {candidates.candidate_skills.length - candidates.candidate_skills.slice(0, 4).length}+
                       </li>
                     )}
                   </ul>
-                </div> */}
+                </div>
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6">
               <div className="candidate-info">
                 <span>Last Education</span>
-                <div>{item.education}</div>
+                <div>{candidates?.educations?.edu_level}</div>
               </div>
 
               <div className="candidate-info mt-2">
                 <span>Expected Salary</span>
-                <div>{item.expectedSalary}</div>
+                <div>{candidates?.expected_salary}</div>
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6">
               <div className="candidate-info">
                 <span>Year of Experience</span>
-                <div>{item.yearExperience}</div>
+                <div>{candidates?.working_experiences?.experiences_desc}</div>
               </div>
               <div className="candidate-info mt-2">
                 <span>Status</span>
-                <div>{item.status}</div>
+                {/* <div>{item.status}</div> */}
               </div>
             </div>
             <div className="col-xl-1 col-md-4">
@@ -108,6 +134,8 @@ const CandidatesItems = ({ item }: { item: ICandidate }) => {
       <DynamicCandidateDetails
         isOpen={isOpenModal}
         setIsOpenModal={setIsOpenModal}
+        data={null}
+        setDetails={setDetails}
       />
     </div>
   );

@@ -1,6 +1,5 @@
 'use client';
-import React, { useState } from 'react';
-import EmployAside from './aside';
+import React from 'react';
 import EmployDashboardArea from './dashboard-area';
 
 const EmployDashboardMain = () => {

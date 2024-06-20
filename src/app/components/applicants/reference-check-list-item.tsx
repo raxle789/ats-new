@@ -32,7 +32,7 @@ type Props = {
   ) => void;
 };
 
-const ReferenceCheckListItem = ({
+const ReferenceCheckListItem: React.FC<Props> = ({
   status,
   applicantData,
   jobVacancyId,

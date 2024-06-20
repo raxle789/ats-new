@@ -1,13 +1,13 @@
 import React from 'react';
 import Wrapper from '@/layouts/wrapper';
-import CandidateDashboardMain from '@/app/components/dashboard/candidate';
+import UserDashboardMain from '@/app/components/dashboard/user';
 
-const CandidateDashboardPage = () => {
+const EmployDashboardPage = () => {
   return (
     <Wrapper>
-      <CandidateDashboardMain />
+      <UserDashboardMain />
     </Wrapper>
   );
 };
 
-export default CandidateDashboardPage;
+export default EmployDashboardPage;

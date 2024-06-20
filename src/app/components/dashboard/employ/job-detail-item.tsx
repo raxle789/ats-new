@@ -247,7 +247,7 @@ const EmployJobDetailItem: React.FC<Props> = ({ jobVacancyData, params }) => {
         </button>
         <button
           className={`d-flex flex-column align-items-center ${status === 'OFFERING' ? 'btn-pipeline btn-pipeline-active' : 'btn-pipeline'}`}
-          onClick={() => handlePath(Status?.APPLICANT)}
+          onClick={() => handlePath(Status?.OFFERING)}
         >
           <span>{jobVacancyData?.applicant}</span>
           <span>Offering</span>

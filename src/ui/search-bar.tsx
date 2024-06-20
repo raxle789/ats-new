@@ -4,35 +4,26 @@ import Image from 'next/image';
 import search from '@/assets/dashboard/images/icon/icon_10.svg';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
+import React, { SetStateAction } from 'react';
 
-const SearchBar = () => {
-  const searchParams = useSearchParams();
-
+const SearchBar = ({ current, setCurrent } : { current: number, setCurrent: React.Dispatch<SetStateAction<number>> }) => {
   const router = useRouter();
-
   const pathname = usePathname();
-
-  const perPage = searchParams.get('perPage')?.toString() ?? '10';
-
+  const searchParams = useSearchParams();
   const handleSearch = useDebouncedCallback((value) => {
     const params = new URLSearchParams(searchParams);
-
-    if (value) {
-      params.set('page', '1');
-
-      params.set('perPage', perPage);
-
-      params.set('query', value);
+    if(current >= 1) {
+      params.set('page', String(1))
+      setCurrent(1);
+    };
+    if(value) {
+      params.set('search', value);
+      router.replace(pathname + '?' + params.toString());
     } else {
-      params.set('page', '1');
-
-      params.set('perPage', perPage);
-
-      params.delete('query');
-    }
-
-    router.replace(`${pathname}?${params.toString()}`);
-  }, 500);
+      params.delete('search');
+      router.replace(pathname + '?' + params.toString())
+    };
+  }, 1000);
 
   return (
     <>

@@ -1,19 +1,51 @@
 'use client';
-import React, { useState } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import SearchBar from '@/ui/search-bar';
-import candidate_data from '@/data/candidate-data';
 import CandidatesItems from './candidates-items';
 // import CandidatesFilter from './candidates-filter';
-import { Button, Popover } from 'antd';
+import { Button, Pagination, PaginationProps, Popover } from 'antd';
 import dynamic from 'next/dynamic';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 const CandidatesArea = () => {
   const DynamicFilter = dynamic(() => import('./candidates-filter'));
-  const candidate_items = candidate_data.slice(0, 10);
   const [popOverState, setPopOverState] = useState(false);
   const filterButtonClick = () => {
     setPopOverState(!popOverState);
   };
+
+  const _ROUTER = useRouter();
+  const _PATHNAME = usePathname();
+  const searchParams = useSearchParams();
+  let _CURRENTPAGE = searchParams.get('page'); // string Number
+  let _SEARCHTEXT = searchParams.get('search') ?? '';
+  const [current, setCurrent] = useState<number>(Number(_CURRENTPAGE) ?? 0);
+  const [candidateList, setCandidateList] = useState<any>(null);
+
+  const fetchCandidates = async () => {
+    const request = await fetch('/api/v1/talent-acq/candidates?page=' + current + '&search=' + _SEARCHTEXT, {
+      method: 'GET',
+      headers: {
+        "Content-Type": "application/json"
+      }
+    });
+    const response = await request.json();
+    /* Candidate List State */
+    setCandidateList(response.data);
+  };
+  /* Change number of pagination */
+  const onChange: PaginationProps['onChange'] = (page) => {
+    setCurrent(page);
+    const params = new URLSearchParams(searchParams);
+    params.set('page', String(page));
+    _ROUTER.push(_PATHNAME + '?' + params.toString());
+  };
+
+  useEffect(() => {
+    fetchCandidates();
+  }, [current, _SEARCHTEXT]);
   return (
     <>
       <div className="job-fpk-header mb-40 lg-mb-30">
@@ -21,7 +53,8 @@ const CandidatesArea = () => {
           <h2 className="main-title m0 flex-grow-1">Candidates</h2>
         </div>
         <div className="d-flex xs-mt-30 justify-content-end align-items-center">
-          <SearchBar />
+          {/* Search Bar */}
+          <SearchBar current={current} setCurrent={setCurrent} />
           <div className="short-filter d-flex align-items-center ms-3">
             {/* <div className="popover-filter"> */}
             <Popover
@@ -40,22 +73,17 @@ const CandidatesArea = () => {
         </div>
       </div>
       <div className="wrapper">
-        {candidate_items.map((item) => (
-          <CandidatesItems key={item.id} item={item} />
+        {candidateList && candidateList.candidates?.map((candidate: any, index: number) => (
+          <CandidatesItems key={index} candidates={candidate} />
         ))}
       </div>
-
-      {/* <div className="d-flex justify-content-center mt-30">
-        <Pagination
-          pageRangeDisplayed={3}
-          totalData={jobVacancyData?.total}
-          disabled={
-            !jobVacancyData.data || jobVacancyData?.total <= Number(perPage)
-              ? true
-              : false
-          }
-        />
-      </div> */}
+      {/* Pagination */}
+      <Pagination
+        onChange={onChange}
+        defaultCurrent={current}
+        current={current}
+        total={candidateList?.count}
+      />
     </>
   );
 };

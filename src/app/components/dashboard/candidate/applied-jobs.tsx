@@ -7,36 +7,36 @@ import EmployShortSelect from '../employ/short-select';
 const appliedJobs = [
   {
     id: 1,
-    jobTitle: 'Danil Mukbang',
-    positionLevel: 'Assitant Manager',
+    jobTitle: 'Data Analyst',
+    positionLevel: 'Staff',
     applyDate: '5-6-2024',
     status: 'assessment',
   },
   {
     id: 2,
-    jobTitle: 'Danil Makan Udang Rambutan',
-    positionLevel: 'Assitant Manager',
+    jobTitle: 'Software Engineer',
+    positionLevel: 'Supervisor',
     applyDate: '5-6-2024',
     status: 'assessment',
   },
   {
     id: 3,
-    jobTitle: 'Danil onChange',
-    positionLevel: 'Assitant Manager',
+    jobTitle: 'Front-end Web Developer',
+    positionLevel: 'Assistant Manager',
     applyDate: '5-6-2024',
     status: 'assessment',
   },
   {
     id: 4,
-    jobTitle: 'Danil lagi Kesel',
-    positionLevel: 'Assitant Manager',
+    jobTitle: 'UI/UX Designer',
+    positionLevel: 'Assistant Manager',
     applyDate: '5-6-2024',
     status: 'assessment',
   },
   {
     id: 5,
-    jobTitle: 'Danil si wota',
-    positionLevel: 'Assitant Manager',
+    jobTitle: 'AI Engineer',
+    positionLevel: 'Assistant Manager',
     applyDate: '5-6-2024',
     status: 'assessment',
   },
@@ -66,12 +66,24 @@ const AppliedJobs = () => {
               <table className="table job-alert-table w-100">
                 <thead>
                   <tr>
-                    <th scope="col">No</th>
-                    <th scope="col">Job Title</th>
-                    <th scope="col">Level</th>
-                    <th scope="col">Apply Date</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Action</th>
+                    <th className="text-start" scope="col">
+                      No
+                    </th>
+                    <th className="text-start" scope="col">
+                      Job Title
+                    </th>
+                    <th className="text-start" scope="col">
+                      Level
+                    </th>
+                    <th className="text-start" scope="col">
+                      Apply Date
+                    </th>
+                    <th className="text-start" scope="col">
+                      Status
+                    </th>
+                    <th className="text-start" scope="col">
+                      Action
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -79,7 +91,7 @@ const AppliedJobs = () => {
                     <React.Fragment key={index}>
                       <tr>
                         <td>{data.id}</td>
-                        <td>
+                        <td className="text-start">
                           <a
                             className="tran3s"
                             style={{ cursor: 'pointer' }}
@@ -88,9 +100,9 @@ const AppliedJobs = () => {
                             {data.jobTitle}
                           </a>
                         </td>
-                        <td>{data.positionLevel}</td>
-                        <td>{data.applyDate}</td>
-                        <td>{data.status}</td>
+                        <td className="text-start">{data.positionLevel}</td>
+                        <td className="text-start">{data.applyDate}</td>
+                        <td className="text-start">{data.status}</td>
                         <td>
                           <div className="action-dots float-end">
                             <button

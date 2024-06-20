@@ -1,8 +1,8 @@
 'use client';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image, { StaticImageData } from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 // import logo from '@/assets/dashboard/images/logo_01.png';
 import avatar from '@/assets/dashboard/images/avatar_01.jpg';
 import profile_icon_1 from '@/assets/dashboard/images/icon/icon_23.svg';
@@ -35,6 +35,8 @@ import {
   regSession,
 } from '@/libs/Sessions/utils';
 import { DecryptSession } from '@/libs/Sessions/jwt';
+import { userLoggedOut } from '@/libs/Login';
+import { getUserProfilePicture } from '@/libs/Candidate/retrieve-data';
 
 // nav data
 const nav_data: {
@@ -48,28 +50,28 @@ const nav_data: {
     id: 1,
     icon: nav_1,
     icon_active: nav_1_active,
-    link: '/dashboard/user',
+    link: '/dashboard/candidate',
     title: 'Dashboard',
   },
   {
     id: 2,
     icon: nav_2,
     icon_active: nav_2_active,
-    link: '/dashboard/user/profile',
+    link: '/dashboard/candidate/profile',
     title: 'My Profile',
   },
   {
     id: 3,
     icon: nav_3,
     icon_active: nav_3_active,
-    link: '/dashboard/user/stages',
+    link: '/dashboard/candidate/stages',
     title: 'Stages',
   },
   {
     id: 4,
     icon: nav_4,
     icon_active: nav_4_active,
-    link: '/dashboard/user/applied-jobs',
+    link: '/dashboard/candidate/applied-jobs',
     title: 'Applied Jobs',
   },
   // {
@@ -106,10 +108,11 @@ const CandidateAside = () => {
    * Session Context
    */
   const session = useAppSessionContext();
-  const authSessionPayload = DecryptSession(session[`${authSession}`]);
+  const authSessionPayload = DecryptSession(session[`${authSession}`] ?? ''); // verify if auth token doesn't exist
   console.info('auth payload \t:', authSessionPayload);
+  const regSessionPayload = DecryptSession(session[`${regSession}`] ?? '');
   /* END SESSION */
-
+  const router = useRouter();
   const pathname = usePathname();
   const isOpenSidebar = useAppSelector((state) => state.sidebar.isOpen);
   const dispatch = useAppDispatch();
@@ -120,6 +123,19 @@ const CandidateAside = () => {
       dispatch(setIsOpen(false));
     }
   };
+
+  /* State */
+  const [profilePic, setProfilePic] = useState<string | null>(null);
+
+  const fetchProfilePic = async () => {
+    const profilePictureBase64 = await getUserProfilePicture();
+    if(profilePictureBase64.file_base) {
+      setProfilePic(profilePictureBase64.file_base);
+    }
+  }
+  useEffect(() => {
+    fetchProfilePic()
+  }, []);
   return (
     <>
       <aside className={`dash-aside-navbar ${isOpenSidebar ? 'show' : ''}`}>
@@ -143,15 +159,19 @@ const CandidateAside = () => {
           <div className="user-data">
             <div className="user-avatar online position-relative rounded-circle">
               <Image
-                src={avatar}
+                src={profilePic ?? 'https://placehold.jp/3d4070/ffffff/150x150.png?text=ERA'}
                 alt="avatar"
                 className="lazy-img"
-                style={{ height: 'auto' }}
+                width={76}
+                height={76}
+                style={{ borderRadius: '50%', objectFit: 'cover' }}
               />
             </div>
             <div className="user-name-data">
               <p className="user-name">
-                {authSessionPayload?.user?.name ?? 'unknown'}
+                {authSessionPayload?.user?.name
+                  ? `${authSessionPayload?.user?.name.substring(0, 15)}...`
+                  : regSessionPayload?.user?.name ? regSessionPayload?.user?.name : 'guest'}
               </p>
             </div>
           </div>
@@ -160,16 +180,16 @@ const CandidateAside = () => {
               {nav_data.map((m) => {
                 // const isActive = pathname === m.link;
                 let isActive = false;
-                if (m.id === 2) {
-                  isActive =
-                    pathname === m.link ||
-                    pathname === '/dashboard/user/profile/document' ||
-                    pathname === '/dashboard/user/profile/personal-data' ||
-                    pathname ===
-                      '/dashboard/user/profile/background-experience';
-                } else {
-                  isActive = pathname === m.link;
-                }
+                // if (m.id === 2) {
+                //   isActive =
+                //     pathname === m.link ||
+                //     pathname === '/dashboard/candidate/profile/document' ||
+                //     pathname === '/dashboard/candidate/profile/personal-data' ||
+                //     pathname ===
+                //       '/dashboard/candidate/profile/background-experience';
+                // } else {
+                // }
+                isActive = pathname === m.link;
                 return (
                   <li key={m.id} onClick={handleClick}>
                     <Link
@@ -196,7 +216,13 @@ const CandidateAside = () => {
                   <Image src={nav_8} alt="icon" className="lazy-img" />
                   <span>Delete Account</span>
                 </a> */}
-                <Link href="#" className="d-flex w-100 align-items-center">
+                <Link href="#" className="d-flex w-100 align-items-center"
+                  onClick={async () => {
+                    await userLoggedOut()
+                    setTimeout(() => {
+                      router.push("/")
+                    }, 1000)
+                  }}>
                   <Image src={logout} alt="icon" className="lazy-img" />
                   <span style={{ color: '#ff2730' }}>Logout</span>
                 </Link>

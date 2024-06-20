@@ -9,6 +9,29 @@ export type TypeFetchReturned = {
   message: string;
 };
 
+export async function getUserProfilePicture() {
+  const authSession = await getUserSession('auth');
+  try {
+    const profilePicture = await prisma.documents.findFirst({
+      where: {
+        candidate_id: authSession.candidate.id,
+        documentTypeId: 1
+      },
+      select: {
+        file_base: true
+      }
+    })
+    return {
+      file_base: profilePicture?.file_base?.toString()
+    }
+  } catch (error) {
+    console.info("Error getting profile picture \t:", error);
+    return {
+      file_base: null
+    }
+  }
+}
+
 export async function getCandidateProfile(): Promise<TypeFetchReturned> {
   const authSession = await getUserSession('auth');
   try {
@@ -357,7 +380,7 @@ export async function getAppliedJobs(): Promise<TypeFetchReturned> {
         },
       },
     });
-    console.log('APPLIED \t:', appliedJobData);
+    // console.log('APPLIED \t:', appliedJobData);
     return {
       success: true,
       data: appliedJobData,

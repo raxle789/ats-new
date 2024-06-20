@@ -150,16 +150,16 @@ const FpkArea: React.FC<EmployJobFpkProps> = async ({ searchParams }) => {
     <>
       {/* {contextHolder} */}
 
-      {/* <div className="job-fpk-header d-sm-flex flex-wrap align-items-center justify-content-between mb-40 lg-mb-30">
+      <div className="job-fpk-header d-sm-flex flex-wrap align-items-center justify-content-between mb-40 lg-mb-30">
         <h2 className="main-title m0 flex-grow-1">FPK</h2>
-        <div className="d-flex ms-auto xs-mt-30 justify-content-between align-items-center">
+        {/* <div className="d-flex ms-auto xs-mt-30 justify-content-between align-items-center">
           <SearchBar />
           <div className="short-filter d-flex align-items-center ms-3">
             <div className="text-dark fw-500 me-2">Filter by:</div>
             <EmployShortSelect />
           </div>
-        </div>
-      </div> */}
+        </div> */}
+      </div>
 
       <div className="bg-white card-box border-20">
         <FpkItem

@@ -74,7 +74,6 @@ export async function userAuth(formData: any) {
         candidates: true // null.
       }
     });
-    console.info("user-data \t:", userData);
     /* close connection */
     await prisma.$disconnect();
     /* Guard Checking */

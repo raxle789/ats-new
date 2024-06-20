@@ -51,7 +51,7 @@
     font-size: 25px;
   }
   .filter-block.bottom-line {
-    border-bottom: 1px solid rgba($color: #31795a, $alpha: 0.3);
+    border-bottom: 1px solid rgba($color: $color-one, $alpha: 0.3);
   }
   .filter-title {
     font-size: 1em;
@@ -69,7 +69,7 @@
       width: 20px;
       height: 20px;
       border-radius: 50%;
-      background: $color-five;
+      background: $color-two;
       position: absolute;
       right: 0;
       top: 3px;
@@ -493,11 +493,14 @@
     width: calc(100% - 90px);
     margin-left: 30px;
     &:hover {
-      color: $color-three;
+      color: $color-one !important;
     }
   }
+  // .title:hover {
+  //   color: $color-one;
+  // }
   .split-box1 {
-    width: calc(100% - 60px);
+    // width: calc(100% - 60px);
     padding-left: 10px;
     .title {
       width: 100%;
@@ -534,8 +537,8 @@
   .job-location {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    // align-items: center;
+    // justify-content: center;
     p {
       margin-bottom: 0;
     }
@@ -577,18 +580,23 @@
     color: #fff;
     text-transform: uppercase;
     border-radius: 17px;
-    background: $color-three;
+    background: $color-two;
     &:hover {
-      background: $color-four;
+      background: $color-one;
     }
   }
   &.style-two {
     padding-top: 35px;
     padding-bottom: 35px;
     .apply-btn {
-      background: $color-five;
+      color: #fff;
+      background: $color-two;
+      padding: 17px 0 17px 0;
+      border: 1px solid $color-two;
       &:hover {
-        background: $color-three;
+        color: #fff;
+        background: $color-one;
+        border: 1px solid $color-one;
       }
     }
     .title:hover {
@@ -780,7 +788,7 @@
       color: #000;
       margin-bottom: 7px;
       &:hover {
-        color: $color-five;
+        color: $color-one;
       }
     }
     .info-data li {
@@ -975,7 +983,7 @@
     height: 25px;
     line-height: 25px;
     font-size: 14px;
-    background: $color-five;
+    background: $color-two;
   }
   p {
     font-size: 14px;

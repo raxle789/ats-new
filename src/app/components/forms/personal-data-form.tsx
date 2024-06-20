@@ -338,7 +338,7 @@ const PersonalDataForm: React.FC<Props> = ({
                       alt="Profile"
                       width={80}
                       height={80}
-                      style={{ borderRadius: '50%' }}
+                      style={{ borderRadius: '50%', objectFit: 'cover' }}
                     />
                   )}
                   <Form.Item<FieldType>

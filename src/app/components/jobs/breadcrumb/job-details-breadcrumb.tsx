@@ -14,7 +14,7 @@ const JobDetailsBreadcrumb = () => {
                 <h2 className="text-white">Job Details</h2>
               </div>
               <p className="text-lg text-white mt-30 lg-mt-20">
-                Here will be your job description & requirements
+                Here will be the job description & requirements
               </p>
             </div>
           </div>
