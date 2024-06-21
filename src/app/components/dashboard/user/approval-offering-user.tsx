@@ -11,19 +11,24 @@ import {
   message,
   Radio,
   Upload,
+  Image,
 } from 'antd';
 import type {
   CheckboxProps,
   FormProps,
   InputNumberProps,
+  GetProp,
   RadioChangeEvent,
+  UploadFile,
   UploadProps,
 } from 'antd';
 import InterviewHistoryModal from '../../common/popup/interview-history-modal';
 import SignatureCanvas from 'react-signature-canvas';
 import { AiOutlineUpload } from 'react-icons/ai';
+// import Image from 'next/image';
 
 const { TextArea } = Input;
+type FileType = Parameters<GetProp<UploadProps, 'beforeUpload'>>[0];
 
 type FieldType = {
   basicSalaryPackage?: number;
@@ -105,6 +110,14 @@ type schemeOffer = {
   };
 };
 
+const getBase64 = (file: FileType): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
+
 const uploadProps: UploadProps = {
   name: 'file',
   action: '',
@@ -168,6 +181,9 @@ const ApprovalOfferingUser = () => {
 
   const signRef = useRef<any | undefined>();
   const [signature, setSignature] = useState<any>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState('');
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
 
   // Functions
   const handleInterviewModal = () => {
@@ -183,6 +199,37 @@ const ApprovalOfferingUser = () => {
   const clearSignature = () => {
     signRef.current.clear();
     setSignature(null);
+  };
+
+  const handleBeforeUpload = (file: FileType) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!');
+    }
+    const isLt500kb = file.size / 1024 / 1024 < 0.5;
+    if (!isLt500kb) {
+      message.error('Image must smaller than 500KB!');
+    }
+    return isJpgOrPng && isLt500kb;
+  };
+
+  const handlePreview = async (file: UploadFile) => {
+    // console.log(file);
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj as FileType);
+    }
+
+    // console.log('okeoke');
+    console.log('file preview: ', file);
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
+  };
+
+  const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+    if (fileList) {
+      setSignature(fileList[0]?.thumbUrl);
+    }
   };
   // const basicSalaryChangeLeft = (value: any) => {
   //   const annualSalary = value * 12;
@@ -584,6 +631,10 @@ const ApprovalOfferingUser = () => {
   useEffect(() => {
     console.log(signature);
   }, [signature]);
+
+  useEffect(() => {
+    console.log('fileList: ', fileList);
+  }, [fileList]);
 
   // useEffect(() => {
   //   console.log('labelNames: ', labelNames);
@@ -1717,47 +1768,80 @@ const ApprovalOfferingUser = () => {
                 <div className="col-lg-6">
                   {approveValue === 'Approve' && (
                     <div className="row">
-                      <div className="col-lg-7">
-                        <label>Draw E-Sign*</label>
-                        <SignatureCanvas
-                          penColor="black"
-                          canvasProps={{
-                            style: {
-                              display: 'block',
-                              border: '1px solid black',
-                              width: '100%',
-                              height: '200px',
-                            },
-                          }}
-                          ref={signRef}
-                          onEnd={handleSignatureEnd}
-                        />
-                        <Button
-                          className="mt-2"
-                          type="primary"
-                          danger
-                          onClick={clearSignature}
+                      {!fileList[0] && (
+                        <div className="col-lg-7">
+                          <label>Draw E-Sign*</label>
+                          <SignatureCanvas
+                            penColor="black"
+                            canvasProps={{
+                              style: {
+                                display: 'block',
+                                border: '1px solid black',
+                                width: '100%',
+                                height: '200px',
+                                borderRadius: '10px',
+                              },
+                            }}
+                            ref={signRef}
+                            onEnd={handleSignatureEnd}
+                          />
+                          <Button
+                            className="mt-2"
+                            type="primary"
+                            danger
+                            onClick={clearSignature}
+                          >
+                            Clear
+                          </Button>
+                        </div>
+                      )}
+                      {signature === null && (
+                        <div
+                          className={`${fileList[0] ? 'col-lg-12' : 'col-lg-5'}`}
                         >
-                          Clear
-                        </Button>
-                      </div>
-                      <div className="col-lg-5">
-                        <Form.Item<FieldType>
-                          name="uploadESign"
-                          className="mb-0"
-                        >
-                          <Upload {...uploadProps}>
-                            <Button
-                              className="d-flex align-items-center justify-content-center"
-                              icon={
-                                <AiOutlineUpload style={{ fontSize: '19px' }} />
-                              }
+                          <Form.Item<FieldType>
+                            name="uploadESign"
+                            className="mb-0"
+                          >
+                            <Upload
+                              {...uploadProps}
+                              beforeUpload={handleBeforeUpload}
+                              onChange={handleChange}
+                              onPreview={handlePreview}
                             >
-                              Upload E-Sign
-                            </Button>
-                          </Upload>
-                        </Form.Item>
-                      </div>
+                              <Button
+                                className="d-flex align-items-center justify-content-center"
+                                icon={
+                                  <AiOutlineUpload
+                                    style={{ fontSize: '19px' }}
+                                  />
+                                }
+                              >
+                                Upload E-Sign
+                              </Button>
+                            </Upload>
+                          </Form.Item>
+                          {fileList[0] && (
+                            <label>
+                              note: Please check the E-Sign by click the image
+                            </label>
+                          )}
+
+                          {previewImage && (
+                            <Image
+                              wrapperStyle={{ display: 'none' }}
+                              preview={{
+                                visible: previewOpen,
+                                onVisibleChange: (visible) =>
+                                  setPreviewOpen(visible),
+                                afterOpenChange: (visible) =>
+                                  !visible && setPreviewImage(''),
+                              }}
+                              src={previewImage}
+                            />
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                   {approveValue === 'Reject' && (

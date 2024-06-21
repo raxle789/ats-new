@@ -2,11 +2,15 @@
 import React from 'react';
 // import { handleApplicant } from '@/app/components/message/confirm';
 import { Status } from '@/status/applicant-status';
+import { usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 // import { useAppSelector } from '@/redux/hook';
 // import { useRouter } from 'next/navigation';
 // import CreateInterviewModal from '../app/components/common/popup/create-interview-modal';
 
 const ActionApplicant = (props) => {
+  const pathname = usePathname();
+  const router = useRouter();
   // const currentStep = useAppSelector((state) => state.applicantStep.step);
   // const [isModalOpen, setIsOpenModal] = useState(false);
   return (
@@ -143,6 +147,17 @@ const ActionApplicant = (props) => {
               }}
             >
               Assign to Reference Check
+            </button>
+          </li>
+        )}
+        {props?.status === Status?.OFFERING && (
+          <li>
+            <button
+              className="applicant-action"
+              type="button"
+              onClick={() => router.push(`${pathname}/create-offering`)}
+            >
+              Create Offering
             </button>
           </li>
         )}

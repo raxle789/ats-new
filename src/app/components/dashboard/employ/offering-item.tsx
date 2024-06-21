@@ -1,9 +1,10 @@
 import React, { SetStateAction, useState } from 'react';
-import ActionApplicant from '../candidate/action-applicant';
-import { ICandidate } from '@/data/candidate-data';
+// import ActionApplicant from '../candidate/action-applicant';
+import ActionApplicant from '@/ui/action-card-applicant';
+// import { ICandidate } from '@/data/candidate-data';
 import Image from 'next/image';
 import { Select, Checkbox } from 'antd';
-import CandidateDetailsModal from '../../common/popup/candidate-details-modal';
+// import CandidateDetailsModal from '../../common/popup/candidate-details-modal';
 
 type TSub = {
   name: string;
@@ -204,7 +205,7 @@ const OfferingItem: React.FC<Props> = ({
                       aria-expanded="false"
                     >
                       <span>
-                        <ActionApplicant />
+                        <ActionApplicant status={'OFFERING'} />
                       </span>
                     </button>
                   </div>
