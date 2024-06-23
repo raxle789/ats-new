@@ -129,12 +129,12 @@ const CandidateAside = () => {
 
   const fetchProfilePic = async () => {
     const profilePictureBase64 = await getUserProfilePicture();
-    if(profilePictureBase64.file_base) {
+    if (profilePictureBase64.file_base) {
       setProfilePic(profilePictureBase64.file_base);
     }
-  }
+  };
   useEffect(() => {
-    fetchProfilePic()
+    fetchProfilePic();
   }, []);
   return (
     <>
@@ -159,7 +159,10 @@ const CandidateAside = () => {
           <div className="user-data">
             <div className="user-avatar online position-relative rounded-circle">
               <Image
-                src={profilePic ?? 'https://placehold.jp/3d4070/ffffff/150x150.png?text=ERA'}
+                src={
+                  profilePic ??
+                  'https://placehold.jp/3d4070/ffffff/150x150.png?text=ERA'
+                }
                 alt="avatar"
                 className="lazy-img"
                 width={76}
@@ -168,10 +171,12 @@ const CandidateAside = () => {
               />
             </div>
             <div className="user-name-data">
-              <p className="user-name">
+              <p className="user-name text-center">
                 {authSessionPayload?.user?.name
                   ? `${authSessionPayload?.user?.name.substring(0, 15)}...`
-                  : regSessionPayload?.user?.name ? regSessionPayload?.user?.name : 'guest'}
+                  : regSessionPayload?.user?.name
+                    ? regSessionPayload?.user?.name
+                    : 'guest'}
               </p>
             </div>
           </div>
@@ -216,13 +221,16 @@ const CandidateAside = () => {
                   <Image src={nav_8} alt="icon" className="lazy-img" />
                   <span>Delete Account</span>
                 </a> */}
-                <Link href="#" className="d-flex w-100 align-items-center"
+                <Link
+                  href="#"
+                  className="d-flex w-100 align-items-center"
                   onClick={async () => {
-                    await userLoggedOut()
+                    await userLoggedOut();
                     setTimeout(() => {
-                      router.push("/")
-                    }, 1000)
-                  }}>
+                      router.push('/');
+                    }, 1000);
+                  }}
+                >
                   <Image src={logout} alt="icon" className="lazy-img" />
                   <span style={{ color: '#ff2730' }}>Logout</span>
                 </Link>

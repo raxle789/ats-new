@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import SearchBar from '@/ui/search-bar';
 import CandidatesItems from './candidates-items';
+import CardsSkeleton from '@/ui/cards-skeleton';
 // import CandidatesFilter from './candidates-filter';
 import { Button, Pagination, PaginationProps, Popover } from 'antd';
 import dynamic from 'next/dynamic';
@@ -25,12 +26,18 @@ const CandidatesArea = () => {
   const [candidateList, setCandidateList] = useState<any>(null);
 
   const fetchCandidates = async () => {
-    const request = await fetch('/api/v1/talent-acq/candidates?page=' + current + '&search=' + _SEARCHTEXT, {
-      method: 'GET',
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
+    const request = await fetch(
+      '/api/v1/talent-acq/candidates?page=' +
+        current +
+        '&search=' +
+        _SEARCHTEXT,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
     const response = await request.json();
     /* Candidate List State */
     setCandidateList(response.data);
@@ -73,9 +80,12 @@ const CandidatesArea = () => {
         </div>
       </div>
       <div className="wrapper">
-        {candidateList && candidateList.candidates?.map((candidate: any, index: number) => (
-          <CandidatesItems key={index} candidates={candidate} />
-        ))}
+        {candidateList === null && <CardsSkeleton />}
+        {candidateList &&
+          candidateList !== null &&
+          candidateList.candidates?.map((candidate: any, index: number) => (
+            <CandidatesItems key={index} candidates={candidate} />
+          ))}
       </div>
       {/* Pagination */}
       <Pagination

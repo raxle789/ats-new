@@ -2,7 +2,11 @@
 
 import { Spin } from 'antd';
 
-const SpinFullScreen = ({ loading }) => {
+type Props = {
+  loading?: boolean;
+};
+
+const SpinFullScreen: React.FC<Props> = ({ loading }) => {
   return (
     <>
       <Spin spinning={loading} fullscreen />

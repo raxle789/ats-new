@@ -292,7 +292,7 @@ const Stage3Form = () => {
       fetchJobFunctions(setMasterData),
       jobJobLevels(setMasterData),
       lineIndutries(setMasterData),
-      fetchSources(setMasterData)
+      fetchSources(setMasterData),
     ]);
   };
   /* END OF ACTIONS */
@@ -2518,10 +2518,12 @@ const Stage3Form = () => {
               <Form.Item<FieldType>
                 name={['others', 'source']}
                 className="mb-0"
-                rules={[{
-                  required: true,
-                  message: 'Please select source'
-                }]}
+                rules={[
+                  {
+                    required: true,
+                    message: 'Please select source',
+                  },
+                ]}
                 // validateStatus={
                 //   errors &&
                 //   errors.education &&

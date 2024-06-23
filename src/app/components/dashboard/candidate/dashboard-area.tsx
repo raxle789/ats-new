@@ -80,8 +80,8 @@ const DashboardArea = () => {
           <div className="recent-job-tab bg-white border-20 mt-30 h-100">
             <h4 className="dash-title-two">Recommended Jobs 20</h4>
             <div
-              className={`wrapper ${appliedJobs.length !== 0 ? 'd-flex justify-content-center align-items-center' : 'content-dashboard-user'}`}
-              style={{ minHeight: '75%' }}
+              className="wrapper content-dashboard-user"
+              // style={{ minHeight: '75%' }}
             >
               <Alert
                 message="No Recommendations"

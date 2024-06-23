@@ -23,24 +23,27 @@ const CandidatesItems = ({ candidates }: { candidates: any }) => {
   /* States */
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [details, setDetails] = useState<any>(null); // will be typed soon
-  console.info("Details state data \t:", details)
+  console.info('Details state data \t:', details);
 
   const fetchDetailCandidate = async (candidateId: number) => {
-    const request = await fetch("/api/v1/talent-acq/candidates?for=" + String(candidateId), {
-      method: 'GET',
-      headers: {
-        "Content-Type": "application/json"
-      }
-    });
+    const request = await fetch(
+      '/api/v1/talent-acq/candidates?for=' + String(candidateId),
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      },
+    );
     const response = await request.json();
     /* Set Details State */
-    setDetails(response)
+    setDetails(response);
   };
 
   const showModal = async (candidateId: number) => {
     /* Get detail candidates by id */
     await fetchDetailCandidate(candidateId);
-    setIsOpenModal(true)
+    setIsOpenModal(true);
   };
   return (
     <div className="candidate-profile-card list-layout border-0 mb-25">
@@ -50,8 +53,6 @@ const CandidatesItems = ({ candidates }: { candidates: any }) => {
             <Image
               src={candidates?.documents}
               alt="image"
-              width={80}
-              height={80}
               className="lazy-img rounded-circle"
               width={80}
               height={80}
@@ -74,9 +75,11 @@ const CandidatesItems = ({ candidates }: { candidates: any }) => {
                 </h4>
                 <div className="candidate-info mt-2 mb-4">
                   <span>Last Position</span>
-                  <div>{candidates?.working_experiences?.latest_experience}</div>
+                  <div>
+                    {candidates?.working_experiences?.latest_experience}
+                  </div>
                 </div>
-                <div className="candidate-info mt-5">
+                {/* <div className="candidate-info mt-5">
                   <ul className="candidate-skills style-none d-flex align-items-center">
                     {candidates.candidate_skills.slice(0, 4).map((s: any, i: number) => (
                       <li key={i}>{s}</li>
@@ -87,7 +90,7 @@ const CandidatesItems = ({ candidates }: { candidates: any }) => {
                       </li>
                     )}
                   </ul>
-                </div>
+                </div> */}
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6">
