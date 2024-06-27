@@ -28,7 +28,7 @@ const ActionCheckboxJob = () => {
         type="primary"
         danger
         size="small"
-        className="action-checkbox-btn"
+        className="action-checkbox-job-vacancies-btn"
         onClick={showModal}
       >
         <MdDeleteOutline className="action-checkbox-icon" />

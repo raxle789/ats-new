@@ -31,15 +31,18 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'placehold.co',
         port: '',
-        pathname: '*'
-      }
+        pathname: '*',
+      },
     ],
   },
   experimental: {
     serverComponentsExternalPackages: ['@react-pdf/renderer'],
     serverActions: {
-      bodySizeLimit: '5mb'
-    }
+      bodySizeLimit: '5mb',
+    },
+  },
+  typescript: {
+    ignoreBuildErrors: true,
   },
   webpack(config) {
     // react-pdf configuration

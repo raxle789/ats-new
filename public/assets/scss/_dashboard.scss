@@ -88,7 +88,7 @@
     font-size: 16px;
     font-weight: 500;
     letter-spacing: -0.16px;
-    color: $color-one;
+    color: #1c1c1c;
     padding: 20px 5px 20px 20px;
     border-radius: 15px;
     @include transition(0.25s);
@@ -125,7 +125,7 @@
     .progress-line {
       height: 5px;
       border-radius: 10px;
-      background: #3f634d;
+      background: #0e0b4c;
       overflow: hidden;
       margin: 9px 0 3px;
       .inner-line {
@@ -140,7 +140,7 @@
       font-size: 11px;
       font-weight: 500;
       margin: 0;
-      color: rgba($color: #244034, $alpha: 0.5);
+      color: rgba($color: #0e0b4c, $alpha: 0.5);
     }
   }
   .logout-btn {
@@ -1112,6 +1112,10 @@
     td {
       font-size: 12px;
     }
+    .job-title-item {
+      font-size: 14px;
+      font-weight: bold;
+    }
     .job-title-item:hover {
       color: #1e87f0;
     }
@@ -1953,6 +1957,11 @@
 .action-checkbox-btn {
   padding-top: 3px;
   padding-bottom: 28px;
+}
+
+.action-checkbox-job-vacancies-btn {
+  padding-top: 15px;
+  padding-bottom: 15px;
 }
 
 .action-checkbox-icon {

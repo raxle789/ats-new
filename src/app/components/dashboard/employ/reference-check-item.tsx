@@ -54,6 +54,7 @@ type Props = {
     setLoading: (loading: boolean) => void,
     status: string,
   ) => void | any;
+  children?: any;
 };
 
 const ReferenceCheckItem: React.FC<Props> = ({
@@ -125,12 +126,12 @@ const ReferenceCheckItem: React.FC<Props> = ({
   };
   return (
     <>
-      {/* {isOpenModal && (
+      {isOpenModal && (
         <ReferenceCheckFormModal
           isOpenModal={isOpenModal}
           setIsOpenModal={setIsOpenModal}
         />
-      )} */}
+      )}
 
       <div className="candidate-profile-card list-layout border-0 mb-25">
         <div className="d-flex">
@@ -214,7 +215,7 @@ const ReferenceCheckItem: React.FC<Props> = ({
                     <div className="d-flex align-items-center justify-content-start">
                       <button
                         type="button"
-                        onClick={() => handleFormModal('candidate-reference')}
+                        onClick={() => setIsOpenModal(true)}
                       >
                         {sendCandRefCheckForm && (
                           <Tag color="#1e87f0" style={{ color: 'white' }}>
@@ -243,13 +244,31 @@ const ReferenceCheckItem: React.FC<Props> = ({
                       </Tooltip>
                     </div>
                   </div>
+                  <div className="candidate-info mt-2">
+                    <span className="d-block">
+                      Do you want to send reference check form to referee?
+                    </span>
+                    <Button
+                      className="me-2"
+                      onClick={() => handleFirstFormSend('No')}
+                    >
+                      No
+                    </Button>
+                    <Button
+                      type="primary"
+                      className="btn-yes-ref-check"
+                      onClick={() => handleFirstFormSend('Yes')}
+                    >
+                      <span style={{ color: 'white' }}>Yes</span>
+                    </Button>
+                  </div>
                   {candRefCheckFormsState && (
                     <div className="candidate-info mt-2">
                       <span>Referee Form Status</span>
                       <div className="d-flex align-items-center justify-content-start">
                         <button
                           type="button"
-                          onClick={() => handleFormModal('referee-form')}
+                          onClick={() => setIsOpenModal(true)}
                         >
                           <Tag color="#29d259" style={{ color: 'white' }}>
                             Done
@@ -276,6 +295,10 @@ const ReferenceCheckItem: React.FC<Props> = ({
                   )}
                 </div>
               )}
+
+              {/* <div className="col-lg-4 col-md-4 col-sm-6">
+                
+              </div> */}
 
               {/* {onOkState && (
               )} */}
@@ -308,17 +331,17 @@ const ReferenceCheckItem: React.FC<Props> = ({
           </div>
         </div>
 
-        <ReferenceCheckFormModal
+        {/* <ReferenceCheckFormModal
           titleModal={titleModal}
           isOpenModal={isOpenRefForm}
           setIsOpenModal={setIsRefForm}
           children={childrenModal}
-        />
+        /> */}
 
-        {/* <ReferenceCheckFormModal
-        isOpen={isOpenRefForm}
-        setIsOpenModal={setIsRefForm}
-      /> */}
+        <ReferenceCheckFormModal
+          isOpenModal={isOpenRefForm}
+          setIsOpenModal={setIsRefForm}
+        />
       </div>
     </>
   );

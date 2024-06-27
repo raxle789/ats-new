@@ -6,14 +6,14 @@ import Image from 'next/image';
 // import { useAppDispatch } from '@/redux/hook';
 // import { setIsOpen } from '@/redux/features/candidateDetailsSlice';
 import dynamic from 'next/dynamic';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { usePathname, useSearchParams } from 'next/navigation';
 
 const CandidatesItems = ({ candidates }: { candidates: any }) => {
-  const router = useRouter();
-  const pathname = usePathname();
+  // const router = useRouter();
+  // const pathname = usePathname();
   const searchParams = useSearchParams();
-  const newDetailParams = new URLSearchParams(searchParams);
+  // const newDetailParams = new URLSearchParams(searchParams);
   const DynamicCandidateDetails = dynamic(
     () => import('../../common/popup/candidate-details-modal'),
   );
@@ -23,9 +23,10 @@ const CandidatesItems = ({ candidates }: { candidates: any }) => {
   /* States */
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [details, setDetails] = useState<any>(null); // will be typed soon
-  console.info('Details state data \t:', details);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const fetchDetailCandidate = async (candidateId: number) => {
+    setLoading(true);
     const request = await fetch(
       '/api/v1/talent-acq/candidates?for=' + String(candidateId),
       {
@@ -35,16 +36,22 @@ const CandidatesItems = ({ candidates }: { candidates: any }) => {
         },
       },
     );
+    setLoading(false);
     const response = await request.json();
     /* Set Details State */
     setDetails(response);
   };
 
   const showModal = async (candidateId: number) => {
+    setIsOpenModal(true);
     /* Get detail candidates by id */
     await fetchDetailCandidate(candidateId);
-    setIsOpenModal(true);
   };
+
+  useEffect(() => {
+    console.log('Details state data:', details);
+  }, [details]);
+
   return (
     <div className="candidate-profile-card list-layout border-0 mb-25">
       <div className="d-flex">
@@ -61,7 +68,7 @@ const CandidatesItems = ({ candidates }: { candidates: any }) => {
           </a>
         </div>
         <div className="right-side">
-          <div className="row gx-1 align-items-start mb-40">
+          <div className="row gx-1 align-items-start mb-0">
             <div className="col-lg-3">
               <div className="position-relative mt-1">
                 <h4 className="candidate-name mb-0">
@@ -73,24 +80,14 @@ const CandidatesItems = ({ candidates }: { candidates: any }) => {
                     {candidates?.users?.name}
                   </a>
                 </h4>
-                <div className="candidate-info mt-2 mb-4">
-                  <span>Last Position</span>
-                  <div>
-                    {candidates?.working_experiences?.latest_experience}
-                  </div>
+                <div className="candidate-info mt-30">
+                  <span>Age</span>
+                  <div>-</div>
                 </div>
-                {/* <div className="candidate-info mt-5">
-                  <ul className="candidate-skills style-none d-flex align-items-center">
-                    {candidates.candidate_skills.slice(0, 4).map((s: any, i: number) => (
-                      <li key={i}>{s}</li>
-                    ))}
-                    {candidates.candidate_skills.length > 4 && (
-                      <li className="more">
-                        {candidates.candidate_skills.length - candidates.candidate_skills.slice(0, 4).length}+
-                      </li>
-                    )}
-                  </ul>
-                </div> */}
+                <div className="candidate-info mt-2">
+                  <span>City</span>
+                  <div>-</div>
+                </div>
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6">
@@ -98,10 +95,18 @@ const CandidatesItems = ({ candidates }: { candidates: any }) => {
                 <span>Last Education</span>
                 <div>{candidates?.educations?.edu_level}</div>
               </div>
-
               <div className="candidate-info mt-2">
+                <span>Education Major</span>
+                <div>-</div>
+              </div>
+              <div className="candidate-info mt-10">
                 <span>Expected Salary</span>
-                <div>{candidates?.expected_salary}</div>
+                <div>
+                  {`Rp. ${Number(candidates?.expected_salary)}`.replace(
+                    /\B(?=(\d{3})+(?!\d))/g,
+                    '.',
+                  )}
+                </div>
               </div>
             </div>
             <div className="col-lg-4 col-md-4 col-sm-6">
@@ -110,8 +115,12 @@ const CandidatesItems = ({ candidates }: { candidates: any }) => {
                 <div>{candidates?.working_experiences?.experiences_desc}</div>
               </div>
               <div className="candidate-info mt-2">
-                <span>Status</span>
-                {/* <div>{item.status}</div> */}
+                <span>Last Position</span>
+                <div>{candidates?.working_experiences?.latest_experience}</div>
+              </div>
+              <div className="candidate-info mt-2">
+                <span>Last Company</span>
+                <div>-</div>
               </div>
             </div>
             <div className="col-xl-1 col-md-4">
@@ -137,8 +146,9 @@ const CandidatesItems = ({ candidates }: { candidates: any }) => {
       <DynamicCandidateDetails
         isOpen={isOpenModal}
         setIsOpenModal={setIsOpenModal}
-        data={null}
+        data={details} // details candidate data
         setDetails={setDetails}
+        loading={loading}
       />
     </div>
   );

@@ -2,12 +2,8 @@ import React from 'react';
 // import Link from 'next/link';
 import Image from 'next/image';
 // import logo_era from '@/assets/images/logo/logo_erajaya2.jpg';
-import img_1 from '@/assets/images/assets/img_37.jpg';
 // import img_2 from '@/assets/images/assets/img_38.jpg';
-import grey_bg from '@/assets/images/assets/grey-bg.jpg';
-import img_3 from '@/assets/images/assets/img_04.jpg';
-import logo_era from '@/assets/images/home/logo_era.png';
-import logo_era_hd from '@/assets/images/home/erajaya_logo_hd.png';
+import era_group from '@/assets/images/home/era_group.png';
 // import img_4 from '@/assets/images/assets/img_42.png';
 // import screen_1 from '@/assets/images/assets/screen_01.png';
 // import screen_2 from '@/assets/images/assets/screen_02.png';
@@ -62,18 +58,18 @@ const FeatureNine = () => {
               </div>
             </div>
           </div>
-          <div className="col-lg-6 col-md-11 ms-auto me-auto me-lg-0">
-            <div className="img-data position-relative md-mt-50">
-              <div className="row ms-3">
-                <Image
-                  src={logo_era_hd}
-                  alt="image"
-                  className="lazy-img logo-img mb-4 wow fadeInRight"
-                  style={imgStyle}
-                  loading="lazy"
-                />
-              </div>
-              <div className="row ms-5 mt-30">
+          <div className="col-lg-6 col-md-11 ms-auto me-auto me-lg-0 d-flex align-items-center justify-content-center">
+            <div>
+              <Image
+                src={era_group}
+                alt="image"
+                className="lazy-img logo-img mb-4 wow fadeInRight"
+                style={{ width: '700px', height: 'auto' }}
+                loading="lazy"
+              />
+            </div>
+            {/* <div className="img-data position-relative md-mt-50"> */}
+            {/* <div className="row ms-5 mt-30">
                 <div className="col-md-6 col-lg-12">
                   <Image
                     src={grey_bg}
@@ -82,8 +78,8 @@ const FeatureNine = () => {
                     loading="lazy"
                   />
                 </div>
-              </div>
-            </div>
+              </div> */}
+            {/* </div> */}
           </div>
         </div>
       </div>

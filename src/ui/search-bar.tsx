@@ -6,23 +6,31 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
 import React, { SetStateAction } from 'react';
 
-const SearchBar = ({ current, setCurrent } : { current: number, setCurrent: React.Dispatch<SetStateAction<number>> }) => {
+const SearchBar = ({
+  current,
+  setCurrent,
+}: {
+  current?: number;
+  setCurrent?: React.Dispatch<SetStateAction<number>>;
+}) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const handleSearch = useDebouncedCallback((value) => {
     const params = new URLSearchParams(searchParams);
-    if(current >= 1) {
-      params.set('page', String(1))
-      setCurrent(1);
-    };
-    if(value) {
+    if (current && setCurrent) {
+      if (current >= 1) {
+        params.set('page', String(1));
+        setCurrent(1);
+      }
+    }
+    if (value) {
       params.set('search', value);
       router.replace(pathname + '?' + params.toString());
     } else {
       params.delete('search');
-      router.replace(pathname + '?' + params.toString())
-    };
+      router.replace(pathname + '?' + params.toString());
+    }
   }, 1000);
 
   return (

@@ -1,26 +1,27 @@
 import React from 'react';
-import Image from 'next/image';
-import edit from '@/assets/dashboard/images/icon/icon_20.svg';
-import delete_icon from '@/assets/dashboard/images/icon/icon_21.svg';
-import { useRouter } from 'next/navigation';
+import { HiOutlineEye } from 'react-icons/hi';
+import { FiEdit } from 'react-icons/fi';
 
 const ActionDropdownJobDetails = () => {
-  const router = useRouter();
   return (
     <ul className="dropdown-menu dropdown-menu-end">
       <li>
-        <a
+        <button
           className="dropdown-item"
-          onClick={() => router.push('/dashboard/ta/preview-page/job-info')}
-          style={{ cursor: 'pointer' }}
+          type="button"
+          // onClick={() => handleJobVacancy('view', jobId)}
         >
-          <Image src={edit} alt="icon" className="lazy-img" /> Info
-        </a>
+          <HiOutlineEye className="me-1" style={{ fontSize: '16px' }} /> View
+        </button>
       </li>
       <li>
-        <a className="dropdown-item" href="#">
-          <Image src={delete_icon} alt="icon" className="lazy-img" /> Delete
-        </a>
+        <button
+          className="dropdown-item"
+          type="button"
+          // onClick={() => handleJobVacancy('view', jobId)}
+        >
+          <FiEdit className="me-1" style={{ fontSize: '16px' }} /> Edit
+        </button>
       </li>
     </ul>
   );

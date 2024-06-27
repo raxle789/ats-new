@@ -39,6 +39,7 @@ const CandidatesArea = () => {
       },
     );
     const response = await request.json();
+    console.log('search \t:', response);
     /* Candidate List State */
     setCandidateList(response.data);
   };
@@ -66,7 +67,6 @@ const CandidatesArea = () => {
             {/* <div className="popover-filter"> */}
             <Popover
               placement="bottom"
-              // title={text}
               content={<DynamicFilter />}
               open={popOverState}
               // style={{ width: '400px' }}
@@ -89,6 +89,7 @@ const CandidatesArea = () => {
       </div>
       {/* Pagination */}
       <Pagination
+        showSizeChanger={false}
         onChange={onChange}
         defaultCurrent={current}
         current={current}
